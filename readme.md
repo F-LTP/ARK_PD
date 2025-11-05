@@ -1,8 +1,8 @@
 # Tomorrow's RogueNights
 
-이 게임은 Hypergryph에서 개발한 명일방주의 팬 게임입니다!
+This game is a variant of Tomorrow roguenights, a fan game of Arknights! Main tasks: Replace text with Chinese, fix bugs, add seeds, daily challenges, and testing modes。
 
-개발자 [00-Evan](https://github.com/00-Evan)의 [Shattered Pixel Dungeon](https://github.com/00-Evan/shattered-pixel-dungeon) (녹픽던)을 기반으로 개발중인 프로젝트입니다.
+The developer [00-Evan](https://github.com/00-Evan) [Shattered Pixel Dungeon](https://github.com/00-Evan/shattered-pixel-dungeon) 
 
 A fan game of Arknights, a tactical RPG / tower defense mobile defense game developed by Hypergryph, with a twist of Roguelike RPG, including randomly generated levels, items, enemies, and traps! 
 

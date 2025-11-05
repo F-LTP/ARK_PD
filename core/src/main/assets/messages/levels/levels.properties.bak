@@ -225,3 +225,7 @@ levels.prisonlevel.bookshelf_desc=这个书架可能是监狱图书馆的残留�
 levels.sewerlevel.water_name=浑浊水潭
 levels.sewerlevel.empty_deco_desc=潮湿且发黄的苔藓覆盖其上。
 levels.sewerlevel.bookshelf_desc=这个书架塞满了廉价而无用的书籍。烧掉怎么样？
+
+
+levels.sealevel_part1.see_teeror_name=溟痕
+levels.sealevel_part1.see_teeror_desc=这个地方被溟痕污染，踩上去会受到神经损伤。
