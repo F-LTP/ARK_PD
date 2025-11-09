@@ -1,3 +1,4 @@
+
 badges.endorsed=取得蚀刻章：%s
 badges.new_super=新的镀层蚀刻章：%s
 badges.new=新的蚀刻章：%s
@@ -74,6 +75,83 @@ badges$badge.unlock_rosecat=解锁迷迭香
 badges$badge.unlock_nearl=解锁临光
 badges$badge.unlock_chen=解锁陈
 
+badges.endorsed=배지 획득: %s
+badges.new_super=새로운 고급 배지 획득: %s
+badges.new=새 배지 획득: %s
+badges$badge.monsters_slain_1=리유니온 10명 처치
+badges$badge.monsters_slain_2=리유니온 50명 처치
+badges$badge.monsters_slain_3=리유니온 150명 처치
+badges$badge.monsters_slain_4=리유니온 250명 처치
+badges$badge.gold_collected_1=100 합성옥 수집
+badges$badge.gold_collected_2=500 합성옥 수집
+badges$badge.gold_collected_3=2500 합성옥 수집
+badges$badge.gold_collected_4=7500 합성옥 수집
+badges$badge.gold_collected_5=15000 합성옥 수집
+badges$badge.level_reached_1=레벨 6 달성
+badges$badge.level_reached_2=레벨 12 달성
+badges$badge.level_reached_3=레벨 18 달성
+badges$badge.level_reached_4=레벨 24 달성
+badges$badge.all_weapons_identified=모든 무기 감정됨
+badges$badge.all_skillbook_identified=모든 스킬 감정됨
+badges$badge.all_wands_identified=모든 아츠 스태프 감정됨
+badges$badge.all_rings_identified=모든 반지 감정됨
+badges$badge.all_artifacts_identified=모든 유물 감정됨
+badges$badge.all_potions_identified=모든 물약 감정됨
+badges$badge.all_scrolls_identified=모든 주문서 감정됨
+badges$badge.all_items_identified=모든 아이템 감정됨
+badges$badge.all_bags_bought=모든 가방 구입함
+badges$badge.death_from_fire=YES I'M ON FIRE
+badges$badge.death_from_poison=중독으로 사망
+badges$badge.death_from_gas=유독 가스로 사망
+badges$badge.death_from_hunger=영양실조로 사망
+badges$badge.death_from_glyph=지연된 피해로 인해 사망
+badges$badge.death_from_falling=추락으로 사망
+badges$badge.yasd=화상, 중독, 영양실조, 상형문자, 추락으로 한 번씩 사망
+badges$badge.boss_slain_1=1번째 보스 처치
+badges$badge.boss_slain_2=2번째 보스 처치
+badges$badge.boss_slain_3=3번째 보스 처치
+badges$badge.boss_slain_4=4번째 보스 처치
+badges$badge.boss_slain_1_all_classes=모든 오퍼레이터로 1번째 보스 처치
+badges$badge.boss_slain_3_all_subclasses=모든 전문화로 3번째 보스 처치
+badges$badge.strength_attained_1=힘 수치 13 달성
+badges$badge.strength_attained_2=힘 수치 15 달성
+badges$badge.strength_attained_3=힘 수치 17 달성
+badges$badge.strength_attained_4=힘 수치 19 달성
+badges$badge.food_eaten_1=음식 10개 섭취
+badges$badge.food_eaten_2=음식 20개 섭취
+badges$badge.food_eaten_3=음식 30개 섭취
+badges$badge.food_eaten_4=음식 40개 섭취
+badges$badge.item_level_1=아이템 레벨 3 달성
+badges$badge.item_level_2=아이템 레벨 6 달성
+badges$badge.item_level_3=아이템 레벨 9 달성
+badges$badge.item_level_4=아이템 레벨 12 달성
+badges$badge.victory=박사 구출!
+badges$badge.victory_all_classes=모든 오퍼레이터로 박사를 구출
+badges$badge.mastery_combo=10연속 타격 성공
+badges$badge.potions_cooked_1=물약 3개 제작
+badges$badge.potions_cooked_2=물약 6개 제작
+badges$badge.potions_cooked_3=물약 9개 제작
+badges$badge.potions_cooked_4=물약 12개 제작
+badges$badge.no_monsters_slain=어떤 적도 처치하지 않고 한 층 돌파
+badges$badge.grim_weapon=음침한 무기로 대상을 일격사
+badges$badge.piranhas=촉수 6마리 처치
+badges$badge.games_played_1=게임을 10판 플레이
+badges$badge.games_played_2=게임을 50판 플레이
+badges$badge.games_played_3=게임을 100판 플레이
+badges$badge.games_played_4=게임을 250판 플레이
+badges$badge.happy_end=엔딩-행복한 결말
+badges$badge.champion_1=1개의 위기협약을 활성화하고 클리어
+badges$badge.champion_2=3개의 위기협약을 활성화하고 클리어
+badges$badge.champion_3=6개의 위기협약을 활성화하고 클리어
+badges$badge.champion_4=8개의 위기협약을 활성화하고 클리어
+badges$badge.unlock_mage=아미야 해금
+badges$badge.unlock_rogue=레드 해금
+badges$badge.unlock_huntress=그레이스롯 해금
+badges$badge.unlock_rosecat=로즈몬티스 해금
+badges$badge.unlock_nearl=니어 해금
+badges$badge.unlock_chen=첸 해금
+
+
 badges$badge.roaringflare=怒号光明
 badges$badge.eviltime_end=黑暗时代的终结
 badges$badge.fragging=结局 - 高潮
@@ -92,10 +170,20 @@ badges$badge.siesta_part2=结局 - 火蓝之心
 badges$badge.gavial_part1=抓获恐怖分子
 badges$badge.gavial_part2=结局 - 大酋长
 
+
 badges$badge.get_25_stones=收集25块固源岩
 badges$badge.get_40_stones=收集40块固源岩
 badges$badge.doll_collector=人偶收藏家
 badges$badge.slain_pursuer=追猎者
+
+badges$badge.iberia_part1=물이 정말 깊어
+badges$badge.iberia_part2=엔딩-고요함
+
+badges$badge.get_25_stones=원암 25개 채취
+badges$badge.get_40_stones=원암 40개 채취
+badges$badge.doll_collector=인형 수집가
+badges$badge.slain_pursuer=사냥꾼 처치
+
 
 badges$badge.blaze_champion1=熟练煌
 badges$badge.blaze_champion2=精通煌
