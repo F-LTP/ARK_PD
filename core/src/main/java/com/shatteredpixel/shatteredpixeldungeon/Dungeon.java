@@ -219,8 +219,7 @@ public class Dungeon {
 
 	public static boolean daily;
 	public static boolean dailyReplay;
-	public static boolean extrastage_Gavial; // true라면 가비알 스테이지 실행
-	public static boolean extrastage_Sea;
+
 	public static boolean isPray; // 프리스티스를 위한 기도를 하였는가?
 	public static boolean killcat; // 엔딩 씬에서 켈시 하극상 출현용.
 

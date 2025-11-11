@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 
 import com.shatteredpixel.shatteredpixeldungeon.custom.dict.DictBook;
+import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.AnnihilationGear;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
@@ -37,7 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK1.BookChainHook;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SkillBook;
 import com.shatteredpixel.shatteredpixeldungeon.items.TomeOfMastery;
-import com.shatteredpixel.shatteredpixeldungeon.items.WalkieTalkie;
+
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CustomeSet;
@@ -477,7 +478,7 @@ import com.watabou.utils.DeviceCompat;
 				 new MagicalHolster().collect();
 				 Dungeon.LimitedDrops.MAGICAL_HOLSTER.drop();
 			 }
-			 new WalkieTalkie().collect();
+
 		 }
 	 }
 

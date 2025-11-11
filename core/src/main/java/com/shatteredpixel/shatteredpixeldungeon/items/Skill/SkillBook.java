@@ -53,8 +53,8 @@ public class SkillBook extends Item {
         super.execute(hero, action);
 
 
-        /*if (action.equals(AC_ACT)) {
-            if (Dungeon.depth > 30 && Dungeon.extrastage_Sea){//change from budding
+        if (action.equals(AC_ACT)) {
+         /*   if (Dungeon.depth > 30 && Dungeon.extrastage_Sea){//change from budding
             if (hero.buff(NervousImpairment.class) == null) {
                 Buff.affect(hero, NervousImpairment.class);
             } else {

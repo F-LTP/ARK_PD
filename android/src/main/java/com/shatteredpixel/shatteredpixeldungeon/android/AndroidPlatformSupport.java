@@ -38,6 +38,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidGraphics;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.PixmapPacker;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
@@ -292,6 +293,7 @@ public class AndroidPlatformSupport extends PlatformSupport {
 	//droid sans / roboto, or a custom pixel font, for use with Latin and Cyrillic languages
 	private static FreeTypeFontGenerator basicFontGenerator;
 	//droid sans / nanum gothic / noto sans, for use with Korean
+    private static HashMap<Integer, BitmapFont> basicFonts = new HashMap<>();
 	private static FreeTypeFontGenerator KRFontGenerator;
 	private static HashMap<Integer, BitmapFont> KRFonts = new HashMap<>();
 	
@@ -373,9 +375,9 @@ public class AndroidPlatformSupport extends PlatformSupport {
 			// NotoSansTC-Regular and NotoSansHant-Regular seem to only contain some hant-specific
 			// ways to draw certain symbols, too much messing for old android
 			if (Gdx.files.absolute("/system/fonts/NotoSansSC-Regular.otf").exists()){
-				ZHFontGenerator = new FreeTypeFontGenerator(Gdx.files.absolute("/system/fonts/NotoSansSC-Regular.otf"));
+				SCFontGenerator = new FreeTypeFontGenerator(Gdx.files.absolute("/system/fonts/NotoSansSC-Regular.otf"));
 			} else if (Gdx.files.absolute("/system/fonts/NotoSansHans-Regular.otf").exists()){
-				ZHFontGenerator = new FreeTypeFontGenerator(Gdx.files.absolute("/system/fonts/NotoSansHans-Regular.otf"));
+				SCFontGenerator = new FreeTypeFontGenerator(Gdx.files.absolute("/system/fonts/NotoSansHans-Regular.otf"));
 			}
 
 			//Japaneses font generators
@@ -417,9 +419,9 @@ if (basicFontGenerator != null) fonts.put(basicFontGenerator, basicFonts);
 protected FreeTypeFontGenerator getGeneratorForString( String input ){
 		if (KRMatcher.matcher(input).find()){
 return KRFontGenerator;
-		} else if (ZHMatcher.reset(input).find()){
-			return ZHFontGenerator;
-		} else if (JPMatcher.reset(input).find()){
+		} else if (SCMatcher.matcher(input).find()){
+			return SCFontGenerator;
+		} else if (JPMatcher.matcher(input).find()){
 			return JPFontGenerator;
 		} else {
 			return basicFontGenerator;

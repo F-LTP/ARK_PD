@@ -114,7 +114,7 @@ public class Vertexbuffer {
 
 
 
-	public static void refreshAllBuffers(){
+	public static void reload(){
 
 		synchronized (buffers) {
 			for (Vertexbuffer buf : buffers) {

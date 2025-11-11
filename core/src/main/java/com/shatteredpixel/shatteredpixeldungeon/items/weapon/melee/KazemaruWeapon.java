@@ -129,39 +129,7 @@ public class KazemaruWeapon extends MeleeWeapon {
             next();
             die(this);
         }
-        @Override
-        public boolean attack(Char enemy) {
-            if (enemy == null) return false;
 
-            boolean visibleFight = Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[enemy.pos];
-
-            if (hit( this, enemy, true )) {
-
-                int dmg = damageRoll();
-                enemy.damage( dmg, this );
-                enemy.sprite.bloodBurstA( sprite.center(), dmg );
-                enemy.sprite.flash();
-
-                if (Dungeon.level.heroFOV[pos]) Sample.INSTANCE.play(Assets.Sounds.HIT_SLASH, 1f, Random.Float(0.96f, 1.05f));
-
-                if (enemy == Dungeon.hero && !enemy.isAlive()) {
-                    Dungeon.fail( getClass() );
-                }
-            } else {
-                enemy.sprite.showStatus( CharSprite.NEUTRAL,  enemy.defenseVerb() );
-            }
-
-            if (!enemy.isAlive() && visibleFight) {
-                if (enemy == Dungeon.hero) {
-
-                    Dungeon.fail( getClass() );
-                    GLog.n( Messages.capitalize(Messages.get(Char.class, "kill", name())) );
-                }
-            }
-
-            return true;
-
-        }
         @Override
         public int attackSkill( Char target ) {
             return INFINITE_ACCURACY;
@@ -206,10 +174,7 @@ public class KazemaruWeapon extends MeleeWeapon {
             return Random.NormalIntRange(maxLvl + 15, 20 + (maxLvl * 5));
 
         }
-        @Override//change from budding
-        public int attackSkill( Char target ){
-            return INFINITE_ACCURACY;
-        }
+
         public void GetWeaponLvl(int wlvl) {
             maxLvl = wlvl;
         }
