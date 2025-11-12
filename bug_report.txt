@@ -1,0 +1,23 @@
+Build version: 0.5.0-B4-A 
+Build date: 1981-01-01 01:01:02 
+Current date: 2025-11-12 22:18:04 
+Device: Vivo V2130A 
+OS version: Android 13 (SDK 33) 
+ 
+Stack trace:  
+java.lang.NullPointerException: Attempt to invoke virtual method 'float com.watabou.utils.RectF.width()' on a null object reference
+	at com.watabou.noosa.Image.frame(Image.java:77)
+	at com.watabou.noosa.MovieClip.updateAnimation(MovieClip.java:86)
+	at com.watabou.noosa.MovieClip.update(MovieClip.java:50)
+	at com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite.update(CharSprite.java:531)
+	at com.shatteredpixel.shatteredpixeldungeon.sprites.MobSprite.update(MobSprite.java:40)
+	at com.watabou.noosa.Group.update(Group.java:64)
+	at com.watabou.noosa.Group.update(Group.java:64)
+	at com.watabou.noosa.Scene.update(Scene.java:67)
+	at com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene.update(GameScene.java:701)
+	at com.watabou.noosa.Game.update(Game.java:275)
+	at com.watabou.noosa.Game.step(Game.java:237)
+	at com.watabou.noosa.Game.render(Game.java:167)
+	at com.badlogic.gdx.backends.android.AndroidGraphics.onDrawFrame(AndroidGraphics.java:503)
+	at android.opengl.GLSurfaceView$GLThread.guardedRun(GLSurfaceView.java:1582)
+	at android.opengl.GLSurfaceView$GLThread.run(GLSurfaceView.java:1272)

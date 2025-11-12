@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.android;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -42,13 +43,13 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.PixmapPacker;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
-
-import com.shatteredpixel.shatteredpixeldungeon.TomorrowRogueNight;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
-
+import com.shatteredpixel.shatteredpixeldungeon.android.windows.WndAndroidTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.watabou.noosa.Game;
+import com.watabou.utils.Callback;
 import com.watabou.utils.PlatformSupport;
+import com.shatteredpixel.shatteredpixeldungeon.TomorrowRogueNight;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 
 import android.graphics.Rect;
 import android.view.DisplayCutout;
@@ -56,9 +57,7 @@ import android.view.DisplayCutout;
 import com.watabou.utils.RectF;
 
 import java.util.HashMap;
-
 import java.util.Objects;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -289,7 +288,26 @@ public class AndroidPlatformSupport extends PlatformSupport {
 			return false;
 		}
 	}
+    @Override
+    public void promptTextInput(final String title, final String hintText, final int maxLen, final boolean multiLine, final String posTxt, final String negTxt, final TextCallback callback) {
+        Game.runOnRenderThread( new Callback() {
+                                    @Override
+                                    public void call() {
+                                        Game.scene().addToFront(new WndAndroidTextInput(title, hintText, maxLen, multiLine, posTxt, negTxt) {
+                                            @Override
+                                            protected void onSelect(boolean positive) {
+                                                callback.onSelect(positive, getText());
+                                            }
+                                        });
+                                    }
+                                }
+        );
+    }
+    /* FONT SUPPORT */
 
+    private int pageSize;
+    private PixmapPacker packer;
+    private boolean systemfont;
 	//droid sans / roboto, or a custom pixel font, for use with Latin and Cyrillic languages
 	private static FreeTypeFontGenerator basicFontGenerator;
 	//droid sans / nanum gothic / noto sans, for use with Korean
@@ -355,8 +373,8 @@ public class AndroidPlatformSupport extends PlatformSupport {
 				default:
 					typeFace = 2;
 			}
-			KRFontGenerator = new FreeTypeFontGenerator(Gdx.files.absolute("/system/fonts/NotoSansCJK-Regular.ttc"), typeFace);
-			//KRFontGenerator = SCFontGenerator = JPFontGenerator = new FreeTypeFontGenerator(Gdx.files.absolute("/system/fonts/NotoSansCJK-Regular.ttc"), typeFace);
+			//KRFontGenerator = new FreeTypeFontGenerator(Gdx.files.absolute("/system/fonts/NotoSansCJK-Regular.ttc"), typeFace);
+			KRFontGenerator = SCFontGenerator = JPFontGenerator = new FreeTypeFontGenerator(Gdx.files.absolute("/system/fonts/NotoSansCJK-Regular.ttc"), typeFace);
 			
 		//otherwise we have to go over a few possibilities.
 
@@ -396,13 +414,11 @@ public class AndroidPlatformSupport extends PlatformSupport {
 
 			if (KRFontGenerator == null) KRFontGenerator = fallbackGenerator;
 if (SCFontGenerator == null) SCFontGenerator = fallbackGenerator;
-
-			//if (ZHFontGenerator == null) ZHFontGenerator = fallbackGenerator;
 if (JPFontGenerator == null) JPFontGenerator = fallbackGenerator;
 
 		}
 
-if (basicFontGenerator != null) fonts.put(basicFontGenerator, basicFonts);
+        if (basicFontGenerator != null) fonts.put(basicFontGenerator, basicFonts);
 		if (KRFontGenerator != null) fonts.put(KRFontGenerator, KRFonts);
 		if (SCFontGenerator != null) fonts.put(SCFontGenerator, SCFonts);
 		if (JPFontGenerator != null) fonts.put(JPFontGenerator, JPFonts);
@@ -418,12 +434,12 @@ if (basicFontGenerator != null) fonts.put(basicFontGenerator, basicFonts);
 
 protected FreeTypeFontGenerator getGeneratorForString( String input ){
 		if (KRMatcher.matcher(input).find()){
-return KRFontGenerator;
-		} else if (SCMatcher.matcher(input).find()){
+            return KRFontGenerator;
+		/*} else if (SCMatcher.matcher(input).find()){
 			return SCFontGenerator;
 		} else if (JPMatcher.matcher(input).find()){
 			return JPFontGenerator;
-		} else {
+		*/} else {
 			return basicFontGenerator;
 		}
 	}
