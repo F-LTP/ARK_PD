@@ -199,6 +199,10 @@ import com.watabou.utils.DeviceCompat;
 		new ScrollOfIdentify().identify();
 		new FoodBag().collect();
 
+		// 모든 캐릭터에게 강화 스크롤과 힘의 물약 90개씩 지급
+		new ScrollOfUpgrade().identify().quantity(90).collect();
+		new PotionOfStrength().identify().quantity(90).collect();
+
 		if (DeviceCompat.isDebug()) {
             new PotionOfStrength().identify().quantity(40).collect();
             new PotionOfExperience().identify().quantity(40).collect();
