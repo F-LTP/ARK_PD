@@ -199,6 +199,10 @@ import com.watabou.utils.DeviceCompat;
 		new ScrollOfIdentify().identify();
 		new FoodBag().collect();
 
+		// 모든 캐릭터에게 강화 스크롤과 힘의 물약 90개씩 지급
+		new ScrollOfUpgrade().identify().quantity(90).collect();
+		new PotionOfStrength().identify().quantity(90).collect();
+
 		if (DeviceCompat.isDebug()) {
             new PotionOfStrength().identify().quantity(40).collect();
             new PotionOfExperience().identify().quantity(40).collect();
@@ -611,25 +615,8 @@ import com.watabou.utils.DeviceCompat;
 	}
 	
 	public boolean isUnlocked(){
-		//always unlock on debug builds
-		if (DeviceCompat.isDebug()) return true;
-		//if (true)return true;//for sixfa
-		switch (this){
-			case WARRIOR: default:
-				return true;
-			case MAGE:
-				return Badges.isUnlocked(Badges.Badge.UNLOCK_MAGE);
-			case ROGUE:
-				return Badges.isUnlocked(Badges.Badge.UNLOCK_ROGUE);
-			case HUNTRESS:
-				return Badges.isUnlocked(Badges.Badge.UNLOCK_HUNTRESS);
-			case ROSECAT:
-				return Badges.isUnlocked(Badges.Badge.UNLOCK_ROSECAT);
-			case NEARL:
-				return Badges.isUnlocked(Badges.Badge.UNLOCK_NEARL);
-			case CHEN:
-				return Badges.isUnlocked(Badges.Badge.UNLOCK_CHEN);
-		}
+		// 모든 캐릭터 항상 해금
+		return true;
 	}
 	
 	public String unlockMsg() {
