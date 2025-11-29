@@ -1,30 +1,19 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 
-import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
-import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
-import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Certificate;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.SurfaceScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.Mula_2Sprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.Mula_3Sprite;
-import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.Random;
 
-//패턴 : 근처에 모든 적에게 고정데미지를 입히는 스킬을 사용한다
-public class SeaBoss2_Phase2_Tail extends Mob {
+//패턴 : 믈라의 몸통은 생존해있다면 주기적으로 머리+꼬리에 보호막을 부여한다
+public class IsharmlaSeabornBody extends Mob {
     {
-        spriteClass = Mula_3Sprite.class;
+        spriteClass = Mula_2Sprite.class;
 
         HP = HT = 1000;
 
@@ -36,21 +25,11 @@ public class SeaBoss2_Phase2_Tail extends Mob {
 
         state = HUNTING;
     }
+    
 
     // 모든 믈라 파츠가 파괴되면 사망
     private boolean dieChacke = false;
-
-    private int cooldown = 3;
-
-    @Override
-    public int damageRoll() {
-        return Random.NormalIntRange(25, 55);
-    }
-
-    @Override
-    public int attackSkill( Char target ) {
-        return 50;
-    }
+    private int cooldown = 8;
 
     @Override
     public int defenseSkill(Char enemy) {
@@ -58,12 +37,13 @@ public class SeaBoss2_Phase2_Tail extends Mob {
         else return 20;
     }
 
-    // 사거리 2
+    // 공격불가
     @Override
     protected boolean canAttack(Char enemy) {
-        return !dieChacke && this.fieldOfView[enemy.pos] && Dungeon.level.distance(this.pos, enemy.pos) <= 2;
+        return false;
     }
 
+    // 몸통은 주기적으로 보호막을 부여한다. 체력이 1이하가 되면 스킬사용 불가
     @Override
     protected boolean act() {
 
@@ -74,13 +54,12 @@ public class SeaBoss2_Phase2_Tail extends Mob {
 
         if (cooldown > 0) cooldown--;
         else {
-            Dungeon.hero.damage(10, this);
             for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
-                if (mob.alignment == Alignment.ALLY)
-                    mob.damage(10, this);
+                if (mob instanceof IsharmlaSeabornHead || mob instanceof IsharmlaSeabornBody || mob instanceof IsharmlaSeabornTail)
+                    Buff.affect(mob, Barrier.class).setShield(80);
             }
-            if (Dungeon.isChallenged(Challenges.DECISIVE_BATTLE)) cooldown = 3;
-            else cooldown = 5;
+            if (Dungeon.isChallenged(Challenges.DECISIVE_BATTLE)) cooldown = 5;
+            else cooldown = 8;
         }
 
         return super.act();
@@ -97,26 +76,25 @@ public class SeaBoss2_Phase2_Tail extends Mob {
             dieChacke = true;
             Buff.affect(this, Doom.class);
             Dungeon.mulaCount++;
-
         }
     }
+
 
     @Override
     public void die(Object cause) { }
 
-
-    private static final String DIECHACKE_TAIL   = "dieChackeTail";
+    private static final String DIECHACKE_BODY   = "dieChackeBody";
 
     @Override
     public void storeInBundle( Bundle bundle ) {
         super.storeInBundle( bundle );
-        bundle.put( DIECHACKE_TAIL, dieChacke );
+        bundle.put( DIECHACKE_BODY, dieChacke );
     }
 
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
 
-        dieChacke = bundle.getBoolean(DIECHACKE_TAIL);
+        dieChacke = bundle.getBoolean(DIECHACKE_BODY);
     }
     }
 

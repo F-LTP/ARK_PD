@@ -18,6 +18,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlam
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DP27;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.Platform;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.SeaTerror;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -149,6 +151,19 @@ public class W0502 extends Item {
 
                 Dungeon.level.destroy( c );
                 GameScene.updateMap( c );
+            }
+            SeaTerror seaTerror = Dungeon.level.seaTerrors.get(c);
+            if (seaTerror != null) {
+                seaTerror.destroy();
+                GameScene.updateMap( c );
+                terrainAffected = true;
+            }
+
+            Platform platform = Dungeon.level.platforms.get(c);
+            if (platform != null) {
+                platform.destroy();
+                GameScene.updateMap( c );
+                terrainAffected = true;
             }
 
             if (Dungeon.level.map[c] == Terrain.WATER || Dungeon.level.map[c] == Terrain.EMPTY) {

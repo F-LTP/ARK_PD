@@ -11,6 +11,8 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PurpleParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.ChaliceOfBlood;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfMistress;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.Platform;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.SeaTerror;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -80,7 +82,19 @@ public class SwordofArtorius extends MeleeWeapon {
                 terrainAffected = true;
 
             }
+            SeaTerror seaTerror = Dungeon.level.seaTerrors.get(c);
+            if (seaTerror != null) {
+                seaTerror.destroy();
+                GameScene.updateMap( c );
+                terrainAffected = true;
+            }
 
+            Platform platform = Dungeon.level.platforms.get(c);
+            if (platform != null) {
+                platform.destroy();
+                GameScene.updateMap( c );
+                terrainAffected = true;
+            }
             CellEmitter.center( c ).burst( PurpleParticle.BURST, Random.IntRange( 1, 2 ) );
         }
 

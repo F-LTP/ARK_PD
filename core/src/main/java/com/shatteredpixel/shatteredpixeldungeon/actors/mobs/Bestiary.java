@@ -333,7 +333,7 @@ public class Bestiary {
 							SeaReaper.class,SeaReaper.class,
 							Sea_Octo.class, Sea_Octo.class,
 							SeaLeef.class, SeaLeef.class,
-							Sea_Brandguider.class));}
+							NetherseaBrandguider.class));}
 				return new ArrayList<>(Arrays.asList(
 						LavaSlug.class, LavaSlug.class,
 						MetalCrab.class,
@@ -353,7 +353,7 @@ public class Bestiary {
 					return new ArrayList<>(Arrays.asList(
 							Sea_Octo.class, Sea_Octo.class,
 							SeaLeef.class, SeaLeef.class,
-							Sea_Brandguider.class, Sea_Brandguider.class));}
+							NetherseaBrandguider.class, NetherseaBrandguider.class));}
 				return new ArrayList<>(Arrays.asList(
 						LavaSlug.class,
 						MetalCrab.class, MetalCrab.class,

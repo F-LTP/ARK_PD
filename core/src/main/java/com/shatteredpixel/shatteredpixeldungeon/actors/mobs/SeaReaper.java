@@ -1,17 +1,12 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
-import com.shatteredpixel.shatteredpixeldungeon.Challenges;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.NervousImpairment;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Dario;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.Bug_ASprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.MudrockSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.Sea_ReaperSprite;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
@@ -33,8 +28,8 @@ public class SeaReaper extends Mob{
         properties.add(Property.SEA);
     }
 
-    boolean awaked = false;
-    boolean firstrun = false;
+    boolean awake = false;
+    boolean firstHit = false;
 
     @Override
     public int damageRoll() {
@@ -53,15 +48,15 @@ public class SeaReaper extends Mob{
 
     @Override
     public float speed() {
-        if (awaked) return super.speed() * 2f;
+        if (awake) return super.speed() * 2f;
         return super.speed();
     }
 
     @Override
     public int defenseProc(Char enemy, int damage) {
-        if (!awaked) {
-            awaked = true;
-            ((Sea_ReaperSprite) sprite).updateChargeState(awaked);
+        if (!awake) {
+            awake = true;
+            ((Sea_ReaperSprite) sprite).updateChargeState(awake);
         }
 
         return super.defenseProc(enemy, damage);
@@ -69,21 +64,21 @@ public class SeaReaper extends Mob{
 
     @Override
     protected boolean act() {
-        if (!firstrun) {
-            ((Sea_ReaperSprite) sprite).updateChargeState(awaked);
-            firstrun = true;
+        if (!firstHit) {
+            ((Sea_ReaperSprite) sprite).updateChargeState(awake);
+            firstHit = true;
         }
 
-        if (awaked) {
+        if (awake) {
 
             for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
                 Char ch = findChar( pos + PathFinder.NEIGHBOURS8[i] );
-                if (ch != null && ch.isAlive() && (ch instanceof Hero || ch instanceof DriedRose.GhostHero)) {
+                if (ch != null && ch.isAlive() && ch.alignment == Alignment.ALLY) {
 
                     if (ch.buff(NervousImpairment.class) == null) {//change from budding
                         Buff.affect(ch, NervousImpairment.class);
                     }
-                    else ch.buff(NervousImpairment.class).Sum(16);
+                    ch.buff(NervousImpairment.class).sum(16);
                 }
             }
         }
@@ -91,17 +86,26 @@ public class SeaReaper extends Mob{
         return super.act();
     }
 
-    private static final String AWKAE   = "awaked";
+    private static final String AWAKE = "awake";
+    private static final String FIRST_HIT = "firstHit";
 
     @Override
     public void storeInBundle( Bundle bundle ) {
         super.storeInBundle( bundle );
-        bundle.put( AWKAE, awaked );
+        bundle.put(AWAKE, awake);
+        bundle.put(FIRST_HIT, firstHit);
     }
 
     @Override
     public void restoreFromBundle( Bundle bundle ) {
         super.restoreFromBundle( bundle );
-        awaked = bundle.getBoolean(AWKAE);
+        awake = bundle.getBoolean(AWAKE);
+        firstHit = bundle.getBoolean(FIRST_HIT);
+    }
+
+    @Override
+    public void die( Object cause ) {
+        super.die(cause);
+        Dario.Quest.process();
     }
 }

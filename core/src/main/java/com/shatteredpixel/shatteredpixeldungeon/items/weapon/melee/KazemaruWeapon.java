@@ -84,7 +84,8 @@ public class KazemaruWeapon extends MeleeWeapon {
 
     @Override
     public int proc(Char attacker, Char defender, int damage) {
-        if (Random.Int(7) == 0) {
+        int procDamage = super.proc(attacker, defender, damage);
+        if (defender.HP > procDamage && Random.Int(7) == 0) {
             ArrayList<Integer> respawnPoints = new ArrayList<>();
 
             for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
@@ -93,25 +94,20 @@ public class KazemaruWeapon extends MeleeWeapon {
                     respawnPoints.add(p);
                 }
             }
-            int spawnd = 0;
-            while (respawnPoints.size() > 0 && spawnd == 0) {
-                int index = Random.index(respawnPoints);
-
-                KazemaruSummon summon = new KazemaruSummon();
-                summon.GetWeaponLvl(buffedLvl());
-                summon.GetTarget(defender);
-                summon.alignment=attacker.alignment;
-                GameScene.add(summon);
-                ScrollOfTeleportation.appear(summon, respawnPoints.get(index));
-
-                respawnPoints.remove(index);
-                spawnd++;
-            }
+            Integer[] spawnPoints = respawnPoints.toArray(new Integer[0]);
+            int pos = Random.element(spawnPoints);
+            summonSubstitute(pos, defender.pos);
         }
 
-        return super.proc(attacker, defender, damage);
+        return procDamage;
     }
-
+    private void summonSubstitute(int pos, int target) {
+        KazemaruSummon summon = new KazemaruSummon();
+        summon.setLevel(buffedLvl());
+        summon.setTarget(target);
+        summon.pos = pos;
+        GameScene.add(summon);
+    }
     public static class KazemaruSummon extends Mob {
         {
             HP = HT = 1;
@@ -119,15 +115,16 @@ public class KazemaruWeapon extends MeleeWeapon {
             spriteClass = KazemaruSprite.class;
 
             flying = true;
-            state = WANDERING;
+            state = HUNTING;
 
         }
 
         @Override
         public void onAttackComplete() {
             attack( enemy );
-            next();
+
             die(this);
+            next();
         }
 
         @Override
@@ -175,10 +172,12 @@ public class KazemaruWeapon extends MeleeWeapon {
 
         }
 
-        public void GetWeaponLvl(int wlvl) {
+        public void setLevel(int wlvl) {
             maxLvl = wlvl;
         }
-        public void GetTarget(Char t) {target = t.pos;}//change from budding
+        public void setTarget(int pos) {
+            target = pos;
+        }
         private static String ISALLY = "is_ally";
         @Override
         public void storeInBundle( Bundle bundle ) {

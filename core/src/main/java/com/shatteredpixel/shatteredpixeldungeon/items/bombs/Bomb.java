@@ -49,6 +49,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.ForceCatalyst;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.Platform;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.SeaTerror;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -174,7 +176,19 @@ public class Bomb extends Item {
 						GameScene.updateMap(c);
 						terrainAffected = true;
 					}
-					
+                    SeaTerror seaTerror = Dungeon.level.seaTerrors.get(c);
+                    if (seaTerror != null) {
+                        seaTerror.destroy();
+                        GameScene.updateMap( c );
+                        terrainAffected = true;
+                    }
+
+                    Platform platform = Dungeon.level.platforms.get(c);
+                    if (platform != null) {
+                        platform.destroy();
+                        GameScene.updateMap( c );
+                        terrainAffected = true;
+                    }
 					//destroys items / triggers bombs caught in the blast.
 					Heap heap = Dungeon.level.heaps.get(c);
 					if (heap != null)

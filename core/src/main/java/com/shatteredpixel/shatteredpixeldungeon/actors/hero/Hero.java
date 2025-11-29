@@ -885,40 +885,8 @@ public class Hero extends Char {
             mark.Charged(time);
         }
         else if (subClass == HeroSubClass.WILD) Buff.affect(this, WildMark.class);
-        if (Dungeon.depth > 35 && Dungeon.extrastage_Sea && Dungeon.level.map[this.pos] == Terrain.SEE_TEEROR1 || Dungeon.level.map[this.pos] == Terrain.SEE_TEEROR2) {
-            if (buff(NervousImpairment.class) == null) {
-                Buff.affect(this, NervousImpairment.class);
-            }
-            else {
-                float nervousdamage = 2 * time;
-                buff(NervousImpairment.class).Sum(nervousdamage); }
-
-
-            int evaporatedTiles;
-            evaporatedTiles = Random.chances(new float[]{0, 0, 0, 2, 1, 1});
-            for (int i = 0; i < evaporatedTiles; i++) {
-                if (Dungeon.level.map[pos + PathFinder.NEIGHBOURS8[i]] == Terrain.EMPTY || Dungeon.level.map[pos + PathFinder.NEIGHBOURS8[i]] == Terrain.EMPTY_SP
-                        || Dungeon.level.map[pos + PathFinder.NEIGHBOURS8[i]] == Terrain.EMPTY_DECO
-                        || Dungeon.level.map[pos + PathFinder.NEIGHBOURS8[i]] == Terrain.WATER) {
-                    if (Random.Int(2) == 0)
-                        Level.set(pos+PathFinder.NEIGHBOURS8[i],Terrain.SEE_TEEROR1);//change from budding
-                        //Dungeon.level.map[pos + PathFinder.NEIGHBOURS8[i]] = Terrain.SEE_TEEROR1;
-                    else
-                        Level.set(pos+PathFinder.NEIGHBOURS8[i],Terrain.SEE_TEEROR2);//change from budding
-                        //Dungeon.level.map[pos + PathFinder.NEIGHBOURS8[i]] = Terrain.SEE_TEEROR2;
-                    CellEmitter.get(pos+PathFinder.NEIGHBOURS8[i]).burst(Speck.factory(Speck.BUBBLE), 10);
-                    GameScene.updateMap( pos+PathFinder.NEIGHBOURS8[i] );
-                    Dungeon.observe();
-
-               /* if (Dungeon.level.map[pos+PathFinder.NEIGHBOURS8[i]] == Terrain.EMPTY || Dungeon.level.map[pos+PathFinder.NEIGHBOURS8[i]] == Terrain.WATER) {
-
-                    Level.set(pos+PathFinder.NEIGHBOURS8[i],Terrain.EMPTY_SP);//change from budding
-                    //Dungeon.level.map[pos+PathFinder.NEIGHBOURS8[i]] = Terrain.EMPTY_SP;
-
-                    //GameScene.resetMap();
-                }*/
-                }
-            }
+        if (Dungeon.depth > 35 && Dungeon.extrastage_Sea && Dungeon.level.seaTerrors.get(pos) != null) {
+            Dungeon.level.seaTerrors.get(pos).spendTime(this, time);
         }
 
         if (belongings.weapon instanceof PatriotSpear) {

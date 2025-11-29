@@ -90,6 +90,12 @@ public class SkillBook extends Item {
                                         case 2:hero.SK3.doSkill();break;
                                     }
                                     Talent.onSkillUsed(Dungeon.hero);
+                                    if (Dungeon.isChallenged(Challenges.DECISIVE_BATTLE)) {
+                                        if (hero.buff(NervousImpairment.class) == null) {
+                                            Buff.affect(hero, NervousImpairment.class);
+                                        }
+                                            hero.buff(NervousImpairment.class).sum(25);
+                                    }
                                 }
                             }
                             /*if (index == 0) {

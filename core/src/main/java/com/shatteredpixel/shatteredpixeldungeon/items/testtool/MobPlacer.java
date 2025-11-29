@@ -59,7 +59,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.SeaCapsule;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.SeaLeef;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.SeaReaper;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.SeaRunner;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Sea_Brandguider;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.NetherseaBrandguider;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Sea_Octo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Slug;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.RipperDemon;
@@ -100,11 +100,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.miniboss.Faust;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.miniboss.MagicGolem;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.miniboss.Mon3tr;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.miniboss.Sentinel;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.miniboss.Shadow;
 import com.shatteredpixel.shatteredpixeldungeon.custom.dict.DictSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.custom.messages.M;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
-import com.shatteredpixel.shatteredpixeldungeon.items.testtool.Generators;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -112,21 +110,16 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.OptionSlider;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
-
-import javax.xml.crypto.Data;
 
 public class MobPlacer extends Generators {
     {
@@ -547,7 +540,7 @@ public class MobPlacer extends Generators {
         CAPSULE(SeaCapsule.class,-37),
         OCTO(Sea_Octo.class,-38),
         LEAF(SeaLeef.class,-39),
-        GUIDER(Sea_Brandguider.class,-26);
+        GUIDER(NetherseaBrandguider.class,-26);
         private Class<? extends Mob> mobClass;
         private int imageId;
 

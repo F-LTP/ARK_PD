@@ -51,7 +51,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicGloemR
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.PitRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.PursuerRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.RoseRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SEE1QuestRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.IberiaPart1QuestRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ShopRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.BeachRoom;
@@ -62,7 +62,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.FloodingRo
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.GavialStanardRoom;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SeaObjRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SeaTerrorRoom;
+
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.Vocan_1Room;
@@ -148,11 +148,10 @@ public abstract class RegularLevel extends Level {
 
 		} else if (Dungeon.extrastage_Sea) {
 			if (Dungeon.depth < 35) {
-				if (Dungeon.depth == 33) initRooms.add(new SEE1QuestRoom());
+				if (Dungeon.depth == 33) initRooms.add(new IberiaPart1QuestRoom());
 				initRooms.add(new SeaObjRoom());
 				initRooms.add(new SeaObjRoom());
-				initRooms.add(new SeaTerrorRoom());
-				initRooms.add(new SeaTerrorRoom());
+
 
 			}
 		} else if (Dungeon.depth > 30) {
