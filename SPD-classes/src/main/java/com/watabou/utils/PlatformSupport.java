@@ -178,9 +178,5 @@ public abstract class PlatformSupport {
 
 		return fonts.get(generator).get(key);
 	}
-    public abstract void promptTextInput( String title, String hintText, int maxLen, boolean multiLine,
-                                          String posTxt, String negTxt, TextCallback callback);
-    public static abstract class TextCallback {
-        public abstract void onSelect( boolean positive, String text );
-    }
+
 }

@@ -288,7 +288,7 @@ public class AndroidPlatformSupport extends PlatformSupport {
 			return false;
 		}
 	}
-    @Override
+    /*@Override
     public void promptTextInput(final String title, final String hintText, final int maxLen, final boolean multiLine, final String posTxt, final String negTxt, final TextCallback callback) {
         Game.runOnRenderThread( new Callback() {
                                     @Override
@@ -302,12 +302,10 @@ public class AndroidPlatformSupport extends PlatformSupport {
                                     }
                                 }
         );
-    }
+    }*/
     /* FONT SUPPORT */
 
-    private int pageSize;
-    private PixmapPacker packer;
-    private boolean systemfont;
+
 	//droid sans / roboto, or a custom pixel font, for use with Latin and Cyrillic languages
 	private static FreeTypeFontGenerator basicFontGenerator;
 	//droid sans / nanum gothic / noto sans, for use with Korean

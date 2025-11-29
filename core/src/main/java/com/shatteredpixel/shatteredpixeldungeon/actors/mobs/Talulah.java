@@ -448,10 +448,9 @@ public class Talulah extends Mob {
 		if (Dungeon.isChallenged(Challenges.SPECIAL_BOSS)) Badges.validateroaringflare();
 		if (Dungeon.isChallenged(Challenges.SPECIAL_BOSS) && Dungeon.mboss4 == 1 && Dungeon.mboss9 == 1 && Dungeon.mboss14 == 1 && Dungeon.mboss19 == 1)
 
-		Badges.validateeviltimeend();
-		if (!Dungeon.isChallenged(TEST))//change from budding
-			Badges.validateChenUnlock();
-		Dungeon.level.drop(new Certificate(12), pos).sprite.drop(pos);
+		    Badges.validateeviltimeend();
+
+        Badges.validateChenUnlock();
 	}
 
 	@Override

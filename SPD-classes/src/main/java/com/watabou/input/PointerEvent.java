@@ -65,7 +65,7 @@ public class PointerEvent {
 	public PointerEvent( int x, int y, int id, Type type, int button){
 		if (Cursor.isCursorCaptured()){
 			x = Game.width/2;
-			y = Game.height/2;//change from budding
+			y = Game.width/2;//change from budding
 		}
 
 		start = current = new PointF(x, y);

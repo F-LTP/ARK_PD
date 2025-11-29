@@ -539,7 +539,6 @@ public class HeroSelectScene extends PixelScene {
 				seedButton.leftJustify = true;
 				seedButton.icon(Icons.get(Icons.GREY));
 				if (!SPDSettings.customSeed().isEmpty()) seedButton.icon().hardlight(1f, 1.5f, 0.67f);
-				;
 				buttons.add(seedButton);
 				add(seedButton);
 

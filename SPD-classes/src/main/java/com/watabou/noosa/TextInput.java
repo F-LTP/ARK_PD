@@ -23,8 +23,10 @@ package com.watabou.noosa;
 
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
@@ -65,6 +67,7 @@ public class TextInput extends Component {
         viewport.setWorldSize(Game.width, Game.height);
         viewport.setScreenBounds(0, Game.bottomInset, Game.width, Game.height);
         viewport.setCamera(new OrthographicCamera());
+        SpriteBatch.overrideVertexType = Mesh.VertexDataType.VertexArray;
         stage = new Stage(viewport);
         Game.inputHandler.addInputProcessor(stage);
 
@@ -77,7 +80,35 @@ public class TextInput extends Component {
         TextField.TextFieldStyle style = skin.get(TextField.TextFieldStyle.class);
         style.font = Game.platform.getFont(size, "", false, false);
         style.background = null;
-        textField = multiline ? new TextArea("", style) : new TextField("", style);
+        if (multiline){
+            textField = new TextArea("", style){
+                @Override
+                public void cut() {
+                    super.cut();
+                    onClipBoardUpdate();
+                }
+
+                @Override
+                public void copy() {
+                    super.copy();
+                    onClipBoardUpdate();
+                }
+            };
+        } else {
+            textField = new TextField("", style){
+                @Override
+                public void cut() {
+                    super.cut();
+                    onClipBoardUpdate();
+                }
+
+                @Override
+                public void copy() {
+                    super.copy();
+                    onClipBoardUpdate();
+                }
+            };
+        }
         textField.setProgrammaticChangeEvents(true);
 
         if (!multiline) textField.setAlignment(Align.center);
@@ -91,6 +122,7 @@ public class TextInput extends Component {
                     style.font = f;
                     textField.setStyle(style);
                 }
+                onChanged();
             }
         });
 
@@ -120,7 +152,13 @@ public class TextInput extends Component {
     public void enterPressed(){
         //do nothing by default
     };
+    public void onChanged(){
+        //fires any time the text box is changed, do nothing by default
+    }
 
+    public void onClipBoardUpdate(){
+        //fires any time the clipboard is updated via cut or copy, do nothing by default
+    }
     public void setText(String text){
         textField.setText(text);
         textField.setCursorPosition(textField.getText().length());
