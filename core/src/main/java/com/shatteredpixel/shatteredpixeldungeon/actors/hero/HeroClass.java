@@ -615,25 +615,8 @@ import com.watabou.utils.DeviceCompat;
 	}
 	
 	public boolean isUnlocked(){
-		//always unlock on debug builds
-		if (DeviceCompat.isDebug()) return true;
-		//if (true)return true;//for sixfa
-		switch (this){
-			case WARRIOR: default:
-				return true;
-			case MAGE:
-				return Badges.isUnlocked(Badges.Badge.UNLOCK_MAGE);
-			case ROGUE:
-				return Badges.isUnlocked(Badges.Badge.UNLOCK_ROGUE);
-			case HUNTRESS:
-				return Badges.isUnlocked(Badges.Badge.UNLOCK_HUNTRESS);
-			case ROSECAT:
-				return Badges.isUnlocked(Badges.Badge.UNLOCK_ROSECAT);
-			case NEARL:
-				return Badges.isUnlocked(Badges.Badge.UNLOCK_NEARL);
-			case CHEN:
-				return Badges.isUnlocked(Badges.Badge.UNLOCK_CHEN);
-		}
+		// 모든 캐릭터 항상 해금
+		return true;
 	}
 	
 	public String unlockMsg() {
