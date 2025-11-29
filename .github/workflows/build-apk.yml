@@ -33,5 +33,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
-        path: android/build/outputs/apk/debug/android-debug.apk
+        path: android/build/outputs/apk/debug/*.apk
         retention-days: 30
