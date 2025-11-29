@@ -441,6 +441,9 @@ actors.buffs.closerangeshot.name=근접사격
 actors.buffs.closerangeshot.active=첸은 주위에 적이 있으면 사격의 피해량이 대폭 상승합니다.\n\n현재 상태: 활성화
 actors.buffs.closerangeshot.passive=첸은 주위에 적이 있으면 사격의 피해량이 대폭 상승합니다.\n\n현재 상태: 비활성화
 
+actors.buffs.nervousimpairment.name=신경손상
+actors.buffs.nervousimpairment.desc=신경손상이 지속되는 상태입니다. 최대치에 도달하면 큰 충격을 받게될 것입니다.\n현재 손상도 : %s%%
+
 
 
 ###hero
@@ -788,7 +791,7 @@ actors.hero.talent.knight_body.desc=_+1:_ 최대 체력이 _10_ 증가합니다.
 actors.hero.talent.quick_tactics.title=속공전술
 actors.hero.talent.quick_tactics.desc=_+1:_ 빛의 인장 사용시 획득하는 신속이 5 턴에서 _6 턴_으로 증가합니다.\n\n_+2:_ 빛의 인장 사용시 획득하는 신속이 5 턴에서 _7 턴_으로 증가합니다.\n\n_+3:_ 빛의 인장 사용시 획득하는 신속이 5 턴에서 _8 턴_으로 증가합니다.\n\n_+3:_ 빛의 인장 사용시 획득하는 신속이 5 턴에서 _9 턴_으로 증가합니다.\n\n또한, 빛의 인장 사용에 턴을 소모하지 않게됩니다.
 actors.hero.talent.blessed_champion.title=축복받은 용사
-actors.hero.talent.blessed_champion.desc=_+1:_ 빛의 인장 발동시 _10 턴_의 축복을 얻습니다.\n\n_+2:_ 빛의 인장 발동시 _20 턴_의 축복을 얻습니다.\n\n_+3:_ 빛의 인장 발동시 _30 턴_의 축복을 얻습니다.\n\n_+4:_ 빛의 인장 발동시 _40 턴_의 축복을 얻습니다.
+actors.hero.talent.blessed_champion.desc=_+1:_ 빛의 인장 발동시 _15 턴_의 축복을 얻습니다.\n\n_+2:_ 빛의 인장 발동시 _25 턴_의 축복을 얻습니다.\n\n_+3:_ 빛의 인장 발동시 _35 턴_의 축복을 얻습니다.\n\n_+4:_ 빛의 인장 발동시 _45 턴_의 축복을 얻습니다.
 
 // 니어 3차 서브클래스
 actors.hero.talent.flash_spear.title=섬광의 창
@@ -1180,8 +1183,14 @@ actors.mobs.npcs.gavial.ok=좋아, 나랑 같이 가겠다는거지?
 actors.mobs.npcs.gavial.no=아, 다음에 가겠다고? 뭐 상관없지.
 actors.mobs.npcs.gavial.questhint=LANCET-2 못봤어? 분명 같이 있었을텐데.
 
+※번역필요
+actors.mobs.npcs.npc_irene.name=아이린
+actors.mobs.npcs.npc_irene.desc=이베리아의 재판관 아이린.\n\n그녀에게 말을 걸면 추가 챕터가 _이베리아_ 로 변경됩니다.
+actors.mobs.npcs.npc_irene.ok=알겠습니다. 이베리아로 가는거죠?
+actors.mobs.npcs.npc_irene.no=그럼 다음 기회에.
+
 actors.mobs.npcs.dummy.name=훈련인형
-actors.mobs.npcs.dummy.desc=KOKODAYO
+actors.mobs.npcs.dummy.desc=살아있는 사람이 아닌 인형이다.
 
 actors.mobs.npcs.dobermann.name=훈련교관 도베르만
 actors.mobs.npcs.dobermann.desc=로도스 아일랜드의 전술 훈련 교관. 엄격하고 깐깐하며 빈틈없는 성격이다.
@@ -1190,7 +1199,7 @@ actors.mobs.npcs.dobermann.say=미안하군. 지금은 바빠.
 actors.mobs.npcs.jessica.name=제시카
 actors.mobs.npcs.jessica.desc=블랙스틸의 정식 오퍼레이터. 상호 교류 프로젝트의 일환으로 로도스 아일랜드에 주재하며 수련 중이다.\n\n_퀘스트가 있는 NPC입니다._
 actors.mobs.npcs.jessica.say=아, 안녕하세요!
-actors.mobs.npcs.jessica.quest=제시카 :\n\n아, 안녕하세요! 저기 혹시... _표준 탄약통_이 있으신가요? 훈련을 해야되는데 탄약이 슬슬 부족해서... 가져다주시면 대금은 치뤄드릴게요.
+actors.mobs.npcs.jessica.quest=제시카 :\n\n아, 안녕하세요! 저기 혹시... _표준 탄약통_이 있으신가요? 가져다 주시면 탄약값은 드릴게요...
 actors.mobs.npcs.jessica.result=제시카 :\n\n가, 감사합니다! 이걸 받아주세요.\n_합성옥 800개_ 에요.
 actors.mobs.npcs.jessica.quest2=제시카 :\n\n아, 안녕하세요! 저기 혹시... _염국 훈제고기_가 있으신가요? 한 번 먹어보고 싶어가지고... 가져다주시면 좋은 걸 드릴게요.
 actors.mobs.npcs.jessica.result2=제시카 :\n\n가, 감사합니다! 여기 _제가 사용하던 총기 액세서리_ 와 _합성옥 900개_ 에요. 받아주세요.
@@ -1250,6 +1259,11 @@ actors.mobs.npcs.minishopkeeper.name=텍사스
 actors.mobs.npcs.minishopkeeper.thief=네 놈에겐 안 팔아.
 actors.mobs.npcs.minishopkeeper.desc=당신을 위한 펭귄 로지스틱스의 맞춤 출장 서비스, 이름하여 뗑컨일레븐!... 라는 명목으로 자리잡은 텍사스.
 
+actors.mobs.npcs.npc_dario.name=대재판관 다리오
+actors.mobs.npcs.npc_dario.desc=사로잡힌 LANCET-2. 그녀를 구출하자.
+actors.mobs.npcs.npc_dario.help=사람 살려-
+actors.mobs.npcs.npc_dario.tnk=당신은 LANCET-2를 구출했다.
+
 
 
 
@@ -1286,8 +1300,8 @@ actors.mobs.acidic.desc=살카즈의 용병. 살카즈 스나이퍼보다 작전
 actors.mobs.albino.name=원석충·α
 actors.mobs.albino.desc=야생의 감염 생물, 일반 원석충보다 위험도가 높은 종이다. 이런 저지능 생물은 적의 캐스터에게 조종당할 가능성이 있으며, 인공설비에 침입하여 무리지어 공격한다. 뾰족한 뿔은 대상에게 출혈을 일으킨다.
 
-actors.mobs.armoredstatue.name=유격대 중갑 방패병
-actors.mobs.armoredstatue.desc=패트리어트의 정예 호위 전사. 패트리어트의 의지를 따라, 방패병은 '감염자의 방패'에서 견실한 성벽과도 같은 존재다. _그는 당신이 선제공격을 하지 않는 이상 공격해오지 않을 것이다._\n\n유격대 방패병이 입고있는 중갑 덕분에 높은 방호력을 보유하고 있는 것처럼 보이며, 쓰러트리기 매우 힘들 것 같습니다.\n\n이 유격대 방패병을 쓰러트릴 경우, _%1$s_와 _%2$s_ 을/를 드랍합니다.
+actors.mobs.armoredstatue.name=껴입은 고프닉
+actors.mobs.armoredstatue.desc=덕로드가 고용한 우르수스 경비. 힘은 장사지만 머리가 둔하다. 주로 덕로드의 짐꾼 노릇을 한다. _그는 당신이 선제공격을 하지 않는 이상 공격해오지 않을 것이다._\n\n고프닉이 입고있는 방어구 덕분에 높은 방호력을 보유하고 있는 것처럼 보이며, 쓰러트리기 매우 힘들 것 같습니다.\n\n고프닉 쓰러트릴 경우, _%1$s_와 _%2$s_ 을/를 드랍합니다.
 
 actors.mobs.airbornesoldier.name=공수부대병
 actors.mobs.airbornesoldier.desc=리유니온의 특수 근거리 전투원. 장비는 상당히 허술하지만 원리는 간단해 쉽게 방어가 취약한 지점에 기습을 감행하기 용이하다. \n\n이들은 보유한 장비를 이용해 대원에게 눈 깜짝할 사이에 접근할 수 있습니다.
@@ -1530,9 +1544,9 @@ actors.mobs.snake.noticed=새싹 원석충은 당신의 어설픈 공격을 회�
 actors.mobs.explodslug_n.name=고에너지 원석충
 actors.mobs.explodslug_n.desc=야생의 감염 생물. 복부에 대량의 오리지늄과 동화되어 불안정한 상태인 관계로 사망 시 폭발이 발생할 수 있다. 이런 저지능 생물은 적의 캐스터에게 조종당할 가능성이 있으며, 인공설비에 침입하여 무리지어 공격한다.\n\n_침묵 가능_
 
-actors.mobs.statue.name=유격대 방패병
+actors.mobs.statue.name=고프닉
 actors.mobs.statue.def_verb=방어
-actors.mobs.statue.desc=패트리어트의 정예 호위 전사. 패트리어트의 의지를 따라, 방패병은 '감염자의 방패'에서 견실한 성벽과도 같은 존재다. _그는 당신이 선제공격을 하지 않는 이상 공격해오지 않을 것이다._\n\n이 유격대 방패병을 쓰러트릴 경우, _%s_ 을/를 드랍합니다.
+actors.mobs.statue.desc=덕로드가 고용한 우르수스 경비. 힘은 장사지만 머리가 둔하다. 주로 덕로드의 짐꾼 노릇을 한다._그는 당신이 선제공격을 하지 않는 이상 공격해오지 않을 것이다._\n\n고프닉을 쓰러트릴 경우, _%s_ 을/를 드랍합니다.
 
 actors.mobs.succubus.name=살카즈 랜서
 actors.mobs.succubus.desc=장창을 사용하여 돌격하는 특수훈련을 받은 살카즈 용병. 돌진 속도가 빠를수록 방어선에 주는 위협은 더 커질 것이다.\n\n이들은 대원을 발견하면 가속 상태에 돌입합니다. 가속 상태일 땐 공격력이 상승하며, 이동할 때마다 추가 공격력과 명중률, 이동속도를 얻습니다. 공격시 가속 상태가 해제됩니다.
@@ -1607,23 +1621,23 @@ actors.mobs.yog$larva.name=신의 애벌레
 actors.mobs.yog$larva.rankings_desc=요그-제바에게 잡아먹힘
 actors.mobs.yog$larva.desc=요그-제바는 고대의 신이며, 혼돈의 땅에서 온 강력한 존재입니다. 몇 세기 전, 고대 드워프들은 겨우 악마 군단과의 전쟁에서 이겼지만, 신을 죽일 순 없었습니다. 대신, 그들은 악마들이 다시 일어날 수 없을 정도로 약화되었다고 믿으며 그들을 도시 아래에 가두어 버렸습니다.
 
-actors.mobs.yogdzewa.name=탈룰라?
-actors.mobs.yogdzewa.notice=결론을 내리기 전에 네 목숨부터 지켜야 할 거다.
-actors.mobs.yogdzewa.notice_ch=아무래도 내가 너희들을 대단한 착각에 빠트린 것 같군.
-actors.mobs.yogdzewa.phase2="나는 소금기 가득한 평원과 피 흘리는 계곡을 지났지만, 죽지 않았다."
-actors.mobs.yogdzewa.phase2_ch=다시 한번 말하지. 이곳에서 나를 죽일 수 있는 사람은 이미 죽었다.
-actors.mobs.yogdzewa.phase3="그의 검, 그의 땅, 그의 신하, 모두가 날 호위했기 때문이다."
-actors.mobs.yogdzewa.phase3_ch=툰드라의 눈과 얼음의 악몽 프로스트노바, 그녀 역시 용문에서 죽었지.
-actors.mobs.yogdzewa.phase4=하지만, 장난은 여기까지다.
-actors.mobs.yogdzewa.phase4_end=인정하지. 이번만큼은 자신들의 승리를 마음껏 축하해도 좋아.
-actors.mobs.yogdzewa.defeated=기억해라, 탈룰라. "이 세상의 끝에서도 나는 존재할 것이다."
-actors.mobs.yogdzewa.rankings_desc=탈룰라에게 불타버림
-actors.mobs.yogdzewa.desc=리유니온의 리더이자 대변인. 현재까지 있었던 많은 폭동 사건의 배후로 지목되었으며, 체르노보그 사건의 주모자이다.\n\n그녀는 자리에서 움직이지 않지만, 강력한 아츠 광선을 발사할 수 있고 이를 돕기 위해 다양한 군단을 소환할 것입니다.
-actors.mobs.yogdzewa.desc_spawners=당신은 위층에서 탈룰라에게 전해지는 살카즈 에너지의 파동을 느낄 수 있습니다. 당신이 위에 살려둔 무언가가 탈룰라에게 힘을 공급하고 있는 것이 틀림없습니다. _탈룰라는 이 에너지를 더 강력한 군단을 소환하기 위해 사용할 것입니다!_
-actors.mobs.yogdzewa$larva.name=우르수스 감염자 감시관
-actors.mobs.yogdzewa$larva.rankings_desc=탈룰라에게 무릎꿇음
-actors.mobs.yogdzewa$larva.desc=우르수스 감염자를 추격하여 체포하는 감시관. 탐욕스럽고 냉혈하다.\n탈룰라에게 포섭당한 듯 하다.
-actors.mobs.yogdzewa$yogripper.rankings_desc=탈룰라에게 무릎꿇음
+actors.mobs.talulah.name=탈룰라?
+actors.mobs.talulah.notice=결론을 내리기 전에 네 목숨부터 지켜야 할 거다.
+actors.mobs.talulah.notice_ch=아무래도 내가 너희들을 대단한 착각에 빠트린 것 같군.
+actors.mobs.talulah.phase2="나는 소금기 가득한 평원과 피 흘리는 계곡을 지났지만, 죽지 않았다."
+actors.mobs.talulah.phase2_ch=다시 한번 말하지. 이곳에서 나를 죽일 수 있는 사람은 이미 죽었다.
+actors.mobs.talulah.phase3="그의 검, 그의 땅, 그의 신하, 모두가 날 호위했기 때문이다."
+actors.mobs.talulah.phase3_ch=툰드라의 눈과 얼음의 악몽 프로스트노바, 그녀 역시 용문에서 죽었지.
+actors.mobs.talulah.phase4=하지만, 장난은 여기까지다.
+actors.mobs.talulah.phase4_end=인정하지. 이번만큼은 자신들의 승리를 마음껏 축하해도 좋아.
+actors.mobs.talulah.defeated=기억해라, 탈룰라. "이 세상의 끝에서도 나는 존재할 것이다."
+actors.mobs.talulah.rankings_desc=탈룰라에게 불타버림
+actors.mobs.talulah.desc=리유니온의 리더이자 대변인. 현재까지 있었던 많은 폭동 사건의 배후로 지목되었으며, 체르노보그 사건의 주모자이다.\n\n그녀는 자리에서 움직이지 않지만, 강력한 아츠 광선을 발사할 수 있고 이를 돕기 위해 다양한 군단을 소환할 것입니다.
+actors.mobs.talulah.desc_spawners=당신은 위층에서 탈룰라에게 전해지는 살카즈 에너지의 파동을 느낄 수 있습니다. 당신이 위에 살려둔 무언가가 탈룰라에게 힘을 공급하고 있는 것이 틀림없습니다. _탈룰라는 이 에너지를 더 강력한 군단을 소환하기 위해 사용할 것입니다!_
+actors.mobs.talulah$infectedpatrolcaptain.name=우르수스 감염자 감시관
+actors.mobs.talulah$infectedpatrolcaptain.rankings_desc=탈룰라에게 무릎꿇음
+actors.mobs.talulah$infectedpatrolcaptain.desc=우르수스 감염자를 추격하여 체포하는 감시관. 탐욕스럽고 냉혈하다.\n탈룰라에게 포섭당한 듯 하다.
+actors.mobs.talulah$yogripper.rankings_desc=탈룰라에게 무릎꿇음
 
 actors.mobs.yogfist.invuln_warn=환영은 탈룰라 근처에 있을 때는 피해를 받지 않는다!
 actors.mobs.yogfist.rankings_desc=탈룰라에게 무릎꿇음
@@ -1809,10 +1823,58 @@ actors.mobs.eunectes.desc=\n\n\n\n\n가비알의 고향인 아카후알라에 �
 actors.mobs.eunectes.notice=어떤 사냥감이라도 온 힘으로 간다!
 actors.mobs.eunectes.die=너희들은 가비알에게 미치지 못한다!
 
-actors.mobs.thebiguglything.name=거못무
+actors.mobs.thebiguglything.name=거대하고 못생긴 무언가
 actors.mobs.thebiguglything.desc=\n\n\n\n\n주마마의 야심작. 쓸데없이 큰 기계 괴수, 대제사장이 조종하고 있다.\n\n불에 약해보입니다.
 actors.mobs.thebiguglything.rage=기계가 폭주한다!
 actors.mobs.thebiguglything.fire_ready=대제사장이 원거리 공격을 준비한다!
+
+
+
+※ 이하 번역 필요
+// 심해 1
+actors.mobs.searunner.name=해안의 폭주자
+actors.mobs.searunner.desc=발이 네 개 달린 시테러. 체내에 뼈가 없다.\n이들은 약하지만, 대상을 서서히 약화시킵니다.
+
+actors.mobs.floatingseadrifter.name=부해의 항해자
+actors.mobs.floatingseadrifter.desc=그들의 후대는 공기 속에서 헤엄치는데 더 능숙할 것 같다.\n이 공중형 적은 공격시 신경손상을 유발하며, _마법_공격이 아니면 피해를 주기 어렵습니다.
+
+actors.mobs.seareaper.name=발해의 수확자
+actors.mobs.seareaper.desc=날카로운 소리를 내는 시테러\n피격당하면 각성하여 근접한 플레이어의 신경을 손상시킵니다.
+
+actors.mobs.seacapsule.name=낭해의 저항자
+actors.mobs.seacapsule.desc=불순물이 섞인 시테러. 신체 조직의 밀도가 일부 합금을 뛰어넘는다.\n물리 공격에 당할 때마다 근접한 플레이어의 신경을 손상시킵니다.\n중요한 아이템을 드롭할 것 같습니다.
+
+actors.mobs.npcs.seaobject.name=응급처치 시설
+actors.mobs.npcs.seaobject.desc=주위에 있는 로도스 대원의 신경손상을 치료해주는 시설.
+
+actors.mobs.seaboss1.name=첫 발언자
+actors.mobs.seaboss1.desc=처음으로 문명의 앞에서 인간의 말을 쓴 아름다운 생물, 시본.
+
+//심해 2
+
+actors.mobs.sea_octo.name=심해의 분출자
+actors.mobs.sea_octo.desc=명흔이 나타난 지역에서 흔히 볼 수 있는 시테러.\n공격시 신경 손상을 부여하며, 명흔 위에서 사거리가 대폭 증가합니다.
+
+actors.mobs.sealeef.name=심해의 열초자
+actors.mobs.sealeef.desc=명흔에서 태어난 아주 공격적인 개체. 주변 자연환경을 크게 훼손하고, 동족에 의해 개조된다.\n공격할 때마다 공격력이 상승하며, 명흔 위에서 위장 효과를 얻습니다.
+
+actors.mobs.sea_brandguider.name=심해의 인도자
+actors.mobs.sea_brandguider.desc=곧 죽어 문드러져 갈 무리에서 파생된 새로운 형태의 시테러.\n체력이 절반 이하가되면 방어력이 상승하고 자신의 위치에 명흔을 생성합니다.\n\n_침묵 가능_
+
+actors.mobs.seaboss2.name=이샤믈라,부식의 마음
+actors.mobs.seaboss2.desc=\n\n \n\n \n\n더 이상 노래 부르지 않고, 위매니를 위해 목소리를 낸다.
+
+
+actors.mobs.seaboss2_phase2_head.name=믈라머리
+actors.mobs.seaboss2_phase2_head.desc=저는 머리 예요!
+
+actors.mobs.seaboss2_phase2_mid.name=믈라가슴
+actors.mobs.seaboss2_phase2_mid.desc=빵ㅋㅋ
+
+actors.mobs.seaboss2_phase2_tail.name=믈라꼬리
+actors.mobs.seaboss2_phase2_tail.desc=쭉ㅋㅋ
+
+
 
 
 
@@ -1834,7 +1896,7 @@ actors.mobs.miniboss.shadow$typerose.desc=_타입 로즈몬티스_ : 피해를 �
 actors.mobs.miniboss.shadow$typenearl.desc=_타입 니어_ : 피해량이 높고 실명에 면역입니다. 대원과의 전투에 돌입하면 빛을 내뿜습니다.
 actors.mobs.miniboss.shadow$typechen.desc=_타입 첸_ : 밀치기와 현기증에 면역입니다.
 actors.mobs.miniboss.shadow$typejessica.desc=_타입 제시카_ : 사거리가 길며, 영구 위장 상태입니다. 체력이 50%이하가 되면 1회 한정으로 강력한 능력을 사용합니다.
-actors.mobs.miniboss.shadow$typeskd.desc=_타입 스카디_ : 전투 능력이 높으며, 1회 부활 능력이 있습니다.
+actors.mobs.miniboss.shadow$typeskd.desc=_타입 스카디_ : 전투 능력이 높으며, 1회 부활 능력이 있습니다. _비행 판정_
 actors.mobs.miniboss.shadow$typespt.desc=_타입 스펙터_ : 피해를 적게 받으며, 재생 능력이 있습니다. 체력이 적을수록 재생력이 증가합니다.
 actors.mobs.miniboss.shadow$typegrn.desc=_타입 그라니_ : 명중, 회피, 이동속도가 높으며, 공격시 확률적으로 밀쳐냅니다.
 

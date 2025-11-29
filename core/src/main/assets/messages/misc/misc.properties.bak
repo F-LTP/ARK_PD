@@ -1,80 +1,3 @@
-
-badges.endorsed=取得蚀刻章：%s
-badges.new_super=新的镀层蚀刻章：%s
-badges.new=新的蚀刻章：%s
-badges$badge.monsters_slain_1=击杀10名敌人
-badges$badge.monsters_slain_2=击杀50名敌人
-badges$badge.monsters_slain_3=击杀150名敌人
-badges$badge.monsters_slain_4=击杀250名敌人
-badges$badge.gold_collected_1=收集100合成玉
-badges$badge.gold_collected_2=收集500合成玉
-badges$badge.gold_collected_3=收集2500合成玉
-badges$badge.gold_collected_4=收集7500合成玉
-badges$badge.gold_collected_5=收集15000合成玉
-badges$badge.level_reached_1=达到6级
-badges$badge.level_reached_2=达到12级
-badges$badge.level_reached_3=达到18级
-badges$badge.level_reached_4=达到24级
-badges$badge.all_weapons_identified=全武器鉴定
-badges$badge.all_skillbook_identified=全技能鉴定
-badges$badge.all_wands_identified=全法杖鉴定
-badges$badge.all_rings_identified=全戒指鉴定
-badges$badge.all_artifacts_identified=全神器鉴定
-badges$badge.all_potions_identified=全药剂鉴定
-badges$badge.all_scrolls_identified=全卷轴鉴定
-badges$badge.all_items_identified=全道具鉴定
-badges$badge.all_bags_bought=买下所有包裹
-badges$badge.death_from_fire=死于火焰
-badges$badge.death_from_poison=死于剧毒
-badges$badge.death_from_gas=死于毒气
-badges$badge.death_from_hunger=死于饥饿
-badges$badge.death_from_glyph=死于延缓伤害
-badges$badge.death_from_falling=死于坠落楼层
-badges$badge.yasd=死于火焰，中毒，毒气，饥饿，护甲刻印和坠落
-badges$badge.boss_slain_1=斩杀第1个Boss
-badges$badge.boss_slain_2=斩杀第2个Boss
-badges$badge.boss_slain_3=斩杀第3个Boss
-badges$badge.boss_slain_4=斩杀第4个Boss
-badges$badge.boss_slain_1_all_classes=使用所有干员斩杀第1个Boss
-badges$badge.boss_slain_3_all_subclasses=使用所有专精斩杀第3个Boss
-badges$badge.strength_attained_1=达到13点力量
-badges$badge.strength_attained_2=达到15点力量
-badges$badge.strength_attained_3=达到17点力量
-badges$badge.strength_attained_4=达到19点力量
-badges$badge.food_eaten_1=吃掉10个食物
-badges$badge.food_eaten_2=吃掉20个食物
-badges$badge.food_eaten_3=吃掉30个食物
-badges$badge.food_eaten_4=吃掉40个食物
-badges$badge.item_level_1=获得3级物品
-badges$badge.item_level_2=获得6级物品
-badges$badge.item_level_3=获得9级物品
-badges$badge.item_level_4=获得12级物品
-badges$badge.victory=救出博士！
-badges$badge.victory_all_classes=使用所有干员拯救一次博士
-badges$badge.mastery_combo=达成10连击
-badges$badge.potions_cooked_1=一场游戏中酿造3瓶药水
-badges$badge.potions_cooked_2=一场游戏中酿造6瓶药水
-badges$badge.potions_cooked_3=一场游戏中酿造9瓶药水
-badges$badge.potions_cooked_4=一场游戏中酿造12瓶药水
-badges$badge.no_monsters_slain=在不击杀怪物的情况下通过楼层
-badges$badge.grim_weapon=通过"死神"武器附魔秒杀一个怪物
-badges$badge.piranhas=消灭6只触手
-badges$badge.games_played_1=进行10场游戏
-badges$badge.games_played_2=进行50场游戏
-badges$badge.games_played_3=进行250场游戏
-badges$badge.games_played_4=进行1000场游戏
-badges$badge.happy_end=结局 - 美好结局
-badges$badge.champion_1=开启1项危机合约通关
-badges$badge.champion_2=开启3项危机合约通关
-badges$badge.champion_3=开启6项危机合约通关
-badges$badge.champion_4=开启8项危机合约通关
-badges$badge.unlock_mage=解锁阿米娅
-badges$badge.unlock_rogue=解锁红
-badges$badge.unlock_huntress=解锁灰喉
-badges$badge.unlock_rosecat=解锁迷迭香
-badges$badge.unlock_nearl=解锁临光
-badges$badge.unlock_chen=解锁陈
-
 badges.endorsed=배지 획득: %s
 badges.new_super=새로운 고급 배지 획득: %s
 badges.new=새 배지 획득: %s
@@ -151,30 +74,23 @@ badges$badge.unlock_rosecat=로즈몬티스 해금
 badges$badge.unlock_nearl=니어 해금
 badges$badge.unlock_chen=첸 해금
 
+badges$badge.roaringflare=울부짖는 광명
+badges$badge.eviltime_end=암흑 시대의 끝
+badges$badge.fragging=엔딩-하극상
+badges$badge.pray=널 기다릴게
+badges$badge.will=엔딩-의지
 
-badges$badge.roaringflare=怒号光明
-badges$badge.eviltime_end=黑暗时代的终结
-badges$badge.fragging=结局 - 高潮
-badges$badge.pray=我在等你
-badges$badge.will=结局 - 意志
+badges$badge.certificate_1=증명서 10개 수집
+badges$badge.certificate_2=증명서 50개 수집
+badges$badge.certificate_3=증명서 150개 수집
+badges$badge.certificate_4=증명서 300개 수집
+badges$badge.use_healbox=클로저의 회복 상자 사용
 
-badges$badge.certificate_1=获得10情报凭证
-badges$badge.certificate_2=获得50情报凭证
-badges$badge.certificate_3=获得150情报凭证
-badges$badge.certificate_4=获得300情报凭证
-badges$badge.use_healbox=可露希尔的医疗服务
+badges$badge.siesta_part1=옵시디언 페스티벌
+badges$badge.siesta_part2=엔딩-화람지심
 
-badges$badge.siesta_part1=黑曜石节手环
-badges$badge.siesta_part2=结局 - 火蓝之心
-
-badges$badge.gavial_part1=抓获恐怖分子
-badges$badge.gavial_part2=结局 - 大酋长
-
-
-badges$badge.get_25_stones=收集25块固源岩
-badges$badge.get_40_stones=收集40块固源岩
-badges$badge.doll_collector=人偶收藏家
-badges$badge.slain_pursuer=追猎者
+badges$badge.gavial_part1=테러범 검거
+badges$badge.gavial_part2=엔딩-대족장
 
 badges$badge.iberia_part1=물이 정말 깊어
 badges$badge.iberia_part2=엔딩-고요함
@@ -184,84 +100,82 @@ badges$badge.get_40_stones=원암 40개 채취
 badges$badge.doll_collector=인형 수집가
 badges$badge.slain_pursuer=사냥꾼 처치
 
+badges$badge.blaze_champion1=숙련 메무라
+badges$badge.blaze_champion2=정예 메무라
+badges$badge.blaze_champion3=전설 메무라
 
-badges$badge.blaze_champion1=熟练煌
-badges$badge.blaze_champion2=精通煌
-badges$badge.blaze_champion3=传奇煌
+badges$badge.amiya_champion1=숙련 당끼
+badges$badge.amiya_champion2=정예 당끼
+badges$badge.amiya_champion3=전설 당끼
 
-badges$badge.amiya_champion1=熟练阿米娅
-badges$badge.amiya_champion2=精通阿米娅
-badges$badge.amiya_champion3=传奇阿米娅
+badges$badge.red_champion1=숙련 렛도
+badges$badge.red_champion2=정예 렛도
+badges$badge.red_champion3=전설 렛도
 
-badges$badge.red_champion1=熟练红
-badges$badge.red_champion2=精通红
-badges$badge.red_champion3=传奇红
+badges$badge.grey_champion1=숙련 스롯이
+badges$badge.grey_champion2=정예 스롯이
+badges$badge.grey_champion3=전설 스롯이
 
-badges$badge.grey_champion1=熟练灰喉
-badges$badge.grey_champion2=精通灰喉
-badges$badge.grey_champion3=传奇灰喉
+badges$badge.rose_champion1=숙련 쪽냥이
+badges$badge.rose_champion2=정예 쪽냥이
+badges$badge.rose_champion3=전설 쪽냥이
 
-badges$badge.rose_champion1=熟练迷迭香
-badges$badge.rose_champion2=精通迷迭香
-badges$badge.rose_champion3=传奇迷迭香
+badges$badge.nearl_champion1=숙련 니얼
+badges$badge.nearl_champion2=정예 니얼
+badges$badge.nearl_champion3=전설 니얼
 
-badges$badge.nearl_champion1=熟练临光
-badges$badge.nearl_champion2=精通临光
-badges$badge.nearl_champion3=传奇临光
+badges$badge.chen_champion1=숙련 첸
+badges$badge.chen_champion2=정예 첸
+badges$badge.chen_champion3=전설 첸
 
-badges$badge.chen_champion1=熟练陈
-badges$badge.chen_champion2=精通陈
-badges$badge.chen_champion3=传奇陈
-
-badges$badge.skin_baboskadi=斯卡蒂皮肤已解锁
-badges$badge.skin_grn=格拉尼皮肤已解锁
-badges$badge.skin_talu=塔露拉皮肤已解锁
-badges$badge.skin_nova=霜星皮肤已解锁
-badges$badge.skin_susuu=苏苏洛皮肤已解锁
-badges$badge.skin_jessi=杰西卡皮肤已解锁
-badges$badge.skin_lappy=拉普兰德皮肤已解锁
-badges$badge.skin_leaf=霜叶皮肤已解锁
-badges$badge.skin_mudrock=泥岩皮肤已解锁
-badges$badge.skin_specter=幽灵鲨皮肤已解锁
-badges$badge.skin_astesia=星极皮肤已解锁
-badges$badge.skin_schwarz=黑皮肤已解锁
-badges$badge.skin_arch=空弦皮肤已解锁
-badges$badge.skin_tomimi=特米米皮肤已解锁
-badges$badge.skin_franka=芙兰卡皮肤已解锁
-
-
-
-badges$badge.bug=烙印(负面刻章)
-
-badges$badge.change=更换皮肤。
-badges$badge.skinlock=此皮肤尚未解锁。 请通过28层的可露希尔解锁。
-badges$badge.default=更换为默认皮肤。
+badges$badge.skin_baboskadi=스카디 스킨 해금
+badges$badge.skin_grn=그라니 스킨 해금
+badges$badge.skin_talu=탈룰라 스킨 해금
+badges$badge.skin_nova=서리별 스킨 해금
+badges$badge.skin_susuu=수수로 스킨 해금
+badges$badge.skin_jessi=제껄룩 스킨 해금
+badges$badge.skin_lappy=꼬지리 스킨 해금
+badges$badge.skin_leaf=배신자 스킨 해금
+badges$badge.skin_mudrock=돌돼지 스킨 해금
+badges$badge.skin_specter=상어 스킨 해금
+badges$badge.skin_astesia=별누나 스킨 해금
+badges$badge.skin_astesia=별누나 스킨 해금
+badges$badge.skin_schwarz=흑금 스킨 해금
+badges$badge.skin_arch=알게또!
+badges$badge.skin_tomimi=테러범 스킨 해금
+badges$badge.skin_franka=프란카 스킨 해금
 
 
-challenges.no_food=环境：缩餐节食
-challenges.no_food_desc=食物本就稀缺，但你还需要注意节食！\n\n・使用各类食物与古米玩偶的饱腹效果为原本的三分之一。\n・其他恢复饥饿的机制不受影响。
-challenges.no_armor=目标：秘密行动
-challenges.no_armor_desc=要相信自己，因为不能相信护甲了！\n\n・除干员制服外，所有护甲的基础防御都会下降。\n・所有护甲被升级时增长的防御力大幅降低。\n・秽壤守护者的防御力大幅降低。
-challenges.no_healing=环境：恐药异症
-challenges.no_healing_desc=治疗药水真是种好东西，可惜你对它过敏！\n\n・治疗药水以及使用治疗药水炼制的道具将无法治愈干员，反而会使干员中毒。\n・炼金催化剂不会随机到治愈干员或使干员中毒的效果。\n・这些道具对其他角色依然发挥正常效果。
-challenges.no_herbalism=环境：邪恶店主
-challenges.no_herbalism_desc=罗德岛的一些商人以建议购买价格的 236% 出售...其他店主也了解到了这一点！\n\n・商店中商品的售价增加_40%_。\n・商店出售的商品数量减少。\n・你的露水瓶收集露珠时有_50%_概率失败。\n・获得露水的方法限制为自动拾取。
-challenges.swarm_intelligence=增幅：集体智慧
-challenges.swarm_intelligence_desc=要小心了，被源石侵染的怪物们越来越聪明了！\n\n・当你被敌人发现时，附近的其他敌人也会被吸引到那里。
-challenges.darkness=环境：崎岖地形
-challenges.darkness_desc=地牢毕竟是在地下嘛！\n\n・视野范围显著缩小\n・每层都会出现一个光环\n・照明效果持续时间缩短
-challenges.no_scrolls=目标：战术节源
-challenges.no_scrolls_desc=其中一种卷轴符文会变得更稀有。只不过，每次都是最有用的那种。\n\n・移除地牢中半数的升级卷轴
-challenges.champion_enemies=增幅：源石刺激
-challenges.champion_enemies_desc=会升级的不止你一个！\n\n・普通敌人刷出时有 1/8 的机率拥有特殊的精英属性。\n・精英敌人刷出时会立即醒来。\n・有精英敌人出现时干员会感知到。\n・精英敌人免疫腐化效果。\n\n精英敌人有六种：\n_烈焰（橙色）：_ 近战伤害 +25% 且带有点燃效果，免疫火焰，死亡时引燃周围。\n_索敌（紫色）：_ 近战伤害 +25%，能直接攻击视野内的目标。\n_敌法（绿色）：_ 受到伤害 -25%，拥有魔法免疫。\n_巨型（蓝色）：_ 受到伤害 -75%，近战范围 +1，无法进入门与过道。\n_祝福（黄色）：_ 精准与躲避 +200%。\n_成长（红色）：_ 精准、躲避、攻击伤害与有效生命值 +20%。每过 3 回合会再增长 1%。
-challenges.special_boss=环境：整合运动
-challenges.special_boss_desc=以塔露拉和整合运动的名义，再次发动统一运动！\n\n・_特殊敌人_出现在 _4、9、14 和 19_ 层。\n・特殊敌人具有独特的能力。如果直到你下楼它还活着，_加强下一层的boss和塔露拉_。
-challenges.decisive_battle=决战：剿灭切尔诺伯格
-challenges.decisive_battle_desc=现在是决战的时候了。整合运动的领袖们将全力以赴。\n\n_萨卡兹积怨者_\n・在追击过程中受到的伤害减少。\n・攻击击退敌人并使其短暂瘫痪。\n\n_W_\n・普通攻击有几率造成失明。\n・一阶段的陷阱变得更加强力。\n・二阶段的能力使用更加频繁。\n・二阶段传送后魔法免疫。\n\n_泥岩_\n・生命值增加50%。\n・当留声机处于激活状态时，地板上的闪电变得更加致命。\n・留声机变得更强。\n\n_梅菲斯特_\n・被召唤的士兵获得随机增益buff。\n・梅菲斯特三阶段受到的伤害减少。\n\n_塔露拉_\n・法术激光变得更强。\n・召唤的幻象变得更强。
-challenges.tactical_upgrade=恶意：战术强化
-challenges.tactical_upgrade_desc= 打倒罗德岛！一些敌人通过特殊训练增强了自己的现有能力或获得了特殊力量！\n部分摘要：\n_猎狗_攻击上升\n_萌芽源石虫_正面战斗闪避一切攻击\n_萨卡兹术师_技能改变\n_空降兵_闪现加盾\n_幽灵_偷到东西附加沉默\n_爆翎_点燃被炸到的目标\n_技术侦查兵_不会被自己的爆翎所伤\n_寻仇者_体力流失减慢\n_高能源石虫_自爆增强\n_泥岩小队践行者_有护盾时防御上升\n_宿主士兵_复活时血量比例增加\n_宿主投掷手_远程攻击附加虚弱\n_帝国前锋精锐_获得减伤20%\n_法术大师a2_的精准+50%\n_狂暴宿主士兵_、_特战术师_获得隐匿
-challenges.shadow=蜃影：罗德岛之暗
-challenges.shadow_desc=在boss层前一层随机出现一位干员的影子，不击败它无法下楼。影子具有固定的面板和基于不同干员的技能。
-challenges.test=支援：测试时间
-rankings$record.something=在黑暗中被击杀
-challenges.test_desc=提供一些模拟工具的测试模式。_请勿将此模式用于炫耀等用途！！截图分享等请明确标出是测试时间防止产生争论。_\n\n_此合约尚未完成，仅开放部分功能。\n\n注意：开启本项支援合约则不记录合约数，无法获得情报凭证。_\n推荐单独开一个存档仅作为查资料/测试用。
+badges$badge.bug=낙인
+
+badges$badge.change=스킨을 변경했습니다.
+badges$badge.skinlock=이 스킨은 아직 해금되지 않았습니다. 28층의 클로저를 통해 해금해주세요.
+badges$badge.default=기본 스킨으로 변경했습니다.
+
+
+challenges.no_food=환경: 식량배급 중단
+challenges.no_food_desc=음식은 이미 부족하지만, 양 또한 주의해야 합니다!\n\n- 음식과 풍요의 뿔이 1/3의 허기만을 회복시켜 줍니다.\n- 허기를 채우는 다른 수단은 기존과 같습니다.
+challenges.no_armor=목표: 비밀 작전
+challenges.no_armor_desc=갑옷이 쓸모가 없어져, 스스로에 대한 믿음이 필요할 것입니다!\n\n- 대원의 사복을 제외한 모든 방어구의 기본 방어력이 감소합니다.\n- 모든 갑옷은 강화 시 매우 낮은 양의 방어력만 증가하게 됩니다.\n- 수호 석상의 방어력 또한 확연하게 감소하게 됩니다.
+challenges.no_healing=환경: 의약품 사용불가
+challenges.no_healing_desc=치유 물약은 정말 편리합니다만, 불행히도 치유 물약 알러지가 있군요!\n\n- 치유 물약, 그리고 치유 물약으로 만드는 아이템들이 플레이어를 치유하는 대신 독성으로 작용합니다.\n- 연금술 촉매제는 무작위로 영웅을 치료하거나 독성으로 작용할 수 없습니다.\n- 여전히 이 아이템들은 다른 캐릭터들에게는 동일하게 작용합니다.
+challenges.no_herbalism=창렬: 클로저식 운영
+challenges.no_herbalism_desc=로도스의 어떤 상인은 구매 권장가의 236%로 판매한다는데... 다른 상점 주인들도 그걸 배웠습니다!\n\n- 상점의 아이템 구매 비용이 상승합니다.\n- 상점에서 판매하는 아이템 품목이 감소합니다.\n- 당신이 가진 이슬병은 불량품입니다.\n- 이슬 획득 수단에 제한이 생깁니다.
+challenges.swarm_intelligence=증폭: 집단지성
+challenges.swarm_intelligence_desc=조심하십시오, 오리지늄에 침식된 적들이 더욱 똑똑해졌습니다!\n\n- 적 하나가 당신을 발견하면, 근처의 적들이 해당 위치로 이동합니다.
+challenges.darkness=환경: 험준한 지형
+challenges.darkness_desc=던전이 어두워야 던전이라 할 수 있겠지요!\n\n- 평소 시야가 크게 감소합니다.\n- 횃불이 매 층마다 등장합니다.\n- 발광 버프의 지속시간이 감소합니다.
+challenges.no_scrolls=목표: 전략 제어
+challenges.no_scrolls_desc=몇몇 주문서가 희귀해졌습니다. 네, 당신이 가장 필요로 하는 그 주문서입니다.\n\n- 던전에서 생성되는 강화의 주문서가 절반으로 줄어듭니다.
+challenges.champion_enemies=증폭: 오리지늄 자극
+challenges.champion_enemies_desc=당신만 레벨 업을 할 수 있는 게 아닙니다!\n\n- 보통 적들이 1/8확률로 특별한 강화 개체 버프를 얻은 채 등장합니다.\n- 강화 개체는 깨어 있는 상태로 등장합니다.\n- 영웅은 강화 개체의 등장을 알 수 있습니다.\n- 강화 개체는 타락에 면역입니다.\n\n강화 개체에는 6가지의 종류가 있습니다.\n_불타는 (주황색):_ 근접 공격 데미지 +25%, 공격 시 발화, 불에 면역, 죽을 때 주변에 불을 흩뿌림\n_도달의 (보라색):_ 근접 공격 데미지 +25%, 시야 내 적을 사거리 관계없이 공격할 수 있음\n_항마의 (초록색):_ 받는 데미지 -25%, 모든 마법 효과에 대해 면역\n_거대한 (파란색):_ 받는 데미지-75%, 근접 공격 범위 +1 타일, 좁은 통로를 지날 수 없음\n_축복받은 (노란색):_ 정확성 +200%, 회피 +200%\n_성장하는 (붉은색):_ 정확성, 회피, 공격력, 최대 체력 +20%, 3턴 마다 효과 1%씩 증가
+challenges.special_boss=환경: 통합운동
+challenges.special_boss_desc=탈룰라와 리유니온의 이름 아래, 다시 한 번 통합운동이 발생합니다!\n\n- _4, 9, 14, 19_층에 _특별한 적_이 등장합니다.\n- 특별한 적들은 고유의 능력을 가지고 있으며, 살아있다면 자신의 힘으로 _다음 층의 보스와 탈룰라를 강화_해줍니다.
+challenges.decisive_battle=결전: 체르노보그 섬멸
+challenges.decisive_battle_desc=이제 결전의 시간입니다. 리유니온의 간부들은 진심을 다해 싸울 것입니다.\n\n_살카즈 저주술사_\n-폭주시 받는 피해가 감소합니다.\n-공격이 적을 밀쳐내고 짧게 마비시킵니다.\n\n_W_\n-일반 공격시 낮은 확률로 실명을 부여합니다.\n-1페이즈의 함정이 더욱 잔혹해집니다.\n-2페이즈 능력을 매우 많이 사용합니다.\n-2페이즈 텔레포트시 아츠 면역을 얻습니다.\n\n_머드락_\n-체력이 50%상승합니다.\n-돌이 떨어진 위치에 물타일을 생성합니다.\n-축음기 활성화 중 바닥의 번개가 더욱 치명적이게됩니다.\n-축음기가 강력해집니다.\n\n_메피스토_\n-소환되는 숙주병들이 무작위 버프를 얻습니다.\n-3페이즈의 메피스토가 받는 피해가 감소합니다.\n\n_탈룰라_\n-아츠 광선이 강력해집니다.\n-소환되는 환영들이 강력해집니다.
+challenges.tactical_upgrade=악의: 전술 강화
+challenges.tactical_upgrade_desc=타도! 로도스 아일랜드! 일부 적이 훈련을 통해 특수한 능력을 얻거나 기존 능력을 강화했습니다.
+challenges.shadow=환시: 팬텀 로도스
+challenges.shadow_desc=보스 이전 층에서 로도스 대원의 환영이 나타납니다. 환영은 모습에 따라 특별한 능력을 지니고 있으며, 환영이 쓰러지기 전까진 해당 층에서 내려가는 계단을 사용할 수 없습니다.
+
+rankings$record.something=어쨌든 무언가에 의해 사망

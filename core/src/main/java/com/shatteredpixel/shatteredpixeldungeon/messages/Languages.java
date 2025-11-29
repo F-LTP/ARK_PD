@@ -24,8 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.messages;
 import java.util.Locale;
 
 public enum Languages {
-	//CHINESE("中文","",Status.UNREVIEWED,null,new String[]{"萌神，新萌"}),//change from budding
-	KOREAN("中文",          "", Status.REVIEWED, null, null),
+	KOREAN("한국어",          "", Status.REVIEWED, null, null),
 	ENGLISH("english",      "en",   Status.UNREVIEWED, new String[]{"Nam_sek"}, new String[]{"Kanra"});
 /*	RUSSIAN("русский",      "ru", Status.INCOMPLETE, new String[]{"ConsideredHamster", "Inevielle", "apxwn", "yarikonline" }, new String[]{"AttHawk46", "BlueberryShortcake", "HerrGotlieb", "HoloTheWise", "Ilbko", "JleHuBbluKoT", "KirStaLong", "MrXantar", "Nikets", "Originalej0name", "Raymundo", "Shamahan", "Thomasg63", "Ya6lo4ko", "kirusyaga", "perefrazz", "roman.yagodin", "un_logic", "Вoвa"}),
 	SPANISH("español",      "es", Status.INCOMPLETE, new String[]{"Kiroto", "Kohru", "airman12", "grayscales"}, new String[]{"AdventurerKilly", "Alesxanderk", "CorvosUtopy", "D0n.Kak0", "Dewstend", "Dyrran", "Enddox", "Fervoreking", "Illyatwo2", "JPCHZ", "KeyKai", "LastCry", "Marquezo_577_284", "NAVI1237", "STKmonoqui", "Sh4rkill3r", "alfongad", "benzarr410", "chepe567.jc", "ctrijueque", "damc0616", "desen90", "dhg121", "javifs", "jonismack1", "magmax", "tres.14159"}),
