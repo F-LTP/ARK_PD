@@ -222,7 +222,8 @@ public class Dungeon {
 	public static boolean dailyReplay;
 
 	public static boolean isPray; // 프리스티스를 위한 기도를 하였는가?
-	public static boolean killcat; // 엔딩 씬에서 켈시 하극상 출현용.
+    public static boolean doctorSaved; // 박사를 구출했는가?
+    public static boolean killcat; // 엔딩 씬에서 켈시 하극상 출현용.
 
 	public static int QuestCatPoint;
 
@@ -304,6 +305,7 @@ public class Dungeon {
 		siesta1_bosspower = 4;
 
 		isPray = false;
+        doctorSaved = false;
 		killcat = false;
 		extrastage_Gavial = false;
 		extrastage_Sea = false;
@@ -649,6 +651,7 @@ public class Dungeon {
 	private static final String EAZYMODE    = "eazymode";
 	private static final String SKIN    = "skin_ch";
 	private static final String PRAY    = "isPray";
+    private static final String DOCTOR_SAVED    = "doctorSaved";
 	private static final String END_CAT    = "killcat";
 	private static final String TALU    = "talucount";
 	private static final String SIEBOSS1    = "siesta1_bosspower";
@@ -695,6 +698,7 @@ public class Dungeon {
 			bundle.put (EAZYMODE, eazymode);
 			bundle.put (SKIN, skin_ch);
 			bundle.put (PRAY, isPray);
+            bundle.put (DOCTOR_SAVED, doctorSaved);
 			bundle.put (END_CAT, killcat);
 			bundle.put (TALU, talucount);
 			bundle.put (SIEBOSS1, siesta1_bosspower);
@@ -886,6 +890,7 @@ public class Dungeon {
 		skin_ch = bundle.getInt(SKIN);
 
 		isPray = bundle.getBoolean(PRAY);
+        doctorSaved = bundle.getBoolean(DOCTOR_SAVED);
 		killcat = bundle.getBoolean(END_CAT);
 		talucount = bundle.getInt(TALU);
 		siesta1_bosspower = bundle.getInt(SIEBOSS1);

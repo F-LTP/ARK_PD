@@ -1,20 +1,23 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Level.set;
+
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Drowsy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSleep;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Sleep;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.Platform;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.Skadi_mulaSprite;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
 import com.watabou.noosa.Camera;
 import com.watabou.utils.Random;
 
@@ -27,24 +30,38 @@ public class Isharmla extends Mob {
         HP = HT = 1500;
         defenseSkill = 60;
 
-        state = PASSIVE;
+        actPriority = MOB_PRIO-1;
+
+        WANDERING = new Wandering();
+        HUNTING = new Hunting();
+
+        state = WANDERING;
 
         properties.add(Property.BOSS);
         properties.add(Property.IMMOVABLE);
-        immunities.add( Paralysis.class );
-        immunities.add( Amok.class );
-        immunities.add( Sleep.class );
-        immunities.add( Terror.class );
-        immunities.add( Vertigo.class );
+        properties.add(Property.STATIC);
     }
 
-    int summoncooldown = 0;
+    int summonCooldown = 5;
+    int shieldCooldown = 8;
+    int shieldAmount = Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? 50 : 30;
 
     @Override
-    public void beckon(int cell) {
-        //do nothing
+    public int defenseSkill(Char enemy) {
+        return INFINITE_EVASION;
     }
 
+    @Override
+    public void notice() {
+        if (!BossHealthBar.isAssigned()) {
+            BossHealthBar.assignBoss(this);
+        }
+    }
+
+    @Override
+    protected boolean canAttack(Char enemy) {
+        return false;
+    }
 
     @Override
     public void damage(int dmg, Object src) {
@@ -74,25 +91,68 @@ public class Isharmla extends Mob {
         WandOfBlastWave.throwChar(Dungeon.hero, trajectory, 6); // 넉백 효과
 
         IsharmlaSeabornHead boss1 = new IsharmlaSeabornHead();
-        boss1.pos = 176;
+        boss1.pos = 197;
+        boss1.notice();
         GameScene.add( boss1 );
 
         IsharmlaSeabornBody boss2 = new IsharmlaSeabornBody();
-        boss2.pos = 178;
+        boss2.pos = 199;
+        boss2.notice();
         GameScene.add( boss2 );
 
         IsharmlaSeabornTail boss3 = new IsharmlaSeabornTail();
-        boss3.pos = 180;
+        boss3.pos = 201;
+        boss3.notice();
         GameScene.add( boss3 );
+
+        updateTerrain();
+
         GameScene.flash(0x80FFFFFF);
         Camera.main.shake(2, 2f);
+        Dungeon.observe();
+    }
+
+    private void updateTerrain() {
+        int[] positions = new int[]{197, 198, 199, 200, 201};
+
+        for (int pos : positions) {
+            Platform platform = Dungeon.level.platforms.get(pos);
+            if (platform != null) {
+                platform.destroy();
+            }
+
+            set( pos, Terrain.WELL );
+            GameScene.updateMap( pos );
+        }
     }
 
     @Override
     protected boolean act() {
+        rooted = true;
 
-        if (summoncooldown <= 0) SummonEnemy();
-        else summoncooldown--;
+        if (state == WANDERING) {
+            return super.act();
+        }
+
+        if (summonCooldown <= 0) {
+            this.damage(250,this);
+            if (this.isAlive()) {
+                SummonEnemy();
+            }
+        } else {
+            summonCooldown--;
+        }
+
+        if (shieldCooldown <= 0) {
+            for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
+                if (mob.isAlive() && (mob instanceof SummonRunner || mob instanceof SummonLeef || mob instanceof SummonOcto))  {
+                    Buff.affect(mob, Barrier.class).setShield(shieldAmount);
+                }
+            }
+            shieldCooldown = (Dungeon.isChallenged(Challenges.DECISIVE_BATTLE)) ? 8 : 12;
+        } else {
+            shieldCooldown--;
+        }
 
         return super.act();
     }
@@ -105,11 +165,6 @@ public class Isharmla extends Mob {
     }
 
     // summon pos = 50, 54
-
-    @Override
-    public int attackSkill(Char target) {
-        return 0;
-    }
 
     private void SummonEnemy()
     {
@@ -161,9 +216,7 @@ public class Isharmla extends Mob {
         for (Mob mob : Dungeon.level.mobs) {
             mob.beckon( Dungeon.hero.pos );
         }
-
-        this.damage(250,this);
-        summoncooldown = 10;
+        summonCooldown = 10;
 
     }
 
@@ -206,6 +259,33 @@ public class Isharmla extends Mob {
 
             //no loot or exp
             maxLvl = -5;
+        }
+    }
+
+    protected class Wandering implements AiState {
+
+        public static final String TAG	= "PASSIVE";
+
+        @Override
+        public boolean act( boolean enemyInFOV, boolean justAlerted ) {
+            enemySeen = enemyInFOV;
+            if (enemySeen) {
+                notice();
+                state = HUNTING;
+            }
+            spend( TICK );
+            return true;
+        }
+    }
+
+    protected class Hunting implements AiState {
+
+        public static final String TAG	= "PASSIVE";
+
+        @Override
+        public boolean act( boolean enemyInFOV, boolean justAlerted ) {
+            spend( TICK );
+            return true;
         }
     }
 }

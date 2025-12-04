@@ -63,6 +63,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SeethingBurst;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ShieldBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Silence;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Sleep;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Slow;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SnipersMark;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Speed;
@@ -951,7 +952,12 @@ public abstract class Char extends Actor {
 		ELECTRIC ( new HashSet<Class>( Arrays.asList(WandOfLightning.class, StaffOfGreyy.class, Shocking.class, Potential.class, Electricity.class, ShockingDart.class, Elemental.ShockElemental.class )),
 				new HashSet<Class>()),
 		LARGE,
-		IMMOVABLE,
+        IMMOVABLE ( new HashSet<Class>(),
+                new HashSet<Class>( Arrays.asList(Vertigo.class) )),
+        //A character that acts in an unchanging manner. immune to AI state debuffs or stuns/slows
+        STATIC( new HashSet<Class>(),
+                new HashSet<Class>( Arrays.asList(Terror.class, Amok.class, Charm.class, Sleep.class,
+                        Paralysis.class, Frost.class, Chill.class, Slow.class, Speed.class) )),
 		NO_KNOCKBACK,
 		// 명픽던 추가 요소
 		DRONE ( new HashSet<Class>(),

@@ -6,11 +6,14 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.Mula_3Sprite;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BossMultiHealthBar;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
-//패턴 : 근처에 모든 적에게 고정데미지를 입히는 스킬을 사용한다
+//패턴 : 1) 근처에 모든 적에게 고정데미지를 입히는 스킬을 사용한다; 2) 원거리 물리공격
 public class IsharmlaSeabornTail extends Mob {
     {
         spriteClass = Mula_3Sprite.class;
@@ -19,21 +22,29 @@ public class IsharmlaSeabornTail extends Mob {
 
         defenseSkill = 25;
 
+        actPriority = MOB_PRIO-1;
+
         properties.add(Property.SEA);
         properties.add(Property.BOSS);
         properties.add(Property.IMMOVABLE);
+        properties.add(Property.STATIC);
 
-        state = HUNTING;
+        state = new Hunting();
     }
 
     // 모든 믈라 파츠가 파괴되면 사망
-    private boolean dieChacke = false;
+    private boolean isDead = false;
 
     private int cooldown = 3;
 
     @Override
+    public void notice() {
+        BossMultiHealthBar.assignBoss(this);
+    }
+
+    @Override
     public int damageRoll() {
-        return Random.NormalIntRange(25, 55);
+        return Random.NormalIntRange(25, 45);
     }
 
     @Override
@@ -43,14 +54,20 @@ public class IsharmlaSeabornTail extends Mob {
 
     @Override
     public int defenseSkill(Char enemy) {
-        if (dieChacke) return INFINITE_EVASION;
+        if (isDead) return INFINITE_EVASION;
+
+        // 캐릭터가 물 밖이라면 데미지를 입지 않습니다
+        if (enemy instanceof Hero && Dungeon.level.map[enemy.pos] == Terrain.EMPTY) {
+            return INFINITE_EVASION;
+        }
+
         else return 20;
     }
 
-    // 사거리 2
+    // 캐릭터가 물 위라면 어디든지 공격 가능
     @Override
     protected boolean canAttack(Char enemy) {
-        return !dieChacke && this.fieldOfView[enemy.pos] && Dungeon.level.distance(this.pos, enemy.pos) <= 2;
+        return !isDead && (Dungeon.level.map[enemy.pos] != Terrain.EMPTY);
     }
 
     @Override
@@ -59,7 +76,10 @@ public class IsharmlaSeabornTail extends Mob {
         sprite.turnTo(pos, 999999);
         rooted = true;
 
-        if (dieChacke) return super.act();
+        if (isDead) {
+            alerted = false;
+            return super.act();
+        }
 
         if (cooldown > 0) cooldown--;
         else {
@@ -78,37 +98,60 @@ public class IsharmlaSeabornTail extends Mob {
     @Override
     public void damage(int dmg, Object src) {
 
-        if (dieChacke) return;
+        if (isDead) return;
+
+        // 캐릭터가 물 밖이라면 데미지를 입지 않습니다
+        if (src instanceof Hero && Dungeon.level.map[Dungeon.hero.pos] == Terrain.EMPTY) {
+            return;
+        }
 
         super.damage(dmg, src);
 
         if (HP < 1) {
-            dieChacke = true;
+            isDead = true;
             Buff.affect(this, Doom.class);
             Dungeon.mulaCount++;
-
+            IsharmlaSeabornHead.triggerAnger();
         }
     }
 
     @Override
     public void die(Object cause) { }
 
-
-    private static final String DIECHACKE_TAIL   = "dieChackeTail";
+    private static final String IS_DEAD_TAIL   = "isDeadTail";
+    private static final String SING_COOLDOWN = "singCooldown";
 
     @Override
     public void storeInBundle( Bundle bundle ) {
         super.storeInBundle( bundle );
-        bundle.put( DIECHACKE_TAIL, dieChacke );
+        bundle.put( IS_DEAD_TAIL, isDead);
+        bundle.put(SING_COOLDOWN, cooldown);
     }
 
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
 
-        dieChacke = bundle.getBoolean(DIECHACKE_TAIL);
-    }
+        isDead = bundle.getBoolean(IS_DEAD_TAIL);
+        cooldown = bundle.getInt(SING_COOLDOWN);
     }
 
+    protected class Hunting implements AiState {
+
+        @Override
+        public boolean act( boolean enemyInFOV, boolean justAlerted ) {
+            enemySeen = enemyInFOV;
+            if (enemyInFOV && !isCharmedBy( enemy ) && canAttack( enemy )) {
+
+                target = enemy.pos;
+                return doAttack( enemy );
+
+            } else {
+                spend( TICK );
+                return true;
+            }
+        }
+    }
+}
 
 
 

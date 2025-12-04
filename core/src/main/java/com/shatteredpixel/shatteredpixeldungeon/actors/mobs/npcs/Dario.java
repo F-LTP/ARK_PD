@@ -17,6 +17,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.NPC_DarioSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndDario;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndQuest;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
@@ -37,7 +38,7 @@ public class Dario extends NPC {
 
         alignment = Alignment.ALLY;
         WANDERING = new Wandering();
-        state = WANDERING;
+        state = PASSIVE;
 
         //before other mobs
         actPriority = MOB_PRIO + 1;
@@ -110,12 +111,13 @@ public class Dario extends NPC {
         }
 
         if (Quest.isQuestComplete()) {
-            yell(Messages.get(this, "thank"));
-            Quest.dropReward(this);
-            GLog.p(Messages.get(this, "success")); // 접촉시 고마워 대사 출력
-
-            destroy(); // 삭제
-            sprite.die();
+            String msg = Messages.get(this, "thank");
+            Game.runOnRenderThread(new Callback() {
+                @Override
+                public void call() {
+                    GameScene.show( new WndDario( Dario.this, msg ) );
+                }
+            });
 
             for (Mob mob : Dungeon.level.mobs) {
                 mob.beckon(mob.pos);
@@ -136,7 +138,7 @@ public class Dario extends NPC {
 
             Quest.prepared = true;
             Quest.startQuest(this.pos);
-
+            Buff.detach(this, Invisibility.class);
             state = WANDERING;
             initialPos = pos;
         } else {
@@ -175,7 +177,7 @@ public class Dario extends NPC {
                 }
             });
 
-            Buff.detach(this, Invisibility.class);
+
             Quest.given = true;
         }
         return true;

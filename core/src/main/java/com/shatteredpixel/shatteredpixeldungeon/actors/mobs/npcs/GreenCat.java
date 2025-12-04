@@ -18,6 +18,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.SurfaceScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GreenCatSprite;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndKaltsit;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Callback;
@@ -73,7 +74,14 @@ public class GreenCat extends NPC {
     @Override
     public boolean interact(Char c) {
         sprite.turnTo(pos, c.pos);
-        if (Dungeon.hero.belongings.getItem(Amulet.class) == null) {
+        if (Dungeon.doctorSaved) {
+            Game.runOnRenderThread(new Callback() {
+                @Override
+                public void call() {
+                    GameScene.show(new WndKaltsit(GreenCat.this, null));
+                }
+            });
+        } else if (Dungeon.hero.belongings.getItem(Amulet.class) == null) {
             Game.runOnRenderThread(new Callback() {
                 @Override
                 public void call() {
@@ -81,11 +89,12 @@ public class GreenCat extends NPC {
                 }
             });
         } else {
-            Badges.silentValidateHappyEnd();
-            if (Dungeon.isPray) Badges.validatepray();
-            Dungeon.win(Amulet.class);
-            Dungeon.deleteGame(GamesInProgress.curSlot, true);
-            Game.switchScene(SurfaceScene.class);
+            Game.runOnRenderThread(new Callback() {
+                @Override
+                public void call() {
+                    GameScene.show(new WndKaltsit(GreenCat.this, Dungeon.hero.belongings.getItem(Amulet.class)));
+                }
+            });
         }
         return true;
     }

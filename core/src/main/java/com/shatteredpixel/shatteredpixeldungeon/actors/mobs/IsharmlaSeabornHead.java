@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -8,27 +9,38 @@ import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Web;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.NervousImpairment;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
+import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PurpleParticle;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.WaterParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Certificate;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Platform;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.SurfaceScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.Mula_1Sprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BossMultiHealthBar;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
-//패턴 : 미정
+//패턴 : 1) 발판 파괴 미법공격 레이저; 2) 근거리 물리공격; 3) 파도 특수패턴
 public class IsharmlaSeabornHead extends Mob {
     {
         spriteClass = Mula_1Sprite.class;
@@ -37,17 +49,23 @@ public class IsharmlaSeabornHead extends Mob {
 
         defenseSkill = 25;
 
+        actPriority = MOB_PRIO-1;
+
         properties.add(Property.SEA);
         properties.add(Property.BOSS);
         properties.add(Property.IMMOVABLE);
 
-        state = HUNTING;
-
+        state = new Hunting();
     }
 
     // 모든 믈라 파츠가 파괴되면 사망
-    private boolean dieChacke = false;
-    private int cooldown = 6;
+    private boolean isDead = false;
+    private int laserCooldown = 6;
+    private static boolean isAngry = false;
+    private static boolean isEnraged = false;
+    private static boolean isHeadEnraged = false;
+    private static int enrageDuration = 20;
+    private int waveCooldown = 1;
 
     @Override
     public int damageRoll() {
@@ -59,25 +77,36 @@ public class IsharmlaSeabornHead extends Mob {
         return 50;
     }
 
+    @Override
+    public void notice() {
+        BossMultiHealthBar.assignBoss(this);
+    }
 
     @Override
     public int defenseSkill(Char enemy) {
-        if (dieChacke) return INFINITE_EVASION;
+        if (isDead) return INFINITE_EVASION;
+
+        // 캐릭터가 물 밖이라면 데미지를 입지 않습니다
+        if (enemy instanceof Hero && Dungeon.level.map[enemy.pos] == Terrain.EMPTY) {
+            return INFINITE_EVASION;
+        }
+
         else return 20;
     }
 
-    // 사거리 6
+    // 사거리 2
     @Override
     protected boolean canAttack(Char enemy) {
-        return !dieChacke && this.fieldOfView[enemy.pos] && Dungeon.level.distance(this.pos, enemy.pos) <= 6;
+        return !isDead && this.fieldOfView[enemy.pos] && Dungeon.level.distance(this.pos, enemy.pos) <= 2;
     }
 
     @Override
     protected boolean act() {
+
         sprite.turnTo(pos, 999999);
         rooted = true;
-        if (dieChacke)
-        {
+
+        if (isDead) {
             if (Dungeon.mulaCount == 3) {
                 Badges.validateVictory();
                 Badges.validateChampion(Challenges.activeChallenges());
@@ -93,102 +122,351 @@ public class IsharmlaSeabornHead extends Mob {
                 Dungeon.deleteGame(GamesInProgress.curSlot, true);
                 Game.switchScene(SurfaceScene.class);
             }
+            alerted = false;
             return super.act();
         }
 
-        if (cooldown > 0) {
-            cooldown--;
-        } else {
-            Ballistica beam = new Ballistica(this.pos, enemy.pos, Ballistica.WONT_STOP);
-            int maxDistance = Math.min(8, beam.dist);
-            int cell = beam.path.get(Math.min(beam.dist, maxDistance));
-            this.sprite.parent.add(new Beam.DeathRay(this.sprite.center(), DungeonTilemap.raisedTileCenterToWorld(cell)));
+        if (laserCooldown <= 0) {
+
             boolean terrainAffected = false;
-            ArrayList<Char> chars = new ArrayList<>();
-            Blob web = Dungeon.level.blobs.get(Web.class);
-            int terrainPassed = 2;
-            for (int c : beam.subPath(1, maxDistance)) {
-                Char ch;
-                if ((ch = Actor.findChar( c )) != null) {
-                    //we don't want to count passed terrain after the last enemy hit. That would be a lot of bonus levels.
-                    //terrainPassed starts at 2, equivalent of rounding up when /3 for integer arithmetic.
-                    terrainPassed = terrainPassed%3;
-                    chars.add( ch );
+            HashSet<Char> affected = new HashSet<>();
+            int targetPos = Dungeon.hero.pos;
+
+            Ballistica b = new Ballistica(pos, targetPos, Ballistica.WONT_STOP);
+            //shoot beams
+            sprite.parent.add(new Beam.WaterRay(sprite.center(), DungeonTilemap.raisedTileCenterToWorld(b.collisionPos)));
+            for (int p : b.path) {
+                Char ch = Actor.findChar(p);
+                if (ch != null && (ch.alignment != alignment || ch instanceof Bee)) {
+                    affected.add(ch);
                 }
-                if (Dungeon.level.solid[c]) {
-                    terrainPassed++;
-                }
-                if (Dungeon.level.flamable[c]) {
-                    Dungeon.level.destroy( c );
-                    GameScene.updateMap( c );
+                if (Dungeon.level.flamable[p]) {
+                    Dungeon.level.destroy(p);
+                    GameScene.updateMap(p);
                     terrainAffected = true;
                 }
-                Platform platform = Dungeon.level.platforms.get(c);
+
+                Platform platform = Dungeon.level.platforms.get(p);
                 if (platform != null) {
                     platform.destroy();
-                    GameScene.updateMap( c );
+                    GameScene.updateMap(p);
                     terrainAffected = true;
                 }
-                CellEmitter.center( c ).burst( PurpleParticle.BURST, Random.IntRange( 1, 2 ) );
             }
             if (terrainAffected) {
                 Dungeon.observe();
             }
+
             int dmg = Random.NormalIntRange(4, 36);
-            for (Char ch : chars) {
+
+            for (Char ch : affected) {
                 ch.damage(dmg, this );
-                ch.sprite.centerEmitter().burst( PurpleParticle.BURST, Random.IntRange( 1, 2 ) );
-                ch.sprite.flash();
+                if (Dungeon.level.heroFOV[pos]) {
+                    ch.sprite.flash();
+                    CellEmitter.center(pos).burst(PurpleParticle.BURST, Random.IntRange(1, 2));
+                }
+
+                if (!ch.isAlive() && ch == Dungeon.hero) {
+                    Dungeon.fail(getClass());
+                    GLog.n(Messages.get(Char.class, "kill", name()));
+                }
             }
-            if (Dungeon.isChallenged(Challenges.DECISIVE_BATTLE)) cooldown = 4;
-            else cooldown = 6;
+
+            laserCooldown = Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? 4 : 6;
+        } else {
+            laserCooldown--;
+        }
+
+        if (isEnraged) {
+            specialAttack();
+        } else if (isAngry) {
+            specialAttack();
+            enrageDuration--;
+            if (enrageDuration <= 0) {
+                isAngry = false;
+            }
         }
 
         return super.act();
     }
 
     @Override
-    protected float attackDelay() {
-        return super.attackDelay() * 2;
-    }
-
-    @Override
     public void damage(int dmg, Object src) {
 
-        if (dieChacke) return;
-        
-        // 믈라의 머리는 다른 부위가 파괴되지않았다면 절반의 피해를 받습니다
-        if (Dungeon.mulaCount < 2) dmg/=2;
+        if (isDead) return;
 
+        // 캐릭터가 물 밖이라면 데미지를 입지 않습니다
+        if (src instanceof Hero && Dungeon.level.map[Dungeon.hero.pos] == Terrain.EMPTY) {
+            return;
+        }
+
+        // 믈라의 머리는 파괴되지 않은 부위 하나당 33/50%의 피해저항을 얻습니다
+        float resistance = Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? 0.50f : 0.33f;
+        dmg = (int) (dmg * (1.0 - (resistance * (2 - Dungeon.mulaCount))));
+
+        int hpThreshold = HT / 2;
         super.damage(dmg, src);
 
-        if (HP < 1) {
-            dieChacke = true;
+        if (HP < hpThreshold && !isHeadEnraged) {
+            HP = hpThreshold;
+            isHeadEnraged = true;
+            IsharmlaSeabornHead.triggerAnger();
+        } else if (HP < 1) {
+            isDead = true;
             Buff.affect(this, Doom.class);
             Dungeon.mulaCount++;
         }
     }
 
-
     @Override
     public void die(Object cause) { }
 
+    public static void triggerAnger() {
+        if (IsharmlaSeabornHead.isHeadEnraged) {
+            isEnraged = true;
+            enrageDuration = 999;
+        } else {
+            isAngry = true;
+            enrageDuration = 15 * Dungeon.mulaCount;
+        }
+    }
 
-    private static final String DIECHACKE_HEAD   = "dieChackeHead";
+    public void specialAttack() {
+        if (waveCooldown > 0) {
+            waveCooldown--;
+        } else {
+            waveCooldown = Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? 2 : 3;
+            sendWaves(this);
+        }
+    }
+
+    private static final String IS_DEAD_HEAD  = "isDeadHead";
+    private static final String LASER_COOLDOWN = "laserCooldown";
+    private static final String IS_ANGRY = "isAngry";
+    private static final String IS_ENRAGED = "isEnraged";
+    private static final String IS_HEAD_ENRAGED = "isHeadEnraged";
+    private static final String ENRAGE_DURATION = "enrageDuration";
+    private static final String WAVE_COOLDOWN = "waveCooldown";
 
     @Override
     public void storeInBundle( Bundle bundle ) {
         super.storeInBundle( bundle );
-        bundle.put( DIECHACKE_HEAD, dieChacke );
+        bundle.put( IS_DEAD_HEAD, isDead);
+        bundle.put( IS_ANGRY, isAngry);
+        bundle.put( IS_ENRAGED, isEnraged);
+        bundle.put( IS_HEAD_ENRAGED, isHeadEnraged);
+
+        bundle.put( LASER_COOLDOWN, laserCooldown);
+        bundle.put( ENRAGE_DURATION, enrageDuration);
+        bundle.put( WAVE_COOLDOWN, waveCooldown);
     }
 
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
 
-        dieChacke = bundle.getBoolean(DIECHACKE_HEAD);
-    }
+        isDead = bundle.getBoolean(IS_DEAD_HEAD);
+        isAngry = bundle.getBoolean(IS_ANGRY);
+        isEnraged = bundle.getBoolean(IS_ENRAGED);
+        isHeadEnraged = bundle.getBoolean(IS_HEAD_ENRAGED);
+
+        laserCooldown = bundle.getInt(LASER_COOLDOWN);
+        enrageDuration = bundle.getInt(ENRAGE_DURATION);
+        waveCooldown = bundle.getInt(WAVE_COOLDOWN);
     }
 
+    public static void sendWaves(final Char thrower) {
+        WaveAbility waveAbility = Buff.append(thrower, WaveAbility.class);
+        waveAbility.width = isHeadEnraged ? 7 : 3 + 2 * Dungeon.mulaCount;
+        waveAbility.start = Random.Int(168 + waveAbility.width / 2, 188 - waveAbility.width / 2);
+    }
+
+    public static class WaveAbility extends Buff {
+        public int start;
+        public int width;
+        private int[] curCells;
+
+        HashSet<Integer> toCells = new HashSet<>();
+
+        @Override
+        public boolean act() {
+
+            toCells.clear();
+
+            if (curCells == null) {
+                curCells = initialCells(start);
+                spreadFromCells(curCells);
+            } else {
+                for (Integer c : curCells) {
+                    if (WaterBlob.volumeAt(c, WaterBlob.class) > 0) spreadFromCell(c);
+                }
+            }
+
+            for (Integer c : curCells) {
+                toCells.remove(c);
+            }
+
+            if (toCells.isEmpty()) {
+                detach();
+            } else {
+                curCells = new int[toCells.size()];
+                int i = 0;
+                for (Integer c : toCells) {
+                    GameScene.add(Blob.seed(c, 2, WaterBlob.class));
+                    curCells[i] = c;
+                    i++;
+                }
+            }
+
+            spend(TICK);
+            return true;
+        }
+
+        private int[] initialCells(int cell) {
+            HashSet<Integer> cells = new HashSet<>();
+            cells.add(cell);
+            addLeft(cell, width / 2, cells);
+            addRight(cell, width / 2, cells);
+            return convertToArray(cells);
+        }
+
+        private int[] convertToArray(Set<Integer> cells) {
+            int[] outArr = new int[cells.size()];
+            int index = 0;
+            for (int cell : cells) {
+                outArr[index] = cell;
+                index ++;
+            }
+            return outArr;
+        }
+
+        private void addLeft(int cell, int width, Set<Integer> cells) {
+            for (int i = 1; i <= width; i ++) {
+                if (!Dungeon.level.solid[cell - i]) {
+                    cells.add(cell - i);
+                }
+            }
+        }
+
+        private void addRight(int cell, int width, Set<Integer> cells) {
+            for (int i = 1; i <= width; i ++) {
+                if (!Dungeon.level.solid[cell + i]) {
+                    cells.add(cell + i);
+                }
+            }
+        }
+
+        private void spreadFromCells(int[] cells) {
+            for (int cell : cells) {
+                spreadFromCell(cell);
+            }
+        }
+
+        private void spreadFromCell(int cell) {
+            if (!Dungeon.level.solid[cell + PathFinder.NEIGHBOURS4[3]]) {
+                toCells.add(cell + PathFinder.NEIGHBOURS4[3]);
+            }
+        }
+
+        private static final String START = "start";
+        private static final String WIDTH = "width";
+        private static final String CUR_CELLS = "cur_cells";
+
+        @Override
+        public void storeInBundle(Bundle bundle) {
+            super.storeInBundle(bundle);
+            bundle.put(START, start);
+            bundle.put(WIDTH, width);
+            bundle.put(CUR_CELLS, curCells);
+        }
+
+        @Override
+        public void restoreFromBundle(Bundle bundle) {
+            super.restoreFromBundle(bundle);
+            start = bundle.getInt(START);
+            width = bundle.getInt(WIDTH);
+            curCells = bundle.getIntArray(CUR_CELLS);
+        }
+
+        public static class WaterBlob extends Blob {
+
+            {
+                actPriority = BUFF_PRIO - 1;
+                alwaysVisible = true;
+            }
+
+            @Override
+            protected void evolve() {
+
+                boolean burned = false;
+
+                int cell;
+                for (int i = area.left; i < area.right; i++) {
+                    for (int j = area.top; j < area.bottom; j++) {
+                        cell = i + j * Dungeon.level.width();
+                        off[cell] = cur[cell] > 0 ? cur[cell] - 1 : 0;
+
+                        if (off[cell] > 0) {
+                            volume += off[cell];
+                        }
+
+                        if (cur[cell] > 0 && off[cell] == 0) {
+
+                            Char ch = Actor.findChar(cell);
+                            if (ch != null
+                                    && !(ch instanceof IsharmlaSeabornHead)
+                                    && !(ch instanceof IsharmlaSeabornBody)
+                                    && !(ch instanceof IsharmlaSeabornTail)) {
+                                Buff.prolong(ch, Blindness.class, 3f);
+                                if (ch.buff(NervousImpairment.class) == null) {
+                                    Buff.affect(ch, NervousImpairment.class);
+                                }
+                                ch.buff(NervousImpairment.class).sum(40);
+                                ch.damage(Random.Int(15, 40), this);
+                            }
+
+                            burned = true;
+                            CellEmitter.get(cell).start(WaterParticle.SPLASHING, 0.07f, 10);
+                        }
+                    }
+                }
+
+                if (burned) {
+                    Sample.INSTANCE.play(Assets.Sounds.SPLASH);
+                }
+            }
+
+            @Override
+            public void use(BlobEmitter emitter) {
+                super.use(emitter);
+                emitter.y -= DungeonTilemap.SIZE * 0.2f;
+                emitter.height *= 0.4f;
+                emitter.pour(WaterParticle.FALLING, 0.2f);
+            }
+
+            @Override
+            public String tileDesc() {
+                return Messages.get(this, "desc");
+            }
+        }
+    }
+
+    protected class Hunting implements AiState {
+
+        @Override
+        public boolean act( boolean enemyInFOV, boolean justAlerted ) {
+            enemySeen = enemyInFOV;
+            if (enemyInFOV && !isCharmedBy( enemy ) && canAttack( enemy )) {
+
+                target = enemy.pos;
+                return doAttack( enemy );
+
+            } else {
+                spend( TICK );
+                return true;
+            }
+        }
+    }
+}
 
 
 

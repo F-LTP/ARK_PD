@@ -36,8 +36,8 @@ public class NPC_DarioSprite extends MobSprite {
         idle = new Animation( 5, true );
         idle.frames( frames, 0,1,2,3,4,5 );
 
-        run = new Animation( 12, true );
-        run.frames( frames,  0 );
+        run = new Animation( 5, true );
+        run.frames( frames, 0, 1, 2, 3, 4, 5 );
 
         attack = new Animation( 15, false );
         attack.frames( frames, 6, 7, 8, 9, 10, 11, 12, 13, 14,0 );

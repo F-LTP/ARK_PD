@@ -60,7 +60,6 @@ public class SeaBossLevel2 extends Level {
     private static int T = Terrain.SEA_TERROR; // 구조물
 
 
-
     // 현재 이 값을 기준으로하면, 외곽부분에 벽만 둘러지고 전부 일반땅인 맵이 생성됨.
     // 대문자 E로 표시한 부분은 "입구"와 "출구"임으로 벽으로 막지 말거나 바꾸기전에 연락하면 따로 설명해드림 (출구는 사실 별 의미없긴함)
     // 맵 사이즈를 늘릴 생각이라면 그것도 추가로 연락바람
@@ -74,9 +73,9 @@ public class SeaBossLevel2 extends Level {
             W, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, W,
             W, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, W,
             W, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, W,
-            W, T/*169*/, T, T, T, T, T, T, T, T, T/*178*/, T, T, T, T, T, T, T, T, T,/*187*/ W,
-            W, T, T, T, T, T, T, T, T, T, T, T, T/*199*/, T, T, T, T, T, T, T, W,
-            W, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, W,
+            W, T/*169*/, T, T, T, T, T, T, T, T, T/*178*/, T, T, T, T, T, T, T, T, T/*187*/, W,
+            W, T/*190*/, T, T, T, T, T, T, T, T, T/*199*/, T, T, T, T, T, T, T, T, T/*208*/, W,
+            W, T/*211*/, T, T, T, T, T, T, T, T, T/*220*/, T, T, T, T, T, T, T, T, T/*229*/, W,
             W, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, W,
             W, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, W,
             W, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, W,
@@ -85,7 +84,7 @@ public class SeaBossLevel2 extends Level {
             W, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, W,
             W, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, W,
             W, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, W,
-            W, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, e, W,
+            W, W, W, W, W, W, W, W, W, e, e, e, W, W, W, W, W, W, W, W, W,
             W, W, W, W, W, W, W, W, W, e, e, e, W, W, W, W, W, W, W, W, W,
             W, W, W, W, W, W, W, W, W, e, e, e, W, W, W, W, W, W, W, W, W,
             W, W, W, W, W, W, W, W, W, e, E, e, W, W, W, W, W, W, W, W, W,
@@ -120,7 +119,9 @@ public class SeaBossLevel2 extends Level {
             i += 21;
             cell += width();
         }
+
         setBrand();
+
         entrance = 430; // 입구 위치
         exit = 31; // 출구 위치
 
@@ -145,11 +146,15 @@ public class SeaBossLevel2 extends Level {
 
         super.occupyCell( ch );
 
-
         if (ch.pos != map[entrance] && map[exit] == Terrain.EXIT) {
             Isharmla boss = new Isharmla();
-            boss.pos = 178;
+            boss.pos = 199;
             GameScene.add( boss );
+
+            set( boss.pos, Terrain.WELL );
+            GameScene.updateMap( entrance );
+            Dungeon.observe();
+
             seal();
         }
     }

@@ -279,7 +279,7 @@ public class Assets {
 		public static final String HIT_WHIP       = "sounds/hit_whip.mp3";
 		public static final String CHAINS2   = "sounds/chains2.mp3";
 		public static final String RELOAD   = "sounds/reload.mp3";
-
+        public static final String SPLASH   = "sounds/splash.mp3";
 		public static final String SKILL_BASIC       = "sounds/skill_basic.mp3";
 		public static final String SKILL_TEXAS       = "sounds/skill_texas.mp3";
 		public static final String SKILL_SURTR       = "sounds/skill_surtr.mp3";
@@ -313,7 +313,7 @@ public class Assets {
 				HIT_KNIFE, HIT_CHAINSAW, HIT_CHAINSAW2, HIT_BIRD, HIT_WALL1, HIT_WALL2, HIT_SHOTGUN, HIT_GUNLANCE, HIT_GLUTONY,
 				HIT_SNIPER, HIT_GUN, HIT_GUN2, HIT_GUN3, HIT_PISTOL, HIT_SNIPER2, HIT_AR, FROST, SHINNING, AJIMU, HIT_STRIKE,
 				SKILL_BASIC, SKILL_BEEP, SKILL_CROSSBOW, SKILL_WOLFPACK, SKILL_CHAINSAW, SKILL_SILVERSLASH, SKILL_YOUWISH,
-				SKILL_MON1, SKILL_MON2, SKILL_TEXAS , SKILL_SURTR, SKILL_BABYNIGHT, SKILL_SORA,
+				SKILL_MON1, SKILL_MON2, SKILL_TEXAS , SKILL_SURTR, SKILL_BABYNIGHT, SKILL_SORA, SPLASH,
 				CHAINS2,
 		};
 	}

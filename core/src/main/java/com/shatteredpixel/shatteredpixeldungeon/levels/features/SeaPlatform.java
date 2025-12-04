@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SmokeParticle;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SeaBossLevel2;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
@@ -56,7 +57,10 @@ public class SeaPlatform extends Platform {
             for (int n : PathFinder.NEIGHBOURS9) {
                 int c = pos + n;
                 // Generate Platform in 3x3 if it is a Nethersea Brand tile
-                if (c >= 0 && c < Dungeon.level.length() && Dungeon.level.platforms.get(c) == null && Dungeon.level.seaTerrors.get(c) != null) {
+                if (c >= 0 && c < Dungeon.level.length()
+                        && Dungeon.level.platforms.get(c) == null
+                        && Dungeon.level.seaTerrors.get(c) != null
+                        && Dungeon.level.map[c] != Terrain.WELL) {
                     if (Dungeon.level.heroFOV[c]) {
                         CellEmitter.get(c).burst(SmokeParticle.FACTORY, 4);
                     }

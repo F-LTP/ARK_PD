@@ -64,6 +64,7 @@ public class StatusPane extends Component {
 	private Image exp;
 
 	private BossHealthBar bossHP;
+    private BossMultiHealthBar bossMultiHP;
 
 	private int lastLvl = -1;
 
@@ -134,6 +135,9 @@ public class StatusPane extends Component {
 
 		bossHP = new BossHealthBar();
 		add( bossHP );
+
+        bossMultiHP = new BossMultiHealthBar();
+        add( bossMultiHP );
 
 		level = new BitmapText( PixelScene.pixelFont);
 		level.hardlight( 0xFFFFAA );
@@ -214,6 +218,8 @@ public class StatusPane extends Component {
 		PixelScene.align(hpText);
 
 		bossHP.setPos( 6 + (width - bossHP.width())/2, 20);
+
+        bossMultiHP.setPos( 6 + (width - bossHP.width())/2, 20);
 
 		depth.x = width - 35.5f - depth.width() / 2f;
 		depth.y = 8f - depth.baseLine() / 2f;
