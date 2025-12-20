@@ -36,15 +36,22 @@ import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndRanking;
+import com.watabou.noosa.Game;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public enum Rankings {
 	
@@ -64,14 +71,27 @@ public enum Rankings {
 		load();
 		
 		Record rec = new Record();
-		
-		rec.cause = cause;
+
+        //we trim version to just the numbers, ignoring alpha/beta, etc.
+        Pattern p = Pattern.compile("\\d+\\.\\d+\\.\\d+");
+        Matcher m = p.matcher(TomorrowRogueNight.version);
+        if (m.find()) {
+            rec.version = "v" + m.group();
+        } else {
+            rec.version = "";
+        }
+
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
+        rec.date = format.format(new Date(Game.realTime));
+
+        rec.cause = cause instanceof Class ? (Class)cause : cause.getClass();
 		rec.win		= win;
 		rec.heroClass	= Dungeon.hero.heroClass;
 		rec.armorTier	= Dungeon.hero.tier();
 		rec.herolevel	= Dungeon.hero.lvl;
-		rec.depth		= Dungeon.depth;
-		rec.score	= score( win );
+        rec.depth       = Statistics.deepestFloor;
+        rec.score       = score(win);
+        rec.customSeed  = Dungeon.customSeedText;
 		
 		INSTANCE.saveGameData(rec);
 
@@ -94,11 +114,13 @@ public enum Rankings {
 
 			size = records.size();
 		}
-		
-		totalNumber++;
-		if (win) {
-			wonNumber++;
-		}
+
+        if (rec.customSeed.isEmpty()) {
+            totalNumber++;
+            if (win) {
+                wonNumber++;
+            }
+        }
 
 		Badges.validateGamesPlayed();
 		
@@ -114,8 +136,16 @@ public enum Rankings {
 	public static final String BADGES = "badges";
 	public static final String HANDLERS = "handlers";
 	public static final String CHALLENGES = "challenges";
+    public static final String GAME_VERSION = "game_version";
+    public static final String SEED         = "seed";
+    public static final String CUSTOM_SEED	= "custom_seed";
 
 	public void saveGameData(Record rec){
+        if (Dungeon.hero == null){
+            rec.gameData = null;
+            return;
+        }
+
 		rec.gameData = new Bundle();
 
 		Belongings belongings = Dungeon.hero.belongings;
@@ -124,13 +154,17 @@ public enum Rankings {
 		ArrayList<Item> allItems = (ArrayList<Item>) belongings.backpack.items.clone();
 		//remove items that won't show up in the rankings screen
 		for (Item item : belongings.backpack.items.toArray( new Item[0])) {
-			if (item instanceof Bag){
-				for (Item bagItem : ((Bag) item).items.toArray( new Item[0])){
-					if (Dungeon.quickslot.contains(bagItem)) belongings.backpack.items.add(bagItem);
-				}
-				belongings.backpack.items.remove(item);
-			} else if (!Dungeon.quickslot.contains(item))
-				belongings.backpack.items.remove(item);
+            if (item instanceof Bag){
+                for (Item bagItem : ((Bag) item).items.toArray( new Item[0])){
+                    if (Dungeon.quickslot.contains(bagItem)
+                            && !Dungeon.quickslot.contains(item)){
+                        belongings.backpack.items.add(bagItem);
+                    }
+                }
+            }
+            if (!Dungeon.quickslot.contains(item)) {
+                belongings.backpack.items.remove(item);
+            }
 		}
 
 		//remove all buffs (ones tied to equipment will be re-applied)
@@ -165,6 +199,11 @@ public enum Rankings {
 		
 		//save challenges
 		rec.gameData.put( CHALLENGES, Dungeon.challenges );
+
+        rec.gameData.put( GAME_VERSION, Dungeon.initialVersion );
+
+        rec.gameData.put( SEED, Dungeon.seed );
+        rec.gameData.put( CUSTOM_SEED, Dungeon.customSeedText );
 	}
 
 	public void loadGameData(Record rec){
@@ -178,6 +217,8 @@ public enum Rankings {
 		Dungeon.quickslot.reset();
 		QuickSlotButton.reset();
 
+        if (data == null) return;
+
 		Bundle handler = data.getBundle(HANDLERS);
 		Scroll.restore(handler);
 		Potion.restore(handler);
@@ -185,26 +226,31 @@ public enum Rankings {
 
 		Badges.loadLocal(data.getBundle(BADGES));
 
-		Dungeon.hero = (Hero)data.get(HERO);
+        Dungeon.hero = (Hero)data.get(HERO);
+        Dungeon.hero.belongings.identify();
 
-		Statistics.restoreFromBundle(data.getBundle(STATS));
+        Statistics.restoreFromBundle(data.getBundle(STATS));
 		
 		Dungeon.challenges = data.getInt(CHALLENGES);
+
+        Dungeon.initialVersion = data.getInt(GAME_VERSION);
+
+        rec.score = score(rec.win);
+
+        if (rec.gameData.contains(SEED)){
+            Dungeon.seed = rec.gameData.getLong(SEED);
+            Dungeon.customSeedText = rec.gameData.getString(CUSTOM_SEED);
+        } else {
+            Dungeon.seed = -1;
+            Dungeon.customSeedText = "";
+        }
 	}
 
-	public static void DestroydChack(int ch, int misc, int ring) {
+	public static void destroyedCheck(int ch, int misc, int ring) {
 		if (ch > 5)
 			if (misc > WndRanking.BugItemLevel || ring > WndRanking.BugItemLevel) {
 			Badges.DestroyGlobal();
 		}
-	}
-
-	// 해당 처리는 0.3.3 버전에서만 적용하며, 그 이후로는 무효화합니다.
-	public static void DestroydChack_Bomb(int ch, float time, int bomb) {
-		if (ch > 5)
-			if (time > 50000 && bomb > 100) {
-				Badges.DestroyGlobal();
-			}
 	}
 	
 	private static final String RECORDS	= "records";
@@ -266,11 +312,16 @@ public enum Rankings {
 		private static final String CAUSE   = "cause";
 		private static final String WIN		= "win";
 		private static final String SCORE	= "score";
+        private static final String CLASS	= "class";
 		private static final String TIER	= "tier";
 		private static final String LEVEL	= "level";
 		private static final String DEPTH	= "depth";
 		private static final String DATA	= "gameData";
 		private static final String ID      = "gameID";
+        private static final String SEED    = "custom_seed";
+
+        private static final String DATE    = "date";
+        private static final String VERSION = "version";
 
 		public Class cause;
 		public boolean win;
@@ -285,8 +336,16 @@ public enum Rankings {
 
 		public int score;
 
+        public String customSeed;
+
+        public String date;
+        public String version;
+
+
 		public String desc(){
-			if (cause == null) {
+            if (win){
+                return Messages.get(this, "won");
+            } else if (cause == null) {
 				return Messages.get(this, "something");
 			} else {
 				String result = Messages.get(cause, "rankings_desc", (Messages.get(cause, "name")));
@@ -309,18 +368,24 @@ public enum Rankings {
 			
 			win		= bundle.getBoolean( WIN );
 			score	= bundle.getInt( SCORE );
+            customSeed  = bundle.getString( SEED );
 			
 			heroClass	= HeroClass.restoreInBundle( bundle );
 			armorTier	= bundle.getInt( TIER );
-			
+            herolevel   = bundle.getInt( LEVEL );
+            depth       = bundle.getInt( DEPTH );
+
+            if (bundle.contains( DATE )){
+                date = bundle.getString( DATE );
+                version = bundle.getString( VERSION );
+            } else {
+                date = version = null;
+            }
+
 			if (bundle.contains(DATA))  gameData = bundle.getBundle(DATA);
 			if (bundle.contains(ID))   gameID = bundle.getString(ID);
 			
 			if (gameID == null) gameID = UUID.randomUUID().toString();
-
-			depth = bundle.getInt( DEPTH );
-			herolevel = bundle.getInt( LEVEL );
-
 		}
 		
 		@Override
@@ -330,11 +395,15 @@ public enum Rankings {
 
 			bundle.put( WIN, win );
 			bundle.put( SCORE, score );
-			
-			heroClass.storeInBundle( bundle );
-			bundle.put( TIER, armorTier );
-			bundle.put( LEVEL, herolevel );
-			bundle.put( DEPTH, depth );
+            bundle.put( SEED, customSeed );
+
+            bundle.put( CLASS, heroClass );
+            bundle.put( TIER, armorTier );
+            bundle.put( LEVEL, herolevel );
+            bundle.put( DEPTH, depth );
+
+            bundle.put( DATE, date );
+            bundle.put( VERSION, version );
 			
 			if (gameData != null) bundle.put( DATA, gameData );
 			bundle.put( ID, gameID );
@@ -344,7 +413,14 @@ public enum Rankings {
 	private static final Comparator<Record> scoreComparator = new Comparator<Rankings.Record>() {
 		@Override
 		public int compare( Record lhs, Record rhs ) {
-			int result = (int)Math.signum( rhs.score - lhs.score );
+            //this covers custom seeded runs and dailies
+            if (rhs.customSeed.isEmpty() && !lhs.customSeed.isEmpty()){
+                return +1;
+            } else if (lhs.customSeed.isEmpty() && !rhs.customSeed.isEmpty()){
+                return -1;
+            }
+
+            int result = (int)Math.signum( rhs.score - lhs.score );
 			if (result == 0) {
 				return (int)Math.signum( rhs.gameID.hashCode() - lhs.gameID.hashCode());
 			} else{

@@ -35,7 +35,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DemonSpawner;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.FireCore;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BannerSprites;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
@@ -139,14 +138,14 @@ public class GameScene extends PixelScene {
 	private FogOfWar fog;
 	private HeroSprite hero;
 
-	private StatusPane pane;
+	private StatusPane status;
 	
 	private GameLog log;
+
+    private static CellSelector cellSelector;
 	
 	private BusyIndicator busy;
 	private CircleArc counter;
-	
-	private static CellSelector cellSelector;
 	
 	private Group terrain;
 	private Group customTiles;
@@ -174,7 +173,11 @@ public class GameScene extends PixelScene {
 	private LootIndicator loot;
 	private ActionIndicator action;
 	private ResumeIndicator resume;
-	
+
+    {
+        inGameScene = true;
+    }
+
 	@Override
 	public void create() {
 		
@@ -305,7 +308,7 @@ public class GameScene extends PixelScene {
 		visualGrid = new GridTileMap();
 		terrain.add( visualGrid );
 
-		terrainFeatures = new TerrainFeaturesTilemap(Dungeon.level.plants, Dungeon.level.traps);
+		terrainFeatures = new TerrainFeaturesTilemap(Dungeon.level.plants, Dungeon.level.traps, Dungeon.level.platforms, Dungeon.level.seaTerrors);
 		terrain.add(terrainFeatures);
 
 		raisedTerrain = new RaisedTerrainTilemap();
@@ -389,10 +392,10 @@ public class GameScene extends PixelScene {
 		
 		add( cellSelector = new CellSelector( tiles ) );
 
-		pane = new StatusPane();
-		pane.camera = uiCamera;
-		pane.setSize( uiCamera.width, 0 );
-		add( pane );
+		status = new StatusPane();
+		status.camera = uiCamera;
+		status.setSize( uiCamera.width, 0 );
+		add(status);
 		
 		toolbar = new Toolbar();
 		toolbar.camera = uiCamera;
@@ -425,7 +428,7 @@ public class GameScene extends PixelScene {
 		busy = new BusyIndicator();
 		busy.camera = uiCamera;
 		busy.x = 1;
-		busy.y = pane.bottom() + 1;
+		busy.y = status.bottom() + 1;
 		add( busy );
 		
 		counter = new CircleArc(18, 4.25f);
@@ -481,25 +484,6 @@ public class GameScene extends PixelScene {
 				}
 			}
 			Dungeon.droppedItems.remove( Dungeon.depth );
-		}
-		
-		ArrayList<Item> ported = Dungeon.portedItems.get( Dungeon.depth );
-		if (ported != null){
-			//TODO currently items are only ported to boss rooms, so this works well
-			//might want to have a 'near entrance' function if items can be ported elsewhere
-			int pos;
-			//try to find a tile with no heap, otherwise just stick items onto a heap.
-			int tries = 100;
-			do {
-				pos = Dungeon.level.randomRespawnCell( null );
-				tries--;
-			} while (tries > 0 && Dungeon.level.heaps.get(pos) != null);
-			for (Item item : ported) {
-				Dungeon.level.drop( item, pos ).type = Heap.Type.CHEST;
-			}
-			Dungeon.level.heaps.get(pos).type = Heap.Type.CHEST;
-			Dungeon.level.heaps.get(pos).sprite.link(); //sprite reset to show chest
-			Dungeon.portedItems.remove( Dungeon.depth );
 		}
 
 		Dungeon.hero.next();
@@ -1001,18 +985,18 @@ public class GameScene extends PixelScene {
 	}
 
 	public static void pickUpJournal( Item item, int pos ) {
-		if (scene != null) scene.pane.pickup( item, pos );
+		if (scene != null) scene.status.pickup( item, pos );
 	}
 	
 	public static void flashJournal(){
-		if (scene != null) scene.pane.flash();
+		if (scene != null) scene.status.flash();
 	}
 	
 	public static void updateKeyDisplay(){
-		if (scene != null) scene.pane.updateKeys();
+		if (scene != null) scene.status.updateKeys();
 	}
 
-	public static void updateplayeravater(){ if (scene != null) scene.pane.Avaterupdate(); }
+	public static void updateplayeravater(){ if (scene != null) scene.status.Avaterupdate(); }
 
 	public static void resetMap() {
 		if (scene != null) {
@@ -1054,6 +1038,12 @@ public class GameScene extends PixelScene {
 			scene.terrainFeatures.growPlant( cell );
 		}
 	}
+
+    public static void createPlatform( int cell ) {
+        if (scene != null) {
+            scene.terrainFeatures.createPlatform( cell );
+        }
+    }
 	
 	//todo this doesn't account for walls right now
 	public static void discoverTile( int pos, int oldValue ) {
@@ -1075,6 +1065,22 @@ public class GameScene extends PixelScene {
 			scene.wallBlocking.updateMap();
 		}
 	}
+
+    public static boolean showingWindow(){
+        if (scene == null) return false;
+
+        for (Gizmo g : scene.members){
+            if (g instanceof Window) return true;
+        }
+
+        return false;
+    }
+
+    public static boolean interfaceBlockingHero(){
+        if (scene == null) return false;
+
+        return showingWindow();
+    }
 
 	public static void updateFog(int x, int y, int w, int h){
 		if (scene != null) {

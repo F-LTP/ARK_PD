@@ -30,7 +30,7 @@ public class Greatshield extends MeleeWeapon {
 
 	{
 		image = ItemSpriteSheet.GREATSHIELD;
-		hitSound = Assets.Sounds.HIT_STRIKE;
+		hitSound = Assets.Sounds.HIT_SLASH2;
 		tier = 5;
 	}
 

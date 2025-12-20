@@ -36,6 +36,7 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.RectF;
 
 public class SupporterScene extends PixelScene {
 
@@ -50,23 +51,28 @@ public class SupporterScene extends PixelScene {
 
 		int w = Camera.main.width;
 		int h = Camera.main.height;
+        RectF insets = getCommonInsets();
 
 		int elementWidth = PixelScene.landscape() ? 202 : 120;
+
+        w -= insets.right + insets.left;
+        h -= insets.top + insets.bottom;
 
 		Archs archs = new Archs();
 		archs.setSize(w, h);
 		add(archs);
 
 		ExitButton btnExit = new ExitButton();
-		btnExit.setPos(w - btnExit.width(), 0);
-		add(btnExit);
+        btnExit.setPos(insets.left + w - btnExit.width(), insets.top);
+        add(btnExit);
 
 		RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
 		title.hardlight(Window.TITLE_COLOR);
-		title.setPos(
-				(w - title.width()) / 2f,
-				(20 - title.height()) / 2f
-		);
+        title.setSize(200, 0);
+        title.setPos(
+                insets.left + (w - title.width()) / 2f,
+                insets.top + (20 - title.height()) / 2f
+        );
 		align(title);
 		add(title);
 
@@ -91,10 +97,10 @@ public class SupporterScene extends PixelScene {
 		link.setSize(elementWidth, BTN_HEIGHT);
 		add(link);
 
-		float elementHeight = msg.height() + BTN_HEIGHT + GAP;
+        float elementHeight = msg.height() + BTN_HEIGHT + GAP;
 
-		float top = 16 + (h - 16 - elementHeight)/2f;
-		float left = (w-elementWidth)/2f;
+        float top = insets.top + 16 + (h - 16 - elementHeight)/2f;
+        float left = insets.left + (w-elementWidth)/2f;
 
 		msg.setPos(left, top);
 		align(msg);
@@ -122,9 +128,6 @@ public class SupporterScene extends PixelScene {
 
 			String message = Messages.get(SupporterScene.class, "intro");
 			message += "\n\n" + Messages.get(SupporterScene.class, "patreon_msg");
-			if (Messages.lang() != Languages.ENGLISH) {
-				message += "\n" + Messages.get(SupporterScene.class, "patreon_english");
-			}
 			message += "\n\n- NAM";
 
 			text = PixelScene.renderTextBlock(message, 6);

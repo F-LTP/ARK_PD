@@ -4,8 +4,6 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Silence;
-import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.StrikerSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.Tiacauh_lancerSprite;
 import com.watabou.utils.Random;
 
@@ -13,8 +11,8 @@ public class TiacauhLancer extends Mob {
     {
         spriteClass =  Tiacauh_lancerSprite.class;
 
-        HP = HT = 110;
-        defenseSkill = 15;
+        HP = HT = 80;
+        defenseSkill = 13;
 
         EXP = 14;
         maxLvl = 30;

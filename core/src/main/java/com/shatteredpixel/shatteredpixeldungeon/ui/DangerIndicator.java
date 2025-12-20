@@ -40,11 +40,12 @@ public class DangerIndicator extends Tag {
 	private int enemyIndex = 0;
 	
 	private int lastNumber = -1;
+    public static int HEIGHT = 16;
 	
 	public DangerIndicator() {
-		super( 0xFF4C4C );
-		
-		setSize( 24, 16 );
+		super( COLOR );
+
+        setSize( SIZE, HEIGHT );
 		
 		visible = false;
 	}
@@ -67,23 +68,23 @@ public class DangerIndicator extends Tag {
 	
 	@Override
 	protected void layout() {
-		super.layout();
-		
-		icon.x = right() - 10;
-		icon.y = y + (height - icon.height) / 2;
-		
-		placeNumber();
+        super.layout();
+
+        icon.x = left() + 14;
+        icon.y = y + (height - icon.height) / 2;
+
+        placeNumber();
 	}
 	
 	private void placeNumber() {
-		number.x = right() - 11 - number.width();
-		number.y = y + (height - number.baseLine()) / 2f;
-		PixelScene.align(number);
+        number.x = left() + 13 - number.width();
+        number.y = y + (height - number.baseLine()) / 2f;
+        PixelScene.align(number);
 	}
 	
 	@Override
 	public void update() {
-		
+
 		if (Dungeon.hero.isAlive()) {
 			int v =  Dungeon.hero.visibleEnemies();
 			if (v != lastNumber) {
@@ -99,20 +100,23 @@ public class DangerIndicator extends Tag {
 		} else {
 			visible = false;
 		}
-		
+
 		super.update();
 	}
 	
 	@Override
 	protected void onClick() {
-		if (Dungeon.hero.visibleEnemies() > 0) {
+        super.onClick();
+        if (Dungeon.hero.visibleEnemies() > 0) {
 
-			Mob target = Dungeon.hero.visibleEnemy(++enemyIndex);
+            Mob target = Dungeon.hero.visibleEnemy(++enemyIndex);
 
-			QuickSlotButton.target(target);
-			if (Dungeon.hero.canAttack(target)) AttackIndicator.target(target);
+            QuickSlotButton.target(target);
+            if (Dungeon.hero.canAttack(target)) AttackIndicator.target(target);
 
-			if (Dungeon.hero.curAction == null) Camera.main.panTo(target.sprite.center(), 5f);
-		}
+            if (Dungeon.hero.curAction == null && target.sprite != null) {
+                Camera.main.panFollow(target.sprite, 5f);
+            }
+        }
 	}
 }

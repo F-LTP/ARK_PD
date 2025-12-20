@@ -31,28 +31,28 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.watabou.noosa.ui.Component;
 
 public class WndInfoMob extends WndTitledMessage {
-	
+
 	public WndInfoMob( Mob mob ) {
 
 		super( new MobTitle( mob ), mob.info() );
-		
+
 	}
-	
+
 	private static class MobTitle extends Component {
 
 		private static final int GAP	= 2;
-		
+
 		private CharSprite image;
 		private RenderedTextBlock name;
 		private HealthBar health;
 		private BuffIndicator buffs;
-		
+
 		public MobTitle( Mob mob ) {
-			
+
 			name = PixelScene.renderTextBlock( Messages.titleCase( mob.name() ), 9 );
 			name.hardlight( TITLE_COLOR );
 			add( name );
-			
+
 			image = mob.sprite();
 			add( image );
 
@@ -66,23 +66,33 @@ public class WndInfoMob extends WndTitledMessage {
 		
 		@Override
 		protected void layout() {
+            if (image.width() > width) {
+                float scale = (width - GAP*2) / image.width();
+                image.scale.set(scale, scale);
+            }
 			
 			image.x = 0;
 			image.y = Math.max( 0, name.height() + health.height() - image.height() );
 
-			name.setPos(x + image.width + GAP,
-					image.height() > name.height() ? y +(image.height() - name.height()) / 2 : y);
+            float w = width - image.width() - GAP;
 
-			float w = width - image.width() - GAP;
+            if (w < name.width()) {
+                name.setPos(x + GAP,
+                        image.height() + GAP*2);
+                health.setRect(GAP , name.bottom() + GAP, width - GAP, health.height());
 
-			health.setRect(image.width() + GAP, name.bottom() + GAP, w, health.height());
+                buffs.setRect(name.right() , name.bottom() - BuffIndicator.SIZE-2, w - name.width(), 8);
+            }
+            else {
+                name.setPos(x + image.width() + GAP,
+                        image.height() > name.height() ? y + (image.height() - name.height()) / 2 : y);
 
-			buffs.setPos(
-				name.right() + GAP-1,
-				name.bottom() - BuffIndicator.SIZE-2
-			);
+                health.setRect(image.width() + GAP, name.bottom() + GAP, w, health.height());
 
-			height = health.bottom();
+                buffs.setRect(name.right(), name.bottom() - BuffIndicator.SIZE-2, w - name.width(), 8);
+            }
+
+            height = Math.max(image.y + image.height(), health.bottom());
 		}
 	}
 }

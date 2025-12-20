@@ -2,14 +2,12 @@ package com.shatteredpixel.shatteredpixeldungeon.levels;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ceylon;
-import com.shatteredpixel.shatteredpixeldungeon.items.NervousPotion;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.Nevous;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.SanityPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
-import com.shatteredpixel.shatteredpixeldungeon.items.quest.Obsidian;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
+import com.shatteredpixel.shatteredpixeldungeon.levels.painters.IberiaPainter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.shatteredpixel.shatteredpixeldungeon.levels.painters.SiestaPainter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.CursingTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.FlashingTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.FrostTrap;
@@ -48,8 +46,12 @@ public class SeaLevel_part1 extends RegularLevel {
     protected void createItems() {
         if (Dungeon.depth == 32 || Dungeon.depth == 34) {
             addItemToSpawn(new PotionOfHealing());}
-        else addItemToSpawn(new PotionOfStrength());
-        addItemToSpawn(new Nevous());
+        else if (Dungeon.depth == 33) {
+            addItemToSpawn(new ScrollOfUpgrade());
+        } else {
+            addItemToSpawn(new PotionOfStrength());
+        }
+        addItemToSpawn(new SanityPotion());
         super.createItems();
     }
 
@@ -71,7 +73,7 @@ public class SeaLevel_part1 extends RegularLevel {
 
     @Override
     protected Painter painter() {
-        return new SiestaPainter()
+        return new IberiaPainter()
                 .setWater(feeling == Feeling.WATER ? 0.38f : 0.18f, 4)
                 .setGrass(feeling == Feeling.GRASS ? 0.30f : 0.10f, 3)
                 .setTraps(nTraps(), trapClasses(), trapChances());
@@ -96,22 +98,6 @@ public class SeaLevel_part1 extends RegularLevel {
     }
 
     @Override
-    protected void createMobs() {
-        super.createMobs();
-    }
-
-    @Override
-    public String tileName( int tile ) {
-        switch (tile) {
-            case Terrain.SEE_TEEROR1:
-            case Terrain.SEE_TEEROR2:
-                return Messages.get(SeaLevel_part1.class, "see_teeror_name");
-            default:
-                return super.tileName( tile );
-        }
-    }
-
-    @Override
     public String tileDesc(int tile) {
         switch (tile) {
             case Terrain.ENTRANCE:
@@ -128,9 +114,6 @@ public class SeaLevel_part1 extends RegularLevel {
                 return Messages.get(CityLevel.class, "statue_desc");
             case Terrain.BOOKSHELF:
                 return Messages.get(CityLevel.class, "bookshelf_desc");
-            case Terrain.SEE_TEEROR1:
-            case Terrain.SEE_TEEROR2:
-                return Messages.get(SeaLevel_part1.class, "see_teeror_desc");
             default:
                 return super.tileDesc( tile );
         }

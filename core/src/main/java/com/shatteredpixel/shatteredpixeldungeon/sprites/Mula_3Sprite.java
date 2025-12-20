@@ -13,16 +13,16 @@ public class Mula_3Sprite extends MobSprite {
         TextureFilm frames = new TextureFilm( texture, 72, 50 );
 
         idle = new Animation( 2, true );
-        idle.frames( frames, 0 );
+        idle.frames( frames, 0, 1, 2, 3, 4, 5 );
 
         run = new Animation( 10, true );
-        run.frames( frames, 0 );
+        run.frames( frames, 0, 1, 2, 3, 4, 5 );
 
         attack = new Animation( 15, false );
-        attack.frames( frames, 0 );
+        attack.frames( frames, 0, 1, 2, 3, 4, 5 );
 
         die = new Animation( 10, false );
-        die.frames( frames, 0 );
+        die.frames( frames, 3 );
 
         play( idle );
     }

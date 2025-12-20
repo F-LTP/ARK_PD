@@ -55,7 +55,7 @@ public class AttackIndicator extends Tag {
 			instance = this;
 			lastTarget = null;
 
-			setSize(24, 24);
+            setSize(SIZE, SIZE);
 			visible(false);
 			enable(false);
 		}
@@ -73,36 +73,39 @@ public class AttackIndicator extends Tag {
 	
 	@Override
 	protected synchronized void layout() {
-		super.layout();
-		
-		if (sprite != null) {
-			sprite.x = x + (width - sprite.width()) / 2 + 1;
-			sprite.y = y + (height - sprite.height()) / 2;
-			PixelScene.align(sprite);
-		}
+        super.layout();
+
+        if (sprite != null) {
+            if (!flipped)   sprite.x = x + (SIZE - sprite.width()) / 2f + 1;
+            else            sprite.x = x + width - (SIZE + sprite.width()) / 2f - 1;
+            sprite.y = y + (height - sprite.height()) / 2f;
+            PixelScene.align(sprite);
+        }
 	}
 	
 	@Override
 	public synchronized void update() {
-		super.update();
+        super.update();
 
-		if (!bg.visible){
-			enable(false);
-			if (delay > 0f) delay -= Game.elapsed;
-			if (delay <= 0f) active = false;
-		} else {
-			delay = 0.75f;
-			active = true;
-		
-			if (Dungeon.hero.isAlive()) {
+        if (!bg.visible){
+            if (sprite != null) sprite.visible = false;
+            enable(false);
+            if (delay > 0f) delay -= Game.elapsed;
+            if (delay <= 0f) active = false;
+        } else {
+            delay = 0.75f;
+            active = true;
+            if (bg.width > 0 && sprite != null)sprite.visible = true;
 
-				enable(Dungeon.hero.ready);
+            if (Dungeon.hero.isAlive()) {
 
-			} else {
-				visible( false );
-				enable( false );
-			}
-		}
+                enable(Dungeon.hero.ready);
+
+            } else {
+                visible( false );
+                enable( false );
+            }
+        }
 	}
 	
 	private synchronized void checkEnemies() {
@@ -115,78 +118,82 @@ public class AttackIndicator extends Tag {
 				candidates.add( mob );
 			}
 		}
-		
-		if (!candidates.contains( lastTarget )) {
-			if (candidates.isEmpty()) {
-				lastTarget = null;
-			} else {
-				active = true;
-				lastTarget = Random.element( candidates );
-				updateImage();
-				flash();
-			}
-		} else {
-			if (!bg.visible) {
-				active = true;
-				flash();
-			}
-		}
+
+        if (lastTarget == null || !candidates.contains( lastTarget )) {
+            if (candidates.isEmpty()) {
+                lastTarget = null;
+            } else {
+                active = true;
+                lastTarget = Random.element( candidates );
+                updateImage();
+                flash();
+            }
+        } else {
+            active = true;
+            if (!bg.visible) {
+                flash();
+            }
+        }
 		
 		visible( lastTarget != null );
 		enable( bg.visible );
 	}
 	
 	private synchronized void updateImage() {
-		
-		if (sprite != null) {
-			sprite.killAndErase();
-			sprite = null;
-		}
-		
-		sprite = Reflection.newInstance(lastTarget.spriteClass);
-		active = true;
-		sprite.linkVisuals(lastTarget);
-		sprite.idle();
-		sprite.paused = true;
-		sprite.visible = bg.visible;
-		sprite.scale.set(0.5f,0.5f);
-		add( sprite );
 
-		layout();
+        if (sprite != null) {
+            sprite.killAndErase();
+            sprite = null;
+        }
+
+        sprite = Reflection.newInstance(lastTarget.spriteClass);
+        active = true;
+        sprite.linkVisuals(lastTarget);
+        sprite.idle();
+        sprite.paused = true;
+        sprite.visible = bg.visible;
+
+        if (sprite.width() > 20 || sprite.height() > 20){
+            sprite.scale.set(PixelScene.align(20f/Math.max(sprite.width(), sprite.height())));
+        }
+
+        add( sprite );
+
+        layout();
 	}
 	
 	private boolean enabled = true;
-	private synchronized void enable( boolean value ) {
-		enabled = value;
-		if (sprite != null) {
-			sprite.alpha( value ? ENABLED : DISABLED );
-		}
-	}
-	
-	private synchronized void visible( boolean value ) {
-		bg.visible = value;
-		if (sprite != null) {
-			sprite.visible = value;
-		}
-	}
-	
-	@Override
-	protected void onClick() {
-		if (enabled) {
-			if (Dungeon.hero.handle( lastTarget.pos )) {
-				Dungeon.hero.next();
-			}
-		}
-	}
-	
-	public static void target( Char target ) {
-		synchronized (instance) {
-			instance.lastTarget = (Mob) target;
-			instance.updateImage();
+    private synchronized void enable( boolean value ) {
+        enabled = value;
+        if (sprite != null) {
+            sprite.alpha( value ? ENABLED : DISABLED );
+        }
+    }
 
-			TargetHealthIndicator.instance.target(target);
-		}
-	}
+    private synchronized void visible( boolean value ) {
+        bg.visible = value;
+    }
+
+    @Override
+    protected void onClick() {
+        super.onClick();
+        if (enabled && Dungeon.hero.ready) {
+            if (Dungeon.hero.handle( lastTarget.pos )) {
+                Dungeon.hero.next();
+            }
+        }
+    }
+
+
+    public static void target(Char target ) {
+        if (target == null) return;
+        synchronized (instance) {
+            instance.lastTarget = (Mob) target;
+            instance.updateImage();
+
+            QuickSlotButton.target(target);
+        }
+    }
 	
 	public static void updateState() {
 		instance.checkEnemies();

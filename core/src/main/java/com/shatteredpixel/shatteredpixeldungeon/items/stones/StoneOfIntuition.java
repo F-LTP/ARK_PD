@@ -116,7 +116,7 @@ public class StoneOfIntuition extends InventoryStone {
 			guess.visible = false;
 			guess.icon( new ItemSprite(item) );
 			guess.enable(false);
-			guess.setRect(0, 100, WIDTH, 20);
+			guess.setRect(0, 120, WIDTH, 20);
 			add(guess);
 			
 			float left;
@@ -155,7 +155,11 @@ public class StoneOfIntuition extends InventoryStone {
 				rows = 1;
 				top += BTN_SIZE/2f;
 				left = (WIDTH - BTN_SIZE*unIDed.size())/2f;
-			} else {
+			} else if (unIDed.size() > 12) {
+                rows = 3;
+                top += BTN_SIZE/2f;
+                left = (WIDTH - BTN_SIZE*((unIDed.size()+2)/3))/2f; // First row of 3-row layout
+            } else {
 				rows = 2;
 				left = (WIDTH - BTN_SIZE*((unIDed.size()+1)/2))/2f;
 			}
@@ -186,10 +190,29 @@ public class StoneOfIntuition extends InventoryStone {
 						left += BTN_SIZE/2f;
 					}
 					top += BTN_SIZE;
+				} else if (rows == 3) {
+					int itemsPerRow = (unIDed.size() + 2) / 3; // Round up division by 3
+					if (placed == itemsPerRow) {
+						placed = 0;
+						// Calculate how many items have been placed total
+						int rowsCompleted = (int)((top - (text.bottom() + 5 + BTN_SIZE/2f)) / BTN_SIZE);
+						int totalPlaced = rowsCompleted * itemsPerRow;
+						int itemsInNextRow;
+						if (rowsCompleted == 0) {
+							// Moving from row 1 to row 2
+							itemsInNextRow = Math.min(itemsPerRow, unIDed.size() - itemsPerRow);
+						} else {
+							// Moving from row 2 to row 3
+							itemsInNextRow = unIDed.size() - (2 * itemsPerRow);
+						}
+						// Center the next row if it has fewer items
+						left = (WIDTH - BTN_SIZE * itemsInNextRow) / 2f;
+						top += BTN_SIZE;
+					}
 				}
 			}
 			
-			resize(WIDTH, 120);
+			resize(WIDTH, 140);
 			
 		}
 		

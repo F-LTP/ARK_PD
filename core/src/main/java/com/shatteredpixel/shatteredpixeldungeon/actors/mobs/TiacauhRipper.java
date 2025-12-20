@@ -3,18 +3,15 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Silence;
-import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.EnragedSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.Tiacauh_RipperSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.Tiacauh_fanaticSprite;
 import com.watabou.utils.Random;
 
 public class TiacauhRipper extends Mob {
     {
         spriteClass = Tiacauh_RipperSprite.class;
 
-        HP = HT = 85;
-        defenseSkill = 45;
+        HP = HT = 65;
+        defenseSkill = 38;
 
         EXP = 16;
         maxLvl = 34;

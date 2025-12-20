@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
 public class Certificate extends Item {
@@ -21,10 +22,10 @@ public class Certificate extends Item {
 
     public Certificate( int value ) {
         this.quantity = value;
-        if (Challenges.activeChallenges() > 7) this.quantity += 20;
-        else if (Challenges.activeChallenges() > 5) this.quantity += 15;
-        else if (Challenges.activeChallenges() > 2) this.quantity += 10;
-        else if (Challenges.activeChallenges() > 0) this.quantity += 5;
+        if (Challenges.activeChallenges() > 7) this.quantity += 50;
+        else if (Challenges.activeChallenges() > 5) this.quantity += 40;
+        else if (Challenges.activeChallenges() > 2) this.quantity += 20;
+        else if (Challenges.activeChallenges() > 0) this.quantity += 10;
 
         if (Dungeon.eazymode == 1) this.quantity = 0;
     }
@@ -51,5 +52,19 @@ public class Certificate extends Item {
             else if (Challenges.activeChallenges() > 0) bouns += 5;
             SPDSettings.addSpecialcoin(10 + bouns);
         }
+    }
+
+    private static final String VALUE	= "value";
+
+    @Override
+    public void storeInBundle( Bundle bundle ) {
+        super.storeInBundle( bundle );
+        bundle.put( VALUE, quantity );
+    }
+
+    @Override
+    public void restoreFromBundle( Bundle bundle ) {
+        super.restoreFromBundle(bundle);
+        quantity = bundle.getInt( VALUE );
     }
 }

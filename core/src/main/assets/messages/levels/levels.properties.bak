@@ -135,7 +135,6 @@ levels.traps.obliviontrap.name=망각 함정
 levels.traps.obliviontrap.desc=이 함정을 밟으면 망각 상태에 빠집니다. 지속시간은 짧지만 매우 치명적입니다.
 
 
-
 ###levels
 levels.newcavesbosslevel.wires_name=노출된 전력관
 levels.newcavesbosslevel.wires_desc=땅이 부분적으로 파여 전력관이 일부 노출되었다. 기계들에게 전력을 공급하던 도관인 것 같다.\n\n전력관에는 지금도 전기가 흐르고 있다. 머드락이 전력관을 밟으면 전력을 흡수할 것이다.

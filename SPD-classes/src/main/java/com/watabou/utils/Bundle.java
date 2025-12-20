@@ -157,7 +157,7 @@ public class Bundle {
 			return result;
 		} catch (JSONException e) {
 			Game.reportException(e);
-			return null;
+			return new int[]{};
 		}
 	}
 	

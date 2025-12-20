@@ -22,16 +22,12 @@
 package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Rankings;
-import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.TomorrowRogueNight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.IsekaiItem;
-import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -74,6 +70,8 @@ public class RankingsScene extends PixelScene {
 		int w = Camera.main.width;
 		int h = Camera.main.height;
 		RectF insets = getCommonInsets();
+        w -= insets.left + insets.right;
+        h -= insets.top + insets.bottom;
 
 		archs = new Archs();
 		archs.setSize( w, h );
@@ -83,6 +81,7 @@ public class RankingsScene extends PixelScene {
 
 		RenderedTextBlock title = PixelScene.renderTextBlock( Messages.get(this, "title"), 9);
 		title.hardlight(Window.TITLE_COLOR);
+        title.setSize(200, 0);
 		title.setPos(
 				insets.left + (w - title.width()) / 2f,
 				insets.top + (20 - title.height()) / 2f
@@ -90,74 +89,71 @@ public class RankingsScene extends PixelScene {
 		align(title);
 		add(title);
 
-		if (Rankings.INSTANCE.records.size() > 0) {
+        if (Rankings.INSTANCE.records.size() > 0) {
 
-			//attempts to give each record as much space as possible, ideally as much space as portrait mode
-			float rowHeight = GameMath.gate(ROW_HEIGHT_MIN, (h - 26)/Rankings.INSTANCE.records.size(), ROW_HEIGHT_MAX);
+            //attempts to give each record as much space as possible, ideally as much space as portrait mode
+            float rowHeight = GameMath.gate(ROW_HEIGHT_MIN, (h - 26)/Rankings.INSTANCE.records.size(), ROW_HEIGHT_MAX);
 
-			float left = (w - Math.min( MAX_ROW_WIDTH, w )) / 2 + GAP;
-			float top = (h - rowHeight  * Rankings.INSTANCE.records.size()) / 2;
+            float left = (w - Math.min( MAX_ROW_WIDTH, w )) / 2 + GAP;
+            float top = (h - rowHeight  * Rankings.INSTANCE.records.size()) / 2;
 
-			int pos = 0;
+            int pos = 0;
 
-			for (Rankings.Record rec : Rankings.INSTANCE.records) {
-				Record row = new Record( pos, pos == Rankings.INSTANCE.lastRecord, rec );
-				float offset = 0;
-				if (rowHeight <= 14){
-					offset = (pos % 2 == 1) ? 5 : -5;
-				}
-				row.setRect( insets.left + left+offset, insets.top + top + pos * rowHeight, w - left * 2, rowHeight );
-				add(row);
+            for (Rankings.Record rec : Rankings.INSTANCE.records) {
+                Record row = new Record( pos, pos == Rankings.INSTANCE.lastRecord, rec );
+                float offset = 0;
+                if (rowHeight <= 14){
+                    offset = (pos % 2 == 1) ? 5 : -5;
+                }
+                row.setRect( insets.left + left+offset, insets.top + top + pos * rowHeight, w - left * 2, rowHeight );
+                add(row);
 
-				pos++;
+                pos++;
 
-				if (Dungeon.hero != null) {
-					String HERO = "hero";
-					String CHALLENGES = "challenges";
+                if (Dungeon.hero != null) {
+                    String HERO = "hero";
+                    String CHALLENGES = "challenges";
 
-					Bundle data = rec.gameData;
-					Dungeon.challenges = data.getInt(CHALLENGES);
-					Dungeon.hero = (Hero) data.get(HERO);
-					if (Dungeon.hero.belongings.ring != null) {
-						Rankings.DestroydChack(Dungeon.challenges,0, Dungeon.hero.belongings.ring.level());
-					}
-					if (Dungeon.hero.belongings.misc != null) {
-						Rankings.DestroydChack(Dungeon.challenges,Dungeon.hero.belongings.misc.level(), 0);
-					}
-					if (Dungeon.hero.belongings.getItem(Bomb.class) != null && Dungeon.hero.belongings.getItem(IsekaiItem.class) != null) {
-						if (Dungeon.hero.belongings.getItem(IsekaiItem.class).isEquipped(Dungeon.hero) )
-							Rankings.DestroydChack_Bomb(Dungeon.challenges, Statistics.duration, Dungeon.hero.belongings.getItem(Bomb.class).quantity()); }
-				}
-			}
+                    Bundle data = rec.gameData;
+                    Dungeon.challenges = data.getInt(CHALLENGES);
+                    Dungeon.hero = (Hero) data.get(HERO);
+                    if (Dungeon.hero.belongings.ring != null) {
+                        Rankings.destroyedCheck(Dungeon.challenges,0, Dungeon.hero.belongings.ring.level());
+                    }
+                    if (Dungeon.hero.belongings.misc != null) {
+                        Rankings.destroyedCheck(Dungeon.challenges,Dungeon.hero.belongings.misc.level(), 0);
+                    }
+                }
+            }
 
-			if (Rankings.INSTANCE.totalNumber >= Rankings.TABLE_SIZE) {
+            if (Rankings.INSTANCE.totalNumber >= Rankings.TABLE_SIZE) {
 
-				RenderedTextBlock label = PixelScene.renderTextBlock( 8 );
-				label.hardlight( 0xCCCCCC );
-				label.setHightlighting(true, Window.SHPX_COLOR);
-				label.text( Messages.get(this, "total") + " _" + Rankings.INSTANCE.wonNumber + "_/" + Rankings.INSTANCE.totalNumber );
-				add( label );
+                RenderedTextBlock label = PixelScene.renderTextBlock( 8 );
+                label.hardlight( 0xCCCCCC );
+                label.setHightlighting(true, Window.SHPX_COLOR);
+                label.text( Messages.get(this, "total") + " _" + Rankings.INSTANCE.wonNumber + "_/" + Rankings.INSTANCE.totalNumber );
+                add( label );
 
-				label.setPos(
-						insets.left + (w - label.width()) / 2,
-						h - label.height() - 2*GAP - insets.bottom
-				);
-				align(label);
+                label.setPos(
+                        insets.left + (w - label.width()) / 2,
+                        insets.top + h - label.height() - 2*GAP
+                );
+                align(label);
 
-			}
+            }
 
-		} else {
+        } else {
 
-			RenderedTextBlock noRec = PixelScene.renderTextBlock(Messages.get(this, "no_games"), 8);
-			noRec.hardlight( 0xCCCCCC );
-			noRec.setPos(
-					insets.left + (w - noRec.width()) / 2,
-					insets.top + (h - noRec.height()) / 2
-			);
-			align(noRec);
-			add(noRec);
+            RenderedTextBlock noRec = PixelScene.renderTextBlock(Messages.get(this, "no_games"), 8);
+            noRec.hardlight( 0xCCCCCC );
+            noRec.setPos(
+                    insets.left + (w - noRec.width()) / 2,
+                    insets.top + (h - noRec.height()) / 2
+            );
+            align(noRec);
+            add(noRec);
 
-		}
+        }
 
 		ExitButton btnExit = new ExitButton();
 		btnExit.setPos( Camera.main.width - btnExit.width() - insets.right, insets.top );
@@ -236,6 +232,11 @@ public class RankingsScene extends PixelScene {
 
 			}
 
+            if (!rec.customSeed.isEmpty()){
+                shield.copy( Icons.get(Icons.SEED_POUCH) );
+                shield.hardlight(1f, 1.5f, 0.67f);
+            }
+
 			if (rec.herolevel != 0){
 				level.text( Integer.toString(rec.herolevel) );
 				level.measure();
@@ -278,46 +279,42 @@ public class RankingsScene extends PixelScene {
 
 			super.layout();
 
-			shield.x = x;
-			shield.y = y + (height - shield.height) / 2f;
-			align(shield);
+            shield.x = x + (16 - shield.width) / 2f;
+            shield.y = y + (height - shield.height) / 2f;
+            align(shield);
 
-			position.x = shield.x + (shield.width - position.width()) / 2f;
-			position.y = shield.y + (shield.height - position.height()) / 2f + 1;
-			align(position);
+            position.x = shield.x + (shield.width - position.width()) / 2f;
+            position.y = shield.y + (shield.height - position.height()) / 2f + 1;
+            align(position);
 
-			if (flare != null) {
-				flare.point( shield.center() );
-			}
+            if (flare != null) {
+                flare.point( shield.center() );
+            }
 
 			classIcon.x = x + width - 16 + (16 - classIcon.width())/2f;
 			classIcon.y = shield.y + (shield.height - classIcon.height())/2f;
 			align(classIcon);
 
-			level.x = classIcon.x + (classIcon.width - level.width()) / 2f;
-			level.y = classIcon.y + (classIcon.height - level.height()) / 2f + 1;
-			align(level);
+            level.x = classIcon.x + (classIcon.width - level.width()) / 2f;
+            level.y = classIcon.y + (classIcon.height - level.height()) / 2f + 1;
+            align(level);
 
 			steps.x = x + width - 32 + (16 - steps.width())/2f;
 			steps.y = shield.y + (shield.height - steps.height())/2f;
 			align(steps);
 
-			depth.x = steps.x + (steps.width - depth.width()) / 2f;
-			depth.y = steps.y + (steps.height - depth.height()) / 2f + 1;
-			align(depth);
+            depth.x = steps.x + (steps.width - depth.width()) / 2f;
+            depth.y = steps.y + (steps.height - depth.height()) / 2f + 1;
+            align(depth);
 
-			desc.maxWidth((int)(steps.x - (shield.x + shield.width + GAP)));
-			desc.setPos(shield.x + shield.width + GAP, shield.y + (shield.height - desc.height()) / 2f + 1);
-			align(desc);
+            desc.maxWidth((int)(steps.x - (x + 16 + GAP)));
+            desc.setPos(x + 16 + GAP, shield.y + (shield.height - desc.height()) / 2f + 1);
+            align(desc);
 		}
 
 		@Override
 		protected void onClick() {
-			if (rec.gameData != null) {
-				parent.add( new WndRanking( rec ) );
-			} else {
-				parent.add( new WndError( Messages.get(RankingsScene.class, "no_info") ) );
-			}
+            parent.add( new WndRanking( rec ) );
 		}
 	}
 }

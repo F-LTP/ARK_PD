@@ -59,8 +59,8 @@ public class GavialLevel extends RegularLevel {
 
     @Override
     public int nMobs() {
-        // 다른 계층보다 몬스터가 4마리 많이 등장합니다. 컨셉 : 맵 넓고 몹이 존나 많음.
-        return super.nMobs()+4;
+        // 다른 계층보다 몬스터가 2마리 많이 등장합니다. 컨셉 : 맵 넓고 몹이 존나 많음.
+        return super.nMobs()+2;
     }
 
     @Override

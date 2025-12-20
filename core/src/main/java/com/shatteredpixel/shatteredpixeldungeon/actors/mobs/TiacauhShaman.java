@@ -22,8 +22,9 @@ public class TiacauhShaman extends TiacauhRitualist {
     {
         spriteClass = TiacauhShamanSprite.class;
 
-        HP = HT = 130;
-
+        HP = HT = 100;
+        EXP = 17;
+        maxLvl = 30;
         loot = Generator.Category.SKL_RND;
         lootChance = 1f;
     }

@@ -129,6 +129,8 @@ public class SPDSettings extends GameSettings {
 	public static final String KEY_FLIPTOOLBAR	= "flipped_ui";
 	public static final String KEY_FLIPTAGS 	= "flip_tags";
 	public static final String KEY_BARMODE		= "toolbar_mode";
+
+    public static final String KEY_GAMES_SORT    = "games_sort";
 	
 	public static void quickSlots( int value ){ put( KEY_QUICKSLOTS, value ); }
 	
@@ -153,11 +155,20 @@ public class SPDSettings extends GameSettings {
 	public static String toolbarMode() {
 		return getString(KEY_BARMODE, PixelScene.landscape() ? "GROUP" : "SPLIT");
 	}
+
+    public static String gamesInProgressSort(){
+        return getString(KEY_GAMES_SORT, "level");
+    }
+
+    public static void gamesInProgressSort(String value){
+        put(KEY_GAMES_SORT, value);
+    }
 	
 	//Game State
 	
 	public static final String KEY_LAST_CLASS	= "last_class";
 	public static final String KEY_CHALLENGES	= "challenges";
+    public static final String KEY_CUSTOM_SEED	= "custom_seed";
 	public static final String KEY_INTRO		= "intro";
 	public static final String KEY_COIN		= "coins";
 
@@ -186,6 +197,14 @@ public class SPDSettings extends GameSettings {
 	public static int challenges() {
 		return getInt( KEY_CHALLENGES, 0, 0, Challenges.MAX_VALUE );
 	}
+
+    public static void customSeed( String value ){
+        put( KEY_CUSTOM_SEED, value );
+    }
+
+    public static String customSeed() {
+        return getString( KEY_CUSTOM_SEED, "", 20);
+    }
 
 	public static void supportNagged( boolean value ) {
 		put( KEY_SUPPORT_NAGGED, value );

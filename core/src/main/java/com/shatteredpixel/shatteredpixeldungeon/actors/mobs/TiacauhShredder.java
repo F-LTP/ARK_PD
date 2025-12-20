@@ -5,10 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Silence;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.HaundSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.Siesta_AgentSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.Tiacauh_ShredderSprite;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -17,8 +14,8 @@ public class TiacauhShredder extends Mob {
     {
         spriteClass = Tiacauh_ShredderSprite.class;
 
-        HP = HT = 180;
-        defenseSkill = 24;
+        HP = HT = 150;
+        defenseSkill = 20;
 
         EXP = 15;
         maxLvl = 35;

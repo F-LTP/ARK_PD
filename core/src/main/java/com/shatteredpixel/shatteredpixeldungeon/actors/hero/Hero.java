@@ -32,7 +32,6 @@ import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Alchemy;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ActiveOriginium;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AdrenalineSurge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
@@ -63,7 +62,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.KnightSKILL;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LanceCharge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.NervousImpairment;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RadiantKnight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
@@ -877,28 +875,9 @@ public class Hero extends Char {
         }
         else if (subClass == HeroSubClass.WILD) Buff.affect(this, WildMark.class);
 
-        if (Dungeon.depth > 35 && Dungeon.extrastage_Sea && Dungeon.level.map[this.pos] == Terrain.SEE_TEEROR1 || Dungeon.level.map[this.pos] == Terrain.SEE_TEEROR2) {
-            if (buff(NervousImpairment.class) == null) {
-                Buff.affect(this, NervousImpairment.class);
-            }
-            else {
-                float nervousdamage = 2 * time;
-                buff(NervousImpairment.class).Sum(nervousdamage); }
-
-            int evaporatedTiles;
-            evaporatedTiles = Random.chances(new float[]{0, 0, 0, 2, 1, 1});
-            for (int i = 0; i < evaporatedTiles; i++) {
-                if (Dungeon.level.map[pos+PathFinder.NEIGHBOURS8[i]] == Terrain.EMPTY || Dungeon.level.map[pos+PathFinder.NEIGHBOURS8[i]] == Terrain.EMPTY_SP
-                        || Dungeon.level.map[pos+PathFinder.NEIGHBOURS8[i]] == Terrain.EMPTY_DECO
-                        || Dungeon.level.map[pos+PathFinder.NEIGHBOURS8[i]] == Terrain.WATER) {
-                    if (Random.Int(2) == 0) Dungeon.level.map[pos+PathFinder.NEIGHBOURS8[i]] = Terrain.SEE_TEEROR1;
-                    else Dungeon.level.map[pos+PathFinder.NEIGHBOURS8[i]] = Terrain.SEE_TEEROR2;
-                    CellEmitter.get(pos+PathFinder.NEIGHBOURS8[i]).burst(Speck.factory(Speck.BUBBLE), 10);
-                    GameScene.updateMap( pos+PathFinder.NEIGHBOURS8[i] );
-                    Dungeon.observe();
-                }
-            }
-            }
+        if (Dungeon.depth > 35 && Dungeon.extrastage_Sea && Dungeon.level.seaTerrors.get(pos) != null) {
+            Dungeon.level.seaTerrors.get(pos).spendTime(this, time);
+        }
 
         if (belongings.weapon instanceof PatriotSpear) {
             if (belongings.armor instanceof PlateArmor) {

@@ -83,6 +83,10 @@ public class AlchemyScene extends PixelScene {
 	private static final int BTN_SIZE	= 28;
 	private static int centerW;
 
+    {
+        inGameScene = true;
+    }
+
 	@Override
 	public void create() {
 		super.create();

@@ -31,6 +31,13 @@ import com.shatteredpixel.shatteredpixeldungeon.items.AnnihilationGear;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.DewVial;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK2.AncientKin;
+import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK2.Bookancientkin;
+import com.shatteredpixel.shatteredpixeldungeon.items.TomeOfMastery;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.PlateArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfCorrupting;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.KazemaruWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.SeaPlatform;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SkillBook;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
@@ -42,7 +49,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MeatCutlet;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.Nevous;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibility;
@@ -58,37 +64,26 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRage;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfWarp;
-import com.shatteredpixel.shatteredpixeldungeon.items.spells.ChaosCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Projecting;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Beowulf;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ChenSword;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DP27;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Dagger;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gloves;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Heamyo;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.EX42;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.NEARL_AXE;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Ots03;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Pkp;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.R4C;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SakuraSword;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ShadowFirmament;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SnowHunter;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SwordofArtorius;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Usg;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WornShortsword;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.LightKnife;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.NormalMagazine;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingStone;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.DeviceCompat;
 
- public enum HeroClass {
+public enum HeroClass {
 
 	WARRIOR( "warrior", HeroSubClass.BERSERKER, HeroSubClass.GLADIATOR, HeroSubClass.HEAT ),
 	MAGE( "mage", HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK, HeroSubClass.CHAOS ),
@@ -96,7 +91,7 @@ import com.watabou.utils.DeviceCompat;
 	HUNTRESS( "huntress", HeroSubClass.SNIPER, HeroSubClass.WARDEN, HeroSubClass.STOME ),
 	ROSECAT("rosecat", HeroSubClass.DESTROYER, HeroSubClass.GUARDIAN, HeroSubClass.WAR),
 	NEARL("nearl", HeroSubClass.KNIGHT, HeroSubClass.SAVIOR, HeroSubClass.FLASH),
-	 CHEN("chen", HeroSubClass.SWORDMASTER, HeroSubClass.SPSHOOTER);
+    CHEN("chen", HeroSubClass.SWORDMASTER, HeroSubClass.SPSHOOTER);
 
 	private String title;
 	private HeroSubClass[] subClasses;
@@ -156,6 +151,8 @@ import com.watabou.utils.DeviceCompat;
 		new FoodBag().collect();
 
 		if (DeviceCompat.isDebug()) {
+            new VelvetPouch().collect();
+
             new PotionOfStrength().identify().quantity(40).collect();
             new PotionOfExperience().identify().quantity(40).collect();
             new PotionOfHealing().identify().quantity(40).collect();
@@ -164,30 +161,39 @@ import com.watabou.utils.DeviceCompat;
 
             new Amulet().collect();
             new Heamyo().collect();
+            new PlateArmor().identify().upgrade(10).collect();
+            new TomeOfMastery().collect();
+
+            new SeaPlatform.LittleHandy().quantity(40).collect();
+            new Bookancientkin().collect();
+            new StaffOfCorrupting().identify().collect();
+
+            new KazemaruWeapon().identify().collect();
         }
 
 		Dungeon.LimitedDrops.FOOD_BAG.drop();
 	}
 
 	public Badges.Badge masteryBadge() {
-		switch (this) {
-			case WARRIOR:
-				return Badges.Badge.MASTERY_WARRIOR;
-			case MAGE:
-				return Badges.Badge.MASTERY_MAGE;
-			case ROGUE:
-				return Badges.Badge.MASTERY_ROGUE;
-			case HUNTRESS:
-				return Badges.Badge.MASTERY_HUNTRESS;
-			case ROSECAT:
-				return Badges.Badge.MASTERY_ROSECAT;
-			case NEARL:
-				return Badges.Badge.MASTERY_NEARL;
-			case CHEN:
-				return Badges.Badge.MASTERY_CHEN;
-		}
-		return null;
-	}
+        switch (this) {
+            case WARRIOR:
+                return Badges.Badge.MASTERY_WARRIOR;
+            case MAGE:
+                return Badges.Badge.MASTERY_MAGE;
+            case ROGUE:
+                return Badges.Badge.MASTERY_ROGUE;
+            case HUNTRESS:
+                return Badges.Badge.MASTERY_HUNTRESS;
+            case ROSECAT:
+                return Badges.Badge.MASTERY_ROSECAT;
+            case NEARL:
+                return Badges.Badge.MASTERY_NEARL;
+            case CHEN:
+                return Badges.Badge.MASTERY_CHEN;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
 
 	private static void initWarrior( Hero hero ) {
 		(hero.belongings.weapon = new WornShortsword()).identify();
@@ -453,6 +459,25 @@ import com.watabou.utils.DeviceCompat;
 				return Assets.Sprites.CHEN;
 		}
 	}
+
+    public Image icon() {
+        switch (this) {
+            case WARRIOR: default:
+                return new Image(Icons.BLAZE.get());
+            case MAGE:
+                return new Image(Icons.AMIYA.get());
+            case ROGUE:
+                return new Image(Icons.P_RED.get());
+            case HUNTRESS:
+                return new Image(Icons.GREY.get());
+            case ROSECAT:
+                return new Image(Icons.ROSEMARI.get());
+            case NEARL:
+                return new Image(Icons.NEARL.get());
+            case CHEN: //첸포인트
+                return new Image(Icons.CHEN.get());
+        }
+    }
 
 	public String splashArt(){
 		switch (this) {

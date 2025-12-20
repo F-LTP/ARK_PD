@@ -86,8 +86,6 @@ public class Talu_BlackSnake extends Mob {
     private int drup = 0; // 방어 상승 상태 지속시간. 있을 경우 받는 피해 50%감소
     private boolean fx = false;
 
-
-
     @Override
     public int damageRoll() {
         if (InvincibilityTime > 0) return Random.NormalIntRange(55, 75);
@@ -149,7 +147,7 @@ public class Talu_BlackSnake extends Mob {
 
     @Override
     protected boolean act() {
-        if (phase == 5 && HP < 1) {
+        if (phase == 5 && HP <= 0) {
             Badges.validateVictory();
             Badges.validateChampion(Challenges.activeChallenges());
             Badges.validateChampion_char(Challenges.activeChallenges());
@@ -163,6 +161,8 @@ public class Talu_BlackSnake extends Mob {
             Dungeon.win(Amulet.class);
             Dungeon.deleteGame(GamesInProgress.curSlot, true);
             Game.switchScene(SurfaceScene.class);
+        } else if (HP <= 0) {
+            phase = Math.min(5, phase + 1);
         }
 
         if (phase > 3 && fx == false) {
@@ -388,7 +388,7 @@ public class Talu_BlackSnake extends Mob {
 
     @Override
     public boolean isAlive() {
-        return true;
+        return HP > 0 || phase < 5;
     }
 
 

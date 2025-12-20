@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.ui.Button;
@@ -32,8 +33,11 @@ public class Tag extends Button {
 	private float g;
 	private float b;
 	protected NinePatch bg;
-	
-	protected float lightness = 0;
+
+    protected float lightness = 0;
+
+    public static int SIZE = 24;
+    protected boolean flipped = false;
 	
 	public Tag( int color ) {
 		super();
@@ -68,8 +72,17 @@ public class Tag extends Button {
 	}
 
 	public void flip(boolean value){
-		bg.flipHorizontal(value);
+        flipped = value;
+        bg.flipHorizontal(value);
+        layout();
 	}
+
+    public void setColor( int color ){
+        this.r = (color >> 16) / 255f;
+        this.g = ((color >> 8) & 0xFF) / 255f;
+        this.b = (color & 0xFF) / 255f;
+        bg.hardlight( r, g, b );
+    }
 	
 	@Override
 	public void update() {

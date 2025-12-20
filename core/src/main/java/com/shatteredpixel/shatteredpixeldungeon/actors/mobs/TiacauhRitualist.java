@@ -8,12 +8,10 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Silence;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.TiacauhRitualistSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.WaveCasterSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Camera;
 import com.watabou.utils.Random;
@@ -24,8 +22,8 @@ public class TiacauhRitualist extends Mob{
     {
         spriteClass = TiacauhRitualistSprite.class;
 
-        HP = HT = 115;
-        defenseSkill = 23;
+        HP = HT = 95;
+        defenseSkill = 18;
 
         EXP = 17;
         maxLvl = 36;

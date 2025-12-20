@@ -28,7 +28,7 @@ public class FlameKatana extends MeleeWeapon {
     public void GetKillPoint() {
         killpoint++;
 
-        if (killpoint == 125) {
+        if (killpoint == 85) {
             int lvl = this.level();
 
             BladeDemon n = new BladeDemon();

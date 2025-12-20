@@ -14,7 +14,7 @@ public class TiacauhSniper extends TiacauhLancer {
     {
         spriteClass = Tiacauh_ImpalerSprite.class;
 
-        HP = HT = 125;
+        HP = HT = 105;
         defenseSkill = 16;
 
         EXP = 17;

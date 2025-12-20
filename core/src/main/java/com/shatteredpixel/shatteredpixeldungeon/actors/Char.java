@@ -34,7 +34,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Charm;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChenCombo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corrosion;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
@@ -63,6 +62,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SeethingBurst;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ShieldBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Silence;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Sleep;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Slow;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SnipersMark;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Speed;
@@ -440,7 +440,7 @@ public abstract class Char extends Actor {
 			enemy != Dungeon.hero && Dungeon.hero.belongings.weapon instanceof Naginata && this instanceof Hero &&
 				!enemy.properties().contains(Char.Property.BOSS) && !enemy.properties().contains(Char.Property.MINIBOSS)) {
 					sprite.showStatus(CharSprite.NEUTRAL, Messages.get(Naginata.class, "skill"));
-					enemy.damage(108108, this);
+					enemy.die(this);
 					SpellSprite.show(enemy, SpellSprite.FOOD);
 
 			}
@@ -938,8 +938,13 @@ public abstract class Char extends Actor {
 				new HashSet<Class>( Arrays.asList(Ooze.class))),
 		ELECTRIC ( new HashSet<Class>( Arrays.asList(WandOfLightning.class, StaffOfGreyy.class, Shocking.class, Potential.class, Electricity.class, ShockingDart.class, Elemental.ShockElemental.class )),
 				new HashSet<Class>()),
-		LARGE,
-		IMMOVABLE,
+        LARGE,
+        IMMOVABLE ( new HashSet<Class>(),
+                new HashSet<Class>( Arrays.asList(Vertigo.class) )),
+        //A character that acts in an unchanging manner. immune to AI state debuffs or stuns/slows
+        STATIC( new HashSet<Class>(),
+                new HashSet<Class>( Arrays.asList(Terror.class, Amok.class, Charm.class, Sleep.class,
+                        Paralysis.class, Frost.class, Chill.class, Slow.class, Speed.class) )),
 		NO_KNOCKBACK,
 		// 명픽던 추가 요소
 		DRONE ( new HashSet<Class>(),
@@ -976,4 +981,8 @@ public abstract class Char extends Actor {
 	public static boolean hasProp( Char ch, Property p){
 		return (ch != null && ch.properties().contains(p));
 	}
+
+    public void activateSeaTerror() {
+        return;
+    }
 }

@@ -58,13 +58,20 @@ public class PixelScene extends Scene {
 	public static final float MIN_WIDTH_L        = 240;
 	public static final float MIN_HEIGHT_L        = 160;
 
+    // Minimum virtual display size for full desktop UI (landscape only)
+    public static final float MIN_WIDTH_FULL = 360;
+    public static final float MIN_HEIGHT_FULL = 200;
+
 	public static int defaultZoom = 0;
 	public static int maxDefaultZoom = 0;
 	public static int maxScreenZoom = 0;
 	public static float minZoom;
 	public static float maxZoom;
 
+
 	public static Camera uiCamera;
+
+    protected boolean inGameScene = false;
 
 	//stylized 3x5 bitmapped pixel font. Only latin characters supported.
 	public static BitmapText.Font pixelFont;

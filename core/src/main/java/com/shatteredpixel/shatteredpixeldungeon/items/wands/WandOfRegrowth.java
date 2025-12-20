@@ -48,7 +48,6 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.LotusSprite;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
-import com.watabou.utils.ColorMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -102,6 +101,9 @@ public class WandOfRegrowth extends Wand {
 			} else if (Char.hasProp(Actor.findChar(cell), Char.Property.IMMOVABLE)) {
 				i.remove();
 			} else if (Dungeon.level.plants.get(cell) != null){
+                i.remove();
+            } else if (Dungeon.level.platforms.get(cell) != null
+                    || Dungeon.level.seaTerrors.get(cell) != null){
 				i.remove();
 			} else {
 				if (terr != Terrain.HIGH_GRASS && terr != Terrain.FURROWED_GRASS) {

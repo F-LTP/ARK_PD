@@ -36,6 +36,7 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.RectF;
 
 public class AboutScene extends PixelScene {
 
@@ -49,12 +50,13 @@ public class AboutScene extends PixelScene {
 		int w = Camera.main.width;
 		int h = Camera.main.height;
 
+        RectF insets = getCommonInsets();
+
 		ScrollPane list = new ScrollPane( new Component() );
 		add( list );
 
 		Component content = list.content();
 		content.clear();
-
 
 		//*** Shattered Pixel Dungeon Credits ***
 
@@ -70,7 +72,11 @@ public class AboutScene extends PixelScene {
 				"Developed by: _Evan Debenham_\nBased on Pixel Dungeon's open source",
 				"ShatteredPixel.com",
 				shpxLink);
-		shpx.setRect((w - fullWidth)/2f, 6, 120, 0);
+        if (landscape()){
+            shpx.setRect((w - fullWidth)/2f - 6, insets.top + 10, 120, 0);
+        } else {
+            shpx.setRect((w - fullWidth)/2f, insets.top + 6, 120, 0);
+        }
 		content.add(shpx);
 
 		CreditsBlock alex = new CreditsBlock(false, Window.SHPX_COLOR,
@@ -80,11 +86,11 @@ public class AboutScene extends PixelScene {
 				"alekskomitov.com",
 				"https://www.alekskomitov.com");
 		alex.setSize(colWidth/2f, 0);
-		if (landscape()){
-			alex.setPos(shpx.right(), shpx.top() + (shpx.height() - alex.height())/2f);
-		} else {
-			alex.setPos(w/2f - colWidth/2f, shpx.bottom()+5);
-		}
+        if (landscape()){
+            alex.setPos(shpx.right(), shpx.top() + (shpx.height() - alex.height()*2)/2f);
+        } else {
+            alex.setPos(w/2f - colWidth/2f, shpx.bottom()+5);
+        }
 		content.add(alex);
 
 		CreditsBlock charlie = new CreditsBlock(false, Window.SHPX_COLOR,
@@ -96,13 +102,12 @@ public class AboutScene extends PixelScene {
 		charlie.setRect(alex.right(), alex.top(), colWidth/2f, 0);
 		content.add(charlie);
 
-
-
+        //*** Tomorrow's RogueNights Credits ***
 
 		CreditsBlock rogu = new CreditsBlock(true, Window.ARKPD_COLOR,
 				"Tomorrow's RogueNights",
 				Icons.ARKPD.get(),
-				"Developed by: _Team Rosemar_\nBased on Shattered Pixel Dungeon's open source",
+				"Developed by: _Team Rosemary_\nBased on Shattered Pixel Dungeon's open source",
 				"",
 				null);
 		rogu.setRect((w - fullWidth)/2f, alex.bottom() + 8, 120, 0);
@@ -125,7 +130,7 @@ public class AboutScene extends PixelScene {
 
 		CreditsBlock mizq = new CreditsBlock(false, Window.SHPX_COLOR,
 				"Programming:",
-				Icons.DANWO.get(),
+				Icons.DANWOO.get(),
 				"Danwo0",
 				"GitHub",
 				"https://github.com/Danwo0/");
@@ -134,13 +139,13 @@ public class AboutScene extends PixelScene {
 
 		addLine(rogu.top() - 2, content);
 
-
+        //*** Arknights Credits ***
 
 		final int HYPER_COLOR = 0xFFFFFF;
 		CreditsBlock hyper = new CreditsBlock(true, HYPER_COLOR,
 				"Hypergryph",
 				Icons.HYPER.get(),
-				"Graphic & Sound ip used\n",
+				"Graphic & Sounds IP credits to\n",
 				"hypergryph.com",
 				"https://ak.hypergryph.com/");
 		if (landscape()){
@@ -252,16 +257,15 @@ public class AboutScene extends PixelScene {
 		transifex.setRect(transifex.left()-10, transifex.bottom() + 8, colWidth+20, 0);
 		content.add(transifex);
 
-		content.setSize( fullWidth, transifex.bottom()+10 );
+		content.setSize( fullWidth, transifex.bottom()+10 + insets.bottom );
 
-		list.setRect( 0, 0, w, h );
-		list.scrollTo(0, 0);
+        list.setRect( 0, 0, w, h );
+        list.scrollTo(0, 0);
 
-		ExitButton btnExit = new ExitButton();
-		btnExit.setPos( Camera.main.width - btnExit.width(), 0 );
-		add( btnExit );
-
-		fadeIn();
+        ExitButton btnExit = new ExitButton();
+        int ofs = PixelScene.landscape() ? 0 : 4;
+        btnExit.setPos( Camera.main.width - btnExit.width() - ofs, ofs );
+        add( btnExit );
 	}
 	
 	@Override

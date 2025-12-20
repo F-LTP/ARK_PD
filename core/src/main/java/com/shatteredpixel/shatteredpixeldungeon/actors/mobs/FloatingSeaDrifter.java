@@ -1,18 +1,17 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
-import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.NervousImpairment;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Dario;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.SanityPotion;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.GunWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.Sea_DrifterSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.YomaSprite;
 import com.watabou.utils.Random;
 
 public class FloatingSeaDrifter extends Mob {
@@ -28,6 +27,8 @@ public class FloatingSeaDrifter extends Mob {
 
             loot = Gold.class;
             lootChance = 0.34f;
+            loot = new SanityPotion();
+            lootChance = 0.1f;
 
             properties.add(Property.SEA);
             immunities.add(Paralysis.class);
@@ -51,12 +52,13 @@ public class FloatingSeaDrifter extends Mob {
     @Override
     public int defenseSkill(Char enemy) {
             if (enemy instanceof Hero) {
-                if (Dungeon.hero.belongings.weapon.getClass() == MissileWeapon.class) {
+                if (Dungeon.hero.belongings.weapon instanceof MissileWeapon
+                        || Dungeon.hero.belongings.weapon instanceof GunWeapon) {
                     return 0;
                 }
             }
 
-            return 70;
+            return 50;
     }
 
     @Override
@@ -64,8 +66,14 @@ public class FloatingSeaDrifter extends Mob {
         if (enemy.buff(NervousImpairment.class) == null) {
             Buff.affect(enemy, NervousImpairment.class);
         }
-        else enemy.buff(NervousImpairment.class).Sum(10);
+        else enemy.buff(NervousImpairment.class).sum(10);
 
         return super.attackProc(enemy, damage);
+    }
+
+    @Override
+    public void die( Object cause ) {
+        super.die(cause);
+        Dario.Quest.process();
     }
 }
