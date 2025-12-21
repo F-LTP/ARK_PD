@@ -77,6 +77,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WindEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ghoul;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Monk;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Talu_BlackSnake;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.ImpShopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -85,6 +86,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.BlastParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
+import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.AnnihilationGear;
 import com.shatteredpixel.shatteredpixeldungeon.items.Bonk;
@@ -93,6 +95,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap.Type;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Certificate;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK1.Camouflage;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK1.ChainHook;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK1.CrimsonCutter;
@@ -198,6 +201,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Suffering;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.NewHallsBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
@@ -209,6 +213,7 @@ import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.AlchemyScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.SurfaceScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.AttackIndicator;
@@ -2403,6 +2408,25 @@ public class Hero extends Char {
     @Override
     public void move(int step) {
         boolean wasHighGrass = Dungeon.level.map[step] == Terrain.HIGH_GRASS;
+
+        // TODO: 0.5.0 임시코드, 삭제 필요
+        if (Dungeon.level instanceof NewHallsBossLevel && Dungeon.level.locked) {
+            if (Dungeon.level.mobs.isEmpty() && Dungeon.talucount == 4) {
+                Badges.validateVictory();
+                Badges.validateChampion(Challenges.activeChallenges());
+                Badges.validateChampion_char(Challenges.activeChallenges());
+                Badges.saveGlobal();
+
+                new Certificate(25).collect();
+                Certificate.specialEndingBouns();
+
+                Badges.silentValidateHappyEnd();
+                Badges.validatewill();
+                Dungeon.win(Amulet.class);
+                Dungeon.deleteGame(GamesInProgress.curSlot, true);
+                Game.switchScene(SurfaceScene.class);
+            }
+        }
 
         super.move(step);
 

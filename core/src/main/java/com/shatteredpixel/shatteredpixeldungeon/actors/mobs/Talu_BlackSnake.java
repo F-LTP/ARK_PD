@@ -146,21 +146,27 @@ public class Talu_BlackSnake extends Mob {
     }
 
     @Override
+    public void die(Object cause) {
+        super.die(cause);
+        Badges.validateVictory();
+        Badges.validateChampion(Challenges.activeChallenges());
+        Badges.validateChampion_char(Challenges.activeChallenges());
+        Badges.saveGlobal();
+
+        Dungeon.level.drop(new Certificate(25), pos).sprite.drop(pos);
+        Certificate.specialEndingBouns();
+
+        Badges.silentValidateHappyEnd();
+        Badges.validatewill();
+        Dungeon.win(Amulet.class);
+        Dungeon.deleteGame(GamesInProgress.curSlot, true);
+        Game.switchScene(SurfaceScene.class);
+    }
+
+    @Override
     protected boolean act() {
         if (phase == 5 && HP <= 0) {
-            Badges.validateVictory();
-            Badges.validateChampion(Challenges.activeChallenges());
-            Badges.validateChampion_char(Challenges.activeChallenges());
-            Badges.saveGlobal();
-
-            Dungeon.level.drop(new Certificate(25), pos).sprite.drop(pos);
-            Certificate.specialEndingBouns();
-
-            Badges.silentValidateHappyEnd();
-            Badges.validatewill();
-            Dungeon.win(Amulet.class);
-            Dungeon.deleteGame(GamesInProgress.curSlot, true);
-            Game.switchScene(SurfaceScene.class);
+            this.die(this);
         } else if (HP <= 0) {
             phase = Math.min(5, phase + 1);
         }

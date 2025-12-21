@@ -83,7 +83,7 @@ public class Closure extends NPC {
                         && Dungeon.level.heroFOV[mob.pos]
                         && mob instanceof SkinModel) {
 
-                    if (Dungeon.customSeedText.isEmpty()) {
+                    if (!Dungeon.customSeedText.isEmpty()) {
                         Game.runOnRenderThread(new Callback() {
                             @Override
                             public void call() {

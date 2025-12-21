@@ -214,7 +214,7 @@ public class Badges {
 		GAVIAL_PART2                ( 193 ),
         IBERIA_PART2                ( 194 ),
 
-		CERTIFICATE_4               ( 175 ),
+		CERTIFICATE_4               ( 176 ),
 
 		//diamond
 		GAMES_PLAYED_4              ( 208, true ),
