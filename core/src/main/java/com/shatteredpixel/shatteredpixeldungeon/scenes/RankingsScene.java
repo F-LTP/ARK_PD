@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Rankings;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
@@ -76,6 +75,8 @@ public class RankingsScene extends PixelScene {
 		int w = Camera.main.width;
 		int h = Camera.main.height;
 		RectF insets = getCommonInsets();
+        w -= insets.left + insets.right;
+        h -= insets.top + insets.bottom;
 
 		archs = new Archs();
 		archs.setSize( w, h );
@@ -85,6 +86,7 @@ public class RankingsScene extends PixelScene {
 
 		RenderedTextBlock title = PixelScene.renderTextBlock( Messages.get(this, "title"), 9);
 		title.hardlight(Window.TITLE_COLOR);
+        title.setSize(200, 0);
 		title.setPos(
 				insets.left + (w - title.width()) / 2f,
 				insets.top + (20 - title.height()) / 2f
@@ -121,15 +123,12 @@ public class RankingsScene extends PixelScene {
 					Dungeon.challenges = data.getInt(CHALLENGES);
 					Dungeon.hero = (Hero) data.get(HERO);
 					if (Dungeon.hero.belongings.ring != null) {
-						Rankings.DestroydChack(Dungeon.challenges,0, Dungeon.hero.belongings.ring.level());
+						Rankings.destroyedCheck(Dungeon.challenges,0, Dungeon.hero.belongings.ring.level());
 					}
 					if (Dungeon.hero.belongings.misc != null) {
-						Rankings.DestroydChack(Dungeon.challenges,Dungeon.hero.belongings.misc.level(), 0);
+						Rankings.destroyedCheck(Dungeon.challenges,Dungeon.hero.belongings.misc.level(), 0);
 					}
-					if (Dungeon.hero.belongings.getItem(Bomb.class) != null && Dungeon.hero.belongings.getItem(IsekaiItem.class) != null) {
-						if (Dungeon.hero.belongings.getItem(IsekaiItem.class).isEquipped(Dungeon.hero) )
-							Rankings.DestroydChack_Bomb(Dungeon.challenges, Statistics.duration, Dungeon.hero.belongings.getItem(Bomb.class).quantity()); }
-				}
+                }
 			}
 
 			if (Rankings.INSTANCE.totalNumber >= Rankings.TABLE_SIZE) {
@@ -140,10 +139,10 @@ public class RankingsScene extends PixelScene {
 				label.text( Messages.get(this, "total") + " _" + Rankings.INSTANCE.wonNumber + "_/" + Rankings.INSTANCE.totalNumber );
 				add( label );
 
-				label.setPos(
-						insets.left + (w - label.width()) / 2,
-						h - label.height() - 2*GAP - insets.bottom
-				);
+                label.setPos(
+                        insets.left + (w - label.width()) / 2,
+                        insets.top + h - label.height() - 2*GAP
+                );
 				align(label);
 
 			}
@@ -260,7 +259,10 @@ public class RankingsScene extends PixelScene {
 				}
 
 			}
-
+            if (!rec.customSeed.isEmpty()){
+                shield.copy( Icons.get(Icons.SEED_POUCH) );
+                shield.hardlight(1f, 1.5f, 0.67f);
+            }
 			if (rec.herolevel != 0){
 				level.text( Integer.toString(rec.herolevel) );
 				level.measure();
@@ -303,46 +305,42 @@ public class RankingsScene extends PixelScene {
 
 			super.layout();
 
-			shield.x = x;
-			shield.y = y + (height - shield.height) / 2f;
-			align(shield);
+            shield.x = x + (16 - shield.width) / 2f;
+            shield.y = y + (height - shield.height) / 2f;
+            align(shield);
 
-			position.x = shield.x + (shield.width - position.width()) / 2f;
-			position.y = shield.y + (shield.height - position.height()) / 2f + 1;
-			align(position);
+            position.x = shield.x + (shield.width - position.width()) / 2f;
+            position.y = shield.y + (shield.height - position.height()) / 2f + 1;
+            align(position);
 
-			if (flare != null) {
-				flare.point( shield.center() );
-			}
+            if (flare != null) {
+                flare.point( shield.center() );
+            }
 
 			classIcon.x = x + width - 16 + (16 - classIcon.width())/2f;
 			classIcon.y = shield.y + (shield.height - classIcon.height())/2f;
 			align(classIcon);
 
-			level.x = classIcon.x + (classIcon.width - level.width()) / 2f;
-			level.y = classIcon.y + (classIcon.height - level.height()) / 2f + 1;
-			align(level);
+            level.x = classIcon.x + (classIcon.width - level.width()) / 2f;
+            level.y = classIcon.y + (classIcon.height - level.height()) / 2f + 1;
+            align(level);
 
 			steps.x = x + width - 32 + (16 - steps.width())/2f;
 			steps.y = shield.y + (shield.height - steps.height())/2f;
 			align(steps);
 
-			depth.x = steps.x + (steps.width - depth.width()) / 2f;
-			depth.y = steps.y + (steps.height - depth.height()) / 2f + 1;
-			align(depth);
+            depth.x = steps.x + (steps.width - depth.width()) / 2f;
+            depth.y = steps.y + (steps.height - depth.height()) / 2f + 1;
+            align(depth);
 
-			desc.maxWidth((int)(steps.x - (shield.x + shield.width + GAP)));
-			desc.setPos(shield.x + shield.width + GAP, shield.y + (shield.height - desc.height()) / 2f + 1);
-			align(desc);
+            desc.maxWidth((int)(steps.x - (x + 16 + GAP)));
+            desc.setPos(x + 16 + GAP, shield.y + (shield.height - desc.height()) / 2f + 1);
+            align(desc);
 		}
 
 		@Override
 		protected void onClick() {
-			if (rec.gameData != null) {
-				parent.add( new WndRanking( rec ) );
-			} else {
-				parent.add( new WndError( Messages.get(RankingsScene.class, "no_info") ) );
-			}
+            parent.add( new WndRanking( rec ) );
 		}
 	}
 }

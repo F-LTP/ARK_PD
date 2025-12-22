@@ -55,7 +55,7 @@ public class AttackIndicator extends Tag {
 			instance = this;
 			lastTarget = null;
 
-			setSize(24, 24);
+			setSize(SIZE, SIZE);
 			visible(false);
 			enable(false);
 		}
@@ -76,8 +76,9 @@ public class AttackIndicator extends Tag {
 		super.layout();
 		
 		if (sprite != null) {
-			sprite.x = x + (width - sprite.width()) / 2 + 1;
-			sprite.y = y + (height - sprite.height()) / 2;
+            if (!flipped)   sprite.x = x + (SIZE - sprite.width()) / 2f + 1;
+            else            sprite.x = x + width - (SIZE + sprite.width()) / 2f - 1;
+            sprite.y = y + (height - sprite.height()) / 2f;
 			PixelScene.align(sprite);
 		}
 	}
@@ -87,13 +88,14 @@ public class AttackIndicator extends Tag {
 		super.update();
 
 		if (!bg.visible){
+            if (sprite != null) sprite.visible = false;
 			enable(false);
 			if (delay > 0f) delay -= Game.elapsed;
 			if (delay <= 0f) active = false;
 		} else {
 			delay = 0.75f;
 			active = true;
-		
+            if (bg.width > 0 && sprite != null)sprite.visible = true;
 			if (Dungeon.hero.isAlive()) {
 
 				enable(Dungeon.hero.ready);
@@ -116,7 +118,7 @@ public class AttackIndicator extends Tag {
 			}
 		}
 		
-		if (!candidates.contains( lastTarget )) {
+		if (lastTarget == null || !candidates.contains( lastTarget )) {
 			if (candidates.isEmpty()) {
 				lastTarget = null;
 			} else {
@@ -126,8 +128,8 @@ public class AttackIndicator extends Tag {
 				flash();
 			}
 		} else {
+            active = true;
 			if (!bg.visible) {
-				active = true;
 				flash();
 			}
 		}
@@ -149,7 +151,9 @@ public class AttackIndicator extends Tag {
 		sprite.idle();
 		sprite.paused = true;
 		sprite.visible = bg.visible;
-		sprite.scale.set(0.5f,0.5f);
+        if (sprite.width() > 20 || sprite.height() > 20){
+            sprite.scale.set(PixelScene.align(20f/Math.max(sprite.width(), sprite.height())));
+        }
 		add( sprite );
 
 		layout();
@@ -165,14 +169,12 @@ public class AttackIndicator extends Tag {
 	
 	private synchronized void visible( boolean value ) {
 		bg.visible = value;
-		if (sprite != null) {
-			sprite.visible = value;
-		}
 	}
 	
 	@Override
 	protected void onClick() {
-		if (enabled) {
+        super.onClick();
+        if (enabled && Dungeon.hero.ready) {
 			if (Dungeon.hero.handle( lastTarget.pos )) {
 				Dungeon.hero.next();
 			}
@@ -180,11 +182,12 @@ public class AttackIndicator extends Tag {
 	}
 	
 	public static void target( Char target ) {
+        if (target == null) return;
 		synchronized (instance) {
 			instance.lastTarget = (Mob) target;
 			instance.updateImage();
 
-			TargetHealthIndicator.instance.target(target);
+            QuickSlotButton.target(target);
 		}
 	}
 	

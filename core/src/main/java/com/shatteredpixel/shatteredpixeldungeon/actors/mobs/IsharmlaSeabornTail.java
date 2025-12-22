@@ -57,7 +57,9 @@ public class IsharmlaSeabornTail extends Mob {
         if (isDead) return INFINITE_EVASION;
 
         // 캐릭터가 물 밖이라면 데미지를 입지 않습니다
-        if (enemy instanceof Hero && Dungeon.level.map[enemy.pos] == Terrain.EMPTY) {
+        if (enemy instanceof Hero &&
+                (Dungeon.level.map[enemy.pos] == Terrain.EMPTY
+                        || Dungeon.level.map[enemy.pos] == Terrain.EMPTY_DECO)) {
             return INFINITE_EVASION;
         }
 
@@ -83,13 +85,13 @@ public class IsharmlaSeabornTail extends Mob {
 
         if (cooldown > 0) cooldown--;
         else {
-            Dungeon.hero.damage(10, this);
+            int damage = Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? 12 : 10;
+            Dungeon.hero.damage(damage, this);
             for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
                 if (mob.alignment == Alignment.ALLY)
-                    mob.damage(10, this);
+                    mob.damage(damage, this);
             }
-            if (Dungeon.isChallenged(Challenges.DECISIVE_BATTLE)) cooldown = 3;
-            else cooldown = 5;
+            cooldown = Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? 3 : 4;
         }
 
         return super.act();

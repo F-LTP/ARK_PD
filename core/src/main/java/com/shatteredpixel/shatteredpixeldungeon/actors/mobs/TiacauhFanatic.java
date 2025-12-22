@@ -17,8 +17,8 @@ public class TiacauhFanatic extends Mob {
     {
         spriteClass = Tiacauh_fanaticSprite.class;
 
-        HP = HT = 75;
-        defenseSkill = 40;
+        HP = HT = 55;
+        defenseSkill = 34;
 
         EXP = 14;
         maxLvl = 29;

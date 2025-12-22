@@ -147,23 +147,29 @@ public class Talu_BlackSnake extends Mob {
             yell(Messages.get(this, "phase5"));
         }
     }
+    @Override
+    public void die(Object cause) {
+        super.die(cause);
+        Badges.validateVictory();
+        Badges.validateChampion(Challenges.activeChallenges());
+        Badges.validateChampion_char(Challenges.activeChallenges());
+        Badges.saveGlobal();
 
+        Dungeon.level.drop(new Certificate(25), pos).sprite.drop(pos);
+        Certificate.specialEndingBouns();
+
+        Badges.silentValidateHappyEnd();
+        Badges.validatewill();
+        Dungeon.win(Amulet.class);
+        Dungeon.deleteGame(GamesInProgress.curSlot, true);
+        Game.switchScene(SurfaceScene.class);
+    }
     @Override
     protected boolean act() {
-        if (phase == 5 && HP < 1) {
-            Badges.validateVictory();
-            Badges.validateChampion(Challenges.activeChallenges());
-            Badges.validateChampion_char(Challenges.activeChallenges());
-            Badges.saveGlobal();
-
-            Dungeon.level.drop(new Certificate(25), pos).sprite.drop(pos);
-            Certificate.specialEndingBouns();
-
-            Badges.silentValidateHappyEnd();
-            Badges.validatewill();
-            Dungeon.win(Amulet.class);
-            Dungeon.deleteGame(GamesInProgress.curSlot, true);
-            Game.switchScene(SurfaceScene.class);
+        if (phase == 5 && HP <= 0) {
+            this.die(this);
+        }else if (HP <= 0) {
+            phase = Math.min(5, phase + 1);
         }
 
         if (phase > 3 && fx == false) {
@@ -389,7 +395,7 @@ public class Talu_BlackSnake extends Mob {
 
     @Override
     public boolean isAlive() {
-        return true;
+        return HP > 0 || phase < 5 ;
     }
 
 

@@ -26,7 +26,7 @@ public class Sea_Octo extends Mob {
 
         HP = HT = 125;
 
-        defenseSkill = 20;
+        defenseSkill = 12;
 
         EXP = 17;
         maxLvl = 36;

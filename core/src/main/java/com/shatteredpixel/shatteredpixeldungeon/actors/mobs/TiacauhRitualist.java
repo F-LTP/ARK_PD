@@ -24,8 +24,8 @@ public class TiacauhRitualist extends Mob{
     {
         spriteClass = TiacauhRitualistSprite.class;
 
-        HP = HT = 115;
-        defenseSkill = 23;
+        HP = HT = 95;
+        defenseSkill = 18;
 
         EXP = 17;
         maxLvl = 36;

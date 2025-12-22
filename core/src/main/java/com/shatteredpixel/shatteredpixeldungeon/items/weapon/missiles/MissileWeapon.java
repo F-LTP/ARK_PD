@@ -52,6 +52,7 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 abstract public class MissileWeapon extends Weapon {
 
@@ -290,7 +291,15 @@ abstract public class MissileWeapon extends Weapon {
 					return;
 				}
 			}
-		 if (!redknife) Dungeon.level.drop( this, cell ).sprite.drop();
+            if (!redknife) {
+                if (enemy != null && enemy.properties().contains(Char.Property.IMMOVABLE)) {
+                    Collection<Integer> candidates = Dungeon.level.getAvailableNeighborCell(cell);
+                    if (!candidates.isEmpty()) {
+                        Dungeon.level.drop(this, Random.element(candidates)).sprite.drop();
+                    }
+                }
+                Dungeon.level.drop(this, cell).sprite.drop();
+            }
 		}
 	}
 	

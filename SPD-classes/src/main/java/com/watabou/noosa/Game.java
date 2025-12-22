@@ -169,7 +169,7 @@ public class Game implements ApplicationListener {
 	
 	@Override
 	public void pause() {
-		PointerEvent.clearPointerEvents();
+
 		
 		if (scene != null) {
 			scene.onPause();

@@ -8,6 +8,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Dario;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.SanityPotion;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.GunWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.Sea_DrifterSprite;
 import com.watabou.utils.Random;
@@ -17,7 +19,7 @@ public class FloatingSeaDrifter extends Mob {
         spriteClass = Sea_DrifterSprite.class;
 
         HP = HT = 65;
-        defenseSkill=70;//change from budding
+        defenseSkill=50;//change from budding
         EXP = 14;
         maxLvl = 29;
 
@@ -25,6 +27,8 @@ public class FloatingSeaDrifter extends Mob {
 
         loot = Gold.class;
         lootChance = 0.34f;
+        loot = new SanityPotion();
+        lootChance = 0.1f;
 
 
         properties.add(Property.SEA);
@@ -49,7 +53,8 @@ public class FloatingSeaDrifter extends Mob {
     @Override
     public int defenseSkill(Char enemy) {
         if (enemy instanceof Hero) {
-            if (Dungeon.hero.belongings.weapon instanceof MissileWeapon) {//change from budding
+            if (Dungeon.hero.belongings.weapon instanceof MissileWeapon
+                    || Dungeon.hero.belongings.weapon instanceof GunWeapon) {
                 return 0;
             }
         }

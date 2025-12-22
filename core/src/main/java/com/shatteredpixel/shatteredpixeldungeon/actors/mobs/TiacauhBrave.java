@@ -23,8 +23,8 @@ public class TiacauhBrave extends Mob {
     {
         spriteClass = Tiacauh_BraveSprite.class;
 
-        HP = HT = 165;
-        defenseSkill = 18;
+        HP = HT = 145;
+        defenseSkill = 16;
 
         EXP = 20;
         maxLvl = 37;

@@ -13,6 +13,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.food.SanityPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.SeaPlatform;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.NPC_DarioSprite;
@@ -73,12 +74,12 @@ public class Dario extends NPC {
 
     @Override
     public int damageRoll() {
-        return Random.NormalIntRange(15, 34);
+        return Random.NormalIntRange(20, 47);
     }
 
     @Override
     public int drRoll() {
-        return Random.NormalIntRange(0, 12);
+        return Random.NormalIntRange(6, 14);
     }
 
     @Override
@@ -91,10 +92,10 @@ public class Dario extends NPC {
         } else {
             seenBefore = false;
 
-            if (!encouraged && Quest.killCount >= 5) {
+            if (!encouraged && Quest.killCount >= Quest.KILL_COUNT_GOAL - 3) {
                 yell(Messages.get(this, "almost"));
                 encouraged = true;
-            } else if (!completed && Quest.isQuestComplete()) {
+            } else if (encouraged && !completed && !isEnemyInFOV() && Quest.isQuestComplete()) {
                 yell(Messages.get(this, "complete"));
                 completed = true;
             }
@@ -203,6 +204,16 @@ public class Dario extends NPC {
         super.die(cause);
     }
 
+    private boolean isEnemyInFOV() {
+        for (Mob mob : Dungeon.level.mobs) {
+            if (mob != null && mob.alignment == Alignment.ENEMY
+                    && mob.isAlive() && fieldOfView[mob.pos] && mob.invisible <= 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private class Wandering extends Mob.Wandering {
         @Override
         public boolean act( boolean enemyInFOV, boolean justAlerted) {
@@ -230,10 +241,18 @@ public class Dario extends NPC {
         }
     }
 
+    public void flee() {
+        GLog.p(Messages.get(this, "success")); // 접촉시 고마워 대사 출력
+
+        destroy();
+        sprite.die();
+    }
+
     public static class Quest {
         private static boolean given;
         private static boolean prepared;
         private static int killCount;
+        private static final int KILL_COUNT_GOAL = 7;
 
         public static void reset() {
             given = false;
@@ -269,25 +288,20 @@ public class Dario extends NPC {
         }
 
         public static void startQuest(int pos) {
-            HashSet<Mob> questMobs = spawnAdditionalMobs(Dungeon.level);
-            for (Mob mob : questMobs) {
-                do {
-                    // 시야 밖 랜덤 위치에서 스폰
-                    mob.pos = Dungeon.level.randomRespawnCell(mob);
-                }
-                while (Dungeon.level.heroFOV[mob.pos]);
-                mob.state = mob.WANDERING;
-                GameScene.add(mob, Random.Int(1, 10));
-                mob.beckon(pos);
-            }
+            spawnAdditionalMobs(pos);
             killCount = 0;
         }
 
         public static void pullMobs(int pos) {
+            int count = 0;
             for (Mob mob : Dungeon.level.mobs) {
+                if (count >= KILL_COUNT_GOAL - killCount) {
+                    break;
+                }
                 if (mob.isAlive() && (mob.state != mob.SLEEPING || mob.state != mob.FLEEING)) {
                     mob.beckon(pos);
                 }
+                count++;
             }
         }
 
@@ -295,7 +309,7 @@ public class Dario extends NPC {
             if (!given || !prepared) {
                 return false;
             } else {
-                return killCount >= 8;
+                return killCount >= KILL_COUNT_GOAL;
             }
         }
 
@@ -324,6 +338,7 @@ public class Dario extends NPC {
             rewards.add(new PotionOfStrength().quantity(1));
             rewards.add(new ScrollOfUpgrade().quantity(1));
             rewards.add(new SanityPotion().quantity(5));
+            rewards.add(new SeaPlatform.LittleHandy().quantity(10));
 
             for (Item item : rewards) {
                 if (item.doPickUp( Dungeon.hero )) {
@@ -335,7 +350,7 @@ public class Dario extends NPC {
 
         }
 
-        private static HashSet<Mob> spawnAdditionalMobs(Level level) {
+        private static void spawnAdditionalMobs(int pos) {
             HashSet<Mob> mobs = new HashSet<>();
             mobs.add(new FloatingSeaDrifter());
             mobs.add(new FloatingSeaDrifter());
@@ -344,9 +359,17 @@ public class Dario extends NPC {
             mobs.add(new SeaReaper());
             mobs.add(new SeaCapsule());
             mobs.add(new SeaCapsule());
-            mobs.add(new SeaCapsule());
 
-            return mobs;
+            for (Mob mob : mobs) {
+                do {
+                    // 시야 밖 랜덤 위치에서 스폰
+                    mob.pos = Dungeon.level.randomRespawnCell(mob);
+                }
+                while (Dungeon.level.heroFOV[mob.pos]);
+                mob.state = mob.WANDERING;
+                GameScene.add(mob, Random.Int(1, 10));
+                mob.beckon(pos);
+            }
         }
     }
 }

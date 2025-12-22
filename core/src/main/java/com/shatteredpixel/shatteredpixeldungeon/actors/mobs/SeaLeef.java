@@ -18,7 +18,7 @@ public class SeaLeef extends Mob {
         EXP = 18;
         maxLvl = 37;
 
-        defenseSkill = 30;
+        defenseSkill = 15;
 
         loot = Gold.class;
         lootChance = 0.28f;

@@ -75,7 +75,7 @@ public abstract class PlatformSupport {
 		return Gdx.net.openURI( uri );
 	}
 
-	public void setOnscreenKeyboardVisible(boolean value, boolean multiline){
+	public void setOnscreenKeyboardVisible(boolean value){
 		//by default ignore multiline
 		Gdx.input.setOnscreenKeyboardVisible(value, Input.OnscreenKeyboardType.Default);
 	}

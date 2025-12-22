@@ -24,6 +24,8 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.Platform;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.SeaTerror;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
@@ -115,6 +117,19 @@ public class WndInfoCell extends Window {
 					desc += blob.tileDesc();
 				}
 			}
+            Platform platform = Dungeon.level.platforms.get( cell );
+            SeaTerror seaTerror = Dungeon.level.seaTerrors.get( cell );
+            if (platform != null) {
+                if (desc.length() > 0) {
+                    desc += "\n\n";
+                }
+                desc += platform.desc();
+            } else if (seaTerror != null) {
+                if (desc.length() > 0) {
+                    desc += "\n\n";
+                }
+                desc += seaTerror.desc();
+            }
 		}
 		
 		info.text( desc.length() == 0 ? Messages.get(this, "nothing") : desc );

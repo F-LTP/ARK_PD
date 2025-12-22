@@ -12,10 +12,11 @@ public class Usg extends GunWeapon {
         hitSound = Assets.Sounds.HIT_PISTOL;
         hitSoundPitch = 0.9f;
 
-        FIRE_ACC_MULT = 5f;
         FIRE_DELAY_MULT = 1f;
-        FIRE_DAMAGE_MULT = 0.8f;
+
         bulletMax = 21;
+        MIN_RANGE = 1;
+        MAX_RANGE = 3;
 
         usesTargeting = true;
 
@@ -25,7 +26,19 @@ public class Usg extends GunWeapon {
     }
 
     @Override
+    public float getFireAcc(int from, int to) {
+        int distance = getDistance(from, to);
+
+        // 최대 사거리 5, 유효 사거리 3. +25% 보정
+        if (isWithinRange(distance)) {
+            return 1.25f;
+        } else if (distance > getMaxRange()) {
+            return Math.max(0f, 1f - 0.33f * (distance - getMaxRange()));
+        }
+        return 1f;
+    }
+    @Override
     protected void specialFire(Char ch) {
-        Buff.affect(ch, Slow.class, 3f);
+        Buff.affect(ch, Slow.class, 2f);
     }
 }

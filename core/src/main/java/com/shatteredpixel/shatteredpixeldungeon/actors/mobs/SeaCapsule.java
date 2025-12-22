@@ -14,14 +14,14 @@ public class SeaCapsule extends Mob{
     {
         spriteClass = Sea_CrawlerSprite.class;
 
-        HP = HT = 150;
+        HP = HT = 180;
         EXP = 17;
         maxLvl = 32;
 
         defenseSkill = 10;
 
         loot = new SanityPotion();
-        lootChance = 0.55f;
+        lootChance = 1f;
 
         properties.add(Property.SEA);
     }

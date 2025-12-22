@@ -61,6 +61,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.spells.OathofFire;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAugmentation;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Enfild;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Usg;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.PurgatoryKnife;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Ragesawblade;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.TippedDart;
@@ -164,10 +165,15 @@ public class ShopRoom extends SpecialRoom {
 		ArrayList<Item> itemsToSpawn = new ArrayList<>();
 
 		MeleeWeapon w;
+        MeleeWeapon w2 = null;
 		switch (Dungeon.depth) {
 		case 6: default:
-			if (Random.Int(5) < 3) { w = (MeleeWeapon) Generator.random(Generator.wepTiers[1]); }
-	     	else w = new Enfild();
+                if (Random.Int(5) < 3) {
+                    w = (MeleeWeapon) Generator.random(Generator.wepTiers[1]);
+                } else {
+                    w = new Enfild();
+                }
+                w2 = new Usg();
 			itemsToSpawn.add( Generator.random(Generator.misTiers[1]).quantity(2).identify() );
             itemsToSpawn.add( new LeatherArmor().identify() );
 			if (Dungeon.isChallenged(Challenges.NO_HERBALISM)) itemsToSpawn.add( new StoneOfAugmentation() );
@@ -232,6 +238,13 @@ public class ShopRoom extends SpecialRoom {
 		w.level(0);
 		w.identify();
 		itemsToSpawn.add(w);
+        if (w2 != null) {
+            w2.enchant(null);
+            w2.cursed = false;
+            w2.level(0);
+            w2.identify();
+            itemsToSpawn.add(w2);
+        }
 		
 		itemsToSpawn.add( TippedDart.randomTipped(2) );
 

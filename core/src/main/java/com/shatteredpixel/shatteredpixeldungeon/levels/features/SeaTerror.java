@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -111,6 +112,11 @@ public class SeaTerror implements Bundlable {
         // ignore all interactions if same position has a platform
         Platform platform = Dungeon.level.platforms.get(pos);
         return platform instanceof SeaPlatform;
+    }
+
+    public String desc() {
+        String desc = Messages.get(this, "desc");
+        return desc;
     }
 
     private static final String POS = "pos";

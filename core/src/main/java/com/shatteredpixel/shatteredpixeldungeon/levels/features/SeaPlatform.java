@@ -8,6 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SmokeParticle;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SeaBossLevel2;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
@@ -71,6 +72,15 @@ public class SeaPlatform extends Platform {
                 }
             }
             return platforms;
+        }
+
+        @Override
+        public String desc() {
+            if (Dungeon.level instanceof SeaBossLevel2) {
+                return Messages.get(this, "desc_active");
+            } else {
+                return Messages.get(this, "desc");
+            }
         }
     }
 }

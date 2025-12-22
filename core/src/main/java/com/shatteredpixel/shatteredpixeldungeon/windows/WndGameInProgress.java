@@ -109,11 +109,23 @@ public class WndGameInProgress extends Window {
 		}
 		
 		pos += GAP;
-		
-		statSlot( Messages.get(this, "str"), info.str );
-		if (info.shld > 0) statSlot( Messages.get(this, "health"), info.hp + "+" + info.shld + "/" + info.ht );
-		else statSlot( Messages.get(this, "health"), (info.hp) + "/" + info.ht );
-		statSlot( Messages.get(this, "exp"), info.exp + "/" + Hero.maxExp(info.level) );
+
+        int strBonus = info.strBonus;
+        if (strBonus > 0) {
+            statSlot( Messages.get(this, "str"), info.str + " + " + strBonus );
+        } else if (strBonus < 0) {
+            statSlot( Messages.get(this, "str"), info.str + " - " + -strBonus );
+        } else {
+            statSlot( Messages.get(this, "str"), info.str );
+        }
+
+        if (info.shld > 0) {
+            statSlot( Messages.get(this, "health"), info.hp + "+" + info.shld + "/" + info.ht );
+        } else {
+            statSlot( Messages.get(this, "health"), (info.hp) + "/" + info.ht );
+        }
+
+        statSlot( Messages.get(this, "exp"), info.exp + "/" + Hero.maxExp(info.level) );
 		
 		pos += GAP;
 		statSlot( Messages.get(this, "gold"), info.goldCollected );
@@ -141,7 +153,7 @@ public class WndGameInProgress extends Window {
 				
 				Dungeon.hero = null;
 				Dungeon.daily = Dungeon.dailyReplay = false;
-				ActionIndicator.action = null;
+                ActionIndicator.clearAction();
 				InterlevelScene.mode = InterlevelScene.Mode.CONTINUE;
 				TomorrowRogueNight.switchScene(InterlevelScene.class);
 			}
@@ -160,8 +172,7 @@ public class WndGameInProgress extends Window {
 					@Override
 					protected void onSelect( int index ) {
 						if (index == 0) {
-							FileUtils.deleteDir(GamesInProgress.gameFolder(slot));
-							GamesInProgress.setUnknown(slot);
+                            Dungeon.deleteGame(slot, true);
 							TomorrowRogueNight.switchNoFade(StartScene.class);
 						}
 					}

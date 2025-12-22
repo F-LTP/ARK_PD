@@ -18,6 +18,7 @@ import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Music;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.RectF;
 
 public class SkinScene extends PixelScene {
 
@@ -25,17 +26,17 @@ public class SkinScene extends PixelScene {
 public void create() {
     super.create();
 
-    if (Statistics.ver0_3_2firstrun == false) {
-        Badges.allskindestroy();
-        Statistics.ver0_3_2firstrun = true;
-    }
-
     Music.INSTANCE.play( Assets.Music.THEME, true );
 
     uiCamera.visible = false;
 
     int w = Camera.main.width;
     int h = Camera.main.height;
+
+        RectF insets = getCommonInsets();
+
+        w -= insets.left + insets.right;
+        h -= insets.top + insets.bottom;
 
     Archs archs = new Archs();
     archs.setSize( w, h );
@@ -47,19 +48,19 @@ public void create() {
     RenderedTextBlock title = PixelScene.renderTextBlock( Messages.get(this, "title"), 9 );
     title.hardlight(Window.TITLE_COLOR);
     title.setPos(
-            (w - title.width()) / 2f,
-            (top - title.height()) / 2f
+            insets.left + (w - title.width()) / 2f,
+            insets.top + (top - title.height()) / 2f
     );
     align(title);
     add(title);
 
     Badges.loadGlobal();
     BadgesGrid grid = new BadgesGrid(true, true);
-    grid.setRect(margin, top, w-(2*margin), h-top-margin);
+    grid.setRect(margin, insets.top + top, w-(2*margin), h-top-margin-insets.bottom);
     add(grid);
 
     SkinExitButton btnExit = new SkinExitButton();
-    btnExit.setPos( Camera.main.width - btnExit.width(), 0 );
+    btnExit.setPos( Camera.main.width - btnExit.width() - insets.left, insets.top );
     add( btnExit );
 
     fadeIn();

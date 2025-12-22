@@ -75,10 +75,7 @@ public class WndDario extends Window {
         hide();
 
         Dario.Quest.dropReward(dario);
-        GLog.p(Messages.get(dario, "success")); // 접촉시 고마워 대사 출력
-
-        dario.destroy(); // 삭제
-        dario.sprite.die();
+        dario.flee();
 
     }
 }

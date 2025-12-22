@@ -263,7 +263,7 @@ public class TitleScene extends PixelScene {
 		@Override
 		protected void onClick() {
 			TomorrowRogueNight.scene().addToFront(new WndOptions(
-					Messages.get(this, "versioned_title") + "ver0.5.0-B4",
+					Messages.get(this, "versioned_title") + "ver0.5.0-B5",
 					Messages.get(this, "desc"),
 					Messages.get(this, "update"),
 					Messages.get(this, "changes")
@@ -271,7 +271,7 @@ public class TitleScene extends PixelScene {
 				@Override
 				protected void onSelect(int index) {
 					if (index == 0) {
-						String link = "https://mizq4482.tistory.com/";
+						String link = "https://arca.live/b/arknights/80626930";
 						DeviceCompat.openURI(link);
 					} else if (index == 1) {
 						ChangesScene.changesSelected = 0;

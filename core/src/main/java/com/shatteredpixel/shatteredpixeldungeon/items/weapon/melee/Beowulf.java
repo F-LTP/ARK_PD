@@ -32,7 +32,7 @@ public class Beowulf extends MeleeWeapon {
 
     {
         image = ItemSpriteSheet.BEOWULF;
-        hitSound = Assets.Sounds.HIT_BONK;
+        hitSound = Assets.Sounds.BLAST;
         hitSoundPitch = 1f;
 
         tier = 4;
@@ -54,10 +54,14 @@ public class Beowulf extends MeleeWeapon {
     public int proc(Char attacker, Char defender, int damage) {
 
         int sppos = Dungeon.level.distance(attacker.pos, defender.pos);
-        if (sppos < 4) {
+        if (sppos < 3) {
             return super.proc(attacker, defender, damage / 4);
         }
 
         return super.proc(attacker, defender, damage);
+    }
+    @Override
+    public int defenseFactor( Char owner ) {
+        return 3+1*buffedLvl();    //기본 방어력 3, 강화당 1씩 상승
     }
 }

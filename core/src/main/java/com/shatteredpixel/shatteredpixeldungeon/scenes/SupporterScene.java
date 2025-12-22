@@ -36,124 +36,127 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.RectF;
 
 public class SupporterScene extends PixelScene {
 
-	private static final int BTN_HEIGHT = 22;
-	private static final int GAP = 2;
+    private static final int BTN_HEIGHT = 22;
+    private static final int GAP = 2;
 
-	@Override
-	public void create() {
-		super.create();
+    @Override
+    public void create() {
+        super.create();
 
-		uiCamera.visible = false;
+        uiCamera.visible = false;
 
-		int w = Camera.main.width;
-		int h = Camera.main.height;
+        int w = Camera.main.width;
+        int h = Camera.main.height;
+        RectF insets = getCommonInsets();
 
-		int elementWidth = PixelScene.landscape() ? 202 : 120;
+        int elementWidth = PixelScene.landscape() ? 202 : 120;
 
-		Archs archs = new Archs();
-		archs.setSize(w, h);
-		add(archs);
+        w -= insets.right + insets.left;
+        h -= insets.top + insets.bottom;
 
-		ExitButton btnExit = new ExitButton();
-		btnExit.setPos(w - btnExit.width(), 0);
-		add(btnExit);
+        Archs archs = new Archs();
+        archs.setSize(w, h);
+        add(archs);
 
-		RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
-		title.hardlight(Window.TITLE_COLOR);
-		title.setPos(
-				(w - title.width()) / 2f,
-				(20 - title.height()) / 2f
-		);
-		align(title);
-		add(title);
+        ExitButton btnExit = new ExitButton();
+        btnExit.setPos(insets.left + w - btnExit.width(), insets.top);
+        add(btnExit);
 
-		SupporterMessage msg = new SupporterMessage();
-		msg.setSize(elementWidth, 0);
-		add(msg);
+        RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
+        title.hardlight(Window.TITLE_COLOR);
+        title.setSize(200, 0);
+        title.setPos(
+                insets.left + (w - title.width()) / 2f,
+                insets.top + (20 - title.height()) / 2f
+        );
+        align(title);
+        add(title);
 
-		StyledButton link = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "supporter_link")){
-			@Override
-			protected void onClick() {
-				super.onClick();
-				String link = "https://arca.live/b/arknights/80626930";
-				//tracking codes, so that the website knows where this pageview came from
-				link += "?utm_source=roguenight";
-				link += "&utm_medium=supporter_page";
-				link += "&utm_campaign=ingame_link";
-				DeviceCompat.openURI(link);
-			}
-		};
-		link.icon(Icons.get(Icons.MONNY));
-		link.textColor(Window.TITLE_COLOR);
-		link.setSize(elementWidth, BTN_HEIGHT);
-		add(link);
+        SupporterMessage msg = new SupporterMessage();
+        msg.setSize(elementWidth, 0);
+        add(msg);
 
-		float elementHeight = msg.height() + BTN_HEIGHT + GAP;
+        StyledButton link = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "supporter_link")){
+            @Override
+            protected void onClick() {
+                super.onClick();
+                String link = "https://arca.live/b/arknights/80626930";
+                //tracking codes, so that the website knows where this pageview came from
+                link += "?utm_source=roguenight";
+                link += "&utm_medium=supporter_page";
+                link += "&utm_campaign=ingame_link";
+                DeviceCompat.openURI(link);
+            }
+        };
+        link.icon(Icons.get(Icons.MONNY));
+        link.textColor(Window.TITLE_COLOR);
+        link.setSize(elementWidth, BTN_HEIGHT);
+        add(link);
 
-		float top = 16 + (h - 16 - elementHeight)/2f;
-		float left = (w-elementWidth)/2f;
+        float elementHeight = msg.height() + BTN_HEIGHT + GAP;
 
-		msg.setPos(left, top);
-		align(msg);
+        float top = insets.top + 16 + (h - 16 - elementHeight)/2f;
+        float left = insets.left + (w-elementWidth)/2f;
 
-		link.setPos(left, msg.bottom()+GAP);
-		align(link);
+        msg.setPos(left, top);
+        align(msg);
 
-	}
+        link.setPos(left, msg.bottom()+GAP);
+        align(link);
 
-	@Override
-	protected void onBackPressed() {
-		TomorrowRogueNight.switchNoFade( TitleScene.class );
-	}
+    }
 
-	private static class SupporterMessage extends Component {
+    @Override
+    protected void onBackPressed() {
+        TomorrowRogueNight.switchNoFade( TitleScene.class );
+    }
 
-		NinePatch bg;
-		RenderedTextBlock text;
-		Image icon;
+    private static class SupporterMessage extends Component {
 
-		@Override
-		protected void createChildren() {
-			bg = Chrome.get(Chrome.Type.GREY_BUTTON_TR);
-			add(bg);
+        NinePatch bg;
+        RenderedTextBlock text;
+        Image icon;
 
-			String message = Messages.get(SupporterScene.class, "intro");
-			message += "\n\n" + Messages.get(SupporterScene.class, "patreon_msg");
-			if (Messages.lang() != Languages.ENGLISH) {
-				message += "\n" + Messages.get(SupporterScene.class, "patreon_english");
-			}
-			message += "\n\n- NAM";
+        @Override
+        protected void createChildren() {
+            bg = Chrome.get(Chrome.Type.GREY_BUTTON_TR);
+            add(bg);
 
-			text = PixelScene.renderTextBlock(message, 6);
-			add(text);
+            String message = Messages.get(SupporterScene.class, "intro");
+            message += "\n\n" + Messages.get(SupporterScene.class, "patreon_msg");
+            message += "\n\n- NAM";
 
-			icon = Icons.get(Icons.NAMSEK);
-			add(icon);
+            text = PixelScene.renderTextBlock(message, 6);
+            add(text);
 
-		}
+            icon = Icons.get(Icons.NAMSEK);
+            add(icon);
 
-		@Override
-		protected void layout() {
-			bg.x = x;
-			bg.y = y;
+        }
 
-			text.maxWidth((int)width - bg.marginHor());
-			text.setPos(x + bg.marginLeft(), y + bg.marginTop() + 1);
+        @Override
+        protected void layout() {
+            bg.x = x;
+            bg.y = y;
 
-			icon.y = text.bottom() - icon.height() + 4;
-			icon.x = x + 25;
+            text.maxWidth((int)width - bg.marginHor());
+            text.setPos(x + bg.marginLeft(), y + bg.marginTop() + 1);
 
-			height = (text.bottom() + 3) - y;
+            icon.y = text.bottom() - icon.height() + 4;
+            icon.x = x + 25;
 
-			height += bg.marginBottom();
+            height = (text.bottom() + 3) - y;
 
-			bg.size(width, height);
+            height += bg.marginBottom();
 
-		}
+            bg.size(width, height);
 
-	}
+        }
+
+    }
 
 }

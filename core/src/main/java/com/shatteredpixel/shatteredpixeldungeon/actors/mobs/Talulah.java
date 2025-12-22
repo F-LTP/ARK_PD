@@ -440,7 +440,7 @@ public class Talulah extends Mob {
 		updateVisibility(Dungeon.level);
 
 		GameScene.bossSlain();
-        Dungeon.level.drop(new Certificate(25), pos).sprite.drop(pos);
+        Dungeon.level.drop(new Certificate(50), pos).sprite.drop(pos);
 		Dungeon.level.unseal();
 		super.die( cause );
 

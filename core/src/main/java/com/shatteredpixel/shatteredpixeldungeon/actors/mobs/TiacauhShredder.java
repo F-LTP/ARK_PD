@@ -17,8 +17,8 @@ public class TiacauhShredder extends Mob {
     {
         spriteClass = Tiacauh_ShredderSprite.class;
 
-        HP = HT = 180;
-        defenseSkill = 24;
+        HP = HT = 150;
+        defenseSkill = 20;
 
         EXP = 15;
         maxLvl = 35;

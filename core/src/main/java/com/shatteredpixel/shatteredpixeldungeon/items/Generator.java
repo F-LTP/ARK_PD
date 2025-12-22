@@ -243,6 +243,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.HandAxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.KRISSVector;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Longsword;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.M1887;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Sig553;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Suffering;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ThermiteBlade;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
@@ -495,7 +496,7 @@ public class Generator {
                     Enfild.class,
                     Firmament.class
             };
-            WEP_T2.probs = new float[]{4, 5, 4, 4, 4, 5, 3, 2, 0, 0};
+            WEP_T2.probs = new float[]{4, 5, 4, 4, 4, 5, 3, 4, 0, 0};
 
             WEP_T3.classes = new Class<?>[]{
                     Sword.class,
@@ -506,7 +507,7 @@ public class Generator {
                     Destreza.class,
                     SHISHIOH.class,
                     Flag.class,
-                    DP27.class,
+                    Sig553.class,
                     C1_9mm.class,
                     Enfild2.class,
                     Gamzashield.class
@@ -531,6 +532,7 @@ public class Generator {
                     KazemaruWeapon.class,
                     Beowulf.class,
                     //SG_CQB.class,산탄총의 프롭 등록되지 않음
+                    DP27.class,
                     Ots03.class,
 
                     BladeDemon.class,
@@ -538,7 +540,7 @@ public class Generator {
                     GoldDogSword.class,
                     SanktaBet.class
             };
-            WEP_T4.probs = new float[]{4, 5, 4, 4, 3, 4, 4, 4, 3, 3, 2, 4, 2, 3, 4, 4, 4, 0, 0, 0, 0};
+            WEP_T4.probs = new float[]{4, 5, 4, 4, 3, 4, 4, 4, 3, 3, 2, 4, 2, 3, 4, 4, 4, 3, 0, 0, 0, 0};
 
             WEP_T5.classes = new Class<?>[]{
                     Greatsword.class,

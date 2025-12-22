@@ -103,6 +103,9 @@ public class WandOfRegrowth extends Wand {
 				i.remove();
 			} else if (Dungeon.level.plants.get(cell) != null){
 				i.remove();
+            } else if (Dungeon.level.platforms.get(cell) != null
+                    || Dungeon.level.seaTerrors.get(cell) != null){
+                i.remove();
 			} else {
 				if (terr != Terrain.HIGH_GRASS && terr != Terrain.FURROWED_GRASS) {
 					Level.set(cell, Terrain.GRASS);

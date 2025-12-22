@@ -25,8 +25,8 @@ public class TiacauhAddict extends Mob {
         spriteClass = Tiacauh_DrugsSprite.class;
         baseSpeed = 2f;
 
-        HP = HT = 120;
-        defenseSkill = 24;
+        HP = HT = 100;
+        defenseSkill = 20;
 
         EXP = 14;
         maxLvl = 32;

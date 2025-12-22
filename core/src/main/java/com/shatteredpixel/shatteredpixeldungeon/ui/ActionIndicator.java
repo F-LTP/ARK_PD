@@ -39,7 +39,7 @@ public class ActionIndicator extends Tag {
 
 		instance = this;
 
-		setSize( 24, 24 );
+		setSize( SIZE, SIZE );
 		visible = false;
 	}
 	
@@ -59,72 +59,84 @@ public class ActionIndicator extends Tag {
 		super.layout();
 		
 		if (icon != null){
-			icon.x = x + (width - icon.width()) / 2;
-			icon.y = y + (height - icon.height()) / 2;
+            if (!flipped)   icon.x = x + (SIZE - icon.width()) / 2f + 1;
+            else            icon.x = x + width - (SIZE + icon.width()) / 2f - 1;
+            icon.y = y + (height - icon.height()) / 2f;
 			PixelScene.align(icon);
-			if (!members.contains(icon))
-				add(icon);
 		}
 	}
 	
-	private boolean needsLayout = false;
+	private boolean needsRefresh = false;
 	
 	@Override
 	public synchronized void update() {
-		super.update();
+        super.update();
+        synchronized (ActionIndicator.class) {
+            if (!visible && action != null) {
+                visible = true;
+                needsRefresh = true;
+                flash();
+            } else {
+                visible = action != null;
+            }
 
-		if (!Dungeon.hero.ready){
-			if (icon != null) icon.alpha(0.5f);
-		} else {
-			if (icon != null) icon.alpha(1f);
-		}
+        if (needsRefresh) {
+            if (icon != null) {
+                icon.destroy();
+                icon.killAndErase();
+                icon = null;
+            }
+            if (action != null) {
+                icon = action.getIcon();
+                add(icon);
+            }
 
-		if (!visible && action != null){
-			visible = true;
-			updateIcon();
-			flash();
-		} else {
-			visible = action != null;
-		}
-		
-		if (needsLayout){
-			layout();
-			needsLayout = false;
-		}
+            layout();
+            needsRefresh = false;
+        }
+            if (!Dungeon.hero.ready) {
+                if (icon != null) icon.alpha(0.5f);
+            } else {
+                if (icon != null) icon.alpha(1f);
+            }
+        }
 	}
 
 	@Override
 	protected void onClick() {
-		if (action != null && Dungeon.hero.ready)
-			action.doAction();
+        super.onClick();
+        if (action != null && Dungeon.hero.ready) {
+            action.doAction();
+        }
 	}
 
 	public static void setAction(Action action){
-		ActionIndicator.action = action;
-		updateIcon();
+        synchronized (ActionIndicator.class) {
+            ActionIndicator.action = action;
+            refresh();
+        }
 	}
+
+    public static void clearAction(){
+        clearAction(null);
+    }
 
 	public static void clearAction(Action action){
-		if (ActionIndicator.action == action)
-			ActionIndicator.action = null;
+        synchronized (ActionIndicator.class) {
+            if (action == null || ActionIndicator.action == action) {
+                ActionIndicator.action = null;
+            }
+        }
 	}
+    public static void refresh(){
+        synchronized (ActionIndicator.class) {
+            if (instance != null) {
+                instance.needsRefresh = true;
+            }
+        }
+    }
 
-	public static void updateIcon(){
-		if (instance != null){
-			synchronized (instance) {
-				if (instance.icon != null) {
-					instance.icon.killAndErase();
-					instance.icon = null;
-				}
-				if (action != null) {
-					instance.icon = action.getIcon();
-					instance.needsLayout = true;
-				}
-			}
-		}
-	}
-
-	public interface Action{
+    public interface Action{
 
 		public Image getIcon();
 

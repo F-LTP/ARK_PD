@@ -12,6 +12,7 @@ public class SanityPotion extends Food {
     public static final String AC_DRINK = "DRINK";
     {
         image = ItemSpriteSheet.TYLENOL;
+        defaultAction = AC_DRINK;
     }
 
     @Override

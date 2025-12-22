@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.scenes;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.TomorrowRogueNight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
@@ -32,13 +33,16 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Camera;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.ui.Button;
+import com.watabou.utils.RectF;
 
 import java.util.ArrayList;
 
@@ -58,55 +62,100 @@ public class StartScene extends PixelScene {
 		
 		int w = Camera.main.width;
 		int h = Camera.main.height;
+
+        RectF insets = getCommonInsets();
+
+        w -= insets.left + insets.right;
+        h -= insets.top + insets.bottom;
 		
 		Archs archs = new Archs();
 		archs.setSize( w, h );
 		add( archs );
-		
-		ExitButton btnExit = new ExitButton();
-		btnExit.setPos( w - btnExit.width(), 0 );
-		add( btnExit );
+
+        ExitButton btnExit = new ExitButton();
+        btnExit.setPos( insets.left + w - btnExit.width(), insets.top );
+        add( btnExit );
 		
 		RenderedTextBlock title = PixelScene.renderTextBlock( Messages.get(this, "title"), 9);
 		title.hardlight(Window.TITLE_COLOR);
-		title.setPos(
-				(w - title.width()) / 2f,
-				(20 - title.height()) / 2f
-		);
-		align(title);
-		add(title);
-		
-		ArrayList<GamesInProgress.Info> games = GamesInProgress.checkAll();
-		
-		int slotGap = landscape() ? 5 : 10;
-		int slotCount = Math.min(GamesInProgress.MAX_SLOTS, games.size()+1);
-		int slotsHeight = slotCount*SLOT_HEIGHT + (slotCount-1)* slotGap;
-		
-		float yPos = (h - slotsHeight)/2f;
-		if (landscape()) yPos += 8;
-		
-		for (GamesInProgress.Info game : games) {
-			SaveSlotButton existingGame = new SaveSlotButton();
-			existingGame.set(game.slot);
-			existingGame.setRect((w - SLOT_WIDTH) / 2f, yPos, SLOT_WIDTH, SLOT_HEIGHT);
-			yPos += SLOT_HEIGHT + slotGap;
-			align(existingGame);
-			add(existingGame);
-			
-		}
-		
-		if (games.size() < GamesInProgress.MAX_SLOTS){
-			SaveSlotButton newGame = new SaveSlotButton();
-			newGame.set(GamesInProgress.firstEmpty());
-			newGame.setRect((w - SLOT_WIDTH) / 2f, yPos, SLOT_WIDTH, SLOT_HEIGHT);
-			yPos += SLOT_HEIGHT + slotGap;
-			align(newGame);
-			add(newGame);
-		}
-		
-		GamesInProgress.curSlot = 0;
-		
-		fadeIn();
+        title.setPos(
+                insets.left + (w - title.width()) / 2f,
+                insets.top + (20 - title.height()) / 2f
+        );
+        align(title);
+        add(title);
+
+        ArrayList<GamesInProgress.Info> games = GamesInProgress.checkAll();
+
+        int slotCount = Math.min(GamesInProgress.MAX_SLOTS, games.size()+1);
+        int slotGap = 10 - slotCount;
+        int slotsHeight = slotCount*SLOT_HEIGHT + (slotCount-1)* slotGap;
+        slotsHeight += 14;
+
+        while (slotGap >= 2 && slotsHeight > (h-title.bottom()-2)){
+            slotGap--;
+            slotsHeight -= slotCount-1;
+        }
+
+        float yPos = insets.top + (h - slotsHeight + title.bottom() + 2)/2f - 4;
+        yPos = Math.max(yPos, title.bottom()+2);
+        float slotLeft = insets.left + (w - SLOT_WIDTH) / 2f;
+
+        for (GamesInProgress.Info game : games) {
+            SaveSlotButton existingGame = new SaveSlotButton();
+            existingGame.set(game.slot);
+            existingGame.setRect(slotLeft, yPos, SLOT_WIDTH, SLOT_HEIGHT);
+            yPos += SLOT_HEIGHT + slotGap;
+            align(existingGame);
+            add(existingGame);
+
+        }
+
+        if (games.size() < GamesInProgress.MAX_SLOTS){
+            SaveSlotButton newGame = new SaveSlotButton();
+            newGame.set(GamesInProgress.firstEmpty());
+            newGame.setRect(slotLeft, yPos, SLOT_WIDTH, SLOT_HEIGHT);
+            yPos += SLOT_HEIGHT + slotGap;
+            align(newGame);
+            add(newGame);
+        }
+
+        GamesInProgress.curSlot = 0;
+
+        String sortText = "";
+        switch (SPDSettings.gamesInProgressSort()){
+            case "level":
+                sortText = Messages.get(this, "sort_level");
+                break;
+            case "last_played":
+                sortText = Messages.get(this, "sort_recent");
+                break;
+        }
+
+        StyledButton btnSort = new StyledButton(Chrome.Type.TOAST_TR, sortText, 6){
+            @Override
+            protected void onClick() {
+                super.onClick();
+
+                if (SPDSettings.gamesInProgressSort().equals("level")){
+                    SPDSettings.gamesInProgressSort("last_played");
+                } else {
+                    SPDSettings.gamesInProgressSort("level");
+                }
+
+                TomorrowRogueNight.seamlessResetScene();
+            }
+        };
+        btnSort.textColor(0xCCCCCC);
+
+        if (yPos + 10 > Camera.main.height) {
+            btnSort.setRect(slotLeft - btnSort.reqWidth() - 6, Camera.main.height - 14, btnSort.reqWidth() + 4, 12);
+        } else {
+            btnSort.setRect(slotLeft, yPos, btnSort.reqWidth() + 4, 12);
+        }
+        if (games.size() >= 2) add(btnSort);
+
+        fadeIn();
 		
 	}
 	
@@ -121,7 +170,7 @@ public class StartScene extends PixelScene {
 		
 		private Image hero;
 		private RenderedTextBlock name;
-		
+        private RenderedTextBlock lastPlayed;
 		private Image steps;
 		private BitmapText depth;
 		private Image classIcon;
@@ -137,8 +186,11 @@ public class StartScene extends PixelScene {
 			bg = Chrome.get(Chrome.Type.GEM);
 			add( bg);
 			
-			name = PixelScene.renderTextBlock(9);
+			name = PixelScene.renderTextBlock(7);
 			add(name);
+
+            lastPlayed = PixelScene.renderTextBlock(5);
+            add(lastPlayed);
 		}
 		
 		public void set( int slot ){
@@ -161,73 +213,46 @@ public class StartScene extends PixelScene {
 					level = null;
 				}
 			} else {
+                if (info.subClass != HeroSubClass.NONE){
+                    name.text(Messages.titleCase(info.subClass.title()));
+                } else {
+                    name.text(Messages.titleCase(info.heroClass.title()));
+                }
 
-					name.text(Messages.titleCase(info.heroClass.title()));
-				
-				if (hero == null){
-					hero = new Image(info.heroClass.spritesheet(), 0, 30*info.armorTier, 24, 20);
-					switch (info.heroClass) {
-						case WARRIOR:
-							hero = new Image(Icons.BLAZE.get());
-							break;
-						case MAGE:
-							hero = new Image(Icons.AMIYA.get());
-							break;
-						case ROGUE:
-							hero = new Image(Icons.P_RED.get());
-							break;
-						case HUNTRESS:
-							hero = new Image(Icons.GREY.get());
-							break;
-						case ROSECAT:
-							hero = new Image(Icons.ROSEMARI.get());
-							break;
-						case NEARL:
-							hero = new Image(Icons.NEARL.get());
-							break;
-						case CHEN: //첸포인트
-							hero = new Image(Icons.CHEN.get());
-							break;
-					}
-					add(hero);
-					
-					steps = new Image(Icons.get(Icons.DEPTH));
-					add(steps);
-					depth = new BitmapText(PixelScene.pixelFont);
-					add(depth);
-					
-					classIcon = new Image(Icons.get(info.heroClass));
-					add(classIcon);
-					level = new BitmapText(PixelScene.pixelFont);
-					add(level);
-				} else {
-					switch (info.heroClass) {
-						case WARRIOR:
-							hero = new Image(Icons.BLAZE.get());
-							break;
-						case MAGE:
-							hero = new Image(Icons.AMIYA.get());
-							break;
-						case ROGUE:
-							hero = new Image(Icons.P_RED.get());
-							break;
-						case HUNTRESS:
-							hero = new Image(Icons.GREY.get());
-							break;
-						case ROSECAT:
-							hero = new Image(Icons.ROSEMARI.get());
-							break;
-						case NEARL:
-							hero = new Image(Icons.NEARL.get());
-							break;
-						case CHEN: //첸포인트
-							hero = new Image(Icons.CHEN.get());
-							break;
-					}
+                if (hero == null){
+                    hero = info.heroClass.icon();
+                    add(hero);
 
-					classIcon.copy(Icons.get(info.heroClass));
-				}
-				
+                    steps = new Image(Icons.get(Icons.DEPTH));
+                    add(steps);
+                    depth = new BitmapText(PixelScene.pixelFont);
+                    add(depth);
+
+                    classIcon = new Image(Icons.get(info.heroClass));
+                    add(classIcon);
+                    level = new BitmapText(PixelScene.pixelFont);
+                    add(level);
+                } else {
+                    hero = info.heroClass.icon();
+
+                    classIcon.copy(Icons.get(info.heroClass));
+                }
+
+                long diff = Game.realTime - info.lastPlayed;
+                if (diff > 99L * 30 * 24 * 60 * 60_000){
+                    lastPlayed.text(" "); //show no text for >99 months ago
+                } else if (diff < 60_000){
+                    lastPlayed.text(Messages.get(StartScene.class, "one_minute_ago"));
+                } else if (diff < 2 * 60 * 60_000){
+                    lastPlayed.text(Messages.get(StartScene.class, "minutes_ago", diff / 60_000));
+                } else if (diff < 2 * 24 * 60 * 60_000){
+                    lastPlayed.text(Messages.get(StartScene.class, "hours_ago", diff / (60 * 60_000)));
+                } else if (diff < 2L * 30 * 24 * 60 * 60_000){
+                    lastPlayed.text(Messages.get(StartScene.class, "days_ago", diff / (24 * 60 * 60_000)));
+                } else {
+                    lastPlayed.text(Messages.get(StartScene.class, "months_ago", diff / (30L * 24 * 60 * 60_000)));
+                }
+
 				depth.text(Integer.toString(info.depth));
 				depth.measure();
 				
@@ -236,13 +261,19 @@ public class StartScene extends PixelScene {
 				
 				if (info.challenges > 0){
 					name.hardlight(Window.TITLE_COLOR);
+                    lastPlayed.hardlight(Window.TITLE_COLOR);
 					depth.hardlight(Window.TITLE_COLOR);
 					level.hardlight(Window.TITLE_COLOR);
 				} else {
 					name.resetColor();
+                    lastPlayed.resetColor();
 					depth.resetColor();
 					level.resetColor();
 				}
+
+                if (!info.customSeed.isEmpty()){
+                    steps.hardlight(1f, 1.5f, 0.67f);
+                }
 
 				if (info.daily){
 					if (info.dailyReplay){
@@ -269,20 +300,25 @@ public class StartScene extends PixelScene {
 			
 			if (hero != null){
 				hero.x = x+8;
-				hero.y = y + (height - hero.height())/2f;
+				hero.y = y + (height - hero.height())/2f-2;
 				align(hero);
 				
 				name.setPos(
 						hero.x + hero.width() + 6,
-						y + (height - name.height())/2f
+						y + (height - name.height())/2f-4
 				);
 				align(name);
-				
+
+                lastPlayed.setPos(
+                        hero.x + hero.width() + 6,
+                        name.bottom()+2
+                );
+
 				classIcon.x = x + width - 24 + (16 - classIcon.width())/2f;
 				classIcon.y = y + (height - classIcon.height())/2f;
 				align(classIcon);
 				
-				level.x = classIcon.x + (classIcon.width() - level.width()) / 2f;
+				level.x = classIcon.x + (classIcon.width() - level.width()) / 2f-1;
 				level.y = classIcon.y + (classIcon.height() - level.height()) / 2f + 1;
 				align(level);
 				
@@ -290,7 +326,7 @@ public class StartScene extends PixelScene {
 				steps.y = y + (height - steps.height())/2f;
 				align(steps);
 				
-				depth.x = steps.x + (steps.width() - depth.width()) / 2f;
+				depth.x = steps.x + (steps.width() - depth.width()) / 2f+1;
 				depth.y = steps.y + (steps.height() - depth.height()) / 2f + 1;
 				align(depth);
 				

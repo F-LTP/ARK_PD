@@ -131,6 +131,8 @@ public class SPDSettings extends GameSettings {
 	public static final String KEY_FLIPTOOLBAR	= "flipped_ui";
 	public static final String KEY_FLIPTAGS 	= "flip_tags";
 	public static final String KEY_BARMODE		= "toolbar_mode";
+
+    public static final String KEY_GAMES_SORT    = "games_sort";
 	
 	public static void quickSlots( int value ){ put( KEY_QUICKSLOTS, value ); }
 	
@@ -155,7 +157,15 @@ public class SPDSettings extends GameSettings {
 	public static String toolbarMode() {
 		return getString(KEY_BARMODE, PixelScene.landscape() ? "GROUP" : "SPLIT");
 	}
-	
+
+    public static String gamesInProgressSort(){
+        return getString(KEY_GAMES_SORT, "level");
+    }
+
+    public static void gamesInProgressSort(String value){
+        put(KEY_GAMES_SORT, value);
+    }
+
 	//Game State
 	
 	public static final String KEY_LAST_CLASS	= "last_class";

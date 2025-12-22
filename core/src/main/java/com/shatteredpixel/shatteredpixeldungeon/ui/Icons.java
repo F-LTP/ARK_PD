@@ -44,6 +44,8 @@ public enum Icons {
 	AUDIO,
 	TALENT,
 	SKIN,
+	COPY,
+	PASTE,
 
 	//ingame UI icons
 	SKULL,
@@ -98,7 +100,7 @@ public enum Icons {
 	ARKPD,
 	NAMSEK,
 	MIZQ,
-    DANWO,
+    DANWOO,
 
 	BLAZE,
 	AMIYA,
@@ -151,10 +153,10 @@ public enum Icons {
 			icon.frame( icon.texture.uvRect( 65, 0, 83, 16 ) );
 			break;
 		case PREFS:
-			icon.frame( icon.texture.uvRect( 83, 0, 95, 12 ) );
+			icon.frame( icon.texture.uvRect( 83, 0, 97, 14 ) );
 			break;
 		case LANGS:
-			icon.frame( icon.texture.uvRect( 97, 0, 109, 12 ) );
+			icon.frame( icon.texture.uvRect( 97, 0, 111, 14 ) );
 			break;
 		case EXIT:
 			icon.frame( icon.texture.uvRect( 113, 0, 127, 14 ) );
@@ -162,6 +164,12 @@ public enum Icons {
 			case SKIN:
 				icon.frame( icon.texture.uvRect( 128, 0, 143, 13 ) );
 				break;
+			case COPY:
+                icon.frame( icon.texture.uvRect( 144, 0, 158, 15 ) );
+                break;
+            case PASTE:
+                icon.frame( icon.texture.uvRect( 159, 0, 173, 15 ) );
+                break;
 		case CLOSE:
 			icon.frame( icon.texture.uvRect( 0, 16, 11, 27 ) );
 			break;
@@ -328,7 +336,7 @@ public enum Icons {
 				icon.frame(icon.texture.uvRect(96, 192, 128, 224));
 				icon.scale.set(PixelScene.align(0.49f));
 				break;
-            case DANWO:
+            case DANWOO:
                 icon.frame(icon.texture.uvRect(128, 192, 160, 224));
                 icon.scale.set(PixelScene.align(0.49f));
                 break;

@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
-import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
@@ -30,29 +29,21 @@ import com.shatteredpixel.shatteredpixeldungeon.Rankings;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.TomorrowRogueNight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.TalentsPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndChallenges;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndHero;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndHeroInfo;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Camera;
@@ -61,12 +52,8 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.PointerArea;
-import com.watabou.noosa.tweeners.Tweener;
 import com.watabou.noosa.ui.Component;
-import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.GameMath;
-
-import com.watabou.utils.PointF;
 
 
 import com.watabou.utils.PlatformSupport;
@@ -74,9 +61,7 @@ import com.watabou.utils.RectF;
 
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -84,6 +69,7 @@ import java.util.TimeZone;
 public class HeroSelectScene extends PixelScene {
 
 	private Image background;
+    private Image fadeLeft, fadeRight;
 	private RenderedTextBlock prompt;
 
 	//fading UI elements
@@ -91,7 +77,7 @@ public class HeroSelectScene extends PixelScene {
 	private StyledButton startBtn;
 	private IconButton infoButton;
 	private IconButton btnOptions;
-	private IconButton chnageButton;
+	private IconButton toggleButton;
 	private GameOptions optionsPane;
 	private IconButton btnExit;
 	private int change;
@@ -108,6 +94,9 @@ public class HeroSelectScene extends PixelScene {
 		Journal.loadGlobal();
 
 		insets = Game.platform.getSafeInsets(PlatformSupport.INSET_BLK).scale(1f/defaultZoom);
+
+        float w = (Camera.main.width - insets.left - insets.right);
+        float h = (Camera.main.height - insets.top - insets.bottom);
 
 		background = new Image(HeroClass.WARRIOR.splashArt()){
 			@Override
@@ -156,7 +145,8 @@ public class HeroSelectScene extends PixelScene {
 
 				Dungeon.hero = null;
 				Dungeon.daily = Dungeon.dailyReplay = false;
-				ActionIndicator.action = null;
+                Dungeon.initSeed();
+                ActionIndicator.clearAction();
 				InterlevelScene.mode = InterlevelScene.Mode.DESCEND;
 				if (SPDSettings.intro()) {
 					SPDSettings.intro( false );
@@ -176,7 +166,14 @@ public class HeroSelectScene extends PixelScene {
 			@Override
 			protected void onClick() {
 				super.onClick();
-				TomorrowRogueNight.scene().addToFront(new WndHeroInfo(GamesInProgress.selectedClass));
+                HeroClass cls = GamesInProgress.selectedClass;
+                if (cls != null) {
+                    Window info = new WndHeroInfo(GamesInProgress.selectedClass);
+                    if (landscape()) {
+                        info.offset((int) (w / 6), 0);
+                    }
+                    TomorrowRogueNight.scene().addToFront(info);
+                }
 			}
 		};
 		infoButton.visible = false;
@@ -203,11 +200,15 @@ public class HeroSelectScene extends PixelScene {
 			heroBtns.add(button);
 			i++;
 		}
-
+        /*for (HeroClass cl : HeroClass.values()){
+            HeroBtn button = new HeroBtn(cl);
+            add(button);
+            heroBtns.add(button);
+        }*/
 		optionsPane = new GameOptions();
 		optionsPane.visible = optionsPane.active = false;
 		optionsPane.layout();
-		add(optionsPane);//change from budding
+		add(optionsPane);
 
 		btnOptions = new IconButton(Icons.get(Icons.PREFS)){
 			@Override
@@ -235,43 +236,15 @@ public class HeroSelectScene extends PixelScene {
 		btnOptions.setRect(heroBtnleft + 16, Camera.main.height-HeroBtn.HEIGHT-16, 20, 21);
 		updateOptionsColor();
 		btnOptions.visible = false;
-		/*challengeButton = new IconButton(
-				Icons.get( SPDSettings.challenges() > 0 ? Icons.CHALLENGE_ON :Icons.CHALLENGE_OFF)){
-			@Override
-			protected void onClick() {
-				TomorrowRogueNight.scene().addToFront(new WndChallenges(SPDSettings.challenges(), true) {
-					public void onBackPressed() {
-						super.onBackPressed();
-						icon(Icons.get(SPDSettings.challenges() > 0 ? Icons.CHALLENGE_ON : Icons.CHALLENGE_OFF));
-					}
-				} );
-			}
-
-			@Override
-			public void update() {
-				if( !visible && GamesInProgress.selectedClass != null){
-					visible = true;
-				}
-				super.update();
-			}
-		};
-
-		challengeButton.setRect(heroBtnleft + 16, Camera.main.height-HeroBtn.HEIGHT-16, 20, 21);
-		challengeButton.visible = false;*/
-
-		if (true/*DeviceCompat.isDebug() || Badges.isUnlocked(Badges.Badge.VICTORY)*/){
-			add(btnOptions);//change from budding ;convenient for test
-		} else {
-			Dungeon.challenges = 0;
-			SPDSettings.challenges(0);
-			SPDSettings.customSeed("");
-		}
+		if (!SPDSettings.intro())
+			add(btnOptions);
 		optionsPane.setPos(heroBtns.get(0).left(), 0);
-		chnageButton = new IconButton(
+
+		toggleButton = new IconButton(
 				Icons.get( Icons.HERO_CHANGES)){
 			@Override
 			protected void onClick() {
-				ChangeHero();
+				toggleAvailableHeroes();
 			}
 
 			@Override
@@ -285,10 +258,10 @@ public class HeroSelectScene extends PixelScene {
 		add( btnExit );
 		btnExit.visible = !SPDSettings.intro() || Rankings.INSTANCE.totalNumber > 0;
 
-		chnageButton.setSize(21,21);
-		chnageButton.setPos( btnExit.width() - 21 + insets.left, insets.top );
-		add(chnageButton);
-		chnageButton.visible = true;
+		toggleButton.setSize(21,21);
+		toggleButton.setPos( btnExit.width() - 21 + insets.left, insets.top );
+		add(toggleButton);
+		toggleButton.visible = true;
 
 		PointerArea fadeResetter = new PointerArea(0, 0, Camera.main.width, Camera.main.height){
 			@Override
@@ -334,20 +307,21 @@ public class HeroSelectScene extends PixelScene {
 		infoButton.visible = true;
 		infoButton.setPos(startBtn.right(), startBtn.top());
 
-		btnOptions.visible = true;
+        btnOptions.visible = btnOptions.active = !SPDSettings.intro();
 		btnOptions.setPos(startBtn.left()-btnOptions.width(), startBtn.top());
 
 		optionsPane.setPos(optionsPane.left(), startBtn.top() - optionsPane.height() - 2);
 		PixelScene.align(optionsPane);
 	}
 
-	private void ChangeHero() {
+	private void toggleAvailableHeroes() {
 		GamesInProgress.selectedClass = null;
 
 		background.visible = false;
 		startBtn.visible = false;
 		infoButton.visible = false;
 		btnOptions.visible = false;
+        optionsPane.visible = false;
 
 		if (change == 0) change = 1;
 		else change = 0;
@@ -383,7 +357,10 @@ public class HeroSelectScene extends PixelScene {
 	@Override
 	public void update() {
 		super.update();
-		btnExit.visible = !SPDSettings.intro() || Rankings.INSTANCE.totalNumber > 0;
+        if (SPDSettings.intro() && Rankings.INSTANCE.totalNumber > 0){
+            SPDSettings.intro(false);
+        }
+        btnExit.visible = btnExit.active = !SPDSettings.intro();
 		//do not fade when a window is open
 		for (Object v : members){
 			if (v instanceof Window) resetFade();
@@ -396,16 +373,33 @@ public class HeroSelectScene extends PixelScene {
 			for (StyledButton b : heroBtns){
 				b.alpha(alpha);
 			}
-			startBtn.alpha(alpha);
-			btnExit.icon().alpha(alpha);
-			btnOptions.icon().alpha(alpha);
-			infoButton.icon().alpha(alpha);
+            updateFade();
 		}
 	}
 
+    private void updateFade(){
+        float alpha = GameMath.gate(0f, uiAlpha, 1f);
+        for (StyledButton b : heroBtns){
+            b.enable(alpha != 0);
+            b.alpha(alpha);
+        }
+        startBtn.enable(alpha != 0);
+        startBtn.alpha(alpha);
+        btnExit.enable(btnExit.visible && alpha != 0);
+        btnExit.icon().alpha(alpha);
+        toggleButton.enable(alpha != 0);
+        toggleButton.icon().alpha(alpha);
+        optionsPane.active = optionsPane.visible && alpha != 0;
+        optionsPane.alpha(alpha);
+        btnOptions.enable(alpha != 0);
+        btnOptions.icon().alpha(alpha);
+        infoButton.enable(alpha != 0);
+        infoButton.icon().alpha(alpha);
+    }
 	private void resetFade(){
 		//starts fading after 4 seconds, fades over 4 seconds.
 		uiAlpha = 2f;
+        updateFade();
 	}
 
 	@Override
@@ -476,7 +470,7 @@ public class HeroSelectScene extends PixelScene {
 			if( !cl.isUnlocked() ){
 				TomorrowRogueNight.scene().addToFront( new WndMessage(cl.unlockMsg()));
 			} else if (GamesInProgress.selectedClass == cl) {
-				TomorrowRogueNight.scene().add(new WndHeroInfo(cl));
+				TomorrowRogueNight.scene().addToFront(new WndHeroInfo(cl));
 			} else {
 				setSelectedHero(cl);
 			}
@@ -537,7 +531,7 @@ public class HeroSelectScene extends PixelScene {
 					}
 				};
 				seedButton.leftJustify = true;
-				seedButton.icon(Icons.get(Icons.GREY));
+				seedButton.icon(Icons.get(Icons.SEED_POUCH));
 				if (!SPDSettings.customSeed().isEmpty()) seedButton.icon().hardlight(1f, 1.5f, 0.67f);
 				buttons.add(seedButton);
 				add(seedButton);

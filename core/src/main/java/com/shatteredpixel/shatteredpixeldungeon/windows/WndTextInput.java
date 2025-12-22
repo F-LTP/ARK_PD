@@ -83,7 +83,7 @@ public class WndTextInput extends Window {
         }
 
         int textSize = (int)PixelScene.uiCamera.zoom * (multiLine ? 6 : 9);
-        textBox = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), multiLine, textSize){
+        textBox = new TextInput(Chrome.get(Chrome.Type.TOAST), multiLine, textSize){
             @Override
             public void enterPressed() {
                 //triggers positive action on enter pressed, only with non-multiline though.
@@ -138,7 +138,7 @@ public class WndTextInput extends Window {
                 textBox.copyToClipboard();
             }
         };
-        btnCopy.icon(Icons.RED.get());
+        btnCopy.icon(Icons.COPY.get());
         btnCopy.enable(!textBox.getText().isEmpty());
         add(btnCopy);
 
@@ -166,7 +166,7 @@ public class WndTextInput extends Window {
             }
 
         };
-        btnPaste.icon(Icons.BLAZE.get());
+        btnPaste.icon(Icons.PASTE.get());
         btnPaste.enable(Gdx.app.getClipboard().hasContents());
         add(btnPaste);
 

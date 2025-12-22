@@ -210,6 +210,10 @@ public class QuickSlotButton extends Button implements WndBag.Listener {
 		if (Dungeon.quickslot.change == false)slot.enable(Dungeon.quickslot.isNonePlaceholder( slotNum ));
 		else slot.enable(Dungeon.quickslot.isNonePlaceholder( slotNum+4 ));
 	}
+
+    public void slotMargins( int left, int top, int right, int bottom){
+        slot.setMargins(left, top, right, bottom);
+    }
 	
 	private void useTargeting() {
 

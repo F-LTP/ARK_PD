@@ -40,11 +40,12 @@ public class DangerIndicator extends Tag {
 	private int enemyIndex = 0;
 	
 	private int lastNumber = -1;
+    public static int HEIGHT = 16;
 	
 	public DangerIndicator() {
-		super( 0xFF4C4C );
+		super( COLOR );
 		
-		setSize( 24, 16 );
+		setSize( SIZE, HEIGHT );
 		
 		visible = false;
 	}
@@ -69,14 +70,14 @@ public class DangerIndicator extends Tag {
 	protected void layout() {
 		super.layout();
 		
-		icon.x = right() - 10;
+		icon.x = left() + 14;
 		icon.y = y + (height - icon.height) / 2;
 		
 		placeNumber();
 	}
 	
 	private void placeNumber() {
-		number.x = right() - 11 - number.width();
+		number.x = left() + 13 - number.width();
 		number.y = y + (height - number.baseLine()) / 2f;
 		PixelScene.align(number);
 	}

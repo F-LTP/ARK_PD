@@ -138,21 +138,27 @@ public class CellSelector extends ScrollArea {
 				c.sprite.point(c.sprite.worldToCamera(c.pos));
 			}
 		}
+        for (Heap heap : Dungeon.level.heaps.valueList()){
+            if (heap.sprite != null){
+                heap.sprite.point(heap.sprite.worldToCamera(heap.pos));
+            }
+        }
 
 		return value;
 	}
 	
 	public void select( int cell ) {
-		if (enabled && listener != null && cell != -1) {
-			
-			listener.onSelect( cell );
-			GameScene.ready();
-			
-		} else {
-			
-			GameScene.cancel();
-			
-		}
+        if (enabled && Dungeon.hero.ready && !GameScene.interfaceBlockingHero()
+                && listener != null && cell != -1) {
+
+            listener.onSelect( cell );
+            GameScene.ready();
+
+        } else {
+
+            GameScene.cancel();
+
+        }
 	}
 	
 	private boolean pinching = false;
@@ -163,8 +169,9 @@ public class CellSelector extends ScrollArea {
 	@Override
 	protected void onPointerDown( PointerEvent event ) {
 
+        camera.edgeScroll.set(-1);
 		if (event != curEvent && another == null) {
-					
+
 			if (curEvent.type == PointerEvent.Type.UP) {
 				curEvent = event;
 				onPointerDown( event );
@@ -185,6 +192,7 @@ public class CellSelector extends ScrollArea {
 	
 	@Override
 	protected void onPointerUp( PointerEvent event ) {
+        camera.edgeScroll.set(1);
 		if (pinching && (event == curEvent || event == another)) {
 			
 			pinching = false;

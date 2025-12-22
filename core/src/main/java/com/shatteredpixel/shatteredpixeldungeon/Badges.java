@@ -21,6 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
@@ -41,14 +43,20 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.shatteredpixel.shatteredpixeldungeon.Challenges.TEST;
 
 public class Badges {
 
-	public static boolean Destoryd = false;
-	public enum Badge {
+    public enum BadgeType {
+        HIDDEN, //internal badges used for data tracking
+        LOCAL,  //unlocked on a per-run basis and added to overall player profile
+        GLOBAL, //unlocked for the save profile only, usually over multiple runs
+        JOURNAL //profile-based and also tied to the journal, which means they even unlock in seeded runs
+    }
+    public enum Badge {
 		MASTERY_WARRIOR,
 		MASTERY_MAGE,
 		MASTERY_ROGUE,
@@ -61,9 +69,9 @@ public class Badges {
 		UNLOCK_MAGE                 ( 1 ),
 		UNLOCK_ROGUE                ( 2 ),
 		UNLOCK_HUNTRESS             ( 3 ),
-		UNLOCK_ROSECAT             ( 19 ),
-		UNLOCK_NEARL               (20),
-		UNLOCK_CHEN               (22),
+		UNLOCK_ROSECAT              ( 19),
+		UNLOCK_NEARL                ( 20),
+		UNLOCK_CHEN                 ( 22),
 		MONSTERS_SLAIN_1            ( 4 ),
 		MONSTERS_SLAIN_2            ( 5 ),
 		GOLD_COLLECTED_1            ( 6 ),
@@ -79,7 +87,7 @@ public class Badges {
 		DEATH_FROM_GAS              ( 16 ),
 		DEATH_FROM_HUNGER           ( 17 ),
 		DEATH_FROM_FALLING          ( 18 ),
-		CERTIFICATE_1               (21),
+		CERTIFICATE_1               ( 21 ),
 
 		//silver
 		NO_MONSTERS_SLAIN           ( 48 ),
@@ -112,7 +120,7 @@ public class Badges {
 		BOSS_SLAIN_1_CHEN,
 		BOSS_SLAIN_1_ALL_CLASSES    ( 69, true ),
 		GAMES_PLAYED_1              ( 70, true ),
-		CERTIFICATE_2               (71),
+		CERTIFICATE_2               ( 71 ),
 
 		//gold
 		PIRANHAS                    ( 96 ),
@@ -130,7 +138,7 @@ public class Badges {
 		POTIONS_COOKED_4            ( 103 ),
 		BOSS_SLAIN_4                ( 104 ),
 		ALL_WEAPONS_IDENTIFIED      ( 105 ),
-		ALL_SKILLBOOK_IDENTIFIED        ( 106 ),
+		ALL_SKILLBOOK_IDENTIFIED    ( 106 ),
 		ALL_WANDS_IDENTIFIED        ( 107 ),
 		ALL_RINGS_IDENTIFIED        ( 108 ),
 		ALL_ARTIFACTS_IDENTIFIED    ( 109 ),
@@ -159,21 +167,21 @@ public class Badges {
 		BOSS_SLAIN_3_ALL_SUBCLASSES ( 112, true ),
 		GAMES_PLAYED_2              ( 113, true ),
 
-		BLAZE_CHAMPION1              ( 114, true ),
-		AMIYA_CHAMPION1              ( 115, true ),
-		RED_CHAMPION1              ( 116, true ),
+		BLAZE_CHAMPION1             ( 114, true ),
+		AMIYA_CHAMPION1             ( 115, true ),
+		RED_CHAMPION1               ( 116, true ),
 		GREY_CHAMPION1              ( 117, true ),
 		ROSE_CHAMPION1              ( 118, true ),
-		NEARL_CHAMPION1              ( 119, true ),
-		CHEN_CHAMPION1              ( 22, true ),//change from budding
+		NEARL_CHAMPION1             ( 119, true ),
+		CHEN_CHAMPION1              ( 121, true ),
 
-		GOLD_COLLECTED_5              ( 120 ),
+		GOLD_COLLECTED_5            ( 120 ),
 
-		SIESTA_PART1              ( 128 ),
-		GAVIAL_PART1              ( 129 ),
-        IBERIA_PART1              ( 130 ),
+		SIESTA_PART1                ( 128 ),
+		GAVIAL_PART1                ( 129 ),
+        IBERIA_PART1                ( 130 ),
 
-		CERTIFICATE_3               (123),
+		CERTIFICATE_3               ( 123 ),
 		USE_HEALBOX(124, true),
 
 		//RED , 버그 유저
@@ -192,64 +200,64 @@ public class Badges {
 		VICTORY_ALL_CLASSES         ( 162, true ),
 		GAMES_PLAYED_3              ( 163, true ),
 		CHAMPION_1                  ( 164 ),
-		FRAGGING                       ( 165 ),
+		FRAGGING                    ( 165 ),
 		PRAY (166),
 
-		BLAZE_CHAMPION2              ( 167, true ),
-		AMIYA_CHAMPION2              ( 168, true ),
-		RED_CHAMPION2              ( 169, true ),
+		BLAZE_CHAMPION2             ( 167, true ),
+		AMIYA_CHAMPION2             ( 168, true ),
+		RED_CHAMPION2               ( 169, true ),
 		GREY_CHAMPION2              ( 170, true ),
 		ROSE_CHAMPION2              ( 171, true ),
-		NEARL_CHAMPION2              ( 172, true ),
-		CHEN_CHAMPION2              ( 22, true ),//change from budding
+		NEARL_CHAMPION2             ( 172, true ),
+		CHEN_CHAMPION2              ( 173, true ),
 
-		SIESTA_PART2              ( 192),
-		GAVIAL_PART2              ( 193 ),
-        IBERIA_PART2              ( 194 ),
+		SIESTA_PART2                ( 192 ),
+		GAVIAL_PART2                ( 193 ),
+        IBERIA_PART2                ( 194 ),
 
-		CERTIFICATE_4               (175),
+		CERTIFICATE_4               ( 176 ),
 
 		//diamond
 		GAMES_PLAYED_4              ( 208, true ),
 		CHAMPION_2                  ( 209 ),
 		CHAMPION_3                  ( 210 ),
 		CHAMPION_4                  ( 210 ),
-		ROARINGFLARE                  ( 211 ),
-		EVILTIME_END                  ( 212 ),
-		WILL    ( 213 ),
+		ROARINGFLARE                ( 211 ),
+		EVILTIME_END                ( 212 ),
+		WILL                        ( 213 ),
 
-		BLAZE_CHAMPION3              ( 214, true ),
-		AMIYA_CHAMPION3              ( 215, true ),
-		RED_CHAMPION3             ( 216, true ),
+		BLAZE_CHAMPION3             ( 214, true ),
+		AMIYA_CHAMPION3             ( 215, true ),
+		RED_CHAMPION3               ( 216, true ),
 		GREY_CHAMPION3              ( 217, true ),
 		ROSE_CHAMPION3              ( 218, true ),
-		NEARL_CHAMPION3              ( 219, true ),
-		CHEN_CHAMPION3              ( 22, true ),//change from budding
+		NEARL_CHAMPION3             ( 219, true ),
+		CHEN_CHAMPION3              ( 220, true ),
 
 		//Puple
-		Get_25_STONES                (256),
-		Get_40_STONES                (257),
-		DOLL_COLLECTOR                (258),
-		SLAIN_PURSUER				(259),
+		Get_25_STONES               (256 ),
+		Get_40_STONES               (257 ),
+		DOLL_COLLECTOR              (258 ),
+		SLAIN_PURSUER				(259 ),
 
 		//GREEN
-		SKIN_BABOSKADI(288, false, true),
-		SKIN_TALU(289, false, true),
-		SKIN_NOVA(290, false, true),
-		SKIN_SUSUU(291, false, true),
-		SKIN_GRN(292, false, true),
-		SKIN_LAPPY(293,false,true),
-		SKIN_JESSI(294, false, true),
-		SKIN_LEAF(295, false, true),
-		SKIN_MUDROCK(296, false, true),
-		SKIN_ASTESIA(297, false, true),
-		SKIN_SPECTER(298, false, true),
-		SKIN_SCHWARZ(299, false, true),
-		SKIN_ARCH(301, false, true),
-		SKIN_TOMIMI(300, false, true),
-		SKIN_FRANKA(302, false, true),
-		SKIN_WEEDY(303, false, true),
-		SKIN_GLADIIA(304, false, true),
+		SKIN_BABOSKADI              (288, false, true),
+		SKIN_TALU                   (289, false, true),
+		SKIN_NOVA                   (290, false, true),
+		SKIN_SUSUU                  (291, false, true),
+		SKIN_GRN                    (292, false, true),
+		SKIN_LAPPY                  (293,false,true),
+		SKIN_JESSI                  (294, false, true),
+		SKIN_LEAF                   (295, false, true),
+		SKIN_MUDROCK                (296, false, true),
+		SKIN_ASTESIA                (297, false, true),
+		SKIN_SPECTER                (298, false, true),
+		SKIN_SCHWARZ                (299, false, true),
+		SKIN_ARCH                   (301, false, true),
+		SKIN_TOMIMI                 (300, false, true),
+		SKIN_FRANKA                 (302, false, true),
+		SKIN_WEEDY                  (303, false, true),
+		SKIN_GLADIIA                (304, false, true),
 
 		//기타
 		SUPPORT;
@@ -258,6 +266,7 @@ public class Badges {
 		public boolean skin;
 
 		public int image;
+        public BadgeType type;
 		
 		Badge( int image ) {
 			this( image, false, false );
@@ -322,6 +331,8 @@ public class Badges {
 		if (bundle == null) return badges;
 		
 		String[] names = bundle.getStringArray( BADGES );
+        if (names == null) return badges;
+
 		for (int i=0; i < names.length; i++) {
 			try {
 				if (renamedBadges.containsKey(names[i])){
@@ -347,7 +358,7 @@ public class Badges {
 		String names[] = new String[badges.size()];
 		
 		for (Badge badge:badges) {
-			names[count++] = badge.toString();
+            names[count++] = badge.name();
 		}
 		bundle.put( BADGES, names );
 	}
@@ -386,16 +397,12 @@ public class Badges {
 		local.clear();
 		loadGlobal();
 	}
+    public static void saveGlobal(){
+        saveGlobal(false);
+    }
 
-
-	public static void DestroyBUG() {
-		if(global.contains(Badge.BUG)) {
-			global.remove(Badge.BUG);
-		}
-	}
-
-	public static void saveGlobal() {
-		if (saveNeeded) {
+	public static void saveGlobal(boolean force) {
+		if (saveNeeded || force) {
 			
 			Bundle bundle = new Bundle();
 			store( bundle, global );
@@ -422,15 +429,18 @@ public class Badges {
 			local.add( badge );
 		}
 		if (!local.contains( Badge.MONSTERS_SLAIN_2 ) && Statistics.enemiesSlain >= 50) {
-			badge = Badge.MONSTERS_SLAIN_2;
+            if (badge != null) unlock(badge);
+            badge = Badge.MONSTERS_SLAIN_2;
 			local.add( badge );
 		}
 		if (!local.contains( Badge.MONSTERS_SLAIN_3 ) && Statistics.enemiesSlain >= 150) {
-			badge = Badge.MONSTERS_SLAIN_3;
+            if (badge != null) unlock(badge);
+            badge = Badge.MONSTERS_SLAIN_3;
 			local.add( badge );
 		}
 		if (!local.contains( Badge.MONSTERS_SLAIN_4 ) && Statistics.enemiesSlain >= 250) {
-			badge = Badge.MONSTERS_SLAIN_4;
+            if (badge != null) unlock(badge);
+            badge = Badge.MONSTERS_SLAIN_4;
 			local.add( badge );
 		}
 
@@ -445,19 +455,23 @@ public class Badges {
 			local.add( badge );
 		}
 		if (!local.contains( Badge.GOLD_COLLECTED_2 ) && Statistics.goldCollected >= 500) {
-			badge = Badge.GOLD_COLLECTED_2;
+            if (badge != null) unlock(badge);
+            badge = Badge.GOLD_COLLECTED_2;
 			local.add( badge );
 		}
 		if (!local.contains( Badge.GOLD_COLLECTED_3 ) && Statistics.goldCollected >= 2500) {
-			badge = Badge.GOLD_COLLECTED_3;
+            if (badge != null) unlock(badge);
+            badge = Badge.GOLD_COLLECTED_3;
 			local.add( badge );
 		}
 		if (!local.contains( Badge.GOLD_COLLECTED_4 ) && Statistics.goldCollected >= 7500) {
-			badge = Badge.GOLD_COLLECTED_4;
+            if (badge != null) unlock(badge);
+            badge = Badge.GOLD_COLLECTED_4;
 			local.add( badge );
 		}
 		if (!local.contains( Badge.GOLD_COLLECTED_5 ) && Statistics.goldCollected >= 15000) {
-			badge = Badge.GOLD_COLLECTED_5;
+            if (badge != null) unlock(badge);
+            badge = Badge.GOLD_COLLECTED_5;
 			local.add( badge );
 		}
 
@@ -472,14 +486,17 @@ public class Badges {
 			local.add( badge );
 		}
 		if (!local.contains( Badge.LEVEL_REACHED_2 ) && Dungeon.hero.lvl >= 12) {
+            if (badge != null) unlock(badge);
 			badge = Badge.LEVEL_REACHED_2;
 			local.add( badge );
 		}
 		if (!local.contains( Badge.LEVEL_REACHED_3 ) && Dungeon.hero.lvl >= 18) {
+            if (badge != null) unlock(badge);
 			badge = Badge.LEVEL_REACHED_3;
 			local.add( badge );
 		}
 		if (!local.contains( Badge.LEVEL_REACHED_4 ) && Dungeon.hero.lvl >= 24) {
+            if (badge != null) unlock(badge);
 			badge = Badge.LEVEL_REACHED_4;
 			local.add( badge );
 		}
@@ -495,14 +512,17 @@ public class Badges {
 			local.add( badge );
 		}
 		if (!local.contains( Badge.STRENGTH_ATTAINED_2 ) && Dungeon.hero.STR >= 15) {
+            if (badge != null) unlock(badge);
 			badge = Badge.STRENGTH_ATTAINED_2;
 			local.add( badge );
 		}
 		if (!local.contains( Badge.STRENGTH_ATTAINED_3 ) && Dungeon.hero.STR >= 17) {
+            if (badge != null) unlock(badge);
 			badge = Badge.STRENGTH_ATTAINED_3;
 			local.add( badge );
 		}
 		if (!local.contains( Badge.STRENGTH_ATTAINED_4 ) && Dungeon.hero.STR >= 19) {
+            if (badge != null) unlock(badge);
 			badge = Badge.STRENGTH_ATTAINED_4;
 			local.add( badge );
 		}
@@ -518,14 +538,17 @@ public class Badges {
 			local.add( badge );
 		}
 		if (!local.contains( Badge.FOOD_EATEN_2 ) && Statistics.foodEaten >= 20) {
+            if (badge != null) unlock(badge);
 			badge = Badge.FOOD_EATEN_2;
 			local.add( badge );
 		}
 		if (!local.contains( Badge.FOOD_EATEN_3 ) && Statistics.foodEaten >= 30) {
+            if (badge != null) unlock(badge);
 			badge = Badge.FOOD_EATEN_3;
 			local.add( badge );
 		}
 		if (!local.contains( Badge.FOOD_EATEN_4 ) && Statistics.foodEaten >= 40) {
+            if (badge != null) unlock(badge);
 			badge = Badge.FOOD_EATEN_4;
 			local.add( badge );
 		}
@@ -541,14 +564,17 @@ public class Badges {
 			local.add( badge );
 		}
 		if (!local.contains( Badge.POTIONS_COOKED_2 ) && Statistics.potionsCooked >= 6) {
+            if (badge != null) unlock(badge);
 			badge = Badge.POTIONS_COOKED_2;
 			local.add( badge );
 		}
 		if (!local.contains( Badge.POTIONS_COOKED_3 ) && Statistics.potionsCooked >= 9) {
+            if (badge != null) unlock(badge);
 			badge = Badge.POTIONS_COOKED_3;
 			local.add( badge );
 		}
 		if (!local.contains( Badge.POTIONS_COOKED_4 ) && Statistics.potionsCooked >= 12) {
+            if (badge != null) unlock(badge);
 			badge = Badge.POTIONS_COOKED_4;
 			local.add( badge );
 		}
@@ -585,14 +611,17 @@ public class Badges {
 			local.add( badge );
 		}
 		if (!local.contains( Badge.ITEM_LEVEL_2 ) && item.level() >= 6) {
+            if (badge != null) unlock(badge);
 			badge = Badge.ITEM_LEVEL_2;
 			local.add( badge );
 		}
 		if (!local.contains( Badge.ITEM_LEVEL_3 ) && item.level() >= 9) {
+            if (badge != null) unlock(badge);
 			badge = Badge.ITEM_LEVEL_3;
 			local.add( badge );
 		}
 		if (!local.contains( Badge.ITEM_LEVEL_4 ) && item.level() >= 12) {
+            if (badge != null) unlock(badge);
 			badge = Badge.ITEM_LEVEL_4;
 			local.add( badge );
 		}
@@ -635,9 +664,10 @@ public class Badges {
 		for (Catalog cat : Catalog.values()){
 			if (cat.allSeen()){
 				Badge b = Catalog.catalogBadges.get(cat);
-				if (!isUnlocked(b)){
-					displayBadge(b);
-				}
+                if (!global.contains(b)){
+                    unlock(b);
+                    displayBadge(b);
+                }
 			}
 		}
 
@@ -649,7 +679,7 @@ public class Badges {
 				isUnlocked( Badge.ALL_ARTIFACTS_IDENTIFIED ) &&
 				isUnlocked( Badge.ALL_POTIONS_IDENTIFIED ) &&
 				isUnlocked( Badge.ALL_SCROLLS_IDENTIFIED )) {
-
+            unlock( Badge.ALL_ITEMS_IDENTIFIED );
 			displayBadge( Badge.ALL_ITEMS_IDENTIFIED );
 		}
 	}
@@ -711,8 +741,56 @@ public class Badges {
 				isUnlocked( Badge.DEATH_FROM_FALLING)) {
 
 			Badge badge = Badge.YASD;
-			displayBadge( badge );}
+            if (!isUnlocked( badge )) {
+                displayBadge( badge );
+            }
+        }
 	}
+
+    private static LinkedHashMap<HeroClass, Badge> firstBossClassBadges = new LinkedHashMap<>();
+    static {
+        firstBossClassBadges.put(HeroClass.WARRIOR, Badge.BOSS_SLAIN_1_WARRIOR);
+        firstBossClassBadges.put(HeroClass.MAGE, Badge.BOSS_SLAIN_1_MAGE);
+        firstBossClassBadges.put(HeroClass.ROGUE, Badge.BOSS_SLAIN_1_ROGUE);
+        firstBossClassBadges.put(HeroClass.HUNTRESS, Badge.BOSS_SLAIN_1_HUNTRESS);
+        firstBossClassBadges.put(HeroClass.ROSECAT, Badge.BOSS_SLAIN_1_ROSECAT);
+        firstBossClassBadges.put(HeroClass.NEARL, Badge.BOSS_SLAIN_1_NEARL);
+        firstBossClassBadges.put(HeroClass.CHEN, Badge.BOSS_SLAIN_1_CHEN);
+    }
+    private static LinkedHashMap<HeroClass, Badge> victoryClassBadges = new LinkedHashMap<>();
+    static {
+        victoryClassBadges.put(HeroClass.WARRIOR, Badge.VICTORY_WARRIOR);
+        victoryClassBadges.put(HeroClass.MAGE, Badge.VICTORY_MAGE);
+        victoryClassBadges.put(HeroClass.ROGUE, Badge.VICTORY_ROGUE);
+        victoryClassBadges.put(HeroClass.HUNTRESS, Badge.VICTORY_HUNTRESS);
+        victoryClassBadges.put(HeroClass.ROSECAT, Badge.VICTORY_ROSECAT);
+        victoryClassBadges.put(HeroClass.NEARL, Badge.VICTORY_NEARL);
+        victoryClassBadges.put(HeroClass.CHEN, Badge.VICTORY_CHEN);
+    }
+
+    private static LinkedHashMap<HeroSubClass, Badge> thirdBossSubclassBadges = new LinkedHashMap<>();
+    static {
+        thirdBossSubclassBadges.put(HeroSubClass.GLADIATOR, Badge.BOSS_SLAIN_3_GLADIATOR);
+        thirdBossSubclassBadges.put(HeroSubClass.BERSERKER, Badge.BOSS_SLAIN_3_BERSERKER);
+        thirdBossSubclassBadges.put(HeroSubClass.HEAT, Badge.BOSS_SLAIN_3_BATTLEMAGE);
+        thirdBossSubclassBadges.put(HeroSubClass.WARLOCK, Badge.BOSS_SLAIN_3_WARLOCK);
+        thirdBossSubclassBadges.put(HeroSubClass.CHAOS, Badge.BOSS_SLAIN_3_CHAOS);
+        thirdBossSubclassBadges.put(HeroSubClass.BATTLEMAGE, Badge.BOSS_SLAIN_3_BATTLEMAGE);
+        thirdBossSubclassBadges.put(HeroSubClass.FREERUNNER, Badge.BOSS_SLAIN_3_FREERUNNER);
+        thirdBossSubclassBadges.put(HeroSubClass.ASSASSIN, Badge.BOSS_SLAIN_3_ASSASSIN);
+        thirdBossSubclassBadges.put(HeroSubClass.WILD, Badge.BOSS_SLAIN_3_WILD);
+        thirdBossSubclassBadges.put(HeroSubClass.SNIPER, Badge.BOSS_SLAIN_3_SNIPER);
+        thirdBossSubclassBadges.put(HeroSubClass.WARDEN, Badge.BOSS_SLAIN_3_WARDEN);
+        thirdBossSubclassBadges.put(HeroSubClass.STOME, Badge.BOSS_SLAIN_3_STOME);
+        thirdBossSubclassBadges.put(HeroSubClass.DESTROYER, Badge.BOSS_SLAIN_3_DESTROY);
+        thirdBossSubclassBadges.put(HeroSubClass.GUARDIAN, Badge.BOSS_SLAIN_3_GUARDIAN);
+        thirdBossSubclassBadges.put(HeroSubClass.WAR, Badge.BOSS_SLAIN_3_WAR);
+        thirdBossSubclassBadges.put(HeroSubClass.KNIGHT, Badge.BOSS_SLAIN_3_KNIGHT);
+        thirdBossSubclassBadges.put(HeroSubClass.SAVIOR, Badge.BOSS_SLAIN_3_SAVIOR);
+        thirdBossSubclassBadges.put(HeroSubClass.FLASH, Badge.BOSS_SLAIN_3_FLASH);
+        thirdBossSubclassBadges.put(HeroSubClass.SWORDMASTER, Badge.BOSS_SLAIN_3_SWORDMASTER);
+        thirdBossSubclassBadges.put(HeroSubClass.SPSHOOTER, Badge.BOSS_SLAIN_3_SPSHOOTER);
+    }
 
 	public static void validateBossSlain() {
 		Badge badge = null;
@@ -736,135 +814,19 @@ public class Badges {
 			displayBadge( badge );
 
 			if (badge == Badge.BOSS_SLAIN_1) {
-				switch (Dungeon.hero.heroClass) {
-				case WARRIOR:
-					badge = Badge.BOSS_SLAIN_1_WARRIOR;
-					break;
-				case MAGE:
-					badge = Badge.BOSS_SLAIN_1_MAGE;
-					break;
-				case ROGUE:
-					badge = Badge.BOSS_SLAIN_1_ROGUE;
-					break;
-				case HUNTRESS:
-					badge = Badge.BOSS_SLAIN_1_HUNTRESS;
-					break;
-				case ROSECAT:
-					badge = Badge.BOSS_SLAIN_1_ROSECAT;
-					break;
-				case NEARL:
-						badge = Badge.BOSS_SLAIN_1_NEARL;
-						break;
-					case CHEN://change from budding
-						badge=Badge.BOSS_SLAIN_1_CHEN;
-						break;
-				}
+                badge = firstBossClassBadges.get(Dungeon.hero.heroClass);
+                if (badge == null) return;
 				local.add( badge );
 				unlock(badge);
 
-				if (isUnlocked( Badge.BOSS_SLAIN_1_WARRIOR ) &&
-						isUnlocked( Badge.BOSS_SLAIN_1_MAGE ) &&
-						isUnlocked( Badge.BOSS_SLAIN_1_ROGUE ) &&
-						isUnlocked( Badge.BOSS_SLAIN_1_HUNTRESS) &&
-						isUnlocked( Badge.BOSS_SLAIN_1_ROSECAT) &&
-						isUnlocked( Badge.BOSS_SLAIN_1_NEARL) &&
-						isUnlocked( Badge.BOSS_SLAIN_1_CHEN)) {
-
-					badge = Badge.BOSS_SLAIN_1_ALL_CLASSES;
-					if (!isUnlocked( badge )) {
-						displayBadge( badge );
-					}
-				}
-			} else
-			if (badge == Badge.BOSS_SLAIN_3) {
-				switch (Dungeon.hero.subClass) {
-				case GLADIATOR:
-					badge = Badge.BOSS_SLAIN_3_GLADIATOR;
-					break;
-				case BERSERKER:
-					badge = Badge.BOSS_SLAIN_3_BERSERKER;
-					break;
-				case HEAT:
-					badge = Badge.BOSS_SLAIN_3_HEAT;
-					break;
-				case WARLOCK:
-					badge = Badge.BOSS_SLAIN_3_WARLOCK;
-					break;
-				case CHAOS:
-					badge = Badge.BOSS_SLAIN_3_CHAOS;
-					break;
-				case BATTLEMAGE:
-					badge = Badge.BOSS_SLAIN_3_BATTLEMAGE;
-					break;
-				case FREERUNNER:
-					badge = Badge.BOSS_SLAIN_3_FREERUNNER;
-					break;
-				case ASSASSIN:
-					badge = Badge.BOSS_SLAIN_3_ASSASSIN;
-					break;
-				case WILD:
-					badge = Badge.BOSS_SLAIN_3_WILD;
-					break;
-				case SNIPER:
-					badge = Badge.BOSS_SLAIN_3_SNIPER;
-					break;
-				case WARDEN:
-					badge = Badge.BOSS_SLAIN_3_WARDEN;
-					break;
-				case STOME:
-					badge = Badge.BOSS_SLAIN_3_STOME;
-					break;
-				case DESTROYER:
-					badge = Badge.BOSS_SLAIN_3_DESTROY;
-					break;
-				case GUARDIAN:
-					badge = Badge.BOSS_SLAIN_3_GUARDIAN;
-					break;
-				case WAR:
-					badge = Badge.BOSS_SLAIN_3_WAR;
-					break;
-				case KNIGHT:
-					badge = Badge.BOSS_SLAIN_3_KNIGHT;
-					break;
-				case SAVIOR:
-					badge = Badge.BOSS_SLAIN_3_SAVIOR;
-					break;
-				case FLASH:
-					badge = Badge.BOSS_SLAIN_3_FLASH;
-					break;
-				case SWORDMASTER:
-					badge = Badge.BOSS_SLAIN_3_SWORDMASTER;
-					break;
-				case SPSHOOTER:
-					badge = Badge.BOSS_SLAIN_3_SPSHOOTER;
-					break;
-				default:
-					return;
-				}
-				local.add( badge );
-				unlock(badge);
-
-				if (isUnlocked( Badge.BOSS_SLAIN_3_GLADIATOR ) &&
-						isUnlocked( Badge.BOSS_SLAIN_3_BERSERKER ) &&
-						isUnlocked( Badge.BOSS_SLAIN_3_WARLOCK ) &&
-						isUnlocked( Badge.BOSS_SLAIN_3_CHAOS ) &&
-						isUnlocked( Badge.BOSS_SLAIN_3_BATTLEMAGE ) &&
-						isUnlocked( Badge.BOSS_SLAIN_3_FREERUNNER ) &&
-						isUnlocked( Badge.BOSS_SLAIN_3_ASSASSIN ) &&
-						isUnlocked( Badge.BOSS_SLAIN_3_SNIPER ) &&
-						isUnlocked( Badge.BOSS_SLAIN_3_WARDEN ) &&
-						isUnlocked( Badge.BOSS_SLAIN_3_DESTROY ) &&
-						isUnlocked( Badge.BOSS_SLAIN_3_GUARDIAN ) &&
-						isUnlocked( Badge.BOSS_SLAIN_3_WAR ) &&
-						isUnlocked( Badge.BOSS_SLAIN_3_KNIGHT ) &&
-						isUnlocked( Badge.BOSS_SLAIN_3_SAVIOR ) &&
-						isUnlocked( Badge.BOSS_SLAIN_3_SWORDMASTER ) &&
-						isUnlocked( Badge.BOSS_SLAIN_3_SPSHOOTER ) &&
-						isUnlocked( Badge.BOSS_SLAIN_3_HEAT) &&
-						isUnlocked( Badge.BOSS_SLAIN_3_WILD) &&
-						isUnlocked( Badge.BOSS_SLAIN_3_STOME) &&
-						isUnlocked( Badge.BOSS_SLAIN_3_FLASH)
-				) {
+                boolean allUnlocked = true;
+                for (Badge b : firstBossClassBadges.values()){
+                    if (!isUnlocked(b)){
+                        allUnlocked = false;
+                        break;
+                    }
+                }
+                if (allUnlocked) {
 
 					badge = Badge.BOSS_SLAIN_3_ALL_SUBCLASSES;
 					if (!isUnlocked( badge )) {
@@ -932,7 +894,7 @@ public class Badges {
 	}
 
 	public static void validateChenUnlock(){
-		if (!isUnlocked(Badge.UNLOCK_CHEN)){
+		if (Statistics.gameWon &&  !isUnlocked(Badge.UNLOCK_CHEN)){
 			displayBadge( Badge.UNLOCK_CHEN );}
 	}
 
@@ -947,52 +909,33 @@ public class Badges {
 	public static void validateVictory() {
 
 		Badge badge = Badge.VICTORY;
+        local.add( badge );
 		displayBadge( badge );
 
-		switch (Dungeon.hero.heroClass) {
-		case WARRIOR:
-			badge = Badge.VICTORY_WARRIOR;
-			break;
-		case MAGE:
-			badge = Badge.VICTORY_MAGE;
-			break;
-		case ROGUE:
-			badge = Badge.VICTORY_ROGUE;
-			break;
-		case HUNTRESS:
-			badge = Badge.VICTORY_HUNTRESS;
-			break;
-		case ROSECAT:
-			badge = Badge.VICTORY_ROSECAT;
-			break;
-    	case NEARL:
-    		badge = Badge.VICTORY_NEARL;
-			break;
-		case CHEN:
-			badge = Badge.VICTORY_CHEN;
-			break;
-		}
-		local.add( badge );
-		unlock(badge);
+        badge = victoryClassBadges.get(Dungeon.hero.heroClass);
+        if (badge == null) return;
+        local.add( badge );
+        unlock(badge);
 
-		if (global.contains( Badge.VICTORY_WARRIOR ) &&
-			global.contains( Badge.VICTORY_MAGE ) &&
-			global.contains( Badge.VICTORY_ROGUE ) &&
-			global.contains( Badge.VICTORY_HUNTRESS ) &&
-			global.contains( Badge.VICTORY_ROSECAT ) &&
-		   global.contains( Badge.VICTORY_NEARL ) &&
-			global.contains( Badge.VICTORY_CHEN )
-		){
-
-			badge = Badge.VICTORY_ALL_CLASSES;
-			displayBadge( badge );
-		}
-	}
+        boolean allUnlocked = true;
+        for (Badge b : victoryClassBadges.values()){
+            if (!isUnlocked(b)){
+                allUnlocked = false;
+                break;
+            }
+        }
+        if (allUnlocked){
+            badge = Badge.VICTORY_ALL_CLASSES;
+            displayBadge( badge );
+        }
+    }
 
 	public static void validateNoKilling() {
-		if (!isUnlocked( Badge.NO_MONSTERS_SLAIN ) && Statistics.completedWithNoKilling) {
+        if (!local.contains( Badge.NO_MONSTERS_SLAIN ) && Statistics.completedWithNoKilling) {
 			Badge badge = Badge.NO_MONSTERS_SLAIN;
-			displayBadge( badge );
+            local.add( badge );
+            displayBadge( badge );
+            Statistics.completedWithNoKilling = false;
 		}
 	}
 
@@ -1011,12 +954,15 @@ public class Badges {
 		}
 		if (Rankings.INSTANCE.totalNumber >= 50) {
 			badge = Badge.GAMES_PLAYED_2;
+            unlock(badge);
 		}
 		if (Rankings.INSTANCE.totalNumber >= 250) {
 			badge = Badge.GAMES_PLAYED_3;
+            unlock(badge);
 		}
 		if (Rankings.INSTANCE.totalNumber >= 1000) {
 			badge = Badge.GAMES_PLAYED_4;
+            unlock(badge);
 		}
 
 		displayBadge( badge );
@@ -1026,222 +972,158 @@ public class Badges {
 		Badge badge = null;
 		if (SPDSettings.getSpecialcoin() >= 10) {
 			badge = Badge.CERTIFICATE_1;
+            local.add( badge );
 		}
 		if (SPDSettings.getSpecialcoin() >= 50) {
 			badge = Badge.CERTIFICATE_2;
+            unlock(badge);
+            local.add( badge );
 		}
 		if (SPDSettings.getSpecialcoin() >= 150) {
 			badge = Badge.CERTIFICATE_3;
+            unlock(badge);
+            local.add( badge );
 		}
 		if (SPDSettings.getSpecialcoin() >= 300) {
 			badge = Badge.CERTIFICATE_4;
+            unlock(badge);
+            local.add( badge );
 		}
 
-		if (badge != null) {
-			unlock(badge);
-		}
+        displayBadge( badge );
 	}
 
 	public static void UseHealBox() {
 		Badge badge = Badge.USE_HEALBOX;
 		if (!isUnlocked(badge )) {
+            local.add( badge );
 			displayBadge( badge );
 		}
 	}
 
 	public static void validateskadiskin() {
 		Badge badge = Badge.SKIN_BABOSKADI;
+        local.add( badge );
 		displayBadge( badge );
 	}
 
 	public static void validategrnskin() {
 		Badge badge = Badge.SKIN_GRN;
+        local.add( badge );
 		displayBadge( badge );
 	}
 
 	public static void validatejessiskin() {
 		Badge badge = Badge.SKIN_JESSI;
+        local.add( badge );
 		displayBadge( badge );
 	}
 
 	public static void validatelappyskin() {
 		Badge badge = Badge.SKIN_LAPPY;
+        local.add( badge );
 		displayBadge( badge );
 	}
 
 	public static void validatetaluskin() {
 		Badge badge = Badge.SKIN_TALU;
+        local.add( badge );
 		displayBadge( badge );
 	}
 
 	public static void validatenovaskin() {
 		Badge badge = Badge.SKIN_NOVA;
+        local.add( badge );
 		displayBadge( badge );
 	}
 
 	public static void validatesusuuskin() {
 		Badge badge = Badge.SKIN_SUSUU;
+        local.add( badge );
 		displayBadge( badge );
 	}
 
 	public static void validateleafskin() {
 		Badge badge = Badge.SKIN_LEAF;
+        local.add( badge );
 		displayBadge( badge );
 	}
 
 	public static void validateRockskin() {
 		Badge badge = Badge.SKIN_MUDROCK;
+        local.add( badge );
 		displayBadge( badge );
 	}
 
 	public static void validateAstesiaskin() {
 		Badge badge = Badge.SKIN_ASTESIA;
+        local.add( badge );
 		displayBadge( badge );
 	}
 
 	public static void validatesameskin() {
 		Badge badge = Badge.SKIN_SPECTER;
+        local.add( badge );
 		displayBadge( badge );
 	}
 
 	public static void validateschwazrskin() {
 		Badge badge = Badge.SKIN_SCHWARZ;
+        local.add( badge );
 		displayBadge( badge );
 	}
 
 	public static void validatearchskin() {
 		Badge badge = Badge.SKIN_ARCH;
+        local.add( badge );
 		displayBadge( badge );
 	}
 
 	public static void validatetomimiskin() {
 		Badge badge = Badge.SKIN_TOMIMI;
+        local.add( badge );
 		displayBadge( badge );
 	}
 
 	public static void validatefrankaskin() {
 		Badge badge = Badge.SKIN_FRANKA;
+        local.add( badge );
 		displayBadge( badge );
 	}
 
 	public static void validateweedyskin() {
 		Badge badge = Badge.SKIN_WEEDY;
+        local.add( badge );
 		displayBadge( badge );
 	}
 
 	public static void validategladiiaskin() {
 		Badge badge = Badge.SKIN_GLADIIA;
+        local.add( badge );
 		displayBadge( badge );
 	}
 
-	// 0.3.2버전의 스킨 관련 처리로 인해 추가된 구문입니다. 추후 필요없어질 수 있습니다.
-	public static void allskindestroy() {
-		saveNeeded = true;
-		if(isUnlocked(Badge.SKIN_TALU)) {
-			global.remove(Badge.SKIN_TALU);
-		}
-		if(isUnlocked(Badge.SKIN_NOVA)) {
-			global.remove(Badge.SKIN_NOVA);
-		}
-		if(isUnlocked(Badge.SKIN_BABOSKADI)) {
-			global.remove(Badge.SKIN_BABOSKADI);
-		}
-		if(isUnlocked(Badge.SKIN_GRN)) {
-			global.remove(Badge.SKIN_GRN);
-		}
-		if(isUnlocked(Badge.SKIN_JESSI)) {
-			global.remove(Badge.SKIN_JESSI);
-		}
-		if(isUnlocked(Badge.SKIN_SUSUU)) {
-			global.remove(Badge.SKIN_SUSUU);
-		}
-		if(isUnlocked(Badge.SKIN_LAPPY)) {
-			global.remove(Badge.SKIN_LAPPY);
-		}
-		if(isUnlocked(Badge.SKIN_LEAF)) {
-			global.remove(Badge.SKIN_LEAF);
-		}
-		if(isUnlocked(Badge.SKIN_MUDROCK)) {
-			global.remove(Badge.SKIN_MUDROCK);
-		}
-		if(isUnlocked(Badge.SKIN_SPECTER)) {
-			global.remove(Badge.SKIN_SPECTER);
-		}
-		if(isUnlocked(Badge.SKIN_ASTESIA)) {
-			global.remove(Badge.SKIN_ASTESIA);
-		}
-		if(isUnlocked(Badge.SKIN_SCHWARZ)) {
-			global.remove(Badge.SKIN_SCHWARZ);
-		}
-		if(isUnlocked(Badge.SKIN_ARCH)) {
-			global.remove(Badge.SKIN_ARCH);
-		}
-		if(isUnlocked(Badge.SKIN_TOMIMI)) {
-			global.remove(Badge.SKIN_TOMIMI);
-		}
-		if(isUnlocked(Badge.SKIN_FRANKA)) {
-			global.remove(Badge.SKIN_FRANKA);
-		}
-		if(isUnlocked(Badge.SKIN_WEEDY)) {
-			global.remove(Badge.SKIN_WEEDY);
-		}
-
-		if (Badges.isUnlocked(Badge.SUPPORT)) {
-			Badges.validatetaluskin();
-			Badges.validatenovaskin();
-			Badges.validateskadiskin();
-			Badges.validatesusuuskin();
-			Badges.validategrnskin();
-			Badges.validatejessiskin();
-			Badges.validatelappyskin();
-			Badges.validateleafskin();
-			Badges.validateRockskin();
-			Badges.validatesameskin();
-			Badges.validateAstesiaskin();
-			Badges.validateschwazrskin();
-			Badges.validatearchskin();
-			Badges.validatefrankaskin();
-			Badges.validategladiiaskin();
-		}
-
-		// 배지 파괴 후, 조건에 맞는 배지는 다시 획득합니다.
-		if(!Badges.isUnlocked(Badges.Badge.SKIN_TALU) && Badges.isUnlocked(Badges.Badge.EVILTIME_END)) {Badges.validatetaluskin();}
-		if(!Badges.isUnlocked(Badges.Badge.SKIN_NOVA) && Badges.isUnlocked(Badges.Badge.FRAGGING)) { Badges.validatenovaskin();}
-		if(!Badges.isUnlocked(Badges.Badge.SKIN_BABOSKADI) && Badges.isUnlocked(Badges.Badge.GAMES_PLAYED_2)) { Badges.validateskadiskin();}
-		if(!Badges.isUnlocked(Badges.Badge.SKIN_SUSUU) && Badges.isUnlocked(Badges.Badge.ALL_POTIONS_IDENTIFIED)) { Badges.validatesusuuskin();}
-		if(!Badges.isUnlocked(Badges.Badge.SKIN_GRN) && Badges.isUnlocked(Badges.Badge.GAMES_PLAYED_1)) { Badges.validategrnskin();}
-		if(!Badges.isUnlocked(Badges.Badge.SKIN_JESSI) && Badges.isUnlocked(Badges.Badge.UNLOCK_MAGE)) { Badges.validatejessiskin();}
-		if(!Badges.isUnlocked(Badges.Badge.SKIN_LAPPY) && Badges.isUnlocked(Badges.Badge.HAPPY_END)) { Badges.validatelappyskin();}
-		if(!Badges.isUnlocked(Badge.SKIN_LEAF) && Badges.isUnlocked(Badge.CHAMPION_1)) { Badges.validateleafskin();}
-		if(!Badges.isUnlocked(Badge.SKIN_MUDROCK) && Badges.isUnlocked(Badge.BOSS_SLAIN_3_ALL_SUBCLASSES)) { Badges.validateRockskin();}
-		if(!Badges.isUnlocked(Badge.SKIN_SPECTER) && Badges.isUnlocked(Badge.GAMES_PLAYED_1)) { Badges.validatesameskin();}
-		if(!Badges.isUnlocked(Badge.SKIN_ASTESIA) && Badges.isUnlocked(Badge.SLAIN_PURSUER)) { Badges.validateAstesiaskin();}
-		if(!Badges.isUnlocked(Badge.SKIN_SCHWARZ) && Badges.isUnlocked(Badge.SIESTA_PART2)) { Badges.validateschwazrskin();}
-		if(!Badges.isUnlocked(Badge.SKIN_ARCH) && Badges.isUnlocked(Badge.GREY_CHAMPION1)) { Badges.validatearchskin();}
-		if(!Badges.isUnlocked(Badge.SKIN_TOMIMI) && Badges.isUnlocked(Badge.GAVIAL_PART2)) { Badges.validatetomimiskin();}
-		if(!Badges.isUnlocked(Badge.SKIN_FRANKA) && Badges.isUnlocked(Badge.USE_HEALBOX)) { Badges.validatefrankaskin();}
-		if(!Badges.isUnlocked(Badge.SKIN_GLADIIA) && Badges.isUnlocked(Badge.IBERIA_PART2)) { Badges.validategladiiaskin();}
-	}
-
-	//necessary in order to display the happy end badge in the surface scene
+    //necessary in order to display the happy end badge in the surface scene
 	public static void silentValidateHappyEnd() {
-		if (!local.contains( Badge.HAPPY_END ) && !Dungeon.isChallenged(TEST)){//change from budding
+		if (!Dungeon.isChallenged(TEST)){
 			local.add( Badge.HAPPY_END );
 		}
 	}
 
 	//하극상 배지용
 	public static void silentValidateFragging() {
-		if (!local.contains( Badge.FRAGGING ) && !Dungeon.isChallenged(TEST)){//change from budding
+		if (!Dungeon.isChallenged(TEST)){
 			local.add( Badge.FRAGGING );
 		}
 	}
 
 	public static void validateHappyEnd() {
-		displayBadge( Badge.HAPPY_END );
+        local.add( Badge.HAPPY_END );
+        displayBadge( Badge.HAPPY_END );
 	}
 	public static void validateFragging() {
-		displayBadge( Badge.FRAGGING );
+        local.add( Badge.FRAGGING );
+        displayBadge( Badge.FRAGGING );
 	}
 
 	public static void validateChampion( int challenges ) {
@@ -1265,110 +1147,54 @@ public class Badges {
 		local.add(badge);
 		displayBadge( badge );
 	}
+    private static LinkedHashMap<HeroClass, Badge> firstChamionClassBadges = new LinkedHashMap<>();
+    static {
+        firstChamionClassBadges.put(HeroClass.WARRIOR, Badge.BLAZE_CHAMPION1);
+        firstChamionClassBadges.put(HeroClass.MAGE, Badge.AMIYA_CHAMPION1);
+        firstChamionClassBadges.put(HeroClass.ROGUE, Badge.RED_CHAMPION1);
+        firstChamionClassBadges.put(HeroClass.HUNTRESS, Badge.GREY_CHAMPION1);
+        firstChamionClassBadges.put(HeroClass.ROSECAT, Badge.ROSE_CHAMPION1);
+        firstChamionClassBadges.put(HeroClass.NEARL, Badge.NEARL_CHAMPION1);
+        firstChamionClassBadges.put(HeroClass.CHEN, Badge.CHEN_CHAMPION1);
+    }
 
+    private static LinkedHashMap<HeroClass, Badge> secondChamionClassBadges = new LinkedHashMap<>();
+    static {
+        secondChamionClassBadges.put(HeroClass.WARRIOR, Badge.BLAZE_CHAMPION2);
+        secondChamionClassBadges.put(HeroClass.MAGE, Badge.AMIYA_CHAMPION2);
+        secondChamionClassBadges.put(HeroClass.ROGUE, Badge.RED_CHAMPION2);
+        secondChamionClassBadges.put(HeroClass.HUNTRESS, Badge.GREY_CHAMPION2);
+        secondChamionClassBadges.put(HeroClass.ROSECAT, Badge.ROSE_CHAMPION2);
+        secondChamionClassBadges.put(HeroClass.NEARL, Badge.NEARL_CHAMPION2);
+        secondChamionClassBadges.put(HeroClass.CHEN, Badge.CHEN_CHAMPION2);
+    }
+
+    private static LinkedHashMap<HeroClass, Badge> thirdChamionClassBadges = new LinkedHashMap<>();
+    static {
+        thirdChamionClassBadges.put(HeroClass.WARRIOR, Badge.BLAZE_CHAMPION3);
+        thirdChamionClassBadges.put(HeroClass.MAGE, Badge.AMIYA_CHAMPION3);
+        thirdChamionClassBadges.put(HeroClass.ROGUE, Badge.RED_CHAMPION3);
+        thirdChamionClassBadges.put(HeroClass.HUNTRESS, Badge.GREY_CHAMPION3);
+        thirdChamionClassBadges.put(HeroClass.ROSECAT, Badge.ROSE_CHAMPION3);
+        thirdChamionClassBadges.put(HeroClass.NEARL, Badge.NEARL_CHAMPION3);
+        thirdChamionClassBadges.put(HeroClass.CHEN, Badge.CHEN_CHAMPION3);
+    }
 	public static void validateChampion_char( int challenges ) {
 		if (challenges == 0) return;
 		Badge badge = null;
 
-		switch (Dungeon.hero.heroClass) {
-			case WARRIOR:
-				if (challenges >= 1) {
-					badge = Badge.BLAZE_CHAMPION1;
-				}
-				if (challenges >= 3) {
-					unlock(badge);
-					badge = Badge.BLAZE_CHAMPION2;
-				}
-				if (challenges >= 6) {
-					unlock(badge);
-					badge = Badge.BLAZE_CHAMPION3;
-				}
-				break;
-			case MAGE:
-				if (challenges >= 1) {
-					badge = Badge.AMIYA_CHAMPION1;
-				}
-				if (challenges >= 3) {
-					unlock(badge);
-					badge = Badge.AMIYA_CHAMPION2;
-				}
-				if (challenges >= 6) {
-					unlock(badge);
-					badge = Badge.AMIYA_CHAMPION3;
-				}
-				break;
-			case ROGUE:
-				if (challenges >= 1) {
-					badge = Badge.RED_CHAMPION1;
-				}
-				if (challenges >= 3) {
-					unlock(badge);
-					badge = Badge.RED_CHAMPION2;
-				}
-				if (challenges >= 6) {
-					unlock(badge);
-					badge = Badge.RED_CHAMPION3;
-				}
-				break;
-			case HUNTRESS:
-				if (challenges >= 1) {
-					badge = Badge.GREY_CHAMPION1;
-				}
-				if (challenges >= 3) {
-					unlock(badge);
-					badge = Badge.GREY_CHAMPION2;
-				}
-				if (challenges >= 6) {
-					unlock(badge);
-					badge = Badge.GREY_CHAMPION3;
-				}
-				break;
-			case ROSECAT:
-				if (challenges >= 1) {
-					badge = Badge.ROSE_CHAMPION1;
-				}
-				if (challenges >= 3) {
-					unlock(badge);
-					badge = Badge.ROSE_CHAMPION2;
-				}
-				if (challenges >= 6) {
-					unlock(badge);
-					badge = Badge.ROSE_CHAMPION3;
-				}
-				break;
-			case NEARL:
-				if (challenges >= 1) {
-					badge = Badge.NEARL_CHAMPION1;
-				}
-				if (challenges >= 3) {
-					unlock(badge);
-					badge = Badge.NEARL_CHAMPION2;
-				}
-				if (challenges >= 6) {
-					unlock(badge);
-					badge = Badge.NEARL_CHAMPION3;
-				}
-				break;
-			case CHEN:
-				if (challenges >= 1) {
-					badge = Badge.CHEN_CHAMPION1;
-				}
-				if (challenges >= 3) {
-					unlock(badge);
-					badge = Badge.CHEN_CHAMPION2;
-				}
-				if (challenges >= 6) {
-					unlock(badge);
-					badge = Badge.CHEN_CHAMPION3;
-				}
-				break;
-			default:
-				break;
-		}
+        if (challenges >= 1) {
+            badge = firstChamionClassBadges.get(Dungeon.hero.heroClass);
+        }
+        if (challenges >= 3) {
+            badge = secondChamionClassBadges.get(Dungeon.hero.heroClass);
+        }
+        if (challenges >= 6) {
+            badge = thirdChamionClassBadges.get(Dungeon.hero.heroClass);
+        }
 
-		if (badge != null) {
 		local.add(badge);
-		displayBadge( badge ); }
+		displayBadge( badge );
 	}
 
 	public static void validateroaringflare() {
@@ -1408,15 +1234,11 @@ public class Badges {
 	}
     public static void validateiberia1() {
         if (!local.contains( Badge.IBERIA_PART1 )){
-            global.add(Badge.IBERIA_PART1);
-            saveNeeded = true;
             local.add(Badge.IBERIA_PART1);
             displayBadge( Badge.IBERIA_PART1 );}
     }
     public static void validateiberia2() {
         if (!local.contains( Badge.IBERIA_PART2 )){
-            global.add(Badge.IBERIA_PART2);
-            saveNeeded = true;
             local.add(Badge.IBERIA_PART2);
             displayBadge( Badge.IBERIA_PART2 );}
     }

@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.TomorrowRogueNight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.SeaBoss1;
@@ -25,12 +26,12 @@ public class SeaBossLevel1 extends Level {
 
     @Override
     public String tilesTex() {
-        return Assets.Environment.TILSE_IBERIA2;
+        return Assets.Environment.TILSE_IBERIA;
     }
 
     @Override
     public String waterTex() {
-        return Assets.Environment.WATER_IBERIA2;
+        return Assets.Environment.WATER_IBERIA;
     }
 
     @Override
@@ -43,7 +44,7 @@ public class SeaBossLevel1 extends Level {
     @Override
     protected boolean build() {
 
-        setSize(17, 12);
+        setSize(17, 13);
         Arrays.fill( map, Terrain.EMPTY );
 
         feeling = Feeling.NONE;
@@ -64,18 +65,20 @@ public class SeaBossLevel1 extends Level {
     // 대문자 E로 표시한 부분은 "입구"와 "출구"임으로 벽으로 막지 말거나 바꾸기전에 연락하면 따로 설명해드림 (출구는 사실 별 의미없긴함)
     // 맵 사이즈를 늘릴 생각이라면 그것도 추가로 연락바람
     private static final int[] endMap = new int[]{
-            S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S,
-            S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S,
-            S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S,
-            S, S, S, S, S, S, S, S, D, S, S, S, S, S, S, S, S,
-            S, E, e, e, e, e, e, e, e, e, e, e, e, e, e, S, S,
-            S, S, e, S, e, e, e, S, S, e, e, e, e, e, e, S, S,
-            S, S, e, e, e, e, e, e, e, S, e, e, S, e, e, S, S,
-            S, S, e, e, e, S, S, S, E, S, e, e, e, e, e, S, S,
-            S, S, e, e, e, e, e, e, e, e, e, e, e, e, e, S, S,
-            S, S, S, e, e, e, e, e, e, e, S, S, S, S, S, S, S,
-            S, S, S, e, e, e, e, e, e, e, e, e, e, e, e, E, S,
-            S, S, S, S, S, S, S, S, E, S, S, S, S, S, S, S, S,
+            S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, // 0   - 16
+            S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, // 17  - 33
+            S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, // 34  - 50
+            S, S, S, S, S, S, S, S, D, S, S, S, S, S, S, S, S, // 51  - 67
+            S, S, e, e, e, e, e, e, e, e, e, e, e, e, e, S, S, // 68  - 84
+            S, S, e, S, e, e, e, S, S, e, e, e, e, e, e, S, S, // 85  - 101
+            S, S, e, e, e, e, e, e, e, S, e, e, S, e, e, S, S, // 102 - 118
+            S, S, e, e, e, S, S, S, E, S, e, e, e, e, e, S, S, // 119 - 135
+            S, S, e, e, e, e, e, e, e, e, e, e, e, e, e, S, S, // 136 - 152
+            S, S, S, e, e, e, e, e, e, e, S, S, S, S, S, S, S, // 153 - 169
+            S, S, S, e, e, e, e, e, e, e, e, e, e, e, e, E, S, // 170 - 186
+            S, S, S, S, S, S, S, S, E, S, S, S, S, S, S, S, S, // 187 - 203
+            S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, // 204 - 220
+            S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, S, // 221 - 237
     };
 
     private void setMap(){
@@ -88,7 +91,7 @@ public class SeaBossLevel1 extends Level {
             cell += width();
         }
 
-        entrance = 178; // 입구 위치
+        entrance = 195; // 입구 위치
         exit = 59; // 출구 위치
 
         map[entrance] = Terrain.ENTRANCE;
@@ -145,6 +148,8 @@ public class SeaBossLevel1 extends Level {
 
     }
 
+    public static boolean isBossDefeated = true;
+
     @Override
     public void seal() {
         super.seal();
@@ -157,11 +162,13 @@ public class SeaBossLevel1 extends Level {
 
         SeaObject obj = new SeaObject();
         obj.pos = 127;
+        set(obj.pos, Terrain.STATUE);
         GameScene.add( obj );
 
         SeaBoss1 boss = new SeaBoss1();
         boss.pos = 76; // 여길 수정
         GameScene.add( boss );
+        isBossDefeated = false;
 
         Dungeon.observe();
     }
@@ -169,16 +176,19 @@ public class SeaBossLevel1 extends Level {
     @Override
     public void unseal() {
         super.unseal();
+        isBossDefeated = true;
         set( entrance, Terrain.ENTRANCE );
         GameScene.updateMap( entrance );
 
         set( exit, Terrain.EXIT );
         GameScene.updateMap( exit );
 
+        customTiles.clear();
         CustomeMap2 vis = new CustomeMap2();
         vis.setRect(0, 0, width(), height());
         customTiles.add(vis);
 
+        TomorrowRogueNight.resetScene();
         Dungeon.observe();
     }
 
@@ -192,16 +202,6 @@ public class SeaBossLevel1 extends Level {
 
     @Override
     protected void createItems() {
-    }
-
-    @Override
-    public String tileName( int tile ) {
-        switch (tile) {
-            case Terrain.SEA_TERROR:
-                return Messages.get(SeaLevel_part1.class, "sea_terror_name");
-            default:
-                return super.tileName( tile );
-        }
     }
 
     @Override
@@ -221,8 +221,6 @@ public class SeaBossLevel1 extends Level {
                 return Messages.get(CityLevel.class, "statue_desc");
             case Terrain.BOOKSHELF:
                 return Messages.get(CityLevel.class, "bookshelf_desc");
-            case Terrain.SEA_TERROR:
-                return Messages.get(SeaLevel_part1.class, "sea_terror_desc");
             default:
                 return super.tileDesc( tile );
         }
@@ -246,8 +244,17 @@ public class SeaBossLevel1 extends Level {
         return visuals;
     }
 
+    private static final String BOSS_DEFEATED = "bossDefeated";
+
+    @Override
+    public void storeInBundle(Bundle bundle) {
+        super.storeInBundle(bundle);
+        bundle.put(BOSS_DEFEATED, isBossDefeated);
+    }
+
     @Override
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
+        isBossDefeated = bundle.getBoolean(BOSS_DEFEATED);
     }
 }

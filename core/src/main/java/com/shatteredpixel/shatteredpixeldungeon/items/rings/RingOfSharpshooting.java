@@ -34,12 +34,26 @@ public class RingOfSharpshooting extends Ring {
 	}
 
 	public String statsInfo() {
-		if (isIdentified()){
-			return Messages.get(this, "stats", soloBuffedBonus(), new DecimalFormat("#.##").format(100f * (Math.pow(1.2, soloBonus()) - 1f)));
-		} else {
-			return Messages.get(this, "typical_stats", 1, new DecimalFormat("#.##").format(20f));
-		}
+        if (isIdentified()){
+            return Messages.get(this, "stats", soloBuffedBonus(),
+                    new DecimalFormat("#.##").format(100f * (Math.pow(1.2, soloBonus()) - 1f)),
+                    new DecimalFormat("#.##").format(100f * Math.min(1f, (Math.pow(1.07, soloBonus())) - 1f)),
+                    new DecimalFormat("#.##").format(100f * Math.min(1f, (Math.pow(1.09, soloBonus())) - 1f)));
+        } else {
+            return Messages.get(this, "typical_stats", 1,
+                    new DecimalFormat("#.##").format(20f),
+                    new DecimalFormat("#.##").format(8f),
+                    new DecimalFormat("#.##").format(9f));
+        }
 	}
+
+    public static float ammoMultiplier( Char target ){
+        return (float)(Math.min(1f, (Math.pow(1.06, getBonus(target, Aim.class))) - 1f));
+    }
+
+    public static float accuracyBonus(Char target ){
+        return (float)(Math.pow(1.09, getBonus(target, Aim.class)) - 1f);
+    }
 	
 	@Override
 	protected RingBuff buff( ) {

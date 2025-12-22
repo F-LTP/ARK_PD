@@ -12,10 +12,11 @@ public class C1_9mm extends GunWeapon {
         hitSound = Assets.Sounds.HIT_GUN;
         hitSoundPitch = 0.9f;
 
-        FIRE_ACC_MULT = 3f;
+
         FIRE_DELAY_MULT = 0.66f;
-        FIRE_DAMAGE_MULT = 0.6f;
         bulletMax = 34;
+        MIN_RANGE = 1;
+        MAX_RANGE = 4;
 
         usesTargeting = true;
 
@@ -25,7 +26,20 @@ public class C1_9mm extends GunWeapon {
     }
 
     @Override
+    public float getFireAcc(int from, int to) {
+        int distance = getDistance(from, to);
+
+        // 최대 사거리 7. 유효 사거리 1-4, 보정 없음.
+        if (isWithinRange(distance)) {
+            return 1f;
+        } else if (distance > getMaxRange()) {
+            return Math.max(0f, 1f - 0.25f * (distance - getMaxRange()));
+        }
+
+        return 1f;
+    }
+    @Override
     protected void specialFire(Char ch) {
-        Buff.affect(ch, Slow.class, 3f);
+        Buff.affect(ch, Slow.class, 2f);
     }
 }

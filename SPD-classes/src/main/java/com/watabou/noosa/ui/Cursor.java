@@ -26,6 +26,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.watabou.input.ControllerHandler;
 import com.watabou.noosa.Game;
+import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.FileUtils;
 import com.watabou.utils.PointF;
 
@@ -51,6 +52,11 @@ public class Cursor {
     private static int lastZoom;
 
     public static void setCustomCursor(Type type, int zoom){
+
+        //custom cursors (i.e. images which replace the mouse icon) are only supported on desktop
+        if (!DeviceCompat.isDesktop()){
+            return;
+        }
 
         if (currentCursor != null){
             if (lastType == type && lastZoom == zoom){
@@ -97,12 +103,11 @@ public class Cursor {
         if (captured) {
             Gdx.input.setCursorCatched(true);
         } else {
-            if (ControllerHandler.controllerPointerActive()) {//change from budding
+            if (ControllerHandler.controllerPointerActive()) {
                 ControllerHandler.setControllerPointer(true);
                 ControllerHandler.updateControllerPointer(new PointF(Game.width/2, Game.height/2), false);
             } else {
                 Gdx.input.setCursorCatched(false);
-                Gdx.input.setCursorPosition(Game.width/2, Game.height/2);
             }
         }
     }

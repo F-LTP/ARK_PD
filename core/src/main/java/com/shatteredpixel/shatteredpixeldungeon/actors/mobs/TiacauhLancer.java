@@ -13,8 +13,8 @@ public class TiacauhLancer extends Mob {
     {
         spriteClass =  Tiacauh_lancerSprite.class;
 
-        HP = HT = 110;
-        defenseSkill = 15;
+        HP = HT = 80;
+        defenseSkill = 13;
 
         EXP = 14;
         maxLvl = 30;

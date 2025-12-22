@@ -44,7 +44,7 @@ public class Isharmla extends Mob {
 
     int summonCooldown = 5;
     int shieldCooldown = 8;
-    int shieldAmount = Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? 50 : 30;
+    int shieldAmount = Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? 30 : 15;
 
     @Override
     public int defenseSkill(Char enemy) {
@@ -110,6 +110,7 @@ public class Isharmla extends Mob {
         GameScene.flash(0x80FFFFFF);
         Camera.main.shake(2, 2f);
         Dungeon.observe();
+        GameScene.updateFog();
     }
 
     private void updateTerrain() {

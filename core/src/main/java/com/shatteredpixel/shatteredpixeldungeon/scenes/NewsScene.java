@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.Camera;
 import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.RectF;
 
 public class NewsScene extends PixelScene {
 
@@ -50,27 +51,32 @@ public class NewsScene extends PixelScene {
 		int w = Camera.main.width;
 		int h = Camera.main.height;
 
+        RectF insets = getCommonInsets();
+
+        w -= insets.left + insets.right;
+        h -= insets.top + insets.bottom;
+
 		int fullWidth = PixelScene.landscape() ? 202 : 100;
-		int left = (w - fullWidth)/2;
+        int left = (int)insets.left + (w - fullWidth)/2;
 
 		Archs archs = new Archs();
 		archs.setSize(w, h);
 		add(archs);
 
 		ExitButton btnExit = new ExitButton();
-		btnExit.setPos(w - btnExit.width(), 0);
+        btnExit.setPos(insets.left + w - btnExit.width(), insets.top);
 		add(btnExit);
 
 		RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
 		title.hardlight(Window.TITLE_COLOR);
 		title.setPos(
-				(w - title.width()) / 2f,
-				(20 - title.height()) / 2f
+                insets.left + (w - title.width()) / 2f,
+                insets.top + (20 - title.height()) / 2f
 		);
 		align(title);
 		add(title);
 
-		float top = 18;
+		float top = 18+ insets.top;
 
 		StyledButton btnSite = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "read_more1")){
 			@Override
@@ -101,16 +107,16 @@ public class NewsScene extends PixelScene {
 		};
 		btnSite.icon(Icons.get(Icons.NAMSEK));
 		btnSite.textColor(Window.TITLE_COLOR);
-		btnSite.setRect(left, top, fullWidth, BTN_HEIGHT);
+        btnSite.setRect(left, top + 4, fullWidth, BTN_HEIGHT);
 		add(btnSite);
 
-		btnSite2.icon(Icons.get(Icons.DANWO));
+		btnSite2.icon(Icons.get(Icons.DANWOO));
 		btnSite2.textColor(Window.TITLE_COLOR);
-		btnSite2.setRect(left, top*4, fullWidth, BTN_HEIGHT);
+        btnSite2.setRect(left, btnSite.bottom() + 4, fullWidth, BTN_HEIGHT);
 		add(btnSite2);
 
 		btnSite3.textColor(Window.TITLE_COLOR);
-		btnSite3.setRect(left, top*7, fullWidth, BTN_HEIGHT);
+        btnSite3.setRect(left, btnSite2.bottom() + 4, fullWidth, BTN_HEIGHT);
 		add(btnSite3);
 
 	}

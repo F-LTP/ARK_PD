@@ -5,6 +5,8 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SanityPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.SeaPlatform;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.IberiaPainter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.SiestaPainter;
@@ -43,10 +45,23 @@ public class SeaLevel_part2 extends RegularLevel {
     }
 
     @Override
+    public void create() {
+        addItemToSpawn(new SeaPlatform.LittleHandy());
+        addItemToSpawn(new SeaPlatform.LittleHandy());
+        addItemToSpawn(new SeaPlatform.LittleHandy());
+        addItemToSpawn(new SeaPlatform.LittleHandy());
+        super.create();
+    }
+
+    @Override
     protected void createItems() {
         if (Dungeon.depth == 37 || Dungeon.depth == 39) {
             addItemToSpawn(new PotionOfHealing());}
-        else addItemToSpawn(new PotionOfStrength());
+        else if (Dungeon.depth == 38) {
+            addItemToSpawn(new ScrollOfUpgrade());
+        } else {
+            addItemToSpawn(new PotionOfStrength());
+        }
         addItemToSpawn(new SanityPotion());
         super.createItems();
     }
@@ -93,18 +108,6 @@ public class SeaLevel_part2 extends RegularLevel {
         };
     }
 
-
-
-    @Override
-    public String tileName( int tile ) {
-        switch (tile) {
-            case Terrain.SEA_TERROR:
-                return Messages.get(SeaLevel_part1.class, "sea_terror_name");
-            default:
-                return super.tileName( tile );
-        }
-    }
-
     @Override
     public String tileDesc(int tile) {
         switch (tile) {
@@ -122,8 +125,6 @@ public class SeaLevel_part2 extends RegularLevel {
                 return Messages.get(CityLevel.class, "statue_desc");
             case Terrain.BOOKSHELF:
                 return Messages.get(CityLevel.class, "bookshelf_desc");
-            case Terrain.SEA_TERROR:
-                return Messages.get(SeaLevel_part1.class, "sea_terror_desc");
             default:
                 return super.tileDesc( tile );
         }

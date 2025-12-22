@@ -296,7 +296,7 @@ public class Tomimi extends Mob {
             m.die(null);
         }
 
-        Dungeon.level.drop(new Certificate(30), pos).sprite.drop(pos);
+        Dungeon.level.drop(new Certificate(40), pos).sprite.drop(pos);
 
         GameScene.bossSlain();
         Dungeon.level.unseal();

@@ -34,7 +34,7 @@ public class IsharmlaSeabornBody extends Mob {
     // 모든 믈라 파츠가 파괴되면 사망
     private boolean isDead = false;
     private int cooldown = 8;
-    int healAmount = Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? 60 : 40;
+    int healAmount = Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? 50 : 40;
 
     @Override
     public void notice() {
@@ -81,7 +81,7 @@ public class IsharmlaSeabornBody extends Mob {
                     mob.HP = Math.min(mob.HT, mob.HP + healAmount);
                 }
             }
-            cooldown = Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? 6 : 10;
+            cooldown = Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? 6 : 9;
         }
 
         return super.act();

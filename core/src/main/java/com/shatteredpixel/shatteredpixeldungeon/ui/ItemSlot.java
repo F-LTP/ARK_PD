@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Button;
+import com.watabou.utils.Rect;
 
 public class ItemSlot extends Button {
 
@@ -45,6 +46,8 @@ public class ItemSlot extends Button {
 	
 	private static final float ENABLED	= 1.0f;
 	private static final float DISABLED	= 0.3f;
+
+    private Rect margin = new Rect();
 	
 	protected ItemSprite sprite;
 	protected Item       item;
@@ -110,48 +113,75 @@ public class ItemSlot extends Button {
 	@Override
 	protected void layout() {
 		super.layout();
-		
-		sprite.x = x + (width - sprite.width * 0.65f);
-		sprite.y = y + (height - sprite.height * 0.625f);
+
+        sprite.x = x + margin.left + (width - sprite.width * 0.65f - (margin.left + margin.right)) / 2f;
+        sprite.y = y + margin.top + (height - sprite.height * 0.625f - (margin.top + margin.bottom)) / 2f;
 		PixelScene.align(sprite);
 		
 		if (status != null) {
 			status.measure();
-			if (status.width > width){
+            if (status.width > width - (margin.left + margin.right)){
 				status.scale.set(PixelScene.align(0.8f));
 			} else {
 				status.scale.set(1f);
 			}
-			status.x = x;
-			status.y = y;
+            status.x = x + margin.left;
+            status.y = y + margin.top;
 			PixelScene.align(status);
 		}
 		
 		if (extra != null) {
-			extra.x = x + (width - extra.width());
-			extra.y = y;
+            extra.x = x + (width - extra.width()) - margin.right;
+            extra.y = y + margin.top;
 			PixelScene.align(extra);
+            if ((status.width() + extra.width()) > width){
+                extra.visible = false;
+            } else if (item != null) {
+                extra.visible = true;
+            }
 		}
 
 		if (itemIcon != null){
-			itemIcon.x = x + width - (ItemSpriteSheet.Icons.SIZE + itemIcon.width())/2f;
-			itemIcon.y = y + (ItemSpriteSheet.Icons.SIZE - itemIcon.height)/2f;
+            //center the icon slightly if there is enough room
+            if (width >= 24 || height >= 24) {
+                itemIcon.x = x + width - (ItemSpriteSheet.Icons.SIZE + itemIcon.width()) / 2f - margin.right;
+                itemIcon.y = y + (ItemSpriteSheet.Icons.SIZE - itemIcon.height) / 2f + margin.top;
+            } else {
+                itemIcon.x = x + width - itemIcon.width() - margin.right;
+                itemIcon.y = y + margin.top;
+            }
 			PixelScene.align(itemIcon);
 		}
 		
 		if (level != null) {
-			level.x = x + (width - level.width());
-			level.y = y + (height - level.baseLine() - 1);
+            level.x = x + (width - level.width()) - margin.right;
+            level.y = y + (height - level.baseLine() - 1) - margin.bottom;
 			PixelScene.align(level);
 		}
 
 	}
-	
+
+    public void alpha( float value ){
+        if (!active) value *= 0.3f;
+        if (sprite != null)     sprite.alpha(value);
+        if (extra != null)      extra.alpha(value);
+        if (status != null)     status.alpha(value);
+        if (itemIcon != null)   itemIcon.alpha(value);
+        if (level != null)      level.alpha(value);
+    }
+
+    public void clear(){
+        item(null);
+        enable(true);
+        sprite.visible(true);
+        sprite.view(ItemSpriteSheet.SOMETHING, null);
+        layout();
+    }
+
 	public void item( Item item ) {
 		if (this.item == item) {
 			if (item != null) {
-				sprite.frame(item.image());
-				sprite.glow(item.glowing());
+                sprite.view( item );
 			}
 			updateText();
 			return;
@@ -204,7 +234,7 @@ public class ItemSlot extends Button {
 			if (item.levelKnown){
 				int str = item instanceof Weapon ? ((Weapon)item).STRReq() : ((Armor)item).STRReq();
 				extra.text( Messages.format( TXT_STRENGTH, str ) );
-				if (str > Dungeon.hero.STR()) {
+				if (Dungeon.hero != null && str > Dungeon.hero.STR()) {
 					extra.hardlight( DEGRADED );
 				} else {
 					extra.resetColor();
@@ -261,4 +291,28 @@ public class ItemSlot extends Button {
 		}
 
 	}
+    public void textVisible( boolean visible ){
+        if (visible){
+            add(status);
+            add(extra);
+            add(level);
+        } else {
+            remove(status);
+            remove(extra);
+            remove(level);
+        }
+    }
+
+    public void setMargins( int left, int top, int right, int bottom){
+        margin.set(left, top, right, bottom);
+        layout();
+    }
+
+    private void setDefaultMargins() {
+        if (width() >= 24 || height >= 24) {
+            setMargins(2, 2, 2, 2);
+        } else {
+            setMargins(1, 1, 1, 1);
+        }
+    }
 }

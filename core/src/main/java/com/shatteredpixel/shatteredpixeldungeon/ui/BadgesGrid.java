@@ -113,34 +113,24 @@ public class BadgesGrid extends Component {
 	protected void layout() {
 		super.layout();
 
-		//2-5 columns in portrait, 5-8 in landscape
-		int nCols;
-		if (width() > height()){
-			if (badgeButtons.size() > 35)       nCols = 9;
-			else if (badgeButtons.size() > 24)  nCols = 8;
-			else if (badgeButtons.size() > 15)  nCols = 7;
-			else                                nCols = 6;
-		} else {
-			if (badgeButtons.size() > 32)       nCols = 6;
-			else if (badgeButtons.size() > 21)  nCols = 5;
-			else if (badgeButtons.size() > 10)  nCols = 4;
-			else                                nCols = 3;
-		}
+        //determines roughly how much space each badge will get ideally, determines columns based on that
+        float badgeArea = (float) Math.sqrt(width * height / badgeButtons.size());
+        int nCols = Math.round(width / badgeArea);
 
-		int nRows = (int) Math.ceil(badgeButtons.size()/(float)nCols);
+        int nRows = (int) Math.ceil(badgeButtons.size()/(float)nCols);
 
-		float badgeWidth = width()/nCols;
-		float badgeHeight = height()/nRows;
+        float badgeWidth = width()/nCols;
+        float badgeHeight = height()/nRows;
 
-		for (int i = 0; i < badgeButtons.size(); i++){
-			int row = i / nCols;
-			int col = i % nCols;
-			BadgeButton button = badgeButtons.get(i);
-			button.setPos(
-					left() + col * badgeWidth + (badgeWidth - button.width()) / 2,
-					top() + row * badgeHeight + (badgeHeight - button.height()) / 2);
-			PixelScene.align(button);
-		}
+        for (int i = 0; i < badgeButtons.size(); i++){
+            int row = i / nCols;
+            int col = i % nCols;
+            BadgeButton button = badgeButtons.get(i);
+            button.setPos(
+                    left() + col * badgeWidth + (badgeWidth - button.width()) / 2,
+                    top() + row * badgeHeight + (badgeHeight - button.height()) / 2);
+            PixelScene.align(button);
+        }
 	}
 
 	private static class BadgeButton extends Button {
@@ -185,7 +175,7 @@ public class BadgesGrid extends Component {
 		@Override
 		protected void onClick() {
 			Sample.INSTANCE.play( Assets.Sounds.CLICK, 0.7f, 0.7f, 1.2f );
-			Game.scene().add( new WndBadge( badge, unlocked ) );
+			Game.scene().addToFront( new WndBadge( badge, unlocked ) );
 		}
 	}
 

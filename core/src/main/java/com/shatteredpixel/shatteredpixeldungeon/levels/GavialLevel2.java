@@ -28,7 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.noosa.Group;
 import com.watabou.utils.Random;
 
-public class GavialLevel extends RegularLevel {
+public class GavialLevel2 extends RegularLevel {
     {
         color1 = 0x4b6636;
         color2 = 0xf2f2f2;
@@ -59,13 +59,13 @@ public class GavialLevel extends RegularLevel {
 
     @Override
     public int nMobs() {
-        // 다른 계층보다 몬스터가 2마리 많이 등장합니다. 컨셉 : 맵 넓고 몹이 존나 많음.
-        return super.nMobs()+2;
+        // 다른 계층보다 몬스터가 1마리 많이 등장합니다. 컨셉 : 맵 넓고 몹이 존나 많음.
+        return super.nMobs()+1;
     }
 
     @Override
     public String tilesTex() {
-        return Assets.Environment.TILSE_SARGON;
+        return Assets.Environment.TILSE_SARGON2;
     }
 
     @Override

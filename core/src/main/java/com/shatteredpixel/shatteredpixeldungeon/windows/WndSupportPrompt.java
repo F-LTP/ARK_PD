@@ -46,10 +46,6 @@ public class WndSupportPrompt extends Window {
 		add(title);
 
 		String message = Messages.get(WndSupportPrompt.class, "intro");
-		message += "\n\n" + Messages.get(SupporterScene.class, "patreon_msg");
-		if (Messages.lang() != Languages.ENGLISH) {
-			message += "\n" + Messages.get(SupporterScene.class, "patreon_english");
-		}
 		message += "\n- NAM";
 
 		RenderedTextBlock text = PixelScene.renderTextBlock( 6 );
@@ -61,11 +57,7 @@ public class WndSupportPrompt extends Window {
 			@Override
 			protected void onClick() {
 				super.onClick();
-				String link = "https://www.patreon.com/roguenight";
-				//tracking codes, so that the website knows where this pageview came from
-				link += "?utm_source=shatteredpd";
-				link += "&utm_medium=supporter_prompt";
-				link += "&utm_campaign=ingame_link";
+                String link = "https://github.com/tomorrows-ark-pd/ARK_PD";
 				DeviceCompat.openURI(link);
 				SPDSettings.supportNagged(true);
 				WndSupportPrompt.super.hide();

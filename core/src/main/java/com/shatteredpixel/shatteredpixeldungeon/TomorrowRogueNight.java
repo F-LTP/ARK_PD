@@ -31,19 +31,10 @@ import com.watabou.utils.PlatformSupport;
 
 public class TomorrowRogueNight extends Game {
 
-	//variable constants for specific older versions of shattered, used for data conversion
-	//versions older than v0.7.5e are no longer supported, and data from them is ignored
-	public static final int v0_7_5e = 382;
-
-	public static final int v0_8_0b = 414;
-	public static final int v0_8_1a = 422;
-	public static final int v0_8_2d = 463;
-
-	public static final int v0_9_0b  = 489;
-	public static final int v0_9_1d  = 511;
-	public static final int v0_9_2   = 519;
-	public static final int v0_1_2   = 533;
-	public static final int v0_1_2b   = 534;
+    public static final int v0_5_0_b4 = 583;
+    public static final int v0_5_0_b5 = 600;
+    public static final int v0_5_0_b5_hotfix = 602;
+    public static final int v0_5_0 = 603;
 	
 	public TomorrowRogueNight(PlatformSupport platform ) {
 		super( sceneClass == null ? WelcomeScene.class : sceneClass, platform );

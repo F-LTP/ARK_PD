@@ -101,6 +101,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.LightKnife
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingStone;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.DeviceCompat;
 
@@ -527,7 +529,26 @@ import com.watabou.utils.DeviceCompat;
 		}
 	}
 
-	public String splashArt(){
+     public Image icon() {
+         switch (this) {
+             case WARRIOR: default:
+                 return new Image(Icons.BLAZE.get());
+             case MAGE:
+                 return new Image(Icons.AMIYA.get());
+             case ROGUE:
+                 return new Image(Icons.P_RED.get());
+             case HUNTRESS:
+                 return new Image(Icons.GREY.get());
+             case ROSECAT:
+                 return new Image(Icons.ROSEMARI.get());
+             case NEARL:
+                 return new Image(Icons.NEARL.get());
+             case CHEN: //첸포인트
+                 return new Image(Icons.CHEN.get());
+         }
+     }
+
+     public String splashArt(){
 		switch (this) {
 			case WARRIOR: default:
 				return Assets.Splashes.WARRIOR;

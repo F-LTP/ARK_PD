@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2025 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.watabou.glscripts.Script;
 import com.watabou.glwrap.Blending;
@@ -140,18 +139,19 @@ public class TextInput extends Component {
         textField.setOnscreenKeyboard(new TextField.OnscreenKeyboard() {
             @Override
             public void show(boolean visible) {
-                Game.platform.setOnscreenKeyboardVisible(visible,multiline);
+                Game.platform.setOnscreenKeyboardVisible(visible);
             }
         });
 
         container.setActor(textField);
         stage.setKeyboardFocus(textField);
-        Game.platform.setOnscreenKeyboardVisible(true,multiline);
+        Game.platform.setOnscreenKeyboardVisible(true);
     }
 
     public void enterPressed(){
-        //do nothing by default
+        //fires any time enter is pressed, do nothing by default
     };
+
     public void onChanged(){
         //fires any time the text box is changed, do nothing by default
     }
@@ -159,6 +159,7 @@ public class TextInput extends Component {
     public void onClipBoardUpdate(){
         //fires any time the clipboard is updated via cut or copy, do nothing by default
     }
+
     public void setText(String text){
         textField.setText(text);
         textField.setCursorPosition(textField.getText().length());
@@ -255,7 +256,7 @@ public class TextInput extends Component {
             stage.dispose();
             skin.dispose();
             Game.inputHandler.removeInputProcessor(stage);
-            Game.platform.setOnscreenKeyboardVisible(false,false);
+            Game.platform.setOnscreenKeyboardVisible(false);
             if (!DeviceCompat.isDesktop()) Game.platform.updateSystemUI();
         }
     }

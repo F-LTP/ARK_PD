@@ -47,167 +47,180 @@ import com.watabou.utils.Reflection;
 import java.util.ArrayList;
 
 public class StoneOfIntuition extends InventoryStone {
-	
-	
-	{
-		mode = WndBag.Mode.INTUITIONABLE;
-		image = ItemSpriteSheet.STONE_INTUITION;
-	}
 
-	public static boolean isIntuitionable( Item item ){
-		if (item instanceof Ring){
-			return !((Ring) item).isKnown();
-		} else if (item instanceof Potion){
-			return !((Potion) item).isKnown();
-		} else if (item instanceof Scroll){
-			return !((Scroll) item).isKnown();
-		}
-		return false;
-	}
-	
-	@Override
-	protected void onItemSelected(Item item) {
-		
-		GameScene.show( new WndGuess(item));
-		
-	}
-	
-	private static Class curGuess = null;
-	
-	public class WndGuess extends Window {
-		
-		private static final int WIDTH = 140;
-		private static final int BTN_SIZE = 20;
-		
-		public WndGuess(final Item item){
-			
-			IconTitle titlebar = new IconTitle();
-			titlebar.icon( new ItemSprite(ItemSpriteSheet.STONE_INTUITION, null) );
-			titlebar.label( Messages.titleCase(Messages.get(StoneOfIntuition.class, "name")) );
-			titlebar.setRect( 0, 0, WIDTH, 0 );
-			add( titlebar );
-			
-			RenderedTextBlock text = PixelScene.renderTextBlock(6);
-			text.text( Messages.get(this, "text") );
-			text.setPos(0, titlebar.bottom());
-			text.maxWidth( WIDTH );
-			add(text);
-			
-			final RedButton guess = new RedButton(""){
-				@Override
-				protected void onClick() {
-					super.onClick();
-					useAnimation();
-					if (item.getClass() == curGuess){
-						if (item instanceof Ring){
-							((Ring) item).setKnown();
-						} else {
-							item.identify();
-						}
-						GLog.p( Messages.get(WndGuess.class, "correct") );
-						curUser.sprite.parent.add( new Identification( curUser.sprite.center().offset( 0, -16 ) ) );
-					} else {
-						GLog.n( Messages.get(WndGuess.class, "incorrect") );
-					}
-					curGuess = null;
-					hide();
-				}
-			};
-			guess.visible = false;
-			guess.icon( new ItemSprite(item) );
-			guess.enable(false);
-			guess.setRect(0, 120, WIDTH, 20);//change from budding
-			add(guess);
-			
-			float left;
-			float top = text.bottom() + 5;
-			int rows;
-			int placed = 0;
-			
-			final ArrayList<Class<?extends Item>> unIDed = new ArrayList<>();
-			if (item.isIdentified()){
-				hide();
-				return;
-			} else if (item instanceof Potion){
-				if (item instanceof ExoticPotion) {
-					for (Class<?extends Item> i : Potion.getUnknown()){
-						unIDed.add(ExoticPotion.regToExo.get(i));
-					}
-				} else {
-					unIDed.addAll(Potion.getUnknown());
-				}
-			} else if (item instanceof Scroll){
-				if (item instanceof ExoticScroll) {
-					for (Class<?extends Item> i : Scroll.getUnknown()){
-						unIDed.add(ExoticScroll.regToExo.get(i));
-					}
-				} else {
-					unIDed.addAll(Scroll.getUnknown());
-				}
-			} else if (item instanceof Ring) {
-				unIDed.addAll(Ring.getUnknown());
-			} else {
-				hide();
-				return;
-			}
-			
-			if (unIDed.size() <= 5){
-				rows = 1;
-				top += BTN_SIZE/2f;
-				left = (WIDTH - BTN_SIZE*unIDed.size())/2f;
-			} else if (unIDed.size() <=10) {//change from budding
-				rows = 2;
-				left = (WIDTH - BTN_SIZE*((unIDed.size()+1)/2))/2f;
-			} else if (unIDed.size() <=15){//change from budding
-				rows = 3;
-				left = (WIDTH - BTN_SIZE*5)/2f;
-			} else {
-				rows = 4;
-				left = (WIDTH - BTN_SIZE*5)/2f;
-			}
-			
-			for (final Class<?extends Item> i : unIDed){
 
-				IconButton btn = new IconButton(){
-					@Override
-					protected void onClick() {
-						curGuess = i;
-						guess.visible = true;
-						guess.text( Messages.titleCase(Messages.get(curGuess, "name")) );
-						guess.enable(true);
-						super.onClick();
-					}
-				};
-				Image im = new Image(Assets.Sprites.ITEM_ICONS);
-				im.frame(ItemSpriteSheet.Icons.film.get(Reflection.newInstance(i).icon));
-				im.scale.set(2f);
-				btn.icon(im);
-				btn.setRect(left + placed*BTN_SIZE, top, BTN_SIZE, BTN_SIZE);
-				add(btn);
-				
-				placed++;
-				if (rows == 2 && placed == ((unIDed.size()+1)/2)){
-					placed = 0;
-					if (unIDed.size() % 2 == 1){
-						left += BTN_SIZE/2f;
-					}
-					top += BTN_SIZE;
-				}
-				else if (rows >= 3 && placed%5==0){//change from budding
-					placed = 0;
-					top += BTN_SIZE;
-				}
-			}
-			
-			resize(WIDTH, 140);//change from budding
-			
-		}
-		
-		
-		@Override
-		public void onBackPressed() {
-			super.onBackPressed();
-			new StoneOfIntuition().collect();
-		}
-	}
+    {
+        mode = WndBag.Mode.INTUITIONABLE;
+        image = ItemSpriteSheet.STONE_INTUITION;
+    }
+
+    public static boolean isIntuitionable( Item item ){
+        if (item instanceof Ring){
+            return !((Ring) item).isKnown();
+        } else if (item instanceof Potion){
+            return !((Potion) item).isKnown();
+        } else if (item instanceof Scroll){
+            return !((Scroll) item).isKnown();
+        }
+        return false;
+    }
+
+    @Override
+    protected void onItemSelected(Item item) {
+
+        GameScene.show( new WndGuess(item));
+
+    }
+
+    private static Class curGuess = null;
+
+    public class WndGuess extends Window {
+
+        private static final int WIDTH = 120;
+        private static final int BTN_SIZE = 20;
+
+        public WndGuess(final Item item){
+
+            IconTitle titlebar = new IconTitle();
+            titlebar.icon( new ItemSprite(ItemSpriteSheet.STONE_INTUITION, null) );
+            titlebar.label( Messages.titleCase(Messages.get(StoneOfIntuition.class, "name")) );
+            titlebar.setRect( 0, 0, WIDTH, 0 );
+            add( titlebar );
+
+            RenderedTextBlock text = PixelScene.renderTextBlock(6);
+            text.text( Messages.get(this, "text") );
+            text.setPos(0, titlebar.bottom());
+            text.maxWidth( WIDTH );
+            add(text);
+
+            final RedButton guess = new RedButton(""){
+                @Override
+                protected void onClick() {
+                    super.onClick();
+                    useAnimation();
+                    if (item.getClass() == curGuess){
+                        if (item instanceof Ring){
+                            ((Ring) item).setKnown();
+                        } else {
+                            item.identify();
+                        }
+                        GLog.p( Messages.get(WndGuess.class, "correct") );
+                        curUser.sprite.parent.add( new Identification( curUser.sprite.center().offset( 0, -16 ) ) );
+                    } else {
+                        GLog.n( Messages.get(WndGuess.class, "incorrect") );
+                    }
+                    curGuess = null;
+                    hide();
+                }
+            };
+            guess.visible = false;
+            guess.icon( new ItemSprite(item) );
+            guess.enable(false);
+            guess.setRect(0, 120, WIDTH, 20);
+            add(guess);
+
+            float left;
+            float top = text.bottom() + 5;
+            int rows;
+            int placed = 0;
+
+            final ArrayList<Class<?extends Item>> unIDed = new ArrayList<>();
+            if (item.isIdentified()){
+                hide();
+                return;
+            } else if (item instanceof Potion){
+                if (item instanceof ExoticPotion) {
+                    for (Class<?extends Item> i : Potion.getUnknown()){
+                        unIDed.add(ExoticPotion.regToExo.get(i));
+                    }
+                } else {
+                    unIDed.addAll(Potion.getUnknown());
+                }
+            } else if (item instanceof Scroll){
+                if (item instanceof ExoticScroll) {
+                    for (Class<?extends Item> i : Scroll.getUnknown()){
+                        unIDed.add(ExoticScroll.regToExo.get(i));
+                    }
+                } else {
+                    unIDed.addAll(Scroll.getUnknown());
+                }
+            } else if (item instanceof Ring) {
+                unIDed.addAll(Ring.getUnknown());
+            } else {
+                hide();
+                return;
+            }
+
+            if (unIDed.size() <= 5){
+                rows = 1;
+                top += BTN_SIZE/2f;
+                left = (WIDTH - BTN_SIZE*unIDed.size())/2f;
+            } else if (unIDed.size() > 12) {
+                rows = 3;
+                top += BTN_SIZE/2f;
+                left = (WIDTH - BTN_SIZE*((unIDed.size()+2)/3))/2f; // First row of 3-row layout
+            } else {
+                rows = 2;
+                left = (WIDTH - BTN_SIZE*((unIDed.size()+1)/2))/2f;
+            }
+
+            for (final Class<?extends Item> i : unIDed){
+
+                IconButton btn = new IconButton(){
+                    @Override
+                    protected void onClick() {
+                        curGuess = i;
+                        guess.visible = true;
+                        guess.text( Messages.titleCase(Messages.get(curGuess, "name")) );
+                        guess.enable(true);
+                        super.onClick();
+                    }
+                };
+                Image im = new Image(Assets.Sprites.ITEM_ICONS);
+                im.frame(ItemSpriteSheet.Icons.film.get(Reflection.newInstance(i).icon));
+                im.scale.set(2f);
+                btn.icon(im);
+                btn.setRect(left + placed*BTN_SIZE, top, BTN_SIZE, BTN_SIZE);
+                add(btn);
+
+                placed++;
+                if (rows == 2 && placed == ((unIDed.size()+1)/2)){
+                    placed = 0;
+                    if (unIDed.size() % 2 == 1){
+                        left += BTN_SIZE/2f;
+                    }
+                    top += BTN_SIZE;
+                } else if (rows == 3) {
+                    int itemsPerRow = (unIDed.size() + 2) / 3; // Round up division by 3
+                    if (placed == itemsPerRow) {
+                        placed = 0;
+                        // Calculate how many items have been placed total
+                        int rowsCompleted = (int)((top - (text.bottom() + 5 + BTN_SIZE/2f)) / BTN_SIZE);
+                        int totalPlaced = rowsCompleted * itemsPerRow;
+                        int itemsInNextRow;
+                        if (rowsCompleted == 0) {
+                            // Moving from row 1 to row 2
+                            itemsInNextRow = Math.min(itemsPerRow, unIDed.size() - itemsPerRow);
+                        } else {
+                            // Moving from row 2 to row 3
+                            itemsInNextRow = unIDed.size() - (2 * itemsPerRow);
+                        }
+                        // Center the next row if it has fewer items
+                        left = (WIDTH - BTN_SIZE * itemsInNextRow) / 2f;
+                        top += BTN_SIZE;
+                    }
+                }
+            }
+
+            resize(WIDTH, 140);
+
+        }
+
+
+        @Override
+        public void onBackPressed() {
+            super.onBackPressed();
+            new StoneOfIntuition().collect();
+        }
+    }
 }

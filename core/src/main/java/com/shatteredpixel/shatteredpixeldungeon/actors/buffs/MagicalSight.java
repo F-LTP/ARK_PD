@@ -30,8 +30,8 @@ import com.watabou.noosa.Image;
 public class MagicalSight extends FlavourBuff {
 	
 	public static final float DURATION = 50f;
-	
-	public int distance = 8;
+
+    public static int DISTANCE = 8;
 	
 	{
 		type = buffType.POSITIVE;

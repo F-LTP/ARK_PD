@@ -34,6 +34,10 @@ public class Tag extends Button {
 	protected NinePatch bg;
 	
 	protected float lightness = 0;
+
+    public static int SIZE = 24;
+
+    protected boolean flipped = false;
 	
 	public Tag( int color ) {
 		super();
@@ -68,9 +72,18 @@ public class Tag extends Button {
 	}
 
 	public void flip(boolean value){
-		bg.flipHorizontal(value);
+        flipped = value;
+        bg.flipHorizontal(value);
+        layout();
 	}
-	
+
+    public void setColor( int color ){
+        this.r = (color >> 16) / 255f;
+        this.g = ((color >> 8) & 0xFF) / 255f;
+        this.b = (color & 0xFF) / 255f;
+        bg.hardlight( r, g, b );
+    }
+
 	@Override
 	public void update() {
 		super.update();

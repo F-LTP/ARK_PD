@@ -84,15 +84,5 @@ public abstract class Platform implements Bundlable {
         public int value() {
             return 5 * quantity;
         }
-
-        @Override
-        public String desc() {
-            return Messages.get(platformClass, "desc");
-        }
-
-        @Override
-        public String info() {
-            return Messages.get( Platform.class, "info", desc() );
-        }
     }
 }

@@ -37,7 +37,7 @@ public class LootIndicator extends Tag {
 	public LootIndicator() {
 		super( 0x1F75CC );
 		
-		setSize( 24, 24 );
+		setSize( SIZE, SIZE );
 		
 		visible = false;
 	}
@@ -48,7 +48,8 @@ public class LootIndicator extends Tag {
 
 		slot = new ItemSlot() {
 			protected void onClick() {
-				if (Dungeon.hero.handle(Dungeon.hero.pos)){
+                LootIndicator.this.onClick();
+				if (Dungeon.hero.ready && Dungeon.hero.handle(Dungeon.hero.pos)){
 					Dungeon.hero.next();
 				}
 
@@ -66,8 +67,14 @@ public class LootIndicator extends Tag {
 	@Override
 	protected void layout() {
 		super.layout();
-		
-		slot.setRect( x + 2, y + 3, width - 3, height - 6 );
+
+        if (!flipped) {
+            slot.setRect( x, y, SIZE, height );
+            slot.setMargins(2, 2, 0, 2);
+        } else {
+            slot.setRect( x+(width()-SIZE), y, SIZE, height );
+            slot.setMargins(0, 2, 2, 2);
+        }
 	}
 	
 	@Override

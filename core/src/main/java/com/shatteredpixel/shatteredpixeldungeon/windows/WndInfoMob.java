@@ -66,6 +66,10 @@ public class WndInfoMob extends WndTitledMessage {
 		
 		@Override
 		protected void layout() {
+            if (image.width() > width) {
+                float scale = (width - GAP*2) / image.width();
+                image.scale.set(scale, scale);
+            }
 			
 			image.x = 0;
 			image.y = Math.max( 0, name.height() + health.height() - image.height() );
@@ -75,14 +79,23 @@ public class WndInfoMob extends WndTitledMessage {
 
 			float w = width - image.width() - GAP;
 
-			health.setRect(image.width() + GAP, name.bottom() + GAP, w, health.height());
+            if (w < name.width()) {
+                name.setPos(x + GAP,
+                        image.height() + GAP*2);
+                health.setRect(GAP , name.bottom() + GAP, width - GAP, health.height());
 
-			buffs.setPos(
-				name.right() + GAP-1,
-				name.bottom() - BuffIndicator.SIZE-2
-			);
+                buffs.setRect(name.right() , name.bottom() - BuffIndicator.SIZE-2, w - name.width(), 8);
+            }
+            else {
+                name.setPos(x + image.width() + GAP,
+                        image.height() > name.height() ? y + (image.height() - name.height()) / 2 : y);
 
-			height = health.bottom();
+                health.setRect(image.width() + GAP, name.bottom() + GAP, w, health.height());
+
+                buffs.setRect(name.right(), name.bottom() - BuffIndicator.SIZE-2, w - name.width(), 8);
+            }
+
+            height = Math.max(image.y + image.height(), health.bottom());
 		}
 	}
 }

@@ -75,6 +75,12 @@ public class Bones {
 
 	private static Item pickItem(Hero hero){
 		Item item = null;
+
+        //seeded runs don't leave items
+        //This is to prevent using specific seeds to transport items to regular runs
+        if (!Dungeon.customSeedText.isEmpty()){
+            return null;
+        }
 		if (Random.Int(3) != 0) {
 			switch (Random.Int(7)) {
 				case 0:

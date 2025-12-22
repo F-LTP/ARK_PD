@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.NervousImpairment;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Sleep;
@@ -20,11 +21,11 @@ public class SeaObject extends NPC{
 
         properties.add(Property.IMMOVABLE);
         properties.add(Property.MINIBOSS);
-        immunities.add( Paralysis.class );
-        immunities.add( Amok.class );
-        immunities.add( Sleep.class );
-        immunities.add( Terror.class );
-        immunities.add( Vertigo.class );
+        properties.add(Property.INORGANIC);
+        properties.add(Property.STATIC);
+        immunities.add(Burning.class);
+
+        state = PASSIVE;
     }
 
     public SeaObject() {
@@ -32,6 +33,17 @@ public class SeaObject extends NPC{
 
         HT=HP = 2000;
 
+    }
+
+    @Override
+    public void beckon(int cell) {
+        return;
+    }
+
+    @Override
+    protected boolean act() {
+        spend(TICK);
+        return true;
     }
 
     @Override
@@ -43,7 +55,7 @@ public class SeaObject extends NPC{
     protected void spend(float time) {
         for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
             Char ch = findChar( pos + PathFinder.NEIGHBOURS8[i] );
-            if (ch != null && ch.isAlive() && (ch instanceof Hero || ch instanceof DriedRose.GhostHero)) {
+            if (ch != null && ch.isAlive() && ch.alignment == Alignment.ALLY) {
 
                 if (ch.buff(NervousImpairment.class) != null) ch.buff(NervousImpairment.class).sum(-15 * time);
 

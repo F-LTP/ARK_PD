@@ -98,7 +98,7 @@ public enum Rankings {
 
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
 		rec.date = format.format(new Date(Game.realTime));
-		
+
 		rec.cause = cause;
 		rec.win		= win;
 		rec.heroClass	= Dungeon.hero.heroClass;
@@ -175,6 +175,11 @@ public enum Rankings {
 	public static final String DAILY_REPLAY	= "daily_replay";
 
 	public void saveGameData(Record rec){
+        if (Dungeon.hero == null){
+            rec.gameData = null;
+            return;
+        }
+
 		rec.gameData = new Bundle();
 
 		Belongings belongings = Dungeon.hero.belongings;
@@ -185,11 +190,14 @@ public enum Rankings {
 		for (Item item : belongings.backpack.items.toArray( new Item[0])) {
 			if (item instanceof Bag){
 				for (Item bagItem : ((Bag) item).items.toArray( new Item[0])){
-					if (Dungeon.quickslot.contains(bagItem)) belongings.backpack.items.add(bagItem);
+                    if (Dungeon.quickslot.contains(bagItem)
+                            && !Dungeon.quickslot.contains(item)){
+                        belongings.backpack.items.add(bagItem);
+                    }
 				}
-				belongings.backpack.items.remove(item);
-			} else if (!Dungeon.quickslot.contains(item))
-				belongings.backpack.items.remove(item);
+			} else if (!Dungeon.quickslot.contains(item)) {
+                belongings.backpack.items.remove(item);
+            }
 		}
 
 		//remove all buffs (ones tied to equipment will be re-applied)
@@ -243,7 +251,7 @@ public enum Rankings {
 		Notes.reset();
 		Dungeon.quickslot.reset();
 		QuickSlotButton.reset();
-
+        if (data == null) return;
 		Bundle handler = data.getBundle(HANDLERS);
 		Scroll.restore(handler);
 		Potion.restore(handler);
@@ -260,9 +268,6 @@ public enum Rankings {
 
 		Dungeon.initialVersion = data.getInt(GAME_VERSION);
 
-		if (Dungeon.initialVersion <= TomorrowRogueNight.v0_7_5e){
-			Statistics.amuletObtained = rec.win;//change from budding
-		}
 		rec.score = score(rec.win);
 
 		if (rec.gameData.contains(SEED)){
@@ -277,21 +282,13 @@ public enum Rankings {
 		}
 	}
 
-	public static void DestroydChack(int ch, int misc, int ring) {
+	public static void destroyedCheck(int ch, int misc, int ring) {
 		if (ch > 5)
 			if (misc > WndRanking.BugItemLevel || ring > WndRanking.BugItemLevel) {
 			Badges.DestroyGlobal();
 		}
 	}
 
-	// 해당 처리는 0.3.3 버전에서만 적용하며, 그 이후로는 무효화합니다.
-	public static void DestroydChack_Bomb(int ch, float time, int bomb) {
-		if (ch > 5)
-			if (time > 50000 && bomb > 100) {
-				//Badges.DestroyGlobal(); now,it shouldn't work change from budding
-			}
-	}
-	
 	private static final String RECORDS	= "records";
 	private static final String LATEST	= "latest";
 	private static final String TOTAL	= "total";
@@ -417,7 +414,9 @@ public enum Rankings {
 		public String version;
 
 		public String desc(){
-			if (cause == null) {
+            if (win){
+                return Messages.get(this, "won");
+            } else if (cause == null) {
 				return Messages.get(this, "something");
 			} else {
 				String result = Messages.get(cause, "rankings_desc", (Messages.get(cause, "name")));
@@ -473,7 +472,7 @@ public enum Rankings {
 			bundle.put( SEED, customSeed );
 			bundle.put( DAILY, daily );
 			
-			heroClass.storeInBundle( bundle );
+			bundle.put( CLASS, heroClass );
 			bundle.put( TIER, armorTier );
 			bundle.put( LEVEL, herolevel );
 			bundle.put( DEPTH, depth );
