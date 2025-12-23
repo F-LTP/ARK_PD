@@ -107,7 +107,7 @@ public class IsharmlaSeabornHead extends Mob {
         rooted = true;
 
         if (isDead) {
-            if (Dungeon.mulaCount == 3) {
+            if (Dungeon.mulaCount == 3 || allBodyPartsDead()) {
                 Badges.validateVictory();
                 Badges.validateChampion(Challenges.activeChallenges());
                 Badges.validateChampion_char(Challenges.activeChallenges());
@@ -220,6 +220,22 @@ public class IsharmlaSeabornHead extends Mob {
 
     @Override
     public void die(Object cause) { }
+
+    @Override
+    public boolean isAlive() {
+        return !isDead;
+    }
+
+    private boolean allBodyPartsDead() {
+        for (Mob mob : Dungeon.level.mobs) {
+            if ((mob instanceof IsharmlaSeabornHead
+                    || mob instanceof IsharmlaSeabornBody
+                    || mob instanceof IsharmlaSeabornTail) && mob.isAlive()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     public static void triggerAnger() {
         if (IsharmlaSeabornHead.isHeadEnraged) {
@@ -369,11 +385,13 @@ public class IsharmlaSeabornHead extends Mob {
         }
 
         private void setStartPos() {
-            int newStart;
-            do {
+            int newStart = 199;
+            for (int i = 0; i < 10; i ++) {
                 newStart = Random.Int(169 + width / 2, 187 - width / 2);
-            } while (previousStart != newStart);
-
+                if (previousStart != newStart) {
+                    break;
+                }
+            }
             start = newStart;
         }
 
