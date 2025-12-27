@@ -197,14 +197,14 @@ public class NewRhodesLevel2 extends Level {
 
         // 특수 상점 관련
 
-        if (!Dungeon.buyFoodbox) drop( new Closure_FoodBox(), 3692 ).type = Heap.Type.FOR_SALE_28F;
-        if (!Dungeon.buyPotionbox) drop( new Closure_PotionBox(), 3693 ).type = Heap.Type.FOR_SALE_28F;
-        if (!Dungeon.buyScrollbox) drop( new Closure_ScrollBox(), 3694 ).type = Heap.Type.FOR_SALE_28F;
-        if (!Dungeon.buyIdentifybox) drop( new Closure_IdentifyBox(), 3695 ).type = Heap.Type.FOR_SALE_28F;
-        if (!Dungeon.buyHealbox) drop( new Closure_HealingBox(), 3696 ).type = Heap.Type.FOR_SALE_28F;
-        if (!Dungeon.buyWandbox) drop( new Closure_WandBox(), 3828 ).type = Heap.Type.FOR_SALE_28F;
-        if (!Dungeon.buyTransbox) drop( new Closure_TransBox(), 3830 ).type = Heap.Type.FOR_SALE_28F;
-        if (!Dungeon.buyRingbox) drop( new Closure_RingBox(), 3832 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_FoodBox(), 3692 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_PotionBox(), 3693 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_ScrollBox(), 3694 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_IdentifyBox(), 3695 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_HealingBox(), 3696 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_WandBox(), 3828 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_TransBox(), 3830 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_RingBox(), 3832 ).type = Heap.Type.FOR_SALE_28F;
     }
 
     @Override

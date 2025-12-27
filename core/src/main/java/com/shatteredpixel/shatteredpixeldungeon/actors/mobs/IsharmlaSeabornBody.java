@@ -74,9 +74,11 @@ public class IsharmlaSeabornBody extends Mob {
         if (cooldown > 0) {
             cooldown--;
         } else {
-            for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
-                if ((mob instanceof IsharmlaSeabornHead || mob instanceof IsharmlaSeabornBody || mob instanceof IsharmlaSeabornTail)
-                        && mob.buff(Doom.class) == null) {
+            for (Mob mob : Dungeon.level.mobs) {
+                if ((mob instanceof IsharmlaSeabornHead
+                        || mob instanceof IsharmlaSeabornBody
+                        || mob instanceof IsharmlaSeabornTail)
+                        && mob.isAlive()) {
                     mob.sprite.emitter().burst(Speck.factory(Speck.HEALING), 3);
                     mob.HP = Math.min(mob.HT, mob.HP + healAmount);
                 }
@@ -110,6 +112,10 @@ public class IsharmlaSeabornBody extends Mob {
 
     @Override
     public void die(Object cause) { }
+    @Override
+    public boolean isAlive() {
+        return !isDead;
+    }
 
     private static final String IS_DEAD_BODY = "isDeadBody";
     private static final String SHIELD_COOLDOWN = "shieldCooldown";

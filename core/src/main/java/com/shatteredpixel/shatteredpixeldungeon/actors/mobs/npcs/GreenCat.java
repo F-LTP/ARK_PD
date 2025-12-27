@@ -12,7 +12,6 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.levels.RhodesLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RhodesLevel3;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -58,7 +57,7 @@ public class GreenCat extends NPC {
     @Override
     protected boolean act() {
 
-        if (Dungeon.level.heroFOV[pos] && Dungeon.hero.belongings.getItem(Amulet.class) != null) {
+        if (Dungeon.level.heroFOV[pos] && (Dungeon.hero.belongings.getItem(Amulet.class) != null || Dungeon.doctorSaved)) {
             if (!seenBefore) {
                 yell( Messages.get(this, "wellcom", Dungeon.hero.heroClass.title() ) );
             }

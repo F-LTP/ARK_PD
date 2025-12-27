@@ -18,7 +18,7 @@ public class Ots03 extends GunWeapon {
         hitSound = Assets.Sounds.HIT_PISTOL;
         hitSoundPitch = 0.9f;
 
-        FIRE_DELAY_MULT = 5f;
+        FIRE_DELAY_MULT = 2f;
         bulletMax = 16;
         MIN_RANGE = 3;
         MAX_RANGE = 999;

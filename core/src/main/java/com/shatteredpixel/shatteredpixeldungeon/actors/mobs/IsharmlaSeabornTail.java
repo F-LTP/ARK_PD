@@ -119,6 +119,10 @@ public class IsharmlaSeabornTail extends Mob {
 
     @Override
     public void die(Object cause) { }
+    @Override
+    public boolean isAlive() {
+        return !isDead;
+    }
 
     private static final String IS_DEAD_TAIL   = "isDeadTail";
     private static final String SING_COOLDOWN = "singCooldown";

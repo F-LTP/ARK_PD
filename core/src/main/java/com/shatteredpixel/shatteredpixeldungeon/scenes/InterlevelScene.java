@@ -388,7 +388,9 @@ public class InterlevelScene extends PixelScene {
 		}
 
 		Level level;
-		if (Dungeon.depth >= Statistics.deepestFloor) {
+        if ((Dungeon.depth >= 27 && Dungeon.depth <= 30)) {
+            level = handleDescendRhodes();
+        } else if (Dungeon.depth >= Statistics.deepestFloor) {
 			level = Dungeon.newLevel();
 		} else {
 			Dungeon.depth++;
@@ -396,6 +398,15 @@ public class InterlevelScene extends PixelScene {
 		}
 		Dungeon.switchLevel( level, level.entrance );
 	}
+
+    private Level handleDescendRhodes() throws IOException {
+        if (Dungeon.depth >= Dungeon.highestRhodesGenerated) {
+            return Dungeon.newLevel();
+        } else {
+            Dungeon.depth++;
+            return Dungeon.loadLevel( GamesInProgress.curSlot );
+        }
+    }
 
 	private void descend_27() throws IOException {
 		Mob.holdAllies( Dungeon.level );

@@ -288,23 +288,6 @@ public class WndTradeItem extends WndInfoItem {
 			Dungeon.level.drop( item, heap.pos ).sprite.drop();
 		}
 
-		if (item instanceof Closure_FoodBox) {
-			Dungeon.buyFoodbox = true; }
-		else if (item instanceof Closure_PotionBox) {
-			Dungeon.buyPotionbox = true; }
-		else if (item instanceof Closure_ScrollBox) {
-			Dungeon.buyScrollbox = true; }
-		else if (item instanceof Closure_IdentifyBox) {
-			Dungeon.buyIdentifybox = true; }
-		else if (item instanceof Closure_HealingBox) {
-			Dungeon.buyHealbox = true; }
-		else if (item instanceof Closure_WandBox) {
-			Dungeon.buyWandbox = true; }
-		else if (item instanceof Closure_TransBox) {
-			Dungeon.buyTransbox = true; }
-		else if (item instanceof Closure_RingBox) {
-			Dungeon.buyRingbox = true; }
-
 		try {
 			Dungeon.saveAll();
 		} catch (IOException e) {

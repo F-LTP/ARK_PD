@@ -48,7 +48,7 @@ import java.util.Locale;
 
 public class WelcomeScene extends PixelScene {
 
-    private static final int LATEST_UPDATE = TomorrowRogueNight.v0_5_0_b5;
+    private static final int LATEST_UPDATE = TomorrowRogueNight.v0_5_0;
 
     //used so that the game does not keep showing the window forever if cleaning fails
     private static boolean triedCleaningTemp = false;

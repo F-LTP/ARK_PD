@@ -68,7 +68,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.NewRhodesLevel2;
 import com.shatteredpixel.shatteredpixeldungeon.levels.NewRhodesLevel3;
 import com.shatteredpixel.shatteredpixeldungeon.levels.NewRhodesLevel4;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.RhodesLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.HallsLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.LastLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.LastShopLevel;
@@ -238,16 +237,8 @@ public class Dungeon {
     public static boolean killcat; // 엔딩 씬에서 켈시 하극상 출현용.
 
 	public static int QuestCatPoint;
+    public static int highestRhodesGenerated;
 
-	public static boolean buyFoodbox;
-	public static boolean buyPotionbox;
-	public static boolean buyScrollbox;
-	public static boolean buyIdentifybox;
-	public static boolean buyHealbox;
-	public static boolean buyWandbox;
-	public static boolean buyTransbox;
-	public static boolean buyRingbox;
-	
 	public static HashSet<Integer> chapters;
 
 	public static SparseArray<ArrayList<Item>> droppedItems;
@@ -334,16 +325,8 @@ public class Dungeon {
 		NPC_Phantom.QuestClear = false;
 		FrostLeaf.QuestClear = false;
 
-		buyFoodbox = false;
-		buyPotionbox = false;
-		buyScrollbox = false;
-		buyIdentifybox = false;
-		buyHealbox = false;
-		buyWandbox = false;
-		buyTransbox = false;
-		buyRingbox = false;
-
 		QuestCatPoint = Random.Int(2);
+        highestRhodesGenerated = -1;
 
 		droppedItems = new SparseArray<>();
 
@@ -377,7 +360,11 @@ public class Dungeon {
 		
 		depth++;
 		if (depth > Statistics.deepestFloor) {
-            if (!(depth >= 27 && depth <= 30)) Statistics.deepestFloor = depth;
+            if (depth >= 27 && depth <= 30) {
+                Dungeon.highestRhodesGenerated = depth;
+            } else {
+                Statistics.deepestFloor = depth;
+            }
 			if (Statistics.deepestFloor <= 1) Statistics.deepestFloor = 1;
 			
 			if (Statistics.qualifiedForNoKilling) {
@@ -693,14 +680,7 @@ public class Dungeon {
 	private static final String JESI_QUESTCLEAR    = "Jessica.QuestClear";
 	private static final String LEAF_QUESTCLEAR    = "FrostLeaf.QuestClear";
 
-	private static final String BUY_FOOD = "buyFoodbox";
-	private static final String BUY_POTION = "buyPotionbox";
-	private static final String BUY_SCROLL = "buyScrollbox";
-	private static final String BUY_IDENTIFY = "buyIdentifybox";
-	private static final String BUY_HEAL = "buyHealbox";
-	private static final String BUY_WAND = "buyWandbox";
-	private static final String BUY_TRANS = "buyTransbox";
-	private static final String BUY_RING = "buyRingbox";
+    private static final String HIGHEST_RHODES_GENERATED = "highestRhodesGenerated";
 
 	private static final String MULA_COUNT = "mulaCount";
 
@@ -749,15 +729,7 @@ public class Dungeon {
 
 			bundle.put (CATQUEST, QuestCatPoint);
 
-			bundle.put (BUY_FOOD, buyFoodbox);
-			bundle.put (BUY_POTION, buyPotionbox);
-			bundle.put (BUY_SCROLL, buyScrollbox);
-			bundle.put (BUY_IDENTIFY, buyIdentifybox);
-			bundle.put (BUY_HEAL, buyHealbox);
-			bundle.put (BUY_WAND, buyWandbox);
-			bundle.put (BUY_TRANS, buyTransbox);
-			bundle.put (BUY_RING, buyRingbox);
-
+            bundle.put (HIGHEST_RHODES_GENERATED, highestRhodesGenerated);
 
 			for (int d : droppedItems.keyArray()) {
 				bundle.put(Messages.format(DROPPED, d), droppedItems.get(d));
@@ -975,14 +947,7 @@ public class Dungeon {
 		Jessica.QuestClear = bundle.getBoolean(JESI_QUESTCLEAR);
 		FrostLeaf.QuestClear = bundle.getBoolean(LEAF_QUESTCLEAR);
 
-		buyFoodbox = bundle.getBoolean(BUY_FOOD);
-		buyPotionbox = bundle.getBoolean(BUY_POTION);
-		buyScrollbox = bundle.getBoolean(BUY_SCROLL);
-		buyIdentifybox = bundle.getBoolean(BUY_IDENTIFY);
-		buyHealbox = bundle.getBoolean(BUY_HEAL);
-		buyWandbox = bundle.getBoolean(BUY_WAND);
-		buyTransbox = bundle.getBoolean(BUY_TRANS);
-		buyRingbox = bundle.getBoolean(BUY_RING);
+        highestRhodesGenerated = bundle.getInt(HIGHEST_RHODES_GENERATED);
 		
 		Statistics.restoreFromBundle( bundle );
 		Generator.restoreFromBundle( bundle );

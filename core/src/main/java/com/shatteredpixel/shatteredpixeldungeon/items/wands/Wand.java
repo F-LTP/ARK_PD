@@ -443,11 +443,13 @@ public abstract class Wand extends Item {
 		super.restoreFromBundle( bundle );
 		usesLeftToID = bundle.getInt( USES_LEFT_TO_ID );
 		availableUsesToID = bundle.getInt( AVAILABLE_USES );
+        curseInfusionBonus = bundle.getBoolean(CURSE_INFUSION_BONUS);
+
+        updateLevel();
 		
 		curCharges = bundle.getInt( CUR_CHARGES );
 		curChargeKnown = bundle.getBoolean( CUR_CHARGE_KNOWN );
 		partialCharge = bundle.getFloat( PARTIALCHARGE );
-		curseInfusionBonus = bundle.getBoolean(CURSE_INFUSION_BONUS);
 	}
 	
 	@Override
