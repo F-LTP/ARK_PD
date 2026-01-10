@@ -37,13 +37,13 @@ public class RingOfSharpshooting extends Ring {
         if (isIdentified()){
             return Messages.get(this, "stats", soloBuffedBonus(),
                     new DecimalFormat("#.##").format(100f * (Math.pow(1.2, soloBonus()) - 1f)),
-                    new DecimalFormat("#.##").format(100f * Math.min(1f, (Math.pow(1.07, soloBonus())) - 1f)),
-                    new DecimalFormat("#.##").format(100f * Math.min(1f, (Math.pow(1.09, soloBonus())) - 1f)));
+                    new DecimalFormat("#.##").format(100f * Math.min(1f, (Math.pow(1.06, soloBonus())) - 1f)),
+                    1 + ((soloBonus() - 1) / 3));
         } else {
             return Messages.get(this, "typical_stats", 1,
                     new DecimalFormat("#.##").format(20f),
-                    new DecimalFormat("#.##").format(8f),
-                    new DecimalFormat("#.##").format(9f));
+                    new DecimalFormat("#.##").format(6f),
+                    1);
         }
 	}
 
@@ -51,8 +51,8 @@ public class RingOfSharpshooting extends Ring {
         return (float)(Math.min(1f, (Math.pow(1.06, getBonus(target, Aim.class))) - 1f));
     }
 
-    public static float accuracyBonus(Char target ){
-        return (float)(Math.pow(1.09, getBonus(target, Aim.class)) - 1f);
+    public static int rangeBonus( Char target ) {
+        return 1 + (getBuffedBonus(target, Aim.class) - 1) / 3; // 1 + 1 every +3
     }
 	
 	@Override

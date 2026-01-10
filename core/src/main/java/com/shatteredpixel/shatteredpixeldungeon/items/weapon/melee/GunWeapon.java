@@ -26,6 +26,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Gunaccessories.Accessories
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.IsekaiItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAccuracy;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfFuror;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Projecting;
@@ -91,7 +93,8 @@ public class GunWeapon extends MeleeWeapon {
     public int getMaxRange() {
         boolean projecting = hasEnchant(Projecting.class, Dungeon.hero);
 
-        return projecting ? MAX_RANGE + 1 : MAX_RANGE;
+        int range = projecting ? MAX_RANGE + 1 : MAX_RANGE;
+        return range + RingOfSharpshooting.rangeBonus(Dungeon.hero);
     }
 
     public int getMinRange() {
@@ -147,13 +150,14 @@ public class GunWeapon extends MeleeWeapon {
         if (closerrange != null && Dungeon.hero.hasTalent(Talent.PINPOINT)) {
             acc += Dungeon.hero.pointsInTalent(Talent.PINPOINT) * 0.2f;
         }
-        acc += RingOfSharpshooting.accuracyBonus(Dungeon.hero);
+        acc += RingOfAccuracy.shootAccuracyMultiplier(Dungeon.hero);
 
         return acc;
     }
 
-    protected float fireDelayFactor(float dly) {
+    protected float fireDelayFactor(Char owner, float dly) {
         if (gunAccessories != null) dly *= gunAccessories.GetDLYcorrectionvalue();
+        dly *= RingOfFuror.shootDelayMultiplier(owner);
         return dly;
     }
 
@@ -338,9 +342,7 @@ public class GunWeapon extends MeleeWeapon {
         if (ch != null) {
             int dmg = fireDamageFactor(fireDamageRoll());
 
-            // 사격 스롯 판정
-            if (Dungeon.hero.subClass == HeroSubClass.SNIPER) dmg -= (ch.drRoll() / 2);
-            else dmg -= ch.drRoll();
+
 
             if (this instanceof R4C && Dungeon.hero.belongings.getItem(IsekaiItem.class) != null) {
                 if (Dungeon.hero.belongings.getItem(IsekaiItem.class).isEquipped(Dungeon.hero)) {
@@ -362,6 +364,8 @@ public class GunWeapon extends MeleeWeapon {
                 }
 
                 int dr = ch.drRoll();
+                // 사격 스롯 판정
+                if (Dungeon.hero.subClass == HeroSubClass.SNIPER) dr/=2;
 
                 int effectiveDamage = ch.defenseProc( Dungeon.hero, dmg );
                 effectiveDamage = Math.max( effectiveDamage - dr, 0 );
@@ -450,15 +454,15 @@ public class GunWeapon extends MeleeWeapon {
         if (Dungeon.hero.buff(Bonk.BonkBuff.class) != null) Buff.detach(Dungeon.hero, Bonk.BonkBuff.class);
 
         Invisibility.dispel();
-        boolean consumeBullet = false;
+        boolean consumeBullet = true;
         if (gunAccessories != null) {
             consumeBullet = gunAccessories.GetSavingChance() < Random.Int(100);
         }
         if (closerRange != null && closerRange.state() && Dungeon.hero.hasTalent(Talent.FRUGALITY)) {
-            if (Random.Int(100) > Dungeon.hero.pointsInTalent(Talent.FRUGALITY) * 15)  consumeBullet = true;
+            if (Random.Int(100) < Dungeon.hero.pointsInTalent(Talent.FRUGALITY) * 15)  consumeBullet = false;
         }
-        if (RingOfSharpshooting.ammoMultiplier(Dungeon.hero) * 100f < Random.Int(100)) {
-            consumeBullet = true;
+        if (RingOfSharpshooting.ammoMultiplier(Dungeon.hero) * 100f > Random.Int(100)) {
+            consumeBullet = false;
         }
         if (consumeBullet) {
             bullet -= 1;
@@ -468,8 +472,8 @@ public class GunWeapon extends MeleeWeapon {
 
         ACC = oldacc;
 
-        if (pala) { curUser.spendAndNext(fireDelayFactor(FIRE_DELAY_MULT / 4)); }
-        else curUser.spendAndNext(fireDelayFactor(FIRE_DELAY_MULT));
+        if (pala) { curUser.spendAndNext(fireDelayFactor(curUser, FIRE_DELAY_MULT / 4)); }
+        else curUser.spendAndNext(fireDelayFactor(curUser, FIRE_DELAY_MULT));
 
         if (ch != null && !ch.isAlive() && Dungeon.hero.hasTalent(Talent.BF_RULL) && Random.Int(5) < Dungeon.hero.pointsInTalent(Talent.BF_RULL)) {
             Buff.affect(Dungeon.hero, Swiftthistle.TimeBubble.class).bufftime(1f);

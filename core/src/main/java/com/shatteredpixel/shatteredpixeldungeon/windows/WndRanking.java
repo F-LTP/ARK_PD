@@ -167,19 +167,7 @@ public class WndRanking extends WndTabbed {
 
         public StatsTab() {
             super();
-            boolean Destroyd = false;
-            if (Dungeon.hero.belongings.misc != null) {
-                if (Dungeon.challenges > 5 && Dungeon.hero.belongings.misc.level() > BugItemLevel) {
-                    Destroyd = true;
-                }
 
-            }
-            if (Dungeon.hero.belongings.ring != null) {
-                if (Dungeon.challenges > 5 && Dungeon.hero.belongings.ring.level() > BugItemLevel) {
-                    Destroyd = true;
-                }
-
-            }
             String heroClass = "";
             if (Dungeon.hero != null) {
                 heroClass = Dungeon.hero.className();
@@ -222,6 +210,16 @@ public class WndRanking extends WndTabbed {
                 add(errorText);
 
             } else {
+                if (Dungeon.hero.belongings.misc != null) {
+                    if (Dungeon.challenges > 5) {
+                        Rankings.destroyedCheck(Dungeon.challenges,Dungeon.hero.belongings.misc.level(), 0);
+                    }
+                }
+                if (Dungeon.hero.belongings.ring != null) {
+                    if (Dungeon.challenges > 5) {
+                        Rankings.destroyedCheck(Dungeon.challenges, 0, Dungeon.hero.belongings.ring.level());
+                    }
+                }
             int strBonus = Dungeon.hero.STR() - Dungeon.hero.STR;
             if (strBonus > 0)
                 pos = statSlot(this, Messages.get(this, "str"), Dungeon.hero.STR + " + " + strBonus, pos);
@@ -413,17 +411,18 @@ public class WndRanking extends WndTabbed {
 		public BadgesTab() {
 			super();
 
-			if (Dungeon.hero.belongings.misc != null) {
-				if (Dungeon.challenges > 5) {
-					Rankings.destroyedCheck(Dungeon.challenges,Dungeon.hero.belongings.misc.level(), 0);
-				}
-			}
-			if (Dungeon.hero.belongings.ring != null) {
-				if (Dungeon.challenges > 5) {
-					Rankings.destroyedCheck(Dungeon.challenges, 0, Dungeon.hero.belongings.ring.level());
-				}
-			}
-
+            if (Dungeon.hero!=null && Dungeon.hero.belongings!=null) {
+                if (Dungeon.hero.belongings.misc != null) {
+                    if (Dungeon.challenges > 5) {
+                        Rankings.destroyedCheck(Dungeon.challenges, Dungeon.hero.belongings.misc.level(), 0);
+                    }
+                }
+                if (Dungeon.hero.belongings.ring != null) {
+                    if (Dungeon.challenges > 5) {
+                        Rankings.destroyedCheck(Dungeon.challenges, 0, Dungeon.hero.belongings.ring.level());
+                    }
+                }
+            }
 			camera = WndRanking.this.camera;
 
 			Component badges;
