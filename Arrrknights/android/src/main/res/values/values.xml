@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">明日方舟像素地牢注解版</string>
-	<string name="customactivityoncrash_error_activity_error_occurred_explanation">游戏发生了意外的崩溃，\n\n请点击下方错误日志查看详情。\n推荐解决方案：向群友确认是否为最新版本(QQ群号471396285)，并更新到最新；若已为最新，请将错误日志复制后发给新萌(QQ1426725846)以便修复。</string>
+	<string name="customactivityoncrash_error_activity_error_occurred_explanation">游戏发生了意外的崩溃，\n\n请点击下方错误日志查看详情，务必不要只截图本界面。\n推荐解决方案：向群友确认是否为最新版本(QQ群号471396285)，并更新到最新；若已为最新，请将错误日志复制后发给新萌(QQ1426725846)以便修复。</string>
 	<string name="customactivityoncrash_error_activity_restart_app">重启应用程序</string>
 	<string name="customactivityoncrash_error_activity_close_app">退出应用程序</string>
 	<string name="customactivityoncrash_error_activity_error_details">错误日志</string>

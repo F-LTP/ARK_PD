@@ -94,9 +94,11 @@ public class KazemaruWeapon extends MeleeWeapon {
                     respawnPoints.add(p);
                 }
             }
-            Integer[] spawnPoints = respawnPoints.toArray(new Integer[0]);
-            int pos = Random.element(spawnPoints);
-            summonSubstitute(pos, defender.pos,attacker.alignment);
+                Integer[] spawnPoints = respawnPoints.toArray(new Integer[0]);
+            if (spawnPoints.length>0) {
+                int pos = Random.element(spawnPoints);
+                summonSubstitute(pos, defender.pos, attacker.alignment);
+            }
         }
 
         return procDamage;

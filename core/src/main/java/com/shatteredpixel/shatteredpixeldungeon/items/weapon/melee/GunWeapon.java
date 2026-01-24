@@ -382,7 +382,7 @@ public class GunWeapon extends MeleeWeapon {
                     return;
                 }
 
-                ch.damage( effectiveDamage, this );
+                ch.damage( effectiveDamage, Dungeon.hero );
 
                 Sample.INSTANCE.play(Assets.Sounds.HIT, 1, Random.Float(0.87f, 1.15f));
 
@@ -410,7 +410,11 @@ public class GunWeapon extends MeleeWeapon {
                         }
                     }
                 }
-
+                if (Dungeon.hero.hasTalent(Talent.SPARKOFLIFE)) {
+                    if (1 + Dungeon.hero.pointsInTalent(Talent.SPARKOFLIFE) > Random.Int(33)) {
+                        Dungeon.hero.HP = Math.min(Dungeon.hero.HP + Dungeon.hero.HT / 20, Dungeon.hero.HT);
+                    }
+                }
                 // 산사수 첸 판정
                 if (Dungeon.hero.subClass == HeroSubClass.SPSHOOTER && ch.isAlive() && Dungeon.hero.buff(ChenShooterBuff.TACMoveCooldown.class) == null) {
                         Buff.prolong(Dungeon.hero, ChenShooterBuff.class, 5f).set(ch.id());

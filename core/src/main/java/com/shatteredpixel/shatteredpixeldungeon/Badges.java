@@ -894,7 +894,7 @@ public class Badges {
 	}
 
 	public static void validateChenUnlock(){
-		if (Statistics.gameWon &&  !isUnlocked(Badge.UNLOCK_CHEN)){
+		if (!isUnlocked(Badge.UNLOCK_CHEN)){
 			displayBadge( Badge.UNLOCK_CHEN );}
 	}
 

@@ -62,7 +62,7 @@ public class Fate extends Skill {
                     break;
                 case 1:
                     if (rings.isEmpty()) {
-                        probs[2] = 0;
+                        probs[1] = 0;
                         continue;
                     }
                     probs[1]--;

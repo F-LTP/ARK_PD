@@ -195,7 +195,8 @@ public enum Rankings {
                         belongings.backpack.items.add(bagItem);
                     }
 				}
-			} else if (!Dungeon.quickslot.contains(item)) {
+			}
+            if (!Dungeon.quickslot.contains(item)) {
                 belongings.backpack.items.remove(item);
             }
 		}

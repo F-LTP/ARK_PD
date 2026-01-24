@@ -414,7 +414,7 @@ public class InterlevelScene extends PixelScene {
 
 		Level level;
 		Dungeon.depth=26;
-		level = Dungeon.newLevel();
+        level = handleDescendRhodes();
 		Dungeon.switchLevel( level, level.entrance );
 	}
 	
@@ -448,6 +448,7 @@ public class InterlevelScene extends PixelScene {
 	private void ascend_27() throws IOException {
 		Mob.holdAllies( Dungeon.level );
 
+        Dungeon.saveAll();
 		Dungeon.depth = 1;
 		Level level = Dungeon.loadLevel( GamesInProgress.curSlot );
 		Dungeon.switchLevel( level, level.entrance );
