@@ -902,9 +902,7 @@ public class GameScene extends PixelScene {
 	}
 	
 	public static void add( Mob mob ) {
-		Dungeon.level.mobs.add( mob );
-		scene.addMobSprite( mob );
-		Actor.add( mob );
+        add( mob, 0);
 	}
 
 	public static void addSprite( Mob mob ) {
@@ -913,8 +911,13 @@ public class GameScene extends PixelScene {
 	
 	public static void add( Mob mob, float delay ) {
 		Dungeon.level.mobs.add( mob );
-		scene.addMobSprite( mob );
-		Actor.addDelayed( mob, delay );
+        //mobs added on partial turns wait until next full turn to act
+        delay = (float)Math.ceil(Actor.now() + delay) - Actor.now();
+        if (scene != null) {
+            scene.addMobSprite(mob);
+            Actor.addDelayed(mob, delay);
+            mob.spendToWhole();
+        }
 	}
 	
 	public static void add( EmoIcon icon ) {
