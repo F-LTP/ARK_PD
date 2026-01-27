@@ -430,7 +430,7 @@ public class Item implements Bundlable {
 		return false;
 	}
 
-    public Item identify(){
+    public final Item identify(){
         return identify(true);
     }
 	
@@ -443,6 +443,7 @@ public class Item implements Bundlable {
 
 		levelKnown = true;
 		cursedKnown = true;
+        Item.updateQuickslot();
 		
 		return this;
 	}
@@ -527,7 +528,7 @@ public class Item implements Bundlable {
 	}
 	
 	public static void updateQuickslot() {
-			QuickSlotButton.refresh();
+        GameScene.updateItemDisplays = true;
 	}
 	
 	private static final String QUANTITY		= "quantity";

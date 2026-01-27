@@ -675,9 +675,15 @@ public class GameScene extends PixelScene {
 	//sometimes UI changes can be prompted by the actor thread.
 	// We queue any removed element destruction, rather than destroying them in the actor thread.
 	private ArrayList<Gizmo> toDestroy = new ArrayList<>();
+    public static boolean updateItemDisplays = false;
 	
 	@Override
 	public synchronized void update() {
+        if (updateItemDisplays){
+            updateItemDisplays = false;
+            QuickSlotButton.refresh();
+        }
+
 		if (Dungeon.hero == null || scene == null) {
 			return;
 		}
