@@ -31,7 +31,7 @@ public class R4C extends GunWeapon {
 
     @Override
     public int fireMax() {
-        return (int) 3
+        return (int) 4
                 + tier * 2
                 + bulletTier * 3
                 + level() * (tier + 1)

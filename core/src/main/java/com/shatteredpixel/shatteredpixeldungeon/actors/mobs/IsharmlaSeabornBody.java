@@ -20,7 +20,7 @@ public class IsharmlaSeabornBody extends Mob {
 
         HP = HT = 1000;
 
-        defenseSkill = 25;
+        defenseSkill = 20;
 
         actPriority = MOB_PRIO-1;
 
@@ -33,7 +33,7 @@ public class IsharmlaSeabornBody extends Mob {
 
     // 모든 믈라 파츠가 파괴되면 사망
     private boolean isDead = false;
-    private int cooldown = 8;
+    private int cooldown = Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? 6 : 9;
     int healAmount = Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? 50 : 40;
 
     @Override
@@ -50,7 +50,7 @@ public class IsharmlaSeabornBody extends Mob {
             return INFINITE_EVASION;
         }
 
-        else return 20;
+        else return defenseSkill;
     }
 
     // 공격불가
@@ -95,7 +95,8 @@ public class IsharmlaSeabornBody extends Mob {
         if (isDead) return;
 
         // 캐릭터가 물 밖이라면 데미지를 입지 않습니다
-        if (src instanceof Hero && Dungeon.level.map[Dungeon.hero.pos] == Terrain.EMPTY) {
+        int heroTile = Dungeon.level.map[Dungeon.hero.pos];
+        if (heroTile == Terrain.EMPTY || heroTile == Terrain.EMPTY_DECO) {
             return;
         }
 

@@ -4,7 +4,9 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Effects;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
@@ -14,6 +16,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Elastic;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.TenguDartTrap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -64,6 +67,9 @@ public class StaffOfWeedy extends DamageWand {
             }
         }
 
+        //50% of charges used will be refunded if an enemy dies from falling
+        float chargeRefund = (curCharges - 1) * 0.5f;
+
         //throws other chars around the center.
         for (int i  : PathFinder.NEIGHBOURS8){
             Char ch = Actor.findChar(bolt.collisionPos + i);
@@ -95,6 +101,11 @@ public class StaffOfWeedy extends DamageWand {
             ch.damage(dmg, this);
 
             if (ch.isAlive() && bolt.path.size() > bolt.dist+1 && ch.pos == bolt.collisionPos && ch != curUser) {
+                WeedyKnockback buff = ch.buff(WeedyKnockback.class);
+                if (buff != null) {
+                    buff.detach();
+                }
+                Buff.affect(ch, WeedyKnockback.class).setRefund(chargeRefund);
                 Ballistica trajectory = new Ballistica(ch.pos, bolt.path.get(bolt.dist + 1), Ballistica.MAGIC_BOLT);
                 int strength = buffedLvl() + 3 + (curCharges * 2);
                 throwChar(ch, trajectory, strength, false);
@@ -170,10 +181,14 @@ public class StaffOfWeedy extends DamageWand {
                 if (closeDoors && Dungeon.level.map[oldPos] == Terrain.OPEN_DOOR){
                     Door.leave(oldPos);
                 }
+                if (Dungeon.level.map[ch.pos] == Terrain.CHASM && !ch.flying) {
+                    if (ch instanceof Mob) Chasm.mobFall((Mob) ch);
+                } else {
                 Dungeon.level.occupyCell(ch);
-                if (ch == Dungeon.hero){
+                if (ch == Dungeon.hero) {
                     //FIXME currently no logic here if the throw effect kills the hero
                     Dungeon.observe();
+                }
                 }
             }
         }), -1);
@@ -193,7 +208,18 @@ public class StaffOfWeedy extends DamageWand {
                 callback);
         Sample.INSTANCE.play(Assets.Sounds.ZAP);
     }
+    public static class WeedyKnockback extends Buff {
+        private float chargeRefund = 0;
 
+        public WeedyKnockback setRefund(float refund) {
+            chargeRefund = refund;
+            return this;
+        }
+
+        public float getRefund() {
+            return chargeRefund;
+        }
+    }
     public static class BlastWave extends Image {
 
         private static final float TIME_TO_FADE = 0.2f;

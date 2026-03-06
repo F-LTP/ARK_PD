@@ -46,6 +46,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.MiniShopRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.EndspeakerRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.LACNET2Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicGloemRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.PitRoom;
@@ -54,6 +55,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.RoseRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.IberiaPart1QuestRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ShopRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.AdvanceguardRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.BeachRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.EntranceRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.ExitRoom;
@@ -117,6 +119,13 @@ public abstract class RegularLevel extends Level {
 		initRooms.add ( roomEntrance = new EntranceRoom());
 		initRooms.add( roomExit = new ExitRoom());
 
+        // Advanceguard rooms spawn at set intervals in early chapters
+        AdvanceguardRoom.guaranteedThisFloor = false;
+        if (Dungeon.depth <= 9 && Dungeon.depth%5 == ((Dungeon.seed/3)%3 + 2)) {
+            initRooms.add(new AdvanceguardRoom());
+            AdvanceguardRoom.guaranteedThisFloor = true;
+        }
+
 		//force max standard rooms and multiple by 1.5x for large levels
 		int standards = standardRooms(feeling == Feeling.LARGE);
 		if (feeling == Feeling.LARGE){
@@ -154,6 +163,9 @@ public abstract class RegularLevel extends Level {
 
 
 			}
+            if (Dungeon.depth == 39) {
+                initRooms.add(new EndspeakerRoom());
+            }
 		} else if (Dungeon.depth > 30) {
 			if (Dungeon.depth != 35 & Dungeon.depth != 40) {
 				if (Dungeon.depth < 35) {

@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hallucination;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
@@ -37,6 +38,7 @@ public class StaffOfPodenco extends Wand {
             if (ch.buff(Cripple.class) != null) {
                 Buff.affect(ch, Hallucination.class).set(Hallucination.DURATION);
                 Buff.affect(ch, Vertigo.class, 2f);
+                Buff.affect(ch, Poison.class).set(2 + buffedLvl());
             }
             else Buff.affect(ch, Cripple.class, 2 + buffedLvl());
             Sample.INSTANCE.play( Assets.Sounds.HIT_MAGIC, 1, Random.Float(1.33f, 1.47f) );

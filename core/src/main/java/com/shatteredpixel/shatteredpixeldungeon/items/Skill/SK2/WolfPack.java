@@ -40,7 +40,7 @@ public class WolfPack extends Skill {
                 Ballistica route = new Ballistica(curUser.pos, target, Ballistica.PROJECTILE);
                 int cell = route.collisionPos;
 
-                if (Actor.findChar( target ) != null && target != curUser.pos)
+                if (Actor.findChar( cell ) != null && cell != curUser.pos)
                     cell = route.path.get(route.dist-1);
 
                 final int dest = cell;

@@ -49,6 +49,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.SanityPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SmallRation;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfHolyFuror;
@@ -209,14 +210,22 @@ public class ShopRoom extends SpecialRoom {
 				itemsToSpawn.add(new PotionOfHolyFuror());
 				break;
 			}
-			else {
+			else if (Dungeon.extrastage_Sea) {
 				w = (MeleeWeapon) Generator.random(Generator.wepTiers[4]);
 				itemsToSpawn.add(Generator.random(Generator.misTiers[4]).quantity(2).identify());
 				itemsToSpawn.add(new PlateArmor().identify());
 				itemsToSpawn.add(new ScrollOfUpgrade());
-				itemsToSpawn.add(new ScrollOfUpgrade());
+                itemsToSpawn.add(new SanityPotion());
+                itemsToSpawn.add(new SanityPotion());
 				break;
-			}
+			}else {
+                w = (MeleeWeapon) Generator.random(Generator.wepTiers[4]);
+                itemsToSpawn.add(Generator.random(Generator.misTiers[4]).quantity(2).identify());
+                itemsToSpawn.add(new PlateArmor().identify());
+                itemsToSpawn.add(new ScrollOfUpgrade());
+                itemsToSpawn.add(new ScrollOfUpgrade());
+                break;
+            }
 
 			case 36:
 				if (Dungeon.extrastage_Gavial) {

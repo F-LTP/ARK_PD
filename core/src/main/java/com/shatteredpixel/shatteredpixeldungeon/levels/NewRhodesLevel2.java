@@ -24,6 +24,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_Identi
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_PotionBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_RingBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_ScrollBox;
+import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_TGBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_TransBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_WandBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
@@ -203,8 +204,9 @@ public class NewRhodesLevel2 extends Level {
         drop( new Closure_IdentifyBox(), 3695 ).type = Heap.Type.FOR_SALE_28F;
         drop( new Closure_HealingBox(), 3696 ).type = Heap.Type.FOR_SALE_28F;
         drop( new Closure_WandBox(), 3828 ).type = Heap.Type.FOR_SALE_28F;
-        drop( new Closure_TransBox(), 3830 ).type = Heap.Type.FOR_SALE_28F;
-        drop( new Closure_RingBox(), 3832 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_TransBox(), 3829 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_RingBox(), 3830 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_TGBox(), 3832 ).type = Heap.Type.FOR_SALE_28F;
     }
 
     @Override

@@ -1474,9 +1474,9 @@ public class Hero extends Char {
         }
 
         if (buff(RadiantKnight.class) != null) {
-            if (subClass == HeroSubClass.SAVIOR) damage *= 1.55f;
-            else if (subClass == HeroSubClass.FLASH) damage *= 1.25f;
-            else damage *= 1.4f;
+            if (subClass == HeroSubClass.SAVIOR) damage *= 1.45f;
+            else if (subClass == HeroSubClass.FLASH) damage *= 1.2f;
+            else damage *= 1.3f;
 
             // 난입 특성
             if (hasTalent(Talent.PHASERUSH)) {
@@ -1495,12 +1495,22 @@ public class Hero extends Char {
             }
         }
 
-        if (enemy.buff(Blindness.class) != null && hasTalent(Talent.FLASH_SPEAR)) {
-            BounsDamage += damage * (pointsInTalent(Talent.FLASH_SPEAR) * 0.1f);
+        // Combined blindness chance: Radiant Strike (always) + Seal level (during RadiantKnight)
+        {
+            float blindChance = 0f;
+            if (hasTalent(Talent.EXORCISM))
+                blindChance += 0.05f + pointsInTalent(Talent.EXORCISM) * 0.05f;
+            if (buff(RadiantKnight.class) != null) {
+                SealOfLight hikariSeal = belongings.getItem(SealOfLight.class);
+                if (hikariSeal != null) blindChance += 0.05f + hikariSeal.level() * 0.01f;
+            }
+            if (blindChance > 0 && Random.Float() < blindChance)
+                Buff.affect(enemy, Blindness.class, 3f);
         }
 
-        if (hasTalent(Talent.ETERNAL_GLORY) && Random.Int(10) < pointsInTalent(Talent.ETERNAL_GLORY)) {
-            Buff.affect(enemy, Blindness.class, 3);
+        if (enemy.buff(Blindness.class) != null && hasTalent(Talent.FLASH_SPEAR)) {
+            int trueBonusDamage = (int) (damage * (pointsInTalent(Talent.FLASH_SPEAR) * 0.1f));
+            enemy.damage(trueBonusDamage, this);
         }
 
         if (buff(BreaktheDawn.BreakBuff.class) != null) {
@@ -1547,11 +1557,7 @@ public class Hero extends Char {
             BounsDamage += damage * (pointsInTalent(Talent.SAVIOR_BELIEF) * 0.15f);//change from budding
         }
 
-        if (hasTalent(Talent.EXORCISM)) {
-            if (enemy.properties().contains(Property.SARKAZ)) {
-                BounsDamage += 1 + pointsInTalent(Talent.EXORCISM)*2;
-            }
-        }
+
 
         if (Dungeon.hero.hasTalent(Talent.SAVIOR_BELIEF)) {
             int grassCells = 0;
@@ -1708,18 +1714,14 @@ public class Hero extends Char {
         // 니어 특성 관련
 
         // 퇴마
-        if (hasTalent(Talent.EXORCISM)) {
-            if (enemy.properties().contains(Property.SARKAZ)) {
-                damage -= pointsInTalent(Talent.EXORCISM);
-            }
-        }
+
 
         if (HP <= HT/2) {
         if(hasTalent(Talent.RADIANTHERO)) {
             if (buff(RadiantKnight.class) == null && buff(Talent.RadiantHeroCooldown.class) == null && hasTalent(Talent.RADIANTHERO)) {
                 Buff.affect(this, RadiantKnight.class, RadiantKnight.DURATION);
 
-                float CoolDown = 900 - (pointsInTalent(Talent.RADIANTHERO) * 150);
+                float CoolDown = 700 - (pointsInTalent(Talent.RADIANTHERO) * 100);
                 Buff.affect(this, Talent.RadiantHeroCooldown.class, CoolDown);
 
                 GameScene.flash( 0x80FFFFFF );
@@ -1841,16 +1843,19 @@ public class Hero extends Char {
         }
 
         if (buff(RadiantKnight.class) != null && subClass != HeroSubClass.FLASH) {
-            float redu = 0.8f;
+
             if (subClass == HeroSubClass.SAVIOR) {
-                redu = 0.6f;
+                float saviorRedu = 0.4f;
                 if (hasTalent(Talent.HOPELIGHT)) {
-                    float hope = pointsInTalent(Talent.HOPELIGHT) * 0.05f;
-                    redu -= hope;
+                    saviorRedu += pointsInTalent(Talent.HOPELIGHT) * 0.05f;
+
                 }
+                dmg -= Math.max(2, Math.round(dmg * saviorRedu));
+            } else {
+                dmg -= Math.max(2, Math.round(dmg * 0.2f));
             }
-            dmg *= redu;
-            dmg -= 2;
+
+
         }
 
         if (buff(Heat.class) != null) {

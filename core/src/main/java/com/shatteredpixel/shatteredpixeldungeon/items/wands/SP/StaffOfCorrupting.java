@@ -58,6 +58,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TargetHealthIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 
@@ -230,6 +231,7 @@ public class StaffOfCorrupting extends Wand {
             int sbuff = Math.max(3, 3 + buffedLvl() * 3);
             Buff.affect(seaborn, Barrier.class).incShield(sbuff);
             Buff.affect(seaborn, Weakness.class, 60f - buffedLvl() * 3);
+            Buff.affect(seaborn, SeabornRegen.class).setLevel(buffedLvl());
             enemy.die(Dungeon.hero);
             Dungeon.level.mobs.remove(enemy);
             TargetHealthIndicator.instance.target(null);
@@ -260,5 +262,43 @@ public class StaffOfCorrupting extends Wand {
                 callback);
         Sample.INSTANCE.play( Assets.Sounds.ZAP );
     }
+    public static class SeabornRegen extends Buff {
 
+        private int level = 0;
+
+        private static final float REGEN_DELAY = 10;
+
+        public SeabornRegen setLevel(int lvl) {
+            level = lvl;
+            return this;
+        }
+
+        @Override
+        public boolean act() {
+            if (target.isAlive()) {
+                if (target.HP < target.HT) {
+                    int healAmt = 1 + level / 2;
+                    target.HP = Math.min(target.HT, target.HP + healAmt);
+                }
+                spend(REGEN_DELAY);
+            } else {
+                diactivate();
+            }
+            return true;
+        }
+
+        private static final String LEVEL = "level";
+
+        @Override
+        public void storeInBundle(Bundle bundle) {
+            super.storeInBundle(bundle);
+            bundle.put(LEVEL, level);
+        }
+
+        @Override
+        public void restoreFromBundle(Bundle bundle) {
+            super.restoreFromBundle(bundle);
+            level = bundle.getInt(LEVEL);
+        }
+    }
 }

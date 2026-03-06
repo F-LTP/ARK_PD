@@ -25,7 +25,7 @@ public class RingOfAmplified extends Ring {
     }
 
     public static int DamageBonus( Char target ){
-        return (int) getBonus(target, RingOfAmplified.WandPowerup.class);
+        return (int) getBuffedBonus(target, RingOfAmplified.WandPowerup.class);
     }
 
 

@@ -37,7 +37,7 @@ public class RingOfAccuracy extends Ring {
 		if (isIdentified()){
             return Messages.get(this, "stats",
                     new DecimalFormat("#.##").format(100f * (Math.pow(1.3f, soloBuffedBonus()) - 1f)),
-                    new DecimalFormat("#.##").format(100f * (Math.pow(1.12f, soloBonus()) - 1f)));
+                    new DecimalFormat("#.##").format(100f * (Math.pow(1.12f, soloBuffedBonus()) - 1f)));
 		} else {
             return Messages.get(this, "typical_stats",
                     new DecimalFormat("#.##").format(30f),
@@ -55,7 +55,7 @@ public class RingOfAccuracy extends Ring {
 	}
 
     public static float shootAccuracyMultiplier(Char target ){
-        return (float) Math.pow(1.12, getBonus(target, Accuracy.class));
+        return (float) Math.pow(1.12, getBuffedBonus(target, Accuracy.class));
     }
 
 	public class Accuracy extends RingBuff {

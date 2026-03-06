@@ -33,10 +33,12 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.miniboss.TheEndspeaker;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfMindVision;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.SeaLevel_part2;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -61,6 +63,8 @@ import com.watabou.utils.DeviceCompat;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class InterlevelScene extends PixelScene {
 	
@@ -373,7 +377,19 @@ public class InterlevelScene extends PixelScene {
 	}
 
 	private void descend() throws IOException {
-
+        if (Dungeon.level instanceof SeaLevel_part2 && (Dungeon.depth >= 36 && Dungeon.depth <= 38)) {
+            List<Mob> mobsToDestroy = new ArrayList<>();
+            for (Mob mob : Dungeon.level.mobs) {
+                if ((mob instanceof TheEndspeaker.AspectSmall
+                        || mob instanceof TheEndspeaker.AspectMedium
+                        || mob instanceof TheEndspeaker.AspectLarge) && mob.isAlive()) {
+                    mobsToDestroy.add(mob);
+                }
+            }
+            for (Mob mob : mobsToDestroy) {
+                mob.destroy();
+            }
+        }
 		if (Dungeon.hero == null) {
 			Mob.clearHeldAllies();
 			Dungeon.init();

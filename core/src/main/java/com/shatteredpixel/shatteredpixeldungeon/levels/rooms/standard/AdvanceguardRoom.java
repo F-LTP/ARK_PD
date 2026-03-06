@@ -16,6 +16,7 @@ import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
 public class AdvanceguardRoom extends StandardRoom {
+    public static boolean guaranteedThisFloor = false;
 
     private static final Class<?>[] WATERS =
             {WaterOfAdvanceguard.class};

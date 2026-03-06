@@ -4,6 +4,8 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Slow;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Lightning;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
@@ -65,6 +67,9 @@ public class StaffOfGreyy extends DamageWand {
                 ch.damage(Math.round(damageRoll() * 0.25f), this);
             } else {
                 ch.damage(Math.round(damageRoll()), this);
+            }
+            if (Random.NormalIntRange(0, 10) < 5) {
+                Buff.affect(ch, Slow.class, 2f);
             }
         }
 

@@ -36,8 +36,8 @@ public class RingOfSharpshooting extends Ring {
 	public String statsInfo() {
         if (isIdentified()){
             return Messages.get(this, "stats", soloBuffedBonus(),
-                    new DecimalFormat("#.##").format(100f * (Math.pow(1.2, soloBonus()) - 1f)),
-                    new DecimalFormat("#.##").format(100f * Math.min(1f, (Math.pow(1.06, soloBonus())) - 1f)),
+                    new DecimalFormat("#.##").format(100f * (Math.pow(1.2, soloBuffedBonus()) - 1f)),
+                    new DecimalFormat("#.##").format(100f * Math.min(1f, (Math.pow(1.06, soloBuffedBonus())) - 1f)),
                     1 + ((soloBonus() - 1) / 3));
         } else {
             return Messages.get(this, "typical_stats", 1,
@@ -48,7 +48,7 @@ public class RingOfSharpshooting extends Ring {
 	}
 
     public static float ammoMultiplier( Char target ){
-        return (float)(Math.min(1f, (Math.pow(1.06, getBonus(target, Aim.class))) - 1f));
+        return (float)(Math.min(1f, (Math.pow(1.06, getBuffedBonus(target, Aim.class))) - 1f));
     }
 
     public static int rangeBonus( Char target ) {

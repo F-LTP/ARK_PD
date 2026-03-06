@@ -354,6 +354,8 @@ public class MagesStaff extends MeleeWeapon {
 			if (Dungeon.hero.hasTalent(Talent.LIBERATION)) {
 				Bounscharge = Dungeon.hero.pointsInTalent(Talent.LIBERATION);
 			}
+            int libTierBonus = Math.max(0, Bounscharge - 1);
+            tier = (tierUpgraded ? 3 : 1) + libTierBonus;
 			int curCharges = wand.curCharges;
 			wand.level(level());
 			//gives the wand one additional max charge
@@ -404,15 +406,25 @@ public class MagesStaff extends MeleeWeapon {
 		emitter.fillTarget = false;
 		return emitter;
 	}
+    public boolean tierUpgraded = false;
 
+    public void upgradeTier() {
+        tier += 2;
+        tierUpgraded = true;
+        updateQuickslot();
+    }
 	private static final String WAND = "wand";
 	private static final String MAXCHARGE = "charge";
+    private static final String TIER          = "tier";
+    private static final String TIER_UPGRADED = "tier_upgraded";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(WAND, wand);
 		bundle.put(MAXCHARGE, wand.maxCharges);
+        bundle.put(TIER, tier);
+        bundle.put(TIER_UPGRADED, tierUpgraded);
 	}
 
 	@Override
@@ -422,6 +434,9 @@ public class MagesStaff extends MeleeWeapon {
 		if (wand != null) {
 			wand.maxCharges = bundle.getInt(MAXCHARGE);
 		}
+        int savedTier = bundle.getInt(TIER);
+        tier = savedTier > 0 ? savedTier : 1;
+        tierUpgraded = bundle.getBoolean(TIER_UPGRADED);
 	}
 
 	@Override

@@ -192,10 +192,14 @@ public abstract class StandardRoom extends Room {
 		chances[40] = chances[39] = chances[38] = chances[37] = chances[36];
 
 	}
-	
-	
-	public static StandardRoom createRoom(){
-		return Reflection.newInstance(rooms.get(Random.chances(chances[Dungeon.depth])));
-	}
+
+
+    public static StandardRoom createRoom(){
+        StandardRoom room;
+        do {
+            room = Reflection.newInstance(rooms.get(Random.chances(chances[Dungeon.depth])));
+        } while (room instanceof AdvanceguardRoom && AdvanceguardRoom.guaranteedThisFloor);
+        return room;
+    }
 	
 }

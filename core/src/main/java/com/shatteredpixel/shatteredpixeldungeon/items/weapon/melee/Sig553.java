@@ -29,7 +29,7 @@ public class Sig553 extends GunWeapon {
 
     @Override
     public int fireMax() {
-        return (int) 2
+        return (int) 3
                 + tier * 2
                 + bulletTier * 3
                 + level() * tier

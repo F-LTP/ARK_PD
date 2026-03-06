@@ -54,13 +54,16 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.audio.Sample;
 
 import java.util.ArrayList;
 
 public class StaffKit extends Item {
-    private static final String AC_APPLY = "APPLY";
-    private static final String AC_RING = "RING";
+
+    private static final String AC_APPLY   = "APPLY";
+    private static final String AC_RING    = "RING";
+    private static final String AC_TIER_UP = "TIER_UP";
     private static final float TIME_TO_UPGRADE = 2;
 
     {
@@ -72,6 +75,10 @@ public class StaffKit extends Item {
         ArrayList<String> actions = super.actions(hero);
         actions.add(AC_APPLY);
         actions.add(AC_RING);
+        MagesStaff staff = hero.belongings.getItem(MagesStaff.class);
+        if (staff != null && !staff.tierUpgraded) {
+            actions.add(AC_TIER_UP);
+        }
         return actions;
     }
 
@@ -94,6 +101,26 @@ public class StaffKit extends Item {
             }
             else GLog.w( Messages.get(this, "fail_ring") );
 
+        }else if (action.equals(AC_TIER_UP)) {
+
+            curUser = hero;
+            MagesStaff staff = curUser.belongings.getItem(MagesStaff.class);
+            if (staff == null) {
+                GLog.w( Messages.get(this, "fail_ring") );
+                return;
+            }
+            int newTier = staff.tier + 2;
+            GameScene.show(new WndOptions("",
+                    Messages.get(StaffKit.class, "tier_up_desc", staff.tier, newTier),
+                    Messages.get(StaffKit.class, "tier_up_confirm"),
+                    Messages.get(StaffKit.class, "tier_up_cancel")) {
+                @Override
+                protected void onSelect(int index) {
+                    if (index == 0) {
+                        upgrade_tier(staff);
+                    }
+                }
+            });
         }
     }
 
@@ -352,7 +379,19 @@ public class StaffKit extends Item {
         curUser.sprite.operate(curUser.pos);
         Sample.INSTANCE.play(Assets.Sounds.EVOKE);
     }
+    private void upgrade_tier(MagesStaff staff) {
+        detach(curUser.belongings.backpack);
 
+        curUser.sprite.centerEmitter().start(Speck.factory(Speck.KIT), 0.05f, 10);
+        curUser.spend(TIME_TO_UPGRADE);
+        curUser.busy();
+
+        staff.upgradeTier();
+
+        curUser.sprite.operate(curUser.pos);
+        Sample.INSTANCE.play(Assets.Sounds.EVOKE);
+        GLog.p( Messages.get(StaffKit.class, "tier_upgraded", staff.tier) );
+    }
     private void upgrade_staff(MagesStaff Staff) {
 
         detach(curUser.belongings.backpack);

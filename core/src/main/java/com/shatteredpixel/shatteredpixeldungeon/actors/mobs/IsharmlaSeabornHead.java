@@ -40,6 +40,8 @@ import com.watabou.utils.Random;
 import java.util.HashSet;
 import java.util.Set;
 
+import lombok.Getter;
+
 //패턴 : 1) 발판 파괴 미법공격 레이저; 2) 근거리 물리공격; 3) 파도 특수패턴
 public class IsharmlaSeabornHead extends Mob {
     {
@@ -47,7 +49,7 @@ public class IsharmlaSeabornHead extends Mob {
 
         HP = HT = 1000;
 
-        defenseSkill = 25;
+        defenseSkill = 20;
 
         actPriority = MOB_PRIO-1;
 
@@ -57,9 +59,10 @@ public class IsharmlaSeabornHead extends Mob {
 
         state = new Hunting();
     }
-
+    @Getter
     // 모든 믈라 파츠가 파괴되면 사망
     private boolean isDead = false;
+
     private int laserCooldown = 6;
     private static boolean isAngry = false;
     private static boolean isEnraged = false;
@@ -91,7 +94,7 @@ public class IsharmlaSeabornHead extends Mob {
             return INFINITE_EVASION;
         }
 
-        else return 20;
+        else return defenseSkill;
     }
 
     // 사거리 2
@@ -196,7 +199,8 @@ public class IsharmlaSeabornHead extends Mob {
         if (isDead) return;
 
         // 캐릭터가 물 밖이라면 데미지를 입지 않습니다
-        if (src instanceof Hero && Dungeon.level.map[Dungeon.hero.pos] == Terrain.EMPTY) {
+        int heroTile = Dungeon.level.map[Dungeon.hero.pos];
+        if (heroTile == Terrain.EMPTY || heroTile == Terrain.EMPTY_DECO) {
             return;
         }
 
@@ -241,11 +245,19 @@ public class IsharmlaSeabornHead extends Mob {
             isEnraged = true;
             enrageDuration = 999;
         } else {
+            int newDuration = (Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? 20 : 15) * Dungeon.mulaCount;
+            if (!isAngry || newDuration > enrageDuration) {
+                enrageDuration = newDuration;
+            }
             isAngry = true;
-            enrageDuration = (Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? 20 : 15) * Dungeon.mulaCount;
         }
     }
-
+    public static void resetBoss() {
+        isAngry = false;
+        isEnraged = false;
+        isHeadEnraged = false;
+        enrageDuration = 20;
+    }
     public void specialAttack() {
         if (waveCooldown > 0) {
             waveCooldown--;
@@ -256,7 +268,7 @@ public class IsharmlaSeabornHead extends Mob {
     }
 
     public static void sendWaves(final Char thrower) {
-        WaveAbility waveAbility = Buff.append(thrower, WaveAbility.class);
+        WaveAbility waveAbility = Buff.affect(thrower, WaveAbility.class);
         waveAbility.width = isHeadEnraged ? 7 : 3 + 2 * Dungeon.mulaCount;
         waveAbility.setStartPos();
     }
@@ -304,6 +316,10 @@ public class IsharmlaSeabornHead extends Mob {
 
         @Override
         public boolean act() {
+            if (target instanceof IsharmlaSeabornHead && ((IsharmlaSeabornHead) target).isDead) {
+                detach();
+                return true;
+            }
 
             toCells.clear();
 
@@ -390,11 +406,13 @@ public class IsharmlaSeabornHead extends Mob {
                 }
             }
             start = newStart;
+            previousStart = newStart;
         }
 
         private static final String START = "start";
         private static final String WIDTH = "width";
         private static final String CUR_CELLS = "cur_cells";
+        private static final String PREVIOUS_START = "previousStart";
 
         @Override
         public void storeInBundle(Bundle bundle) {
@@ -403,6 +421,7 @@ public class IsharmlaSeabornHead extends Mob {
             bundle.put(WIDTH, width);
             if (curCells!=null)
                 bundle.put(CUR_CELLS, curCells);
+            bundle.put(PREVIOUS_START, previousStart);
         }
 
         @Override
@@ -412,6 +431,7 @@ public class IsharmlaSeabornHead extends Mob {
             width = bundle.getInt(WIDTH);
             if (bundle.contains(CUR_CELLS))
                 curCells = bundle.getIntArray(CUR_CELLS);
+            previousStart = bundle.getInt(PREVIOUS_START);
         }
 
         public static class WaterBlob extends Blob {

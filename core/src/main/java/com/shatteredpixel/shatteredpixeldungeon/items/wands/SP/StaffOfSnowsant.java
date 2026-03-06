@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Silence;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Slow;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Chains;
@@ -42,6 +43,16 @@ public class StaffOfSnowsant extends Wand {
 
             processSoulMark(ch, chargesPerCast());
             Buff.affect(ch, Silence.class, 2f+buffedLvl());
+            //bonus damage against INFECTED enemies
+            if (ch.properties().contains(Char.Property.INFECTED)) {
+                int bonusDmg = 4 + buffedLvl() * 3;
+                ch.damage(bonusDmg, this);
+            }
+
+            //chance to slow, scaling with level
+            if (Random.Int(5 + buffedLvl()) >= 3) {
+                Buff.affect(ch, Slow.class, 2f + buffedLvl());
+            }
             chainEnemy(bolt, curUser, ch);
             Sample.INSTANCE.play( Assets.Sounds.HIT_MAGIC, 1, Random.Float(0.65f, 0.75f) );
 

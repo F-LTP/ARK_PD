@@ -207,7 +207,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 			icon = new ItemSprite(new Item(){ {image = ItemSpriteSheet.WEAPON_HOLDER; }});
 		}
 
-		icon.tint(getHighestMove().tintColor);
+        if (getHighestMove() != null) icon.tint(getHighestMove().tintColor);
 		return icon;
 	}
 

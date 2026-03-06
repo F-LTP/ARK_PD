@@ -24,7 +24,7 @@ public class RingOfDominate extends Ring {
     }
 
     public static float Dominate( Char target ){
-        return Math.max(0,getBonus(target, RingOfDominate.Dominatepower.class) * 4);
+        return Math.max(0,getBuffedBonus(target, RingOfDominate.Dominatepower.class) * 4);
     }
 
     public static boolean Dominate_curse( Char target ){

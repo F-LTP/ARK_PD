@@ -114,7 +114,11 @@ public class StaffOfVigna extends DamageWand {
         int lvl = level + (chars.size()-1) + terrainBonus;
         for (Char ch : chars) {
             processSoulMark(ch, chargesPerCast());
-            ch.damage( damageRoll(lvl), this );
+            int dmg = damageRoll(lvl);
+            if (Random.NormalIntRange(0, 10) < 2) {
+                dmg = (int) (dmg * 1.5); // 20% 확률로 크리티컬
+            }
+            ch.damage( dmg, this );
             Buff.affect(ch, Vulnerable.class, 2 + lvl);
             ch.sprite.centerEmitter().burst( PurpleParticle.BURST, Random.IntRange( 1, 2 ) );
             ch.sprite.flash();

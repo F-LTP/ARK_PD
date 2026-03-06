@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -87,7 +88,11 @@ public class StaffOfPurgatory extends Wand {
                 Dungeon.hero.pos = newpos;
 
                 if (!Dungeon.bossLevel() && !(Dungeon.depth>=27&&Dungeon.depth<=30))  wandattack(ch, beamdis);//change from budding
-
+                //area damage around both the hero and the swapped target
+                int aoeDmg = 2 + buffedLvl() * 2;
+                aoeBlast(Dungeon.hero.pos, aoeDmg);
+                aoeBlast(ch.pos, aoeDmg);
+                ch.damage(aoeDmg, this);
                 Buff.affect(ch, Cripple.class, 2 + buffedLvl());
 
             } else {
@@ -95,7 +100,18 @@ public class StaffOfPurgatory extends Wand {
             }
         }
     }
-
+    private void aoeBlast(int center, int dmg) {
+        for (int i : PathFinder.NEIGHBOURS8) {
+            int cell = center + i;
+            Char ch = Actor.findChar(cell);
+            if (ch != null && ch.alignment == Char.Alignment.ENEMY) {
+                ch.damage(dmg, this);
+                ch.sprite.centerEmitter().burst(BlastParticle.FACTORY, 3);
+            }
+        }
+        CellEmitter.get(center).burst(BlastParticle.FACTORY, 10);
+        Sample.INSTANCE.play(Assets.Sounds.BLAST);
+    }
     private void wandattack(Char defender, int distance) {
         Ballistica beam = new Ballistica(Dungeon.hero.pos, defender.pos, Ballistica.WONT_STOP);
         int maxDistance = distance;

@@ -373,7 +373,8 @@ public class GunWeapon extends MeleeWeapon {
                 if ( ch.buff( Vulnerable.class ) != null){
                     effectiveDamage *= 1.33f;
                 }
-
+                // Mark this as a ranged attack for talents that need to distinguish ranged vs melee
+                Buff.affect(Dungeon.hero, RangedAttackTracker.class);
                 effectiveDamage = Dungeon.hero.attackProc( ch, effectiveDamage );
 
                 // If the enemy is already dead, interrupt the attack.
@@ -454,24 +455,33 @@ public class GunWeapon extends MeleeWeapon {
         if (buff != null) buff.detach();
         buff = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
         if (buff != null) buff.detach();
-
+        buff = Dungeon.hero.buff(RangedAttackTracker.class);
+        if (buff != null) buff.detach();
         if (Dungeon.hero.buff(Bonk.BonkBuff.class) != null) Buff.detach(Dungeon.hero, Bonk.BonkBuff.class);
 
         Invisibility.dispel();
-        boolean consumeBullet = true;
-        if (gunAccessories != null) {
-            consumeBullet = gunAccessories.GetSavingChance() < Random.Int(100);
+
+        // Each source independently checks to save the bullet
+        // If ANY check succeeds, the bullet is saved
+        boolean savedBullet = false;
+        int bulletConsumeChance = Random.Int(100);
+        // Check if gun accessories saves the bullet
+        if (gunAccessories != null && gunAccessories.GetSavingChance() >= bulletConsumeChance) {
+            savedBullet = true;
         }
-        if (closerRange != null && closerRange.state() && Dungeon.hero.hasTalent(Talent.FRUGALITY)) {
-            if (Random.Int(100) < Dungeon.hero.pointsInTalent(Talent.FRUGALITY) * 15)  consumeBullet = false;
+        // Check if frugality talent saves the bullet
+        if (closerRange != null && closerRange.state() && Dungeon.hero.hasTalent(Talent.FRUGALITY)
+                && Dungeon.hero.pointsInTalent(Talent.FRUGALITY) * 15 >= bulletConsumeChance) {
+            savedBullet = true;
         }
-        if (RingOfSharpshooting.ammoMultiplier(Dungeon.hero) * 100f > Random.Int(100)) {
-            consumeBullet = false;
+        // Check if ring of sharpshooting saves the bullet
+        if (RingOfSharpshooting.ammoMultiplier(Dungeon.hero) * 100f >= bulletConsumeChance) {
+            savedBullet = true;
         }
-        if (consumeBullet) {
+        // Only consume if no source saved the bullet
+        if (!savedBullet) {
             bullet -= 1;
         }
-
         updateQuickslot();
 
         ACC = oldacc;
@@ -558,4 +568,8 @@ public class GunWeapon extends MeleeWeapon {
         gamza = bundle.getBoolean(GAMZA);
         gunAccessories = (Accessories) bundle.get(ACCESSORIES);
     }
+
+    // Marker buff to indicate the current attack is a ranged attack from a gun weapon
+    // Used to distinguish ranged attacks (onZap) from melee attacks (proc) with the same weapon
+    public static class RangedAttackTracker extends Buff {}
 }

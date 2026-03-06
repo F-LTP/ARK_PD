@@ -51,6 +51,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.AnnihilationGear;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
+import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
@@ -61,6 +62,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.GunWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
@@ -70,6 +72,7 @@ import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundle;
@@ -406,24 +409,17 @@ public enum Talent {
 			Buff.affect(hero, GALLOPbuff.class);
 		}
 
-		if (talent == PROTECTIONOFLIGHT) {
-			Armor heroArmor = hero.belongings.armor;
-			if (heroArmor != null) {
-				if (hero.pointsInTalent(PROTECTIONOFLIGHT) == 1) {
-					heroArmor.cursed = false;
-					heroArmor.curseInfusionBonus = false;
-					hero.belongings.armor = heroArmor;
-				}
-				else if (hero.pointsInTalent(PROTECTIONOFLIGHT) == 2 && heroArmor.glyph != null) {
-					if (heroArmor.glyph.curse()) {
-						heroArmor.cursed = false;
-						heroArmor.glyph = null;
-						heroArmor.curseInfusionBonus = false;
-						hero.belongings.armor = heroArmor;
-					}
-				}
-			}
-		}
+        if (talent == PROTECTIONOFLIGHT) {
+            if (hero.pointsInTalent(PROTECTIONOFLIGHT) == 1) {
+                Armor heroArmor = hero.belongings.armor;
+                if (heroArmor != null) {
+                    heroArmor.cursed = false;
+                    heroArmor.curseInfusionBonus = false;
+                }
+            } else if (hero.pointsInTalent(PROTECTIONOFLIGHT) == 2) {
+                Buff.affect(hero, ProtectionInsurance.class);
+            }
+        }
 
 		if (talent == KNIGHT_BODY){
 			hero.updateHT(false);
@@ -432,6 +428,7 @@ public enum Talent {
 
 	public static class CachedRationsDropped extends CounterBuff{};
 	public static class NatureBerriesAvailable extends CounterBuff{};
+    public static class ProtectionInsurance extends Buff{};
 
 	public static void onFoodEaten( Hero hero, float foodVal, Item foodSource ){
 		if (hero.hasTalent(HEARTY_MEAL)){
@@ -626,6 +623,7 @@ public enum Talent {
 					Ballistica trajectory = new Ballistica(hero.pos, mob.pos, Ballistica.STOP_TARGET);
 					trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
 					WandOfBlastWave.throwChar(mob, trajectory, hero.pointsInTalent(PUERLIGHT)); // 넉백 효과
+                    Buff.affect(mob, Blindness.class, 1f + hero.pointsInTalent(PUERLIGHT));
 				}
 			}
 			Buff.affect(hero, Light.class, hero.pointsInTalent(PUERLIGHT) * 50);
@@ -643,7 +641,13 @@ public enum Talent {
 				((Ring) item).setKnown();
 			}
 		}
-
+// Protection of Light insurance: auto-uncurse the next cursed equipment equipped
+        if (hero.buff(ProtectionInsurance.class) != null && item instanceof EquipableItem && item.cursed) {
+            item.cursed = false;
+            if (item instanceof Armor) ((Armor) item).curseInfusionBonus = false;
+            Buff.detach(hero, ProtectionInsurance.class);
+            GLog.p(Messages.get(PROTECTIONOFLIGHT, "proc"));
+        }
 	}
 
 	public static void onItemCollected( Hero hero, Item item ){
@@ -707,7 +711,8 @@ public enum Talent {
 		}
 
 		if (hero.hasTalent(Talent.FOLLOWUP_STRIKE)) {
-			if (hero.belongings.weapon instanceof MissileWeapon) {
+            if (hero.belongings.weapon instanceof MissileWeapon
+                    || hero.buff(GunWeapon.RangedAttackTracker.class) != null) {
 				Buff.affect(enemy, FollowupStrikeTracker.class);
 			} else if (enemy.buff(FollowupStrikeTracker.class) != null){
 				dmg += 1 + hero.pointsInTalent(FOLLOWUP_STRIKE);

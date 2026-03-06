@@ -26,7 +26,7 @@ public class SeaLeef extends Mob {
         properties.add(Property.SEA);
     }
 
-    int damageBonus = 0;
+    protected int damageBonus = 0;
 
     @Override
     public int damageRoll() {

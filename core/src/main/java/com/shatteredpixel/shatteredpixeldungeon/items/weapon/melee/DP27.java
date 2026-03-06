@@ -38,9 +38,9 @@ public class DP27 extends GunWeapon {
 
     @Override
     public int fireMax() {
-        return (int) 3
+        return (int) 2
                 + tier * 3
-                + bulletTier
+                + bulletTier*2
                 + level() * (tier)
                 + RingOfSharpshooting.levelDamageBonus(Dungeon.hero) * 2;
     }
