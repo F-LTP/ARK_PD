@@ -69,6 +69,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RadiantKnight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SeethingBurst;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ShieldSlamCounter;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SnipersMark;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SpikesBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.StomeCharge;
@@ -697,7 +698,6 @@ public class Hero extends Char {
         if (hasTalent(Talent.SHIELD_OF_LIGHT)) {
             int drplus_n = pointsInTalent(Talent.SHIELD_OF_LIGHT);
             if (HP <= HT/2) drplus_n*=2;
-            if (buff(RadiantKnight.class) != null) drplus_n*=2;
             dr += Random.NormalIntRange(0,drplus_n);
         }
 
@@ -1636,6 +1636,13 @@ public class Hero extends Char {
             }
         }
 
+        // 구제자 방패 밀기
+        if (subClass == HeroSubClass.SAVIOR && damage > 0
+                && enemy instanceof Mob && Dungeon.level.adjacent(pos, enemy.pos)) {
+            ShieldSlamCounter slamCounter = Buff.affect(this, ShieldSlamCounter.class);
+            slamCounter.countUp(damage);
+        }
+
         if (damage > 0 && subClass == HeroSubClass.BERSERKER) {
             Berserk berserk = Buff.affect(this, Berserk.class);
             berserk.damage(damage);
@@ -1850,9 +1857,10 @@ public class Hero extends Char {
                     saviorRedu += pointsInTalent(Talent.HOPELIGHT) * 0.05f;
 
                 }
-                dmg -= Math.max(2, Math.round(dmg * saviorRedu));
+                int mitigation = Math.max(2, Math.round(dmg * saviorRedu));
+                dmg = Math.max(0, dmg - mitigation);
             } else {
-                dmg -= Math.max(2, Math.round(dmg * 0.2f));
+                dmg = Math.max(0, dmg - Math.max(2, Math.round(dmg * 0.2f)));
             }
 
 

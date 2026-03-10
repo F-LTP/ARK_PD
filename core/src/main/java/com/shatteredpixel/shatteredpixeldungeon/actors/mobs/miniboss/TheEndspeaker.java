@@ -27,11 +27,11 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.SeaLevel_part2;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.Endspeaker1Sprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.Endspeaker2Sprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.Endspeaker3Sprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.Endspeaker4Sprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MobSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.NetherseaBrandguiderSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.Sea_LeefSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.Sea_RunnerSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.Sea_SpewerSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Camera;
@@ -41,6 +41,8 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+
+import java.util.ArrayList;
 
 public class TheEndspeaker extends Mob {
     {
@@ -93,7 +95,7 @@ public class TheEndspeaker extends Mob {
 
     @Override
     public void damage(int dmg, Object src) {
-        if (Status.abilitySpellAbsorption && spellAbsorptionCooldown <= 0 && AntiMagic.RESISTS.contains(src.getClass())) {
+        if (Status.abilitySpellAbsorption && spellAbsorptionCooldown <= 0 && src != null && AntiMagic.RESISTS.contains(src.getClass())) {
             dmg = dmg / 4;
             Buff.affect(this, SpellAbsorptionActive.class);
             spellAbsorptionCooldown = 5;
@@ -253,6 +255,7 @@ public class TheEndspeaker extends Mob {
         // If path is now blocked, cancel charge
         if (rooted || b.collisionPos != chargePos) {
             chargePos = -1;
+            spend(TICK);
             next();
             return;
         }
@@ -271,6 +274,7 @@ public class TheEndspeaker extends Mob {
             }
             if (bouncepos == -1) {
                 chargePos = -1;
+                spend(TICK);
                 next();
                 return;
             }
@@ -288,7 +292,8 @@ public class TheEndspeaker extends Mob {
                 for (int cell : b.path) {
                     Char ch = Actor.findChar(cell);
                     if (ch != null && ch != TheEndspeaker.this && alignment != ch.alignment) {
-                        int damage = Random.NormalIntRange(damageRoll() / 2, damageRoll());
+                        int base = damageRoll();
+                        int damage = Random.NormalIntRange(base / 2, base);
                         ch.damage(damage, TheEndspeaker.this);
                         if (ch.isAlive()) {
                             Buff.prolong(ch, Cripple.class, 3f);
@@ -307,6 +312,7 @@ public class TheEndspeaker extends Mob {
                 chargePos = -1;
                 sprite.idle();
                 Dungeon.level.occupyCell(TheEndspeaker.this);
+                spend(TICK);
                 next();
             }
         });
@@ -328,15 +334,17 @@ public class TheEndspeaker extends Mob {
     public void die(Object cause) {
         super.die(cause);
 
-        int lootTier = Status.abilityCount / 3;
+        int lootTier = Status.abilityCount / 2;
         Ankh lootAnkh;
         switch(lootTier) {
             case 1:
+                // 1단계 폼 (2 형태)
                 Dungeon.level.drop(new Certificate(20), pos).sprite.drop(pos);
                 dropLoot(new ScrollOfUpgrade());
                 dropLoot(new PotionOfExperience());
                 break;
             case 2:
+                // 2딘계 폼 (3 형태)
                 Dungeon.level.drop(new Certificate(30), pos).sprite.drop(pos);
                 dropLoot(new ScrollOfUpgrade());
                 dropLoot(new PotionOfExperience());
@@ -345,6 +353,7 @@ public class TheEndspeaker extends Mob {
                 dropLoot(lootAnkh);
                 break;
             case 3:
+                // 3단계 폼 (4 형태)
                 Dungeon.level.drop(new Certificate(40), pos).sprite.drop(pos);
                 dropLoot(new ScrollOfUpgrade());
                 dropLoot(new PotionOfExperience());
@@ -354,6 +363,7 @@ public class TheEndspeaker extends Mob {
                 break;
             case 0:
             default:
+                // 기본 폼 (1 형태)
                 Dungeon.level.drop(new Certificate(10), pos).sprite.drop(pos);
                 dropLoot(new PotionOfExperience());
                 break;
@@ -362,11 +372,30 @@ public class TheEndspeaker extends Mob {
     }
 
     private void dropLoot(Item item) {
-        int lootPos;
-        do {
-            lootPos = PathFinder.NEIGHBOURS8[Random.Int(8)];
-        } while (!Dungeon.level.passable[pos + lootPos]);
-        Dungeon.level.drop(item, pos + lootPos).sprite.drop(pos);
+        ArrayList<Integer> candidates = new ArrayList<>();
+        for (int offset : PathFinder.NEIGHBOURS8) {
+            if (Dungeon.level.passable[pos + offset]) {
+                candidates.add(pos + offset);
+            }
+        }
+        int lootPos = candidates.isEmpty() ? pos : Random.element(candidates);
+        Dungeon.level.drop(item, lootPos).sprite.drop(pos);
+    }
+
+    @Override
+    public String description() {
+        String desc = Messages.get(this, "desc");
+        desc += Messages.get(this, "desc_" + Status.abilityCount / 2);
+        if (Status.abilityCount > 0) {
+            desc += Messages.get(this, "desc_sp");
+            if (Status.abilitySpellAbsorption) desc += Messages.get(this, "desc_sp_spellabsorption");
+            if (Status.abilityIncreasedRange) desc += Messages.get(this, "desc_sp_increasedrange");
+            if (Status.abilityRampUp) desc += Messages.get(this, "desc_sp_rampup");
+            if (Status.abilityCharge) desc += Messages.get(this, "desc_sp_charge");
+            if (Status.abilityHardening) desc += Messages.get(this, "desc_sp_hardening");
+            if (Status.abilityCcImmune) desc += Messages.get(this, "desc_sp_crowdcontrolimmune");
+        }
+        return desc;
     }
 
     private static final String SPELL_ABSORPTION_CD = "spell_absorption_cooldown";
@@ -712,7 +741,7 @@ public class TheEndspeaker extends Mob {
     }
 
     public static class Status {
-        private static boolean spawned;
+        public static boolean spawned;
         public static boolean abilitySpellAbsorption;
         public static boolean abilityHardening;
         public static boolean abilityCcImmune;
@@ -725,14 +754,14 @@ public class TheEndspeaker extends Mob {
         public static Class<? extends MobSprite> getSprite() {
             switch (abilityCount / 2) {
                 case 1:
-                    return Sea_SpewerSprite.class;
+                    return Endspeaker1Sprite.class;
                 case 2:
-                    return Sea_LeefSprite.class;
+                    return Endspeaker2Sprite.class;
                 case 3:
-                    return NetherseaBrandguiderSprite.class;
+                    return Endspeaker3Sprite.class;
                 case 0:
                 default:
-                    return Sea_RunnerSprite.class;
+                    return Endspeaker4Sprite.class;
             }
         }
 
@@ -767,7 +796,7 @@ public class TheEndspeaker extends Mob {
                         AspectLarge aspectHarden = new AspectLarge();
                         AspectLarge aspectCcImmune = new AspectLarge();
                         summonMob(level, aspectHarden, EndspeakerAspect.Hardening.class);
-                        summonMob(level, aspectCcImmune, EndspeakerAspect.CrownControlImmune.class);
+                        summonMob(level, aspectCcImmune, EndspeakerAspect.CrowdControlImmune.class);
                         break;
                     default:
                         break;

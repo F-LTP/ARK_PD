@@ -61,7 +61,8 @@ public class NetherseaBrandguider extends Mob {
         }
 
         if (HT /2 >= HP && this.buff(Silence.class) == null) {
-            if (Dungeon.level.map[this.pos] == Terrain.EMPTY || Dungeon.level.map[this.pos] == Terrain.WATER) {
+            if (Dungeon.level.seaTerrors.get(pos) != null &&
+                    (Dungeon.level.map[this.pos] == Terrain.EMPTY || Dungeon.level.map[this.pos] == Terrain.WATER)) {
                 Dungeon.level.addSeaTerror(this.pos);
 
                 CellEmitter.get(pos).burst(Speck.factory(Speck.BUBBLE), 10);

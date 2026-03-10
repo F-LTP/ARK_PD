@@ -49,11 +49,14 @@ public class StaffOfSnowsant extends Wand {
                 ch.damage(bonusDmg, this);
             }
 
-            //chance to slow, scaling with level
-            if (Random.Int(5 + buffedLvl()) >= 3) {
-                Buff.affect(ch, Slow.class, 2f + buffedLvl());
+            if (ch.isAlive()) {
+                //chance to slow, scaling with level
+                if (Random.Int(5 + buffedLvl()) >= 3) {
+                    Buff.affect(ch, Slow.class, 2f + buffedLvl());
+                }
+
+                chainEnemy(bolt, curUser, ch);
             }
-            chainEnemy(bolt, curUser, ch);
             Sample.INSTANCE.play( Assets.Sounds.HIT_MAGIC, 1, Random.Float(0.65f, 0.75f) );
 
             ch.sprite.burst(0xFFFFFFFF, buffedLvl() / 2 + 2);

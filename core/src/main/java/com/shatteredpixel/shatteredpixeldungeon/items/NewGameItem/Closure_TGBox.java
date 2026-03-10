@@ -17,10 +17,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK1.BookThoughts;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK1.BookWhispers;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK2.BookGenesis;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.AlchemicalCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.Brew;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.Elixir;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Gamza;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Nmould;
@@ -47,7 +44,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.CrabGun;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.PurgatoryKnife;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Thunderbolt;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.levels.NewRhodesLevel2;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -63,7 +59,7 @@ import com.watabou.utils.Reflection;
 
 public class Closure_TGBox extends ClosuresBox {
 
-    private static final int[] PRICES = {25, 40, 75, 125, 200};
+    private static final int[] PRICES = {80, 120, 175, 250, 400};
 
     private int priceTier = 0;
 
@@ -74,24 +70,18 @@ public class Closure_TGBox extends ClosuresBox {
     }
 
     @Override
-    public boolean doPickUp(Hero hero) {
-        if (Dungeon.level instanceof NewRhodesLevel2) {
-            Closure_TGBox next = new Closure_TGBox();
-            next.priceTier = Math.min(priceTier + 1, PRICES.length - 1);
-            Dungeon.level.drop(next, 3832).type = Heap.Type.FOR_SALE_28F;
-        }
-        return super.doPickUp(hero);
-    }
-
-    @Override
     public void execute(Hero hero, String action) {
         super.execute(hero, action);
 
         if (action.equals(AC_OPEN)) {
-            curUser = hero;
-            curItem = this;
-            GameScene.selectItem(itemSelector, WndBag.Mode.TRANMSUTABLE,
-                    Messages.get(this, "select"));
+            if (Dungeon.level instanceof NewRhodesLevel2) {
+                curUser = hero;
+                curItem = this;
+                GameScene.selectItem(itemSelector, WndBag.Mode.TRANMSUTABLE,
+                        Messages.get(this, "select"));
+            } else {
+                GLog.n(Messages.get(this, "fail"));
+            }
         }
     }
 
@@ -99,7 +89,6 @@ public class Closure_TGBox extends ClosuresBox {
         @Override
         public void onSelect(Item item) {
             if (!(curItem instanceof Closure_TGBox)) return;
-
             Closure_TGBox box = (Closure_TGBox) curItem;
 
             if (item == null) {
@@ -138,6 +127,9 @@ public class Closure_TGBox extends ClosuresBox {
             curUser.sprite.operate(curUser.pos);
 
             box.detach(curUser.belongings.backpack);
+            Closure_TGBox next = new Closure_TGBox();
+            next.priceTier = Math.min(box.priceTier + 1, PRICES.length - 1);
+            Dungeon.level.drop(next, 3832).type = Heap.Type.FOR_SALE_28F;
         }
     };
 
@@ -290,7 +282,8 @@ public class Closure_TGBox extends ClosuresBox {
         n.level(0);
         int level = w.level();
         if (w.curseInfusionBonus) level--;
-        n.upgrade(level);
+        if (level > 0) n.upgrade(level);
+        else if (level < 0) n.degrade(-level);
         n.levelKnown = w.levelKnown;
         n.cursedKnown = w.cursedKnown;
         n.cursed = w.cursed;
@@ -316,23 +309,27 @@ public class Closure_TGBox extends ClosuresBox {
 
     private Scroll changeScroll(Scroll s) {
         if (s instanceof ExoticScroll) {
-            return Reflection.newInstance(ExoticScroll.exoToReg.get(s.getClass()));
+            Class<? extends Scroll> mapped = ExoticScroll.exoToReg.get(s.getClass());
+            return mapped != null ? Reflection.newInstance(mapped) : s;
         } else {
-            return Reflection.newInstance(ExoticScroll.regToExo.get(s.getClass()));
+            Class<? extends ExoticScroll> mapped = ExoticScroll.regToExo.get(s.getClass());
+            return mapped != null ? Reflection.newInstance(mapped) : s;
         }
     }
 
     private Potion changePotion(Potion p) {
         if (p instanceof ExoticPotion) {
-            return Reflection.newInstance(ExoticPotion.exoToReg.get(p.getClass()));
+            Class<? extends Potion> mapped = ExoticPotion.exoToReg.get(p.getClass());
+            return mapped != null ? Reflection.newInstance(mapped) : p;
         } else {
-            return Reflection.newInstance(ExoticPotion.regToExo.get(p.getClass()));
+            Class<? extends ExoticPotion> mapped = ExoticPotion.regToExo.get(p.getClass());
+            return mapped != null ? Reflection.newInstance(mapped) : p;
         }
     }
 
     @Override
     public int value() {
-        return PRICES[priceTier];
+        return PRICES[Math.max(0, Math.min(priceTier, PRICES.length - 1))];
     }
 
     // --- Bundle ---
@@ -348,6 +345,6 @@ public class Closure_TGBox extends ClosuresBox {
     @Override
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
-        priceTier = bundle.getInt(PRICE_TIER);
+        priceTier = Math.max(0, Math.min(bundle.getInt(PRICE_TIER), PRICES.length - 1));
     }
 }

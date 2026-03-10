@@ -341,6 +341,7 @@ public class Dungeon {
 		Imp.Quest.reset();
 		Ceylon.Quest.reset();//change from budding
         Dario.Quest.reset();
+        TheEndspeaker.Status.reset();
 
 		hero = new Hero();
 		hero.live();
@@ -885,9 +886,12 @@ public class Dungeon {
                     generatedLevels.add(i);
                 }
             }
-
+            int maxDropFloor = 26;
+            for (int floor : generatedLevels) {
+                if (floor > maxDropFloor) maxDropFloor = floor;
+            }
             droppedItems = new SparseArray<>();
-            for (int i=1; i <= 26; i++) {
+            for (int i=1; i <= maxDropFloor; i++) {
 
                 //dropped items
                 ArrayList<Item> items = new ArrayList<>();
@@ -949,7 +953,7 @@ public class Dungeon {
 		Jessica.QuestClear = bundle.getBoolean(JESI_QUESTCLEAR);
 		FrostLeaf.QuestClear = bundle.getBoolean(LEAF_QUESTCLEAR);
 
-        highestRhodesGenerated = bundle.getInt(HIGHEST_RHODES_GENERATED);
+        highestRhodesGenerated = bundle.contains(HIGHEST_RHODES_GENERATED) ? bundle.getInt(HIGHEST_RHODES_GENERATED) : -1;
 		
 		Statistics.restoreFromBundle( bundle );
 		Generator.restoreFromBundle( bundle );
@@ -1013,8 +1017,8 @@ public class Dungeon {
 	public static void win( Class cause ) {
 
         updateLevelExplored();
+        Badges.validateChenUnlock();
         Statistics.gameWon = true;
-
 		hero.belongings.identify();
 
 		Rankings.INSTANCE.submit( true, cause );

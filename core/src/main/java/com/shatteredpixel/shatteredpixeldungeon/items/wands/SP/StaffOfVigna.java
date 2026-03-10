@@ -115,7 +115,7 @@ public class StaffOfVigna extends DamageWand {
         for (Char ch : chars) {
             processSoulMark(ch, chargesPerCast());
             int dmg = damageRoll(lvl);
-            if (Random.NormalIntRange(0, 10) < 2) {
+            if (Random.Int(5) == 0) {
                 dmg = (int) (dmg * 1.5); // 20% 확률로 크리티컬
             }
             ch.damage( dmg, this );

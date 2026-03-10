@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RadiantKnight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ShieldSlamCounter;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
@@ -84,6 +85,12 @@ public class SealOfLight extends Artifact {
 
                     if (hero.hasTalent(Talent.BLESSED_CHAMPION)) {
                         Buff.affect(hero, Bless.class, 15f *  hero.pointsInTalent(Talent.BLESSED_CHAMPION));
+                        // Instant shield slam stack charge
+                        if (hero.subClass == HeroSubClass.SAVIOR) {
+                            ShieldSlamCounter slamCounter = Buff.affect(hero, ShieldSlamCounter.class);
+                            float chargePercent = hero.pointsInTalent(Talent.BLESSED_CHAMPION) * 0.1f;
+                            slamCounter.countUp(Math.round(slamCounter.getCap() * chargePercent));
+                        }
                     }
 
                     if (hero.hasTalent(Talent.PEGASUS_AURA)) {

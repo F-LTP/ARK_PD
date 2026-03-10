@@ -93,7 +93,7 @@ public abstract class EndspeakerAspect extends Buff {
         }
     }
 
-    public static class CrownControlImmune extends EndspeakerAspect {
+    public static class CrowdControlImmune extends EndspeakerAspect {
         {
             color = 0xFF751800;
             ability = EndspeakerAbility.CROWD_CONTROL_IMMUNE;

@@ -377,7 +377,7 @@ public class InterlevelScene extends PixelScene {
 	}
 
 	private void descend() throws IOException {
-        if (Dungeon.level instanceof SeaLevel_part2 && (Dungeon.depth >= 36 && Dungeon.depth <= 38)) {
+        if (Dungeon.level instanceof SeaLevel_part2 && (Dungeon.depth >= 36 && Dungeon.depth <= 38) && Dungeon.level.mobs != null) {
             List<Mob> mobsToDestroy = new ArrayList<>();
             for (Mob mob : Dungeon.level.mobs) {
                 if ((mob instanceof TheEndspeaker.AspectSmall

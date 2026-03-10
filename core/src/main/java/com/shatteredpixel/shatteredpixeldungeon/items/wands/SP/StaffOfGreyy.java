@@ -68,7 +68,7 @@ public class StaffOfGreyy extends DamageWand {
             } else {
                 ch.damage(Math.round(damageRoll()), this);
             }
-            if (Random.NormalIntRange(0, 10) < 5) {
+            if (ch != curUser && Random.Int(2) == 0) {
                 Buff.affect(ch, Slow.class, 2f);
             }
         }

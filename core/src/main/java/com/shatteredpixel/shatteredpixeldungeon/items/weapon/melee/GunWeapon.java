@@ -150,7 +150,7 @@ public class GunWeapon extends MeleeWeapon {
         if (closerrange != null && Dungeon.hero.hasTalent(Talent.PINPOINT)) {
             acc += Dungeon.hero.pointsInTalent(Talent.PINPOINT) * 0.2f;
         }
-        acc += RingOfAccuracy.shootAccuracyMultiplier(Dungeon.hero);
+        acc *= RingOfAccuracy.shootAccuracyMultiplier(Dungeon.hero);
 
         return acc;
     }
@@ -380,6 +380,8 @@ public class GunWeapon extends MeleeWeapon {
                 // If the enemy is already dead, interrupt the attack.
                 // This matters as defence procs can sometimes inflict self-damage, such as armor glyphs.
                 if (!ch.isAlive()){
+                    Buff buff = Dungeon.hero.buff(RangedAttackTracker.class);
+                    if (buff != null) buff.detach();
                     return;
                 }
 

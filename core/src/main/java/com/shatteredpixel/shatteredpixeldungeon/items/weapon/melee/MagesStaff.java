@@ -117,8 +117,18 @@ public class MagesStaff extends MeleeWeapon {
 
 	@Override
 	public void activate( Char ch ) {
+        super.activate(ch);
 		if(wand != null) wand.charge( ch, STAFF_SCALE_FACTOR );
 	}
+
+    @Override
+    public int targetingPos(Hero user, int dst) {
+        if (wand != null) {
+            return wand.targetingPos(user, dst);
+        } else {
+            return super.targetingPos(user, dst);
+        }
+    }
 
 	@Override
 	public void execute(Hero hero, String action) {
@@ -259,9 +269,15 @@ public class MagesStaff extends MeleeWeapon {
 		
 		level(targetLevel);
 		this.wand = wand;
+        wand.levelKnown = wand.curChargeKnown = true;
 		updateWand(false);
 		wand.curCharges = Math.min(wand.maxCharges, wand.curCharges+oldStaffcharges);
 		if (owner != null) wand.charge(owner);
+        if (wand.cursed && (!this.cursed || !this.hasCurseEnchant())){
+            equipCursed(Dungeon.hero);
+            this.cursed = this.cursedKnown = true;
+            enchant(Enchantment.randomCurse());
+        }
 
 		//This is necessary to reset any particles.
 		//FIXME this is gross, should implement a better way to fully reset quickslot visuals
@@ -387,7 +403,7 @@ public class MagesStaff extends MeleeWeapon {
 
 		if (wand != null){
 			info += "\n\n" + Messages.get(this, "has_wand", Messages.get(wand, "name"));
-			if (!cursed || !cursedKnown)    info += " " + wand.statsDesc();
+            if ((!cursed && !hasCurseEnchant()) || !cursedKnown)    info += " " + wand.statsDesc();
 			else                            info += " " + Messages.get(this, "cursed_wand");
 
 			if (Dungeon.hero.subClass == HeroSubClass.BATTLEMAGE){
@@ -404,14 +420,80 @@ public class MagesStaff extends MeleeWeapon {
 		Emitter emitter = new Emitter();
 		emitter.pos(12.5f, 3);
 		emitter.fillTarget = false;
+        emitter.pour(StaffParticleFactory, 0.1f);
 		return emitter;
 	}
+
+    private final Emitter.Factory StaffParticleFactory = new Emitter.Factory() {
+        @Override
+        public void emit( Emitter emitter, int index, float x, float y ) {
+            StaffParticle c = (StaffParticle)emitter.getFirstAvailable(StaffParticle.class);
+            if (c == null) {
+                c = new StaffParticle();
+                emitter.add(c);
+            }
+            c.reset(x, y);
+        }
+
+        @Override
+        public boolean lightMode() {
+            return !((wand instanceof WandOfDisintegration)
+                    || (wand instanceof WandOfCorruption)
+                    || (wand instanceof WandOfCorrosion)
+                    || (wand instanceof WandOfRegrowth)
+                    || (wand instanceof WandOfLivingEarth));
+        }
+    };
+
+    public class StaffParticle extends PixelParticle {
+        private float minSize;
+        private float maxSize;
+        public float sizeJitter = 0;
+
+        public StaffParticle(){ super(); }
+
+        public void reset( float x, float y ) {
+            revive();
+            speed.set(0);
+            this.x = x;
+            this.y = y;
+            if (wand != null) wand.staffFx( this );
+        }
+
+        public void setSize( float minSize, float maxSize ){
+            this.minSize = minSize;
+            this.maxSize = maxSize;
+        }
+
+        public void setLifespan( float life ){
+            lifespan = left = life;
+        }
+
+        public void shuffleXY(float amt){
+            x += Random.Float(-amt, amt);
+            y += Random.Float(-amt, amt);
+        }
+
+        public void radiateXY(float amt){
+            float hypot = (float)Math.hypot(speed.x, speed.y);
+            this.x += speed.x/hypot*amt;
+            this.y += speed.y/hypot*amt;
+        }
+
+        @Override
+        public void update() {
+            super.update();
+            size(minSize + (left / lifespan)*(maxSize-minSize) + Random.Float(sizeJitter));
+        }
+    }
+
     public boolean tierUpgraded = false;
 
     public void upgradeTier() {
+        if (tierUpgraded) return;
         tier += 2;
         tierUpgraded = true;
-        updateQuickslot();
+        updateWand(false);
     }
 	private static final String WAND = "wand";
 	private static final String MAXCHARGE = "charge";
@@ -422,7 +504,7 @@ public class MagesStaff extends MeleeWeapon {
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(WAND, wand);
-		bundle.put(MAXCHARGE, wand.maxCharges);
+        bundle.put(MAXCHARGE, wand != null ? wand.maxCharges : 0);
         bundle.put(TIER, tier);
         bundle.put(TIER_UPGRADED, tierUpgraded);
 	}

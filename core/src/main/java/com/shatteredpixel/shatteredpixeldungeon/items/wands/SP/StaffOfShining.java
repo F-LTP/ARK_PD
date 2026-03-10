@@ -58,7 +58,9 @@ public class StaffOfShining extends DamageWand {
 
         Char ch = Actor.findChar(beam.collisionPos);
         if (ch != null){
-            processSoulMark(ch, chargesPerCast());
+            if (ch.alignment != Char.Alignment.ALLY) {
+                processSoulMark(ch, chargesPerCast());
+            }
             affectTarget(ch);
         }
     }

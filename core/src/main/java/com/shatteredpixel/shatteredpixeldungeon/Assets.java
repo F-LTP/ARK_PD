@@ -485,6 +485,10 @@ public class Assets {
 		public static final String SEA_PREDATOR	= "sprites/sea_predator.png";
 		public static final String SEA_BRANDGUIDER	= "sprites/sea_brandguider.png";
 		public static final String SEA_LEEF	= "sprites/sea_reef.png";
+        public static final String ENDSPEAKER1	= "sprites/endspeaker1.png";
+        public static final String ENDSPEAKER2	= "sprites/endspeaker2.png";
+        public static final String ENDSPEAKER3	= "sprites/endspeaker3.png";
+        public static final String ENDSPEAKER4	= "sprites/endspeaker4.png";
 
 		public static final String SKADI_MULA	= "sprites/skadi_mula.png";
 		public static final String MULA_HEAD	= "sprites/mula_1.png";
