@@ -1495,23 +1495,16 @@ public class Hero extends Char {
             }
         }
 
-        // Combined blindness chance: Radiant Strike (always) + Seal level (during RadiantKnight)
-        {
-            float blindChance = 0f;
-            if (hasTalent(Talent.EXORCISM))
-                blindChance += 0.05f + pointsInTalent(Talent.EXORCISM) * 0.05f;
-            if (buff(RadiantKnight.class) != null) {
-                SealOfLight hikariSeal = belongings.getItem(SealOfLight.class);
-                if (hikariSeal != null) blindChance += 0.05f + hikariSeal.level() * 0.01f;
-            }
-            if (blindChance > 0 && Random.Float() < blindChance)
-                Buff.affect(enemy, Blindness.class, 3f);
+        // blindness chance handling
+        float blindChance = 0f;
+        if (hasTalent(Talent.EXORCISM))
+            blindChance += 0.05f + pointsInTalent(Talent.EXORCISM) * 0.05f;
+        if (buff(RadiantKnight.class) != null) {
+            SealOfLight hikariSeal = belongings.getItem(SealOfLight.class);
+            if (hikariSeal != null) blindChance += 0.05f + hikariSeal.level() * 0.01f;
         }
-
-        if (enemy.buff(Blindness.class) != null && hasTalent(Talent.FLASH_SPEAR)) {
-            int trueBonusDamage = (int) (damage * (pointsInTalent(Talent.FLASH_SPEAR) * 0.1f));
-            enemy.damage(trueBonusDamage, this);
-        }
+        if (blindChance > 0 && Random.Float() < blindChance)
+            Buff.affect(enemy, Blindness.class, 3f);
 
         if (buff(BreaktheDawn.BreakBuff.class) != null) {
             damage *= 2f;

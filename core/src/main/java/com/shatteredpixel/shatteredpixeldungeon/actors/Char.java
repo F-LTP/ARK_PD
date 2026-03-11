@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ArcaneArmor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bless;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
@@ -360,6 +361,7 @@ public abstract class Char extends Actor {
 			}
 			
 			int dmg;
+            int trueDmg = 0;
 			Preparation prep = buff(Preparation.class);
 			if (prep != null){
 				dmg = prep.damageRoll(this);
@@ -371,7 +373,9 @@ public abstract class Char extends Actor {
 			} else {
 				dmg = damageRoll();
 			}
-			
+            if (this == Dungeon.hero && enemy.buff(Blindness.class) != null && Dungeon.hero.hasTalent(Talent.FLASH_SPEAR)) {
+                trueDmg += (int) (dmg * (Dungeon.hero.pointsInTalent(Talent.FLASH_SPEAR) * 0.1f));
+            }
 			int effectiveDamage = enemy.defenseProc( this, dmg );
 			effectiveDamage = Math.max( effectiveDamage - dr, 0 );
 			
@@ -395,6 +399,10 @@ public abstract class Char extends Actor {
 
 			enemy.damage( effectiveDamage, this );
 
+            // if enemy is not dead from the main attack, process true damage
+            if (enemy.isAlive() && trueDmg > 0) {
+                enemy.damage(trueDmg, this);
+            }
 			if (buff(FireImbue.class) != null)  buff(FireImbue.class).proc(enemy);
 			if (buff(Hallucination.class) != null)  buff(Hallucination.class).proc();
 			if (buff(ElixirOfDragonsBlood.Dragonsblood.class) != null)  buff(ElixirOfDragonsBlood.Dragonsblood.class).proc(this, enemy);

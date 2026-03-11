@@ -11,8 +11,11 @@ import com.watabou.utils.Point;
 public class EndspeakerRoom extends SpecialRoom {
     @Override
     public int maxHeight() { return 12; }
+    @Override
     public int maxWidth() { return 12; }
+    @Override
     public int minHeight() { return 9; }
+    @Override
     public int minWidth() { return 9; }
 
     public void paint(Level level ) {

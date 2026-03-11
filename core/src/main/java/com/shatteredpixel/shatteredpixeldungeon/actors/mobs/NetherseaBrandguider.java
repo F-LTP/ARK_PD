@@ -48,6 +48,14 @@ public class NetherseaBrandguider extends Mob {
     }
 
     @Override
+    public void damage(int dmg, Object src) {
+        super.damage(dmg, src);
+        if (isAlive() && HT / 2 >= HP && sprite != null && !sprite.hasActiveShield()) {
+            sprite.shieldHalo(0x0099BB);
+        }
+    }
+
+    @Override
     protected boolean act() {
 
         //스폰시 첫 행동하면서 명흔을 깝니다.

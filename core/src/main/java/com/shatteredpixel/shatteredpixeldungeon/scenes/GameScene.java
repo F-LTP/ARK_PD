@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DemonSpawner;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.miniboss.TheEndspeaker;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BannerSprites;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CircleArc;
@@ -57,6 +58,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportat
 import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.SeaLevel_part2;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
@@ -603,6 +605,16 @@ public class GameScene extends PixelScene {
 				case TRAPS:     GLog.w(Messages.get(this, "traps"));    break;
 				case SECRETS:   GLog.w(Messages.get(this, "secrets"));  break;
 			}
+
+            if (Dungeon.level instanceof SeaLevel_part2 && Dungeon.depth >= 36 && Dungeon.depth <= 38
+                    && !TheEndspeaker.Status.spawnMsgShown) {
+                GLog.w(Messages.get(TheEndspeaker.class, "aspect_spawn"));
+                TheEndspeaker.Status.spawnMsgShown = true;
+            }
+            if (Dungeon.level instanceof SeaLevel_part2 && TheEndspeaker.Status.pendingDestroyMessage) {
+                GLog.w(Messages.get(TheEndspeaker.class, "aspect_destroy"));
+                TheEndspeaker.Status.pendingDestroyMessage = false;
+            }
 
 			for (Mob mob : Dungeon.level.mobs) {
 				if (!mob.buffs(ChampionEnemy.class).isEmpty()) {

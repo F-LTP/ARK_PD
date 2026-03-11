@@ -125,6 +125,33 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfParalyticG
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfPurity;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfToxicGas;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.BlizzardBrew;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.CausticBrew;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.InfernalBrew;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.ShockingBrew;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfAquaticRejuvenation;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfArcaneArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfDragonsBlood;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfHoneyedHealing;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfIcyTouch;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfMight;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfToxicEssence;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirsOfIronSkin;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirsOfSoulBreak;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirsOfSoulProtection;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfAdrenalineSurge;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfCleansing;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfCorrosiveGas;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfDragonsBreath;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfEarthenArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfHolyFuror;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfMagicalSight;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfShielding;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfShroudingFog;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfSnapFreeze;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfStamina;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfStormClouds;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAccuracy;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAmplified;
@@ -157,6 +184,20 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTerror;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfWarp;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfAffection;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfAntiMagic;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfDivination;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfDominate;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfEnchantment;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfForesight;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfMysticalEnergy;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfPassage;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfPetrification;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfPolymorph;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfPrismaticImage;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfPsionicBlast;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfSacrifice;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.Runestone;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAffection;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAggression;
@@ -346,7 +387,11 @@ public class Generator {
 
         ACCESSORIES(0, Accessories.class),
 
-        N_INGREDINETS(0,Ingredients.class);
+        N_INGREDINETS(0,Ingredients.class),
+
+        EXOTIC_SCROLL(0,ExoticScroll .class),
+        EXOTIC_POTION(0,ExoticPotion .class),
+        ELIXIR_BREW(0, Potion.class);
 
         public Class<?>[] classes;
 
@@ -767,6 +812,54 @@ public class Generator {
                     Potato.class
             };
             N_INGREDINETS.probs = new float[]{1, 1,1};
+
+            EXOTIC_SCROLL.classes = new Class<?>[]{
+                    ScrollOfAffection.class,
+                    ScrollOfAntiMagic.class,
+                    ScrollOfDivination.class,
+                    ScrollOfDominate.class,
+                    ScrollOfEnchantment.class,
+                    ScrollOfForesight.class,
+                    ScrollOfMysticalEnergy.class,
+                    ScrollOfPassage.class,
+                    ScrollOfPetrification.class,
+                    ScrollOfPolymorph.class,
+                    ScrollOfPrismaticImage.class,
+                    ScrollOfPsionicBlast.class,
+                    ScrollOfSacrifice.class};
+            EXOTIC_SCROLL.probs = new float[]{1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1};
+
+            EXOTIC_POTION.classes = new Class<?>[]{
+                    PotionOfAdrenalineSurge.class,
+                    PotionOfCleansing.class,
+                    PotionOfCorrosiveGas.class,
+                    PotionOfDragonsBreath.class,
+                    PotionOfEarthenArmor.class,
+                    PotionOfHolyFuror.class,
+                    PotionOfMagicalSight.class,
+                    PotionOfShielding.class,
+                    PotionOfShroudingFog.class,
+                    PotionOfSnapFreeze.class,
+                    PotionOfStamina.class,
+                    PotionOfStormClouds.class};
+            EXOTIC_POTION.probs = new float[]{0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+
+            ELIXIR_BREW.classes = new Class<?>[]{
+                    ElixirOfAquaticRejuvenation.class,
+                    ElixirOfArcaneArmor.class,
+                    ElixirOfDragonsBlood.class,
+                    ElixirOfHoneyedHealing.class,
+                    ElixirOfIcyTouch.class,
+                    ElixirOfMight.class,
+                    ElixirOfToxicEssence.class,
+                    ElixirsOfIronSkin.class,
+                    ElixirsOfSoulBreak.class,
+                    ElixirsOfSoulProtection.class,
+                    BlizzardBrew.class,
+                    CausticBrew.class,
+                    InfernalBrew.class,
+                    ShockingBrew.class};
+            ELIXIR_BREW.probs = new float[]{1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1};
         }
     }
 

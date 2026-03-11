@@ -10,7 +10,7 @@ public class Endspeaker3Sprite extends MobSprite {
 
         texture( Assets.Sprites.ENDSPEAKER3 );
 
-        TextureFilm frames = new TextureFilm( texture, 70, 52 );
+        TextureFilm frames = new TextureFilm( texture, 92, 52 );
 
         idle = new Animation( 2, true );
         idle.frames( frames, 0, 1, 2, 3, 4, 5, 6, 7 );

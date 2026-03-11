@@ -259,9 +259,7 @@ public class ShopRoom extends SpecialRoom {
 
 		itemsToSpawn.add( new MerchantsBeacon() );
 
-
 		if (!Dungeon.isChallenged(Challenges.NO_HERBALISM) || Dungeon.depth != 6)itemsToSpawn.add(ChooseBag(Dungeon.hero.belongings));
-
 
 		itemsToSpawn.add( new PotionOfHealing() );
 		if (!Dungeon.isChallenged(Challenges.NO_HERBALISM)) itemsToSpawn.add( Generator.randomUsingDefaults( Generator.Category.POTION ) );

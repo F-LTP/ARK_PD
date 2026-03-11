@@ -50,7 +50,6 @@ public class SeaLevel_part2 extends RegularLevel {
         addItemToSpawn(new SeaPlatform.LittleHandy());
         addItemToSpawn(new SeaPlatform.LittleHandy());
         addItemToSpawn(new SeaPlatform.LittleHandy());
-        addItemToSpawn(new SeaPlatform.LittleHandy());
         super.create();
     }
 

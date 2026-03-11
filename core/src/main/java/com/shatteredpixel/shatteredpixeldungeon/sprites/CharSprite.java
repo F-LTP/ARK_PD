@@ -46,6 +46,7 @@ import com.watabou.glwrap.Matrix;
 import com.watabou.glwrap.Vertexbuffer;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Halo;
 import com.watabou.noosa.MovieClip;
 import com.watabou.noosa.NoosaScript;
 import com.watabou.noosa.audio.Sample;
@@ -114,6 +115,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	protected ShieldHalo shield;
 	protected AlphaTweener invisible;
 	protected Flare aura;
+    protected Halo ring;
 	
 	protected EmoIcon emo;
 	protected CharHealthIndicator health;
@@ -297,6 +299,11 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		float distance = Dungeon.level.trueDistance( from, to );
 		jump( from, to, callback, distance * 2, distance * 0.1f );
 	}
+
+    public void dash( int from, int to, Callback callback ) {
+        float distance = Dungeon.level.trueDistance( from, to );
+        jump( from, to, callback, distance/2, distance * 0.1f );
+    }
 
 	public void jump( int from, int to, Callback callback, float height, float duration ) {
 		jumpCallback = callback;
@@ -503,14 +510,18 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		}
 	}
 
-	public void aura( int color ){
+    public void aura( int color ){
+        aura(color, 90);
+    }
+
+    public void aura( int color, float angularSpeed ){
 		if (aura != null){
 			aura.killAndErase();
 		}
 		float size = Math.max(width(), height());
 		size = Math.max(size+4, 16);
 		aura = new Flare(5, size);
-		aura.angularSpeed = 90;
+        aura.angularSpeed = angularSpeed;
 		aura.color(color, true).show(this, 0);
 	}
 
@@ -520,7 +531,37 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 			aura = null;
 		}
 	}
-	
+
+    public void ring( int color ){
+        if (ring != null){
+            ring.killAndErase();
+        }
+        float radius = (float)Math.sqrt(Math.pow(width()/2f, 2) + Math.pow(height()/2f, 2));
+        ring = new Halo(radius, color, 0.5f);
+        ring.point(x + width/2, y + height/2);
+        parent.addToBack(ring);
+    }
+
+    public void clearRing(){
+        if (ring != null){
+            ring.killAndErase();
+            ring = null;
+        }
+    }
+
+    public void shieldHalo( int color ){
+        if (shield != null) shield.putOut();
+        GameScene.effect( shield = new ShieldHalo( this, color ) );
+    }
+
+    public boolean hasActiveShield(){
+        return shield != null && shield.alive;
+    }
+
+    public void clearShieldHalo(){
+        if (shield != null) shield.putOut();
+    }
+
 	@Override
 	public void update() {
 		if (paused && ch != null && curAnim != null && !curAnim.looped && !finished){
@@ -553,6 +594,11 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 			aura.visible = visible;
 			aura.point(center());
 		}
+        if (ring != null && ring.alive){
+            ring.visible = visible;
+            ring.point(x + width/2, y + height/2);
+            ring.am = 0.4f + 0.15f * (float)Math.sin(Game.timeTotal * Math.PI);
+        }
 		if (sleeping) {
 			showSleep();
 		} else {
