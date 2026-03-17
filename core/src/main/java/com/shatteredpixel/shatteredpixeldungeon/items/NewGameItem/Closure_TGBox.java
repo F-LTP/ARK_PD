@@ -284,10 +284,13 @@ public class Closure_TGBox extends ClosuresBox {
         if (w.curseInfusionBonus) level--;
         if (level > 0) n.upgrade(level);
         else if (level < 0) n.degrade(-level);
-        n.levelKnown = w.levelKnown;
+        n.curChargeKnown = w.curChargeKnown;
         n.cursedKnown = w.cursedKnown;
         n.cursed = w.cursed;
         n.curseInfusionBonus = w.curseInfusionBonus;
+
+        n.curCharges = w.curCharges;
+        n.updateLevel();
         return n;
     }
 

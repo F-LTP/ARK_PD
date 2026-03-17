@@ -109,6 +109,7 @@ public class NewDM300 extends Mob {
         properties.add(Property.SARKAZ);
         properties.add(Property.INORGANIC);
         properties.add(Property.LARGE);
+        properties.add(Property.SARKAZ);
     }
 
     public NewDM300()

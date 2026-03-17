@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Silence;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -9,8 +10,11 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.SeaTerror;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.NetherseaBrandguiderSprite;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
+import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
@@ -42,7 +46,7 @@ public class NetherseaBrandguider extends Mob {
 
     @Override
     public int drRoll() {
-        if (HT /2 >= HP) return Random.NormalIntRange(10, 55);
+        if (buff(Reinforced.class) != null) return Random.NormalIntRange(10, 55);
 
         return Random.NormalIntRange(0, 20);
     }
@@ -50,8 +54,8 @@ public class NetherseaBrandguider extends Mob {
     @Override
     public void damage(int dmg, Object src) {
         super.damage(dmg, src);
-        if (isAlive() && HT / 2 >= HP && sprite != null && !sprite.hasActiveShield()) {
-            sprite.shieldHalo(0x0099BB);
+        if (isAlive() && HT / 2 >= HP) {
+            Buff.affect(this, Reinforced.class);
         }
     }
 
@@ -62,15 +66,14 @@ public class NetherseaBrandguider extends Mob {
         if (!terrorSpawned) {
             SeaTerror seaTerror = Dungeon.level.addSeaTerror(this.pos);
             seaTerror.activate();
-            //Level.set(this.pos, Terrain.SEA_TERROR);
-            GameScene.updateMap(this.pos);
 
+            GameScene.updateMap(this.pos);
             terrorSpawned = true;
         }
 
-        if (HT /2 >= HP && this.buff(Silence.class) == null) {
-            if (Dungeon.level.seaTerrors.get(pos) != null &&
-                    (Dungeon.level.map[this.pos] == Terrain.EMPTY || Dungeon.level.map[this.pos] == Terrain.WATER)) {
+        if ((HT / 2 >= HP || shouldAlwaysGenerateSeaTerror()) && this.buff(Silence.class) == null) {
+            if (Dungeon.level.seaTerrors.get(pos) == null &&
+                    (Dungeon.level.map[this.pos] == Terrain.EMPTY || Dungeon.level.map[this.pos] == Terrain.WATER || Dungeon.level.map[this.pos] == Terrain.EMPTY_DECO)) {
                 Dungeon.level.addSeaTerror(this.pos);
 
                 CellEmitter.get(pos).burst(Speck.factory(Speck.BUBBLE), 10);
@@ -79,6 +82,10 @@ public class NetherseaBrandguider extends Mob {
             }
         }
         return super.act();
+    }
+
+    protected boolean shouldAlwaysGenerateSeaTerror() {
+        return false;
     }
 
     private static final String VAL   = "firstTEEROR";
@@ -95,5 +102,51 @@ public class NetherseaBrandguider extends Mob {
         terrorSpawned = bundle.getBoolean(VAL);
     }
 
+    public static class Reinforced extends Buff {
+
+        {
+            type = buffType.POSITIVE;
+            announced = true;
+        }
+
+        @Override
+        public boolean act() {
+            if (target.HP > target.HT / 2) {
+                detach();
+            } else {
+                spend(TICK);
+            }
+            return true;
+        }
+
+        @Override
+        public void fx(boolean on) {
+            if (on && target.sprite != null) {
+                target.sprite.shieldHalo(0x0099BB);
+            } else if (!on && target.sprite != null) {
+                target.sprite.clearShieldHalo();
+            }
+        }
+
+        @Override
+        public int icon() {
+            return BuffIndicator.ARMOR;
+        }
+
+        @Override
+        public void tintIcon(Image icon) {
+            icon.hardlight(0f, 0.6f, 0.73f);
+        }
+
+        @Override
+        public String toString() {
+            return Messages.get(this, "name");
+        }
+
+        @Override
+        public String desc() {
+            return Messages.get(this, "desc");
+        }
+    }
 }
 

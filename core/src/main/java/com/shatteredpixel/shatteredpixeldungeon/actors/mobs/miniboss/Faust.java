@@ -40,6 +40,7 @@ public class Faust extends Mob {
         lootChance = 1.0f;
 
         state = WANDERING;
+        properties.add(Property.INFECTED);
     }
 
     private int charge = 0; // 3이 될경우 강화 사격

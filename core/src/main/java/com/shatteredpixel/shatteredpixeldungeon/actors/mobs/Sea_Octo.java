@@ -110,17 +110,25 @@ public class Sea_Octo extends Mob {
     @Override
     public void activateSeaTerror() {
         if (this.buff(ExtendedRange.class) == null) {
-            Buff.affect(this, ExtendedRange.class, 1f);
-        } else if (this.buff(ExtendedRange.class) != null) {
-            Buff.prolong(this, ExtendedRange.class, 1f);
+            Buff.affect(this, ExtendedRange.class);
         }
     }
 
-    public static class ExtendedRange extends FlavourBuff {
+    public static class ExtendedRange extends Buff {
 
         {
             type = buffType.POSITIVE;
             announced = false;
+        }
+
+        @Override
+        public boolean act() {
+            if (Dungeon.level.seaTerrors.get(target.pos) == null) {
+                detach();
+            } else {
+                spend(TICK);
+            }
+            return true;
         }
 
         @Override

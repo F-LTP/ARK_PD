@@ -1017,8 +1017,8 @@ public class Dungeon {
 	public static void win( Class cause ) {
 
         updateLevelExplored();
-        Badges.validateChenUnlock();
         Statistics.gameWon = true;
+        Badges.validateChenUnlock();
 		hero.belongings.identify();
 
 		Rankings.INSTANCE.submit( true, cause );

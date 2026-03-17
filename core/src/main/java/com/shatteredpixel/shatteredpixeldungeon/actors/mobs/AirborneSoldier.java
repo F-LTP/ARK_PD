@@ -32,6 +32,7 @@ public class AirborneSoldier extends Mob{
     loot = Gold .class;
     lootChance = 0.3f;
     immunities.add(Silence.class);
+    properties.add(Property.INFECTED);
 }
 
     @Override

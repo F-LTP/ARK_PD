@@ -60,6 +60,7 @@ public class Warlock extends Mob implements Callback {
 		loot = Generator.Category.POTION;
 		lootChance = 0.5f;
 
+        properties.add(Property.SARKAZ);
 	}
 	
 	@Override

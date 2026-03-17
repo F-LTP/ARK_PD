@@ -28,6 +28,7 @@ public class MudrockZealot extends Mob {
         lootChance = 0.1f;
 
         immunities.add(Silence.class);
+        properties.add(Property.INFECTED);
     }
 
     boolean barrier = true;

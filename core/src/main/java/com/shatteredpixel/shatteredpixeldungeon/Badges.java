@@ -239,6 +239,7 @@ public class Badges {
 		Get_40_STONES               (257 ),
 		DOLL_COLLECTOR              (258 ),
 		SLAIN_PURSUER				(259 ),
+        SLAIN_ENDSPEAKER_FULL		(260 ),
 
 		//GREEN
 		SKIN_BABOSKADI              (288, false, true),
@@ -1248,6 +1249,14 @@ public class Badges {
 			local.add(Badge.SLAIN_PURSUER);
 			displayBadge( Badge.SLAIN_PURSUER );}
 	}
+
+    public static void validateEndspeakerTier4Kill() {
+        if (!local.contains( Badge.SLAIN_ENDSPEAKER_FULL )){
+            Badge badge = Badge.SLAIN_ENDSPEAKER_FULL;
+            local.add(badge);
+            displayBadge( badge );
+        }
+    }
 
 	public static void validatewill() {
 		if (!local.contains( Badge.WILL )){

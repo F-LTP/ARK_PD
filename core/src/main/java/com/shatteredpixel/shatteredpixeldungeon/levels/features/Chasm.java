@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.FeatherFall;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfWeedy;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.WeakFloorRoom;
@@ -137,8 +138,11 @@ public class Chasm implements Hero.Doom {
         StaffOfWeedy.WeedyKnockback kb = mob.buff(StaffOfWeedy.WeedyKnockback.class);
         if (kb != null && kb.getRefund() > 0) {
             StaffOfWeedy staff = Dungeon.hero.belongings.getItem(StaffOfWeedy.class);
+            MagesStaff magesStaff = Dungeon.hero.belongings.getItem(MagesStaff.class);
             if (staff != null) {
                 staff.gainCharge(kb.getRefund());
+            }else if (magesStaff != null && magesStaff.wandClass() == StaffOfWeedy.class) {
+                magesStaff.gainCharge(kb.getRefund());
             }
         }
 

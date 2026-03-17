@@ -66,6 +66,8 @@ public class Talu_BlackSnake extends Mob {
         viewDistance = 12;
 
         properties.add(Property.BOSS);
+        properties.add(Property.INFECTED);
+        properties.add(Property.SARKAZ);
         immunities.add(Amok.class);
         immunities.add(Terror.class);
         immunities.add(Paralysis.class);

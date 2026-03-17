@@ -59,6 +59,7 @@ public class Ghoul extends Mob {
 		lootChance = 0.2f;
 
 		immunities.add(Silence.class);
+        properties.add(Property.INFECTED);
 	}
 
 	@Override

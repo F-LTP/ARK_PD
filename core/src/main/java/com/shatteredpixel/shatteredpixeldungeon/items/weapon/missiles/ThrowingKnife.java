@@ -33,13 +33,21 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
+import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
+import java.util.ArrayList;
+
 public class ThrowingKnife extends MissileWeapon {
+
+    public boolean duplicateDestroyed = false;
 	
 	{
 		image = ItemSpriteSheet.THROWING_KNIFE;
@@ -48,6 +56,7 @@ public class ThrowingKnife extends MissileWeapon {
 
 		unique = true;
 		bones = false;
+        stackable = false;
 		
 		tier = 1;
 		baseUses = 10000;
@@ -58,6 +67,58 @@ public class ThrowingKnife extends MissileWeapon {
 		return  6 * tier +                      //6 base, up from 5
 				(tier == 1 ? 2*lvl : tier*lvl); //scaling unchanged
 	}
+
+    @Override
+    public boolean doPickUp(Hero hero) {
+        if (isDuplicate(hero)) {
+            duplicateDestroyed = true;
+            hero.spendAndNext(TIME_TO_PICK_UP);
+            return true;
+        }
+        return super.doPickUp(hero);
+    }
+
+    private boolean isDuplicate(Hero hero) {
+        if (hero.belongings.getItem(ThrowingKnife.class) != null) {
+            return true;
+        }
+
+        //WolfMark buff
+        if (hero.buff(WolfMark.class) != null) {
+            return true;
+        }
+
+        // current floor
+        for (Heap heap : Dungeon.level.heaps.valueList()) {
+            for (Item item : heap.items) {
+                if (item instanceof ThrowingKnife && item != this) {
+                    return true;
+                }
+            }
+        }
+
+        //PinCushion
+        for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
+            PinCushion pc = mob.buff(PinCushion.class);
+            if (pc != null && pc.containsType(ThrowingKnife.class)) {
+                return true;
+            }
+        }
+
+        //items falling through chasms to other floors
+        for (int key : Dungeon.droppedItems.keyArray()) {
+            ArrayList<Item> items = Dungeon.droppedItems.get(key);
+            if (items != null) {
+                for (Item item : items) {
+                    if (item instanceof ThrowingKnife) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
 
 	@Override
 	public int proc(Char attacker, Char defender, int damage) {
@@ -88,4 +149,44 @@ public class ThrowingKnife extends MissileWeapon {
 			return Messages.get(this, "desc", dispTurns());
 		}
 	}
+
+    public static class KnifeSafeguard extends Buff {
+
+        private int turnsLost = 0;
+
+        private static final int SAFEGUARD_TURNS = 100;
+        private static final String TURNS_LOST = "turnsLost";
+
+        @Override
+        public boolean act() {
+            if (Dungeon.hero.belongings.getItem(ThrowingKnife.class) != null) {
+                turnsLost = 0;
+            } else {
+                turnsLost++;
+                if (turnsLost >= SAFEGUARD_TURNS) {
+                    ThrowingKnife newKnife = new ThrowingKnife();
+                    if (!newKnife.collect()) {
+                        Dungeon.level.drop(newKnife, target.pos).sprite.drop();
+                    }
+                    GLog.p(Messages.get(ThrowingKnife.class, "safeguard"));
+                    turnsLost = 0;
+                }
+            }
+
+            spend(TICK);
+            return true;
+        }
+
+        @Override
+        public void storeInBundle(Bundle bundle) {
+            super.storeInBundle(bundle);
+            bundle.put(TURNS_LOST, turnsLost);
+        }
+
+        @Override
+        public void restoreFromBundle(Bundle bundle) {
+            super.restoreFromBundle(bundle);
+            turnsLost = bundle.getInt(TURNS_LOST);
+        }
+    }
 }

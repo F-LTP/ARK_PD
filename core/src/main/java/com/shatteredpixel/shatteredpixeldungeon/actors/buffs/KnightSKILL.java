@@ -156,7 +156,7 @@ public class KnightSKILL extends Buff implements ActionIndicator.Action {
         }
 
         public String desc(){
-            if (name() == "LIGHTSWORD") {
+            if (this == LIGHTSWORD) {
                 int dmgper = 0;
                 int bouns = 25;
                 if (Dungeon.hero.hasTalent(Talent.SKILL_MASTERY)) bouns = 35;

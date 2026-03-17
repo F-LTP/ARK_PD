@@ -199,6 +199,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SHISHIOH;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SanktaBet;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Suffering;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -1182,6 +1183,8 @@ public class Hero extends Char {
                             || item instanceof DriedRose.Petal
                             || item instanceof Key) {
                         //Do Nothing
+                    } else if (item instanceof ThrowingKnife && ((ThrowingKnife) item).duplicateDestroyed) {
+                        GLog.i(Messages.get(ThrowingKnife.class, "duplicate"));
                     } else {
 
                         //TODO make all unique items important? or just POS / SOU?
@@ -1481,9 +1484,10 @@ public class Hero extends Char {
             // 난입 특성
             if (hasTalent(Talent.PHASERUSH)) {
                 SealOfLight Seal = this.belongings.getItem(SealOfLight.class);
-                if (Seal != null)
+                if (Seal != null) {
                     Seal.charge(this, pointsInTalent(Talent.PHASERUSH));
-                Seal.updateQuickslot();
+                    Seal.updateQuickslot();
+                }
             }
             // 카시미어의 기사
             if (hasTalent(Talent.KNIGHT_OF_KAZIMIERZ) && Random.Int(5) == 0) {

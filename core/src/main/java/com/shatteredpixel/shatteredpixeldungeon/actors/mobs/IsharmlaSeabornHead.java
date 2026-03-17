@@ -268,8 +268,7 @@ public class IsharmlaSeabornHead extends Mob {
     }
 
     public static void sendWaves(final Char thrower) {
-        WaveAbility waveAbility = Buff.affect(thrower, WaveAbility.class);
-        waveAbility.curCells = null;
+        WaveAbility waveAbility = Buff.append(thrower, WaveAbility.class);
         waveAbility.width = isHeadEnraged ? 7 : 3 + 2 * Dungeon.mulaCount;
         waveAbility.setStartPos();
     }

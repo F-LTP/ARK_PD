@@ -60,6 +60,7 @@ public class Tomimi extends Mob {
         EXP = 40;
 
         properties.add(Property.BOSS);
+        properties.add(Property.INFECTED);
         immunities.add(Amok.class);
         immunities.add(Terror.class);
         immunities.add(Silence.class);

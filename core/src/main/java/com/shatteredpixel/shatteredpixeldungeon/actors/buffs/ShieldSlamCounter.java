@@ -29,6 +29,7 @@ public class ShieldSlamCounter extends CounterBuff implements ActionIndicator.Ac
     { type = buffType.POSITIVE; }
 
     private int getSealLevel() {
+        if (!(target instanceof Hero)) return 0;
         Hero hero = (Hero) target;
         SealOfLight seal = hero.belongings.getItem(SealOfLight.class);
         return seal != null ? seal.level() : 0;
@@ -152,8 +153,10 @@ public class ShieldSlamCounter extends CounterBuff implements ActionIndicator.Ac
             }
 
             target.hitSound(Random.Float(0.87f, 1.15f));
-            enemy.sprite.bloodBurstA(target.sprite.center(), dmg);
-            enemy.sprite.flash();
+            if (enemy.sprite != null) {
+                enemy.sprite.bloodBurstA(target.sprite.center(), dmg);
+                enemy.sprite.flash();
+            }
 
             if (!enemy.isAlive()) {
                 GLog.i(Messages.capitalize(Messages.get(Char.class, "defeat", enemy.name())));

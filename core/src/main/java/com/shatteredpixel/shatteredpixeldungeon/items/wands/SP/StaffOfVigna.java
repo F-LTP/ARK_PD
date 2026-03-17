@@ -17,6 +17,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Platform;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.SeaTerror;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -40,7 +41,7 @@ public class StaffOfVigna extends DamageWand {
     }
 
     public int max(int lvl){
-        return 8+6*lvl+ RingOfAmplified.DamageBonus(Dungeon.hero) * 6;
+        return 8+6*lvl+ (Dungeon.hero != null ? RingOfAmplified.DamageBonus(Dungeon.hero) : 0) * 6;
     }
 
     @Override
@@ -115,8 +116,8 @@ public class StaffOfVigna extends DamageWand {
         for (Char ch : chars) {
             processSoulMark(ch, chargesPerCast());
             int dmg = damageRoll(lvl);
-            if (Random.Int(5) == 0) {
-                dmg = (int) (dmg * 1.5); // 20% 확률로 크리티컬
+            if (Random.Float() < critChance()) {
+                dmg = (int) (dmg * 1.5f); // 크리티컬 (레벨에 따라 확률 증가)
             }
             ch.damage( dmg, this );
             Buff.affect(ch, Vulnerable.class, 2 + lvl);
@@ -128,6 +129,23 @@ public class StaffOfVigna extends DamageWand {
     @Override
     public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
         //no direct effect, see magesStaff.reachfactor
+    }
+
+    private float critChance() {
+        if (buffedLvl() >= 10) return 1f;
+        return (float)(0.20 * Math.pow(5.0, buffedLvl() / 10.0));
+    }
+
+    private int critChancePct() {
+        return Math.round(critChance() * 100f);
+    }
+
+    @Override
+    public String statsDesc() {
+        if (levelKnown)
+            return Messages.get(this, "stats_desc", min(), max(), critChancePct());
+        else
+            return Messages.get(this, "stats_desc", min(0), max(0), 20);
     }
 
     private int distance() {

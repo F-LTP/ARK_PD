@@ -35,6 +35,7 @@ public class Crownslayer_shadow extends Mob {
         state = WANDERING;
 
         properties.add(Property.BOSS);
+        properties.add(Property.INFECTED);
         immunities.add(Silence.class);
         immunities.add(Corruption.class);
     }

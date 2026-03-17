@@ -538,7 +538,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
         }
         float radius = (float)Math.sqrt(Math.pow(width()/2f, 2) + Math.pow(height()/2f, 2));
         ring = new Halo(radius, color, 0.5f);
-        ring.point(x + width/2, y + height/2);
+        ring.point(x + width()/2, y + height()/2);
         parent.addToBack(ring);
     }
 
@@ -596,7 +596,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		}
         if (ring != null && ring.alive){
             ring.visible = visible;
-            ring.point(x + width/2, y + height/2);
+            ring.point(x + width()/2, y + height()/2);
             ring.am = 0.4f + 0.15f * (float)Math.sin(Game.timeTotal * Math.PI);
         }
 		if (sleeping) {
@@ -701,7 +701,10 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		for( State s : State.values()){
 			remove(s);
 		}
-		
+
+        // ring is parented to the scene group (not the sprite), so it must be cleaned up explicitly
+        clearRing();
+
 		if (health != null){
 			health.killAndErase();
 		}

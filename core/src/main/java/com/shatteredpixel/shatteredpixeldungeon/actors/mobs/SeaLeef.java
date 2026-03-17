@@ -6,7 +6,10 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Camouflage;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.Sea_LeefSprite;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
+import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
@@ -26,11 +29,12 @@ public class SeaLeef extends Mob {
         properties.add(Property.SEA);
     }
 
-    protected int damageBonus = 0;
-
     @Override
     public int damageRoll() {
-        return Random.NormalIntRange(16 + (damageBonus / 2), 24 + damageBonus);
+        int bonus = 0;
+        DamageRampUp ramp = buff(DamageRampUp.class);
+        if (ramp != null) bonus = ramp.getBonus();
+        return Random.NormalIntRange(16 + (bonus / 2), 24 + bonus);
     }
 
     @Override
@@ -50,22 +54,8 @@ public class SeaLeef extends Mob {
 
     @Override
     public int attackProc(Char enemy, int damage) {
-        damageBonus = Math.min(damageBonus + 3, 60);
+        Buff.affect(this, DamageRampUp.class).addBonus();
         return super.attackProc(enemy, damage);
-    }
-
-    private static final String DMG = "dmgbouns";
-
-    @Override
-    public void storeInBundle(Bundle bundle) {
-        super.storeInBundle(bundle);
-        bundle.put(DMG, damageBonus);
-    }
-
-    @Override
-    public void restoreFromBundle(Bundle bundle) {
-        super.restoreFromBundle(bundle);
-        damageBonus = bundle.getInt(DMG);
     }
 
     @Override
@@ -74,6 +64,83 @@ public class SeaLeef extends Mob {
             Buff.affect(this, Camouflage.class, 1f);
         } else if (this.buff(Camouflage.class) != null) {
             Buff.prolong(this, Camouflage.class, 1f);
+        }
+    }
+
+    public static class DamageRampUp extends Buff {
+
+        private int bonus = 0;
+        private int turnsWithoutAttack = 0;
+
+        {
+            type = buffType.POSITIVE;
+            announced = true;
+        }
+
+        public void addBonus() {
+            bonus = Math.min(bonus + 3, 60);
+            turnsWithoutAttack = 0;
+        }
+
+        public int getBonus() {
+            return bonus;
+        }
+
+        private void removeBonus() {
+            bonus -= 6; // 2 stacks worth
+            if (bonus <= 0) {
+                detach();
+            } else {
+                spend(TICK);
+            }
+        }
+
+        @Override
+        public boolean act() {
+            turnsWithoutAttack++;
+            if (turnsWithoutAttack >= 3) {
+                removeBonus();
+            } else {
+                spend(TICK);
+            }
+            return true;
+        }
+
+        @Override
+        public int icon() {
+            return BuffIndicator.UPGRADE;
+        }
+
+        @Override
+        public void tintIcon(Image icon) {
+            icon.hardlight(0.2f, 1.5f, 0.5f);
+        }
+
+        @Override
+        public String toString() {
+            return Messages.get(this, "name");
+        }
+
+        @Override
+        public String desc() {
+            return Messages.get(this, "desc", bonus);
+        }
+
+        private static final String BONUS = "bonus";
+        private static final String TURNS_NO_ATK = "turnsWithoutAttack";
+
+        @Override
+        public void storeInBundle(Bundle bundle) {
+            super.storeInBundle(bundle);
+            bundle.put(BONUS, bonus);
+            bundle.put(TURNS_NO_ATK, turnsWithoutAttack);
+        }
+
+        @Override
+        public void restoreFromBundle(Bundle bundle) {
+            super.restoreFromBundle(bundle);
+            bonus = bundle.getInt(BONUS);
+            turnsWithoutAttack = bundle.getInt(TURNS_NO_ATK);
         }
     }
 }

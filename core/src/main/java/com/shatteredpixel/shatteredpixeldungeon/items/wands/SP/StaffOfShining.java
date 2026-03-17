@@ -21,6 +21,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.DamageWand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -44,12 +45,20 @@ public class StaffOfShining extends DamageWand {
     }
 
     public int max(int lvl){
-        return 3 +2*lvl+ RingOfAmplified.DamageBonus(Dungeon.hero) * 2;
+        return 3 +2*lvl+ (Dungeon.hero != null ? RingOfAmplified.DamageBonus(Dungeon.hero) : 0) * 2;
     }
 
     @Override
     public ItemSprite.Glowing glowing() {
         return COL;
+    }
+
+    @Override
+    public String statsDesc() {
+        if (levelKnown)
+            return Messages.get(this, "stats_desc", min(), max(), 2 + buffedLvl());
+        else
+            return Messages.get(this, "stats_desc", min(0), max(0), 2);
     }
 
     @Override
@@ -76,8 +85,8 @@ public class StaffOfShining extends DamageWand {
         //shield ally targets instead of damaging them
         if (ch.alignment == Char.Alignment.ALLY) {
             ch.sprite.centerEmitter().burst( RainbowParticle.BURST, 10+buffedLvl() );
-            Buff.affect(ch, Barrier.class).incShield(shieldAmt + Blinddmg);
-            Buff.affect(curUser, Barrier.class).incShield(shieldAmt);
+            incShieldCapped(ch, shieldAmt + Blinddmg);
+            incShieldCapped(curUser, shieldAmt);
             return;
         }
         //three in (5+lvl) chance of failing
@@ -94,10 +103,18 @@ public class StaffOfShining extends DamageWand {
             ch.sprite.centerEmitter().burst( RainbowParticle.BURST, 10+buffedLvl() );
 
             ch.damage(dmg, this);
-            Buff.affect(curUser, Barrier.class).incShield(Blinddmg);
+            incShieldCapped(curUser, Blinddmg);
         }
         //shield caster after damaging an enemy
-        Buff.affect(curUser, Barrier.class).incShield(shieldAmt);
+        incShieldCapped(curUser, shieldAmt);
+    }
+
+    private void incShieldCapped(Char target, int amount) {
+        if (amount <= 0) return;
+        int maxShield = 10 + buffedLvl() * 5;
+        Barrier b = Buff.affect(target, Barrier.class);
+        int toAdd = Math.min(amount, Math.max(0, maxShield - b.shielding()));
+        if (toAdd > 0) b.incShield(toAdd);
     }
 
     private void affectMap(Ballistica beam){

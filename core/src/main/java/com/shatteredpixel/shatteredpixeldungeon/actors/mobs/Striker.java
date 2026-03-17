@@ -21,6 +21,7 @@ public class Striker extends Mob{
         loot = Gold.class;
         lootChance = 0.25f;
         immunities.add(Silence.class);
+        properties.add(Property.INFECTED);
     }
 
     @Override

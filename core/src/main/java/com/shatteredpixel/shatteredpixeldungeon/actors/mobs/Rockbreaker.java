@@ -30,6 +30,7 @@ public class Rockbreaker extends Mob {
 
         loot = Generator.Category.SKL_RND;
         lootChance = 0.2f;
+        properties.add(Property.INFECTED);
     }
 
     @Override

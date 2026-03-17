@@ -42,8 +42,7 @@ public abstract class EndspeakerAspect extends Buff {
 
     public boolean giveAbility() {
         if (this.ability != null) {
-            TheEndspeaker.Status.activate(this.ability);
-            return true;
+            return TheEndspeaker.Status.activate(this.ability);
         }
         return false;
     }

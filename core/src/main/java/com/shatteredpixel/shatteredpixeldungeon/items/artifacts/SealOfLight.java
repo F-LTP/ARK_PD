@@ -118,10 +118,10 @@ public class SealOfLight extends Artifact {
     }
     private int damageRoll(Hero hero) {
         int min = 1 + level();
-        int max = 4 + level() * 3;
+        int max = 6 + level() * 2;
         float damage = Random.NormalIntRange(min, max);
         if (hero.hasTalent(Talent.ETERNAL_GLORY)) {
-            damage *= 1f + hero.pointsInTalent(Talent.ETERNAL_GLORY) * 0.1f;
+            damage *= 1f + hero.pointsInTalent(Talent.ETERNAL_GLORY) * 0.15f;
         }
         return (int) damage;
     }

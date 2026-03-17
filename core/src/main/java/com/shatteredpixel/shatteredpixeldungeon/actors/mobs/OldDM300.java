@@ -64,6 +64,7 @@ public class OldDM300 extends Mob {
 
 		properties.add(Property.BOSS);
 		properties.add(Property.INORGANIC);
+        properties.add(Property.SARKAZ);
 	}
 	
 	@Override

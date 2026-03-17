@@ -8,6 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
@@ -70,6 +71,13 @@ public class Ots03 extends GunWeapon {
         }
         return false;
     }
+
+    @Override
+    public String statsInfo() {
+        if (specialBullet > 0) return Messages.get(this, "stats_desc_sp", fireMin(), fireMax(), specialBullet, getMinRange());
+        return Messages.get(this, "stats_desc", fireMin(), fireMax(), getMinRange());
+    }
+
     @Override
     protected void specialFire(Char ch) {
         Buff.affect(ch, Burning.class).reignite(ch);

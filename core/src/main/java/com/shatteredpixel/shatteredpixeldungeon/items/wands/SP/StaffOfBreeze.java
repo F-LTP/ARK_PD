@@ -141,7 +141,9 @@ public class StaffOfBreeze extends Wand {
 
     @Override
     public String status() {
-        return altMode ? "EX" : "NM";
+        String charge = super.status();
+        String mode = altMode ? "C" : "H";
+        return mode + charge;
     }
     @Override
     public String statsDesc() {

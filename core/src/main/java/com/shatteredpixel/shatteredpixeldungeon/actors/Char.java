@@ -401,14 +401,14 @@ public abstract class Char extends Actor {
 
             // if enemy is not dead from the main attack, process true damage
             if (enemy.isAlive() && trueDmg > 0) {
-                enemy.damage(trueDmg, this);
+                enemy.trueDamage(trueDmg, this);
             }
 			if (buff(FireImbue.class) != null)  buff(FireImbue.class).proc(enemy);
 			if (buff(Hallucination.class) != null)  buff(Hallucination.class).proc();
 			if (buff(ElixirOfDragonsBlood.Dragonsblood.class) != null)  buff(ElixirOfDragonsBlood.Dragonsblood.class).proc(this, enemy);
 			if (buff(FrostImbue.class) != null) buff(FrostImbue.class).proc(enemy);
 
-			if (enemy.isAlive() && prep != null && prep.canKO(enemy)){
+            if (enemy.isAlive() && enemy.alignment != alignment && prep != null && prep.canKO(enemy)){
 				enemy.HP = 0;
 				if (!enemy.isAlive()) {
 					enemy.die(this);
@@ -416,11 +416,15 @@ public abstract class Char extends Actor {
 					//helps with triggering any on-damage effects that need to activate
 					enemy.damage(-1, this);
 				}
-				enemy.sprite.showStatus(CharSprite.NEGATIVE, Messages.get(Preparation.class, "assassinated"));
+                if (enemy.sprite != null) {
+                    enemy.sprite.showStatus(CharSprite.NEGATIVE, Messages.get(Preparation.class, "assassinated"));
+                }
 			}
 
-			enemy.sprite.bloodBurstA( sprite.center(), effectiveDamage );
-			enemy.sprite.flash();
+            if (enemy.sprite != null) {
+                enemy.sprite.bloodBurstA(sprite.center(), effectiveDamage);
+                enemy.sprite.flash();
+            }
 
 			if (!enemy.isAlive()) {
 				if (this instanceof Hero) {
@@ -429,7 +433,7 @@ public abstract class Char extends Actor {
 						new FlavourBuff(){
 							{actPriority = VFX_PRIO;}
 							public boolean act() {
-								Buff.affect( Dungeon.hero, Invisibility.class ,5f);
+								Buff.affect( h, Invisibility.class ,5f);
 								return super.act();
 							}
 						}.attachTo(this);
@@ -506,6 +510,7 @@ public abstract class Char extends Actor {
 			float phan = 1f - (Dungeon.hero.pointsInTalent(Talent.RESTRICTION) * 0.05f);
 			acuRoll *= phan; }
 		if (attacker.buff(Hallucination.class) != null) acuRoll *= 0.65f;
+        if (attacker.buff(Blindness.class) != null) acuRoll *= 0.75f;
 		for (ChampionEnemy buff : attacker.buffs(ChampionEnemy.class)){
 			acuRoll *= buff.evasionAndAccuracyFactor();
 		}
@@ -628,7 +633,35 @@ public abstract class Char extends Actor {
 				}
 			}
 		}
+        dmg = applyOnDamageEffects(dmg, src, true);
 
+        int shielded = dmg;
+        //FIXME: when I add proper damage properties, should add an IGNORES_SHIELDS property to use here.
+        if (!(src instanceof Hunger)){
+            for (ShieldBuff s : buffs(ShieldBuff.class)){
+                dmg = s.absorbDamage(dmg);
+                if (dmg == 0) break;
+            }
+        }
+
+        shielded -= dmg;
+        HP -= dmg;
+
+        if (sprite != null) {
+            sprite.showStatus(HP > HT / 2 ?
+                            CharSprite.WARNING :
+                            CharSprite.NEGATIVE,
+                    Integer.toString(dmg + shielded));
+        }
+
+        if (HP < 0) HP = 0;
+
+        if (!isAlive()) {
+            die( src );
+        }
+    }
+
+    private int applyOnDamageEffects(int dmg, Object src, boolean applyResistances) {
 		Terror t = buff(Terror.class);
 		if (t != null){
 			t.recover();
@@ -647,7 +680,8 @@ public abstract class Char extends Actor {
 					dmg+=Random.NormalIntRange(8 + Dungeon.hero.lvl, 12 + Dungeon.hero.lvl * 2);//change from budding
 					//this.damage(Random.NormalIntRange(8 + Dungeon.hero.lvl, 12 + Dungeon.hero.lvl * 2), this);
 					Buff.detach(this, Dream.class);
-				}}
+				}
+            }
 		}
 		if (this.buff(Doom.class) != null && !isImmune(Doom.class)){
 			dmg *= 2;
@@ -656,48 +690,53 @@ public abstract class Char extends Actor {
 		Class<?> srcClass = src.getClass();
 		if (isImmune( srcClass )) {
 			dmg = 0;
-		} else {
+		} else if (applyResistances)  {
 			dmg = Math.round( dmg * resist( srcClass ));
-		}
-		
-		//TODO improve this when I have proper damage source logic
-		if (AntiMagic.RESISTS.contains(src.getClass()) && buff(ArcaneArmor.class) != null){
-			dmg -= Random.NormalIntRange(0, buff(ArcaneArmor.class).level());
-			if (dmg < 0) dmg = 0;
+            //TODO improve this when I have proper damage source logic
+            if (AntiMagic.RESISTS.contains(srcClass) && buff(ArcaneArmor.class) != null){
+                dmg -= Random.NormalIntRange(0, buff(ArcaneArmor.class).level());
+                if (dmg < 0) dmg = 0;
+            }
 		}
 		
 		if (buff( Paralysis.class ) != null) {
 			buff( Paralysis.class ).processDamage(dmg);
 		}
-
 		if (buff( SeethingBurst.class ) != null) {
 			buff( SeethingBurst.class ).GetDamage(dmg);
 		}
 
-		int shielded = dmg;
-		//FIXME: when I add proper damage properties, should add an IGNORES_SHIELDS property to use here.
-		if (!(src instanceof Hunger)){
-			for (ShieldBuff s : buffs(ShieldBuff.class)){
-				dmg = s.absorbDamage(dmg);
-				if (dmg == 0) break;
-			}
-		}
+        return dmg;
+    }
 
-		shielded -= dmg;
-		if (!Dummy.kkdy && !ImmortalShield.isImmortal(this))HP -= dmg;//change from budding
-		if (sprite != null) {
-			sprite.showStatus(HP > HT / 2 ?
-							CharSprite.WARNING :
-							CharSprite.NEGATIVE,
-					Integer.toString(dmg + shielded));
-		}
+    public void trueDamage( int dmg, Object src ) {
 
-		if (HP < 0) HP = 0;
+        if (!isAlive() || dmg < 0) {
+            return;
+        }
 
-		if (!isAlive()) {
-			die( src );
-		}
-	}
+        if (isInvulnerable(src.getClass())) {
+            sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "invulnerable"));
+            return;
+        }
+
+        dmg = applyOnDamageEffects(dmg, src, false);
+
+        HP -= dmg;
+
+        if (sprite != null) {
+            sprite.showStatus(HP > HT / 2 ?
+                            CharSprite.WARNING :
+                            CharSprite.NEGATIVE,
+                    Integer.toString(dmg));
+        }
+
+        if (HP < 0) HP = 0;
+
+        if (!isAlive()) {
+            die( src );
+        }
+    }
 	
 	public void destroy() {
 		HP = 0;

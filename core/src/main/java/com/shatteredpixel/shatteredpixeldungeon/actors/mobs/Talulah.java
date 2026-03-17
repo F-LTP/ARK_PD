@@ -96,6 +96,8 @@ public class Talulah extends Mob {
 
 		properties.add(Property.BOSS);
 		properties.add(Property.IMMOVABLE);
+        properties.add(Property.INFECTED);
+        properties.add(Property.SARKAZ);
 	}
 
 	private int phase = 0;

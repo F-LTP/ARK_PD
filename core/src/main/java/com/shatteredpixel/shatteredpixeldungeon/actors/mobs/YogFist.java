@@ -189,6 +189,8 @@ public abstract class YogFist extends Mob {
 			spriteClass = FistSprite.Burning.class;
 
 			properties.add(Property.FIERY);
+            properties.add(Property.INFECTED);
+            properties.add(Property.SARKAZ);
 		}
 
 		@Override
@@ -436,6 +438,7 @@ public abstract class YogFist extends Mob {
 
 			properties.add(Property.LARGE);
 			properties.add(Property.INORGANIC);
+            properties.add(Property.SARKAZ);
 		}
 
 		@Override
@@ -473,6 +476,7 @@ public abstract class YogFist extends Mob {
 			spriteClass = FistSprite.Bright.class;
 
 			properties.add(Property.ELECTRIC);
+            properties.add(Property.INFECTED);
 
 			canRangedInMelee = false;
 		}

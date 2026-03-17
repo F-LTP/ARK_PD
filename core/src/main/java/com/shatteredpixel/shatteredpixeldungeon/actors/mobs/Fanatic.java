@@ -31,6 +31,7 @@ public class Fanatic extends Mob {
 
         immunities.add(Paralysis.class);
         immunities.add(Silence.class);
+        properties.add(Property.INFECTED);
     }
 
     private boolean add = false;

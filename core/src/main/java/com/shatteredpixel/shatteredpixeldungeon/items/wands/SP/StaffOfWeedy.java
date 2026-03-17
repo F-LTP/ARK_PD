@@ -219,6 +219,11 @@ public class StaffOfWeedy extends DamageWand {
         public float getRefund() {
             return chargeRefund;
         }
+        @Override
+        public boolean act() {
+            detach();
+            return true;
+        }
     }
     public static class BlastWave extends Image {
 

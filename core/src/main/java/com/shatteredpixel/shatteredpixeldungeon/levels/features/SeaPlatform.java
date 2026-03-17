@@ -119,6 +119,8 @@ public class SeaPlatform extends Platform {
             // Only activate in boss level 2 in Iberia and if thrown tile is a Nethersea Brand
             if (Dungeon.level instanceof SeaBossLevel2 && action.equals( AC_SPAWN )) {
                 GameScene.selectCell( spawnListener );
+            } else {
+                GLog.w(Messages.get(this, "inactive"));
             }
         }
 

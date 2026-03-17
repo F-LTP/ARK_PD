@@ -3,6 +3,8 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.miniboss;
 import static com.shatteredpixel.shatteredpixeldungeon.actors.Char.Property.STATIC;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -10,6 +12,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EndspeakerAspect;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.NervousImpairment;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Silence;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.NetherseaBrandguider;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.SeaLeef;
@@ -88,7 +92,7 @@ public class TheEndspeaker extends Mob {
 
     @Override
     public int attackSkill(Char target) {
-        return 48;
+        return 60;
     }
 
     @Override
@@ -100,17 +104,17 @@ public class TheEndspeaker extends Mob {
 
     @Override
     public void damage(int dmg, Object src) {
-        if (Status.abilitySpellAbsorption && spellAbsorptionCooldown <= 0 && src != null && AntiMagic.RESISTS.contains(src.getClass())) {
+        if (Status.abilitySpellAbsorption && !isSilenced() && spellAbsorptionCooldown <= 0 && src != null && AntiMagic.RESISTS.contains(src.getClass())) {
             dmg = dmg / 4;
             Buff.affect(this, SpellAbsorptionActive.class);
-            spellAbsorptionCooldown = 5;
+            spellAbsorptionCooldown = Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? 4 : 5;
         }
         if (buff(HardeningActive.class) != null) {
             dmg = dmg / 2;
         }
         if (state == PASSIVE) state = HUNTING;
         super.damage(dmg, src);
-        if (Status.abilityHardening && isAlive() && HP < HT / 4) {
+        if (Status.abilityHardening && !isSilenced() && isAlive() && HP < HT / 4) {
             Buff.affect(this, HardeningActive.class);
         }
     }
@@ -126,7 +130,7 @@ public class TheEndspeaker extends Mob {
     @Override
     protected boolean doAttack( Char enemy ) {
         SpellAbsorptionActive spellBuff = buff(SpellAbsorptionActive.class);
-        if (Status.abilitySpellAbsorption && spellBuff != null) {
+        if (Status.abilitySpellAbsorption && !isSilenced() && spellBuff != null) {
             spellBuff.detach();
             return zap();
         } else {
@@ -192,20 +196,27 @@ public class TheEndspeaker extends Mob {
     protected boolean act() {
         if (state == PASSIVE) return super.act();
 
-        // Execute charge if position is set
+        // Execute charge if position is set, cancel if silenced
         if (Status.abilityCharge && chargePos != -1) {
-            executeCharge();
-            return false;
+            if (isSilenced()) {
+                chargePos = -1;
+            } else {
+                executeCharge();
+                return false;
+            }
         }
 
         // Setup charge if conditions are met
-        if (Status.abilityCharge && chargeCooldown <= 0 && enemy != null && !rooted) {
+        if (Status.abilityCharge && !isSilenced() && chargeCooldown <= 0 && enemy != null && !rooted) {
             if (setupCharge()) {
                 return true;
             }
         }
 
-        // Ramp Up cooldown is now handled by the buff's duration system
+        // Re-apply hardening if silence wore off and HP is still low
+        if (Status.abilityHardening && !isSilenced() && HP < HT / 4 && buff(HardeningActive.class) == null) {
+            Buff.affect(this, HardeningActive.class);
+        }
 
         reduceCooldown();
         return super.act();
@@ -251,7 +262,7 @@ public class TheEndspeaker extends Mob {
 
         // Setup charge
         chargePos = targetPos;
-        chargeCooldown = Random.NormalIntRange(5, 7);
+        chargeCooldown = Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? Random.NormalIntRange(3, 6) : Random.NormalIntRange(5, 7);
 
         // Visual warning
         if (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[chargePos]) {
@@ -306,11 +317,14 @@ public class TheEndspeaker extends Mob {
                 // Damage all characters along the path
                 for (int cell : b.path) {
                     Char ch = Actor.findChar(cell);
-                    if (ch != null && ch != TheEndspeaker.this && alignment != ch.alignment) {
+                    if (ch != null && ch != TheEndspeaker.this) {
                         int base = damageRoll();
                         int damage = Random.NormalIntRange(base / 2, base);
                         ch.damage(damage, TheEndspeaker.this);
-                        if (ch.isAlive()) {
+                        if (ch instanceof Hero && !ch.isAlive()) {
+                            Dungeon.fail( getClass() );
+                            GLog.n(Messages.get(Char.class, "kill", name()));
+                        } else if (ch.isAlive()) {
                             Buff.prolong(ch, Cripple.class, 3f);
                         }
                         ch.sprite.flash();
@@ -338,9 +352,14 @@ public class TheEndspeaker extends Mob {
         spellAbsorptionCooldown--;
     }
 
+    private boolean isSilenced() {
+        return buff(Silence.class) != null;
+    }
+
     private void addImmunities() {
         if (Status.abilityCcImmune) {
             properties.add(STATIC);
+            immunities.add(Silence.class);
         }
     }
 
@@ -389,6 +408,7 @@ public class TheEndspeaker extends Mob {
                 lootAnkh.bless();
                 dropLoot(lootAnkh);
                 dropLoot(new SeaPlatform.EnhancedLittleHandy());
+                Badges.validateEndspeakerTier4Kill();
                 break;
             case 0:
             default:
@@ -454,8 +474,8 @@ public class TheEndspeaker extends Mob {
      */
     public static class RampUpStacks extends Buff {
 
-
-        private @Getter int stacks = 0;
+        @Getter
+        private int stacks = 0;
         private int turnsWithoutDamage = 0;
 
         {
@@ -484,15 +504,24 @@ public class TheEndspeaker extends Mob {
         }
 
         public void addStack() {
-            stacks++;
+            stacks = Math.min(stacks + 1, 30);
             turnsWithoutDamage = 0;
+        }
+
+        public void removeStack() {
+            stacks = stacks - 2;
+            if (stacks <= 0) {
+                detach();
+            } else {
+                spend(TICK);
+            }
         }
 
         @Override
         public boolean act() {
             turnsWithoutDamage++;
             if (turnsWithoutDamage >= 3) {
-                detach();
+                removeStack();
             } else {
                 spend(TICK);
             }
@@ -595,7 +624,7 @@ public class TheEndspeaker extends Mob {
 
         @Override
         public boolean act() {
-            if (target.HP >= target.HT / 4) {
+            if (target.HP >= target.HT / 4 || target.buff(Silence.class) != null) {
                 detach();
             } else {
                 spend(TICK);
@@ -606,7 +635,7 @@ public class TheEndspeaker extends Mob {
 
     public static class AspectSmall extends Sea_Octo {
         {
-            state = SLEEPING;
+            state = PASSIVE;
             loot = new PotionOfStrength();
             lootChance = 1f;
         }
@@ -634,11 +663,25 @@ public class TheEndspeaker extends Mob {
         }
 
         @Override
+        protected boolean canAttack(Char enemy) {
+            if (isEmpowered) {
+                return fieldOfView[enemy.pos] && Dungeon.level.distance(pos, enemy.pos) <= 8;
+            }
+            return super.canAttack(enemy);
+        }
+
+        @Override
         public int drRoll() {
             if (isEmpowered) {
                 return Random.NormalIntRange(9, 27);
             }
             return super.drRoll();
+        }
+
+        @Override
+        public void damage(int dmg, Object src) {
+            if (state == PASSIVE) state = HUNTING;
+            super.damage(dmg, src);
         }
 
         @Override
@@ -652,6 +695,16 @@ public class TheEndspeaker extends Mob {
         public void destroy() {
             grantAbility(this);
             super.destroy();
+        }
+
+        @Override
+        public String description() {
+            String description = super.description();
+            description += Messages.get(TheEndspeaker.class, "aspect_desc");
+            if (isEmpowered) {
+                description += Messages.get(this, "empowered");
+            }
+            return description;
         }
 
         private static final String IS_EMPOWERED = "is_empowered";
@@ -671,7 +724,7 @@ public class TheEndspeaker extends Mob {
 
     public static class AspectMedium extends SeaLeef {
         {
-            state = SLEEPING;
+            state = PASSIVE;
             loot = new PotionOfStrength();
             lootChance = 1f;
         }
@@ -693,9 +746,20 @@ public class TheEndspeaker extends Mob {
         @Override
         public int damageRoll() {
             if (isEmpowered) {
-                return Random.NormalIntRange(24 + (damageBonus / 2), 36 + damageBonus);
+                int bonus = 0;
+                SeaLeef.DamageRampUp ramp = buff(SeaLeef.DamageRampUp.class);
+                if (ramp != null) bonus = ramp.getBonus();
+                return Random.NormalIntRange(24 + (bonus / 2), 36 + bonus);
             }
             return super.damageRoll();
+        }
+
+        @Override
+        protected float attackDelay() {
+            if (isEmpowered) {
+                return 1f / 3f;
+            }
+            return super.attackDelay();
         }
 
         @Override
@@ -704,6 +768,12 @@ public class TheEndspeaker extends Mob {
                 return Random.NormalIntRange(5, 15);
             }
             return super.drRoll();
+        }
+
+        @Override
+        public void damage(int dmg, Object src) {
+            if (state == PASSIVE) state = HUNTING;
+            super.damage(dmg, src);
         }
 
         @Override
@@ -717,6 +787,16 @@ public class TheEndspeaker extends Mob {
         public void destroy() {
             grantAbility(this);
             super.destroy();
+        }
+
+        @Override
+        public String description() {
+            String description = super.description();
+            description += Messages.get(TheEndspeaker.class, "aspect_desc");
+            if (isEmpowered) {
+                description += Messages.get(this, "empowered");
+            }
+            return description;
         }
 
         private static final String IS_EMPOWERED = "is_empowered";
@@ -736,7 +816,7 @@ public class TheEndspeaker extends Mob {
 
     public static class AspectLarge extends NetherseaBrandguider {
         {
-            state = SLEEPING;
+            state = PASSIVE;
             loot = new PotionOfStrength();
             lootChance = 1f;
         }
@@ -748,7 +828,7 @@ public class TheEndspeaker extends Mob {
             EndspeakerAspect.Empowering buff = buff(EndspeakerAspect.Empowering.class);
             if (!isEmpowered && buff != null) {
                 HP = HT = 320;
-                defenseSkill = 30;
+                defenseSkill = 25;
                 loot = new ScrollOfUpgrade();
                 isEmpowered = true;
             }
@@ -764,12 +844,23 @@ public class TheEndspeaker extends Mob {
         }
 
         @Override
+        protected boolean shouldAlwaysGenerateSeaTerror() {
+            return isEmpowered;
+        }
+
+        @Override
         public int drRoll() {
             if (isEmpowered) {
-                if (HT /2 >= HP) return Random.NormalIntRange(20, 60);
+                if (buff(NetherseaBrandguider.Reinforced.class) != null) return Random.NormalIntRange(20, 60);
                 return Random.NormalIntRange(10, 30);
             }
             return super.drRoll();
+        }
+
+        @Override
+        public void damage(int dmg, Object src) {
+            if (state == PASSIVE) state = HUNTING;
+            super.damage(dmg, src);
         }
 
         @Override
@@ -783,6 +874,16 @@ public class TheEndspeaker extends Mob {
         public void destroy() {
             grantAbility(this);
             super.destroy();
+        }
+
+        @Override
+        public String description() {
+            String description = super.description();
+            description += Messages.get(TheEndspeaker.class, "aspect_desc");
+            if (isEmpowered) {
+                description += Messages.get(this, "empowered");
+            }
+            return description;
         }
 
         private static final String IS_EMPOWERED = "is_empowered";
@@ -866,14 +967,14 @@ public class TheEndspeaker extends Mob {
         public static int getMaxHp() {
             switch(abilityCount / 2) {
                 case 1:
-                    return 1250;
+                    return 1000;
                 case 2:
-                    return 1750;
+                    return 1200;
                 case 3:
-                    return 2000;
+                    return 1500;
                 case 0:
                 default:
-                    return 750;
+                    return 600;
             }
         }
 
@@ -927,18 +1028,21 @@ public class TheEndspeaker extends Mob {
                         AspectSmall aspectSpell = new AspectSmall();
                         summonMob(level, aspectSpell, EndspeakerAspect.SpellAbsorption.class);
                         summonMob(level, aspectRange, EndspeakerAspect.IncreasedRange.class);
+                        spawnMsgShown = false;
                         break;
                     case 37:
                         AspectMedium aspectRamp = new AspectMedium();
                         AspectMedium aspectCharge = new AspectMedium();
                         summonMob(level, aspectRamp, EndspeakerAspect.RampUp.class);
                         summonMob(level, aspectCharge, EndspeakerAspect.Charge.class);
+                        spawnMsgShown = false;
                         break;
                     case 38:
                         AspectLarge aspectHarden = new AspectLarge();
                         AspectLarge aspectCcImmune = new AspectLarge();
                         summonMob(level, aspectHarden, EndspeakerAspect.Hardening.class);
                         summonMob(level, aspectCcImmune, EndspeakerAspect.CrowdControlImmune.class);
+                        spawnMsgShown = false;
                         break;
                     default:
                         break;
@@ -964,9 +1068,9 @@ public class TheEndspeaker extends Mob {
             level.mobs.add(mob);
         }
 
-        public static void activate(EndspeakerAspect.EndspeakerAbility ability) {
+        public static boolean activate(EndspeakerAspect.EndspeakerAbility ability) {
             if (spawned) {
-                return;
+                return false;
             }
             switch (ability) {
                 case SPELL_ABSORPTION:
@@ -988,8 +1092,9 @@ public class TheEndspeaker extends Mob {
                     abilityCcImmune = true;
                     break;
                 default:
-                    break;
+                    return false;
             }
+            return true;
         }
 
         public static void reset() {
