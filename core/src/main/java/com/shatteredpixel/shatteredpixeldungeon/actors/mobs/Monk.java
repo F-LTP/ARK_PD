@@ -55,8 +55,9 @@ public class Monk extends Mob {
 		lootChance = 0.083f;
 
 		immunities.add(Silence.class);
+		properties.add(Property.INFECTED);
 	}
-	
+
 	@Override
 	public int damageRoll()
 	{

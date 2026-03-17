@@ -26,7 +26,7 @@ public class RingOfSunLight extends Ring {
     }
 
     public static float SPBonus( Char target ){
-        return (float)(Math.pow(1.14f, getBonus(target, RingOfSunLight.Chargeup.class)));
+        return (float)(Math.pow(1.14f, getBuffedBonus(target, RingOfSunLight.Chargeup.class)));
     }
 
 

@@ -21,6 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee;
 
+import static com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfBreeze.AC_SWITCH;
+
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -36,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SkillBook;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfBreeze;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfVigna;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfCorrosion;
@@ -111,13 +114,26 @@ public class MagesStaff extends MeleeWeapon {
 		actions.add(AC_IMBUE);
 		if (wand!= null && wand.curCharges > 0) {
 			actions.add( AC_ZAP );
+            if (wand instanceof StaffOfBreeze) {
+                actions.add( AC_SWITCH );
+            }
 		}
 		return actions;
 	}
 
 	@Override
 	public void activate( Char ch ) {
+		super.activate(ch);
 		if(wand != null) wand.charge( ch, STAFF_SCALE_FACTOR );
+	}
+
+	@Override
+	public int targetingPos(Hero user, int dst) {
+		if (wand != null) {
+			return wand.targetingPos(user, dst);
+		} else {
+			return super.targetingPos(user, dst);
+		}
 	}
 
 	@Override
@@ -140,7 +156,9 @@ public class MagesStaff extends MeleeWeapon {
 			if (cursed || hasCurseEnchant()) wand.cursed = true;
 			else                             wand.cursed = false;
 			wand.execute(hero, AC_ZAP);
-		}
+		} else if (action.equals(AC_SWITCH) && wand instanceof StaffOfBreeze) {
+            wand.execute(hero, AC_SWITCH);
+        }
 	}
 
 	@Override
@@ -170,7 +188,7 @@ public class MagesStaff extends MeleeWeapon {
 			}
 		}
 
-		if (wand.curCharges >= wand.maxCharges && attacker instanceof Hero && Random.Int(8) < ((Hero) attacker).pointsInTalent(Talent.EXCESS_CHARGE)){
+		if (wand != null && wand.curCharges >= wand.maxCharges && attacker instanceof Hero && Random.Int(8) < ((Hero) attacker).pointsInTalent(Talent.EXCESS_CHARGE)){
 			Buff.affect(attacker, Barrier.class).setShield(buffedLvl()*2);
 		}
 
@@ -255,12 +273,19 @@ public class MagesStaff extends MeleeWeapon {
 
 		//if the staff's level is being overridden by the wand, preserve 1 upgrade
 		if (wand.level() >= this.level() && this.level() > (curseInfusionBonus ? 1 : 0)) targetLevel++;
-		
+
 		level(targetLevel);
 		this.wand = wand;
+		wand.levelKnown = wand.curChargeKnown = true;
 		updateWand(false);
 		wand.curCharges = Math.min(wand.maxCharges, wand.curCharges+oldStaffcharges);
 		if (owner != null) wand.charge(owner);
+
+		if (wand.cursed && (!this.cursed || !this.hasCurseEnchant())){
+			equipCursed(Dungeon.hero);
+			this.cursed = this.cursedKnown = true;
+			enchant(Enchantment.randomCurse());
+		}
 
 		//This is necessary to reset any particles.
 		//FIXME this is gross, should implement a better way to fully reset quickslot visuals
@@ -271,7 +296,7 @@ public class MagesStaff extends MeleeWeapon {
 			Dungeon.quickslot.setSlot( slot, this );
 			updateQuickslot();
 		}
-		
+
 		Badges.validateItemLevelAquired(this);
 
 		return this;
@@ -353,6 +378,8 @@ public class MagesStaff extends MeleeWeapon {
 			if (Dungeon.hero.hasTalent(Talent.LIBERATION)) {
 				Bounscharge = Dungeon.hero.pointsInTalent(Talent.LIBERATION);
 			}
+			int libTierBonus = Math.max(0, Bounscharge - 1);
+			tier = (tierUpgraded ? 3 : 1) + libTierBonus;
 			int curCharges = wand.curCharges;
 			wand.level(level());
 			//gives the wand one additional max charge
@@ -384,7 +411,7 @@ public class MagesStaff extends MeleeWeapon {
 
 		if (wand != null){
 			info += "\n\n" + Messages.get(this, "has_wand", Messages.get(wand, "name"));
-			if (!cursed || !cursedKnown)    info += " " + wand.statsDesc();
+			if ((!cursed && !hasCurseEnchant()) || !cursedKnown)    info += " " + wand.statsDesc();
 			else                            info += " " + Messages.get(this, "cursed_wand");
 
 			if (Dungeon.hero.subClass == HeroSubClass.BATTLEMAGE){
@@ -401,17 +428,94 @@ public class MagesStaff extends MeleeWeapon {
 		Emitter emitter = new Emitter();
 		emitter.pos(12.5f, 3);
 		emitter.fillTarget = false;
+		emitter.pour(StaffParticleFactory, 0.1f);
 		return emitter;
 	}
 
-	private static final String WAND = "wand";
-	private static final String MAXCHARGE = "charge";
+	private final Emitter.Factory StaffParticleFactory = new Emitter.Factory() {
+		@Override
+		public void emit( Emitter emitter, int index, float x, float y ) {
+			StaffParticle c = (StaffParticle)emitter.getFirstAvailable(StaffParticle.class);
+			if (c == null) {
+				c = new StaffParticle();
+				emitter.add(c);
+			}
+			c.reset(x, y);
+		}
+
+		@Override
+		public boolean lightMode() {
+			return !((wand instanceof WandOfDisintegration)
+					|| (wand instanceof WandOfCorruption)
+					|| (wand instanceof WandOfCorrosion)
+					|| (wand instanceof WandOfRegrowth)
+					|| (wand instanceof WandOfLivingEarth));
+		}
+	};
+
+	public class StaffParticle extends PixelParticle {
+		private float minSize;
+		private float maxSize;
+		public float sizeJitter = 0;
+
+		public StaffParticle(){ super(); }
+
+		public void reset( float x, float y ) {
+			revive();
+			speed.set(0);
+			this.x = x;
+			this.y = y;
+			if (wand != null) wand.staffFx( this );
+		}
+
+		public void setSize( float minSize, float maxSize ){
+			this.minSize = minSize;
+			this.maxSize = maxSize;
+		}
+
+		public void setLifespan( float life ){
+			lifespan = left = life;
+		}
+
+		public void shuffleXY(float amt){
+			x += Random.Float(-amt, amt);
+			y += Random.Float(-amt, amt);
+		}
+
+		public void radiateXY(float amt){
+			float hypot = (float)Math.hypot(speed.x, speed.y);
+			this.x += speed.x/hypot*amt;
+			this.y += speed.y/hypot*amt;
+		}
+
+		@Override
+		public void update() {
+			super.update();
+			size(minSize + (left / lifespan)*(maxSize-minSize) + Random.Float(sizeJitter));
+		}
+	}
+
+	public boolean tierUpgraded = false;
+
+	public void upgradeTier() {
+        if (tierUpgraded) return;
+        tier += 2;
+        tierUpgraded = true;
+        updateWand(false);
+    }
+
+	private static final String WAND          = "wand";
+	private static final String MAXCHARGE     = "charge";
+	private static final String TIER          = "tier";
+	private static final String TIER_UPGRADED = "tier_upgraded";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(WAND, wand);
-		bundle.put(MAXCHARGE, wand.maxCharges);
+		bundle.put(MAXCHARGE, wand != null ? wand.maxCharges : 0);
+		bundle.put(TIER, tier);
+		bundle.put(TIER_UPGRADED, tierUpgraded);
 	}
 
 	@Override
@@ -421,6 +525,9 @@ public class MagesStaff extends MeleeWeapon {
 		if (wand != null) {
 			wand.maxCharges = bundle.getInt(MAXCHARGE);
 		}
+		int savedTier = bundle.getInt(TIER);
+		tier = savedTier > 0 ? savedTier : 1;
+		tierUpgraded = bundle.getBoolean(TIER_UPGRADED);
 	}
 
 	@Override

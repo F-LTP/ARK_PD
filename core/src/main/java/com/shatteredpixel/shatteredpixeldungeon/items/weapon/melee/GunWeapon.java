@@ -26,6 +26,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Gunaccessories.Accessories
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.IsekaiItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAccuracy;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfFuror;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Projecting;
@@ -52,6 +54,8 @@ public class GunWeapon extends MeleeWeapon {
     public static final String AC_ZAP = "ZAP";
     public static final String AC_RELOAD = "RELOAD";
     public static final String AC_REMOVE = "REMOVE";
+
+    protected static final int RELOAD_AMOUNT = 31;
 
     protected int bulletTier = 3;
     protected int bullet = 5;
@@ -90,7 +94,8 @@ public class GunWeapon extends MeleeWeapon {
 
     public int getMaxRange() {
         boolean projecting = hasEnchant(Projecting.class, Dungeon.hero);
-        return projecting ? MAX_RANGE + 1 : MAX_RANGE;
+        int range = projecting ? MAX_RANGE + 1 : MAX_RANGE;
+        return range + RingOfSharpshooting.rangeBonus(Dungeon.hero);
     }
 
     public int getMinRange() {
@@ -135,10 +140,10 @@ public class GunWeapon extends MeleeWeapon {
             if (Dungeon.hero.hasTalent(Talent.SHARPSHOOTER)) {
                 acc += Dungeon.hero.pointsInTalent(Talent.SHARPSHOOTER) * 0.2f;
             }
+        }
 
-            if (Dungeon.hero.hasTalent(Talent.BLITZKRIEG)) {
-                acc += (Dungeon.hero.pointsInTalent(Talent.BLITZKRIEG) * 0.1f);
-            }
+        if (Dungeon.hero.hasTalent(Talent.BLITZKRIEG)) {
+            acc += (Dungeon.hero.pointsInTalent(Talent.BLITZKRIEG) * 0.1f);
         }
 
         CloserangeShot closerrange = Dungeon.hero.buff(CloserangeShot.class);
@@ -146,37 +151,38 @@ public class GunWeapon extends MeleeWeapon {
             acc += Dungeon.hero.pointsInTalent(Talent.PINPOINT) * 0.2f;
         }
 
-        acc += RingOfSharpshooting.accuracyBonus(Dungeon.hero);
+        acc *= RingOfAccuracy.shootAccuracyMultiplier(Dungeon.hero);
 
         return acc;
     }
 
-    protected float fireDelayFactor(float dly) {
+    protected float fireDelayFactor(Char owner, float dly) {
         if (gunAccessories != null) dly *= gunAccessories.GetDLYcorrectionvalue();
+        dly *= RingOfFuror.shootDelayMultiplier(owner);
         return dly;
     }
 
     protected int fireDamageFactor(int dmg) {
-        float accessoriesbouns = 1f;
-        if (gunAccessories != null) accessoriesbouns = gunAccessories.GetDMGcorrectionvalue();
+        float accessoriesBonus = 1f;
+        if (gunAccessories != null) accessoriesBonus = gunAccessories.GetDMGcorrectionvalue();
 
-        float talentbouns = 1f;
+        float talentBonus = 1f;
         if (Dungeon.hero.hasTalent(Talent.PROJECTILE_MOMENTUM) && Dungeon.hero.buff(Momentum.class) != null &&  Dungeon.hero.buff(Momentum.class).freerunning()) {
-            talentbouns += (Dungeon.hero.pointsInTalent(Talent.PROJECTILE_MOMENTUM) * 0.1f); }
+            talentBonus += (Dungeon.hero.pointsInTalent(Talent.PROJECTILE_MOMENTUM) * 0.1f); }
 
         if (Dungeon.hero.hasTalent(Talent.BLITZKRIEG)) {
-            talentbouns += (Dungeon.hero.pointsInTalent(Talent.BLITZKRIEG) * 0.1f);
+            talentBonus += (Dungeon.hero.pointsInTalent(Talent.BLITZKRIEG) * 0.1f);
         }
 
         CloserangeShot closerRange = Dungeon.hero.buff(CloserangeShot.class);
         if (closerRange != null) {
             if (closerRange.state()){
-                talentbouns += 0.5f;
-                if (Dungeon.hero.hasTalent(Talent.ZERO_RANGE_SHOT)) talentbouns += Dungeon.hero.pointsInTalent(Talent.ZERO_RANGE_SHOT) * 0.1f;
+                talentBonus += 0.5f;
+                if (Dungeon.hero.hasTalent(Talent.ZERO_RANGE_SHOT)) talentBonus += Dungeon.hero.pointsInTalent(Talent.ZERO_RANGE_SHOT) * 0.1f;
             }
         }
 
-        dmg *= accessoriesbouns * talentbouns;
+        dmg *= accessoriesBonus * talentBonus;
         return dmg;
     }
 
@@ -219,7 +225,7 @@ public class GunWeapon extends MeleeWeapon {
             } else if (this.cursed) {
                 Buff.affect(Dungeon.hero, Burning.class).reignite(Dungeon.hero, 4f);
                 cursedKnown = true;
-                bullet -= 1;
+                bullet = Math.max(0, bullet - 1);
             } else {
                 curUser = hero;
                 curItem = this;
@@ -249,8 +255,8 @@ public class GunWeapon extends MeleeWeapon {
 
     public void reload(int tier, boolean sp) {
         bulletTier = tier;
-        bullet = Math.min(bullet + 31, bulletMax);
-        specialBullet = sp ? Math.min(specialBullet + 31, bulletMax) : specialBullet;
+        bullet = Math.min(bullet + RELOAD_AMOUNT, bulletMax);
+        specialBullet = sp ? Math.min(specialBullet + RELOAD_AMOUNT, bulletMax) : specialBullet;
 
         if (Dungeon.hero.subClass == HeroSubClass.FREERUNNER) Dungeon.hero.spendAndNext(RELOAD_DELAY / 2);
         else Dungeon.hero.spendAndNext(RELOAD_DELAY);
@@ -272,7 +278,7 @@ public class GunWeapon extends MeleeWeapon {
                     int cell = shot.collisionPos;
 
                     if (target == curUser.pos || cell == curUser.pos) {
-                        GLog.i(Messages.get(DP27.class, "self_target"));
+                        GLog.i(Messages.get(this, "self_target"));
                         return;
                     }
 
@@ -299,7 +305,7 @@ public class GunWeapon extends MeleeWeapon {
 
         @Override
         public String prompt() {
-            return Messages.get(DP27.class, "prompt");
+            return Messages.get(GunWeapon.class, "prompt");
         }
     };
 
@@ -331,146 +337,174 @@ public class GunWeapon extends MeleeWeapon {
         Char ch = Actor.findChar( bolt.collisionPos );
         float oldacc = ACC;
         boolean pala = false;
-
-        if (ch != null) {
-            int dmg = fireDamageFactor(fireDamageRoll());
-
-            // 사격 스롯 판정
-            if (Dungeon.hero.subClass == HeroSubClass.SNIPER) dmg -= (ch.drRoll() / 2);
-            else dmg -= ch.drRoll();
-
-            if (this instanceof R4C && Dungeon.hero.belongings.getItem(IsekaiItem.class) != null) {
-                if (Dungeon.hero.belongings.getItem(IsekaiItem.class).isEquipped(Dungeon.hero)) {
-                    if (ch.buff(Paralysis.class) != null) {pala = true;}
+        try {
+            if (ch != null) {
+                float dmg = fireDamageFactor(fireDamageRoll());
+                int trueDmg = 0;
+                if (ch.buff(Blindness.class) != null && Dungeon.hero.hasTalent(Talent.FLASH_SPEAR)) {
+                    trueDmg += (int) (dmg * (Dungeon.hero.pointsInTalent(Talent.FLASH_SPEAR) * 0.075f));
                 }
-            }
 
-            ACC = fireAccuracyFactor(getFireAcc(Dungeon.hero.pos, ch.pos));
-            if (ACC <= 0f) {
-                String missed = Messages.get(ch, "missed");
-                ch.sprite.showStatus( CharSprite.NEUTRAL, missed );
-                Sample.INSTANCE.play(Assets.Sounds.MISS);
-            } else if (Char.hit(Dungeon.hero, ch, false)) {
-
-                // 첸 특성
-                if (Dungeon.hero.hasTalent(Talent.TARGET_FOCUSING)) {
-                    if (Random.Int(3) < Dungeon.hero.pointsInTalent(Talent.TARGET_FOCUSING)) {
-                        Buff.detach(ch, Camouflage.class);
+                if (this instanceof R4C && Dungeon.hero.belongings.getItem(IsekaiItem.class) != null) {
+                    if (Dungeon.hero.belongings.getItem(IsekaiItem.class).isEquipped(Dungeon.hero)) {
+                        if (ch.buff(Paralysis.class) != null) {pala = true;}
                     }
                 }
 
-                int dr = ch.drRoll();
+                ACC = fireAccuracyFactor(getFireAcc(Dungeon.hero.pos, ch.pos));
+                if (ACC <= 0f) {
+                    String missed = Messages.get(ch, "missed");
+                    ch.sprite.showStatus( CharSprite.NEUTRAL, missed );
+                    Sample.INSTANCE.play(Assets.Sounds.MISS);
+                } else if (Char.hit(Dungeon.hero, ch, false)) {
 
-                int effectiveDamage = ch.defenseProc( Dungeon.hero, dmg );
-                effectiveDamage = Math.max( effectiveDamage - dr, 0 );
-
-                if ( ch.buff( Vulnerable.class ) != null){
-                    effectiveDamage *= 1.33f;
-                }
-
-                effectiveDamage = Dungeon.hero.attackProc( ch, effectiveDamage );
-
-                // If the enemy is already dead, interrupt the attack.
-                // This matters as defence procs can sometimes inflict self-damage, such as armor glyphs.
-                if (!ch.isAlive()){
-                    return;
-                }
-
-                ch.damage( effectiveDamage, this );
-
-                Sample.INSTANCE.play(Assets.Sounds.HIT, 1, Random.Float(0.87f, 1.15f));
-
-                if (specialFire) {
-                    specialFire(ch);
-                    specialBullet = Math.max(0, specialBullet - 1);
-                }
-                if (this instanceof C1_9mm) {
-                    if (Random.Int(8) == 0) Buff.affect(ch, Chill.class, 2f);
-                }
-
-                ch.sprite.burst(0xFFFFFFFF, buffedLvl() / 2 + 2);
-
-                // 사격 그레이스롯 판정
-                int bonusTurns = Dungeon.hero.hasTalent(Talent.SHARED_UPGRADES) ? this.buffedLvl() : 0;
-                if (Dungeon.hero.subClass == HeroSubClass.SNIPER) Buff.prolong(Dungeon.hero, SnipersMark.class, SnipersMark.DURATION).set(ch.id(), bonusTurns);
-
-                // 연계 블레이즈 판정
-                if (Dungeon.hero.subClass == HeroSubClass.GLADIATOR) {
-                    Buff.affect(Dungeon.hero, Combo.class).hit(ch);
-
-                    if (Dungeon.hero.hasTalent(Talent.CLEAVE)) {
-                        if (Random.Int(10) < Dungeon.hero.pointsInTalent(Talent.CLEAVE)) {
-                            Buff.affect(Dungeon.hero, Combo.class).hit(ch);
+                    // 첸 특성
+                    if (Dungeon.hero.hasTalent(Talent.TARGET_FOCUSING)) {
+                        if (Random.Int(3) < Dungeon.hero.pointsInTalent(Talent.TARGET_FOCUSING)) {
+                            Buff.detach(ch, Camouflage.class);
                         }
                     }
-                }
 
-                // 산사수 첸 판정
-                if (Dungeon.hero.subClass == HeroSubClass.SPSHOOTER && ch.isAlive() && Dungeon.hero.buff(ChenShooterBuff.TACMoveCooldown.class) == null) {
-                        Buff.prolong(Dungeon.hero, ChenShooterBuff.class, 5f).set(ch.id());
-                }
+                    int dr = ch.drRoll();
 
-                if (closerRange != null && ch.isAlive() && closerRange.state()) {
-                    if (Dungeon.hero.hasTalent(Talent.WATER_PLAY) && Random.Int(5) < Dungeon.hero.pointsInTalent(Talent.WATER_PLAY)) {
-                        Buff.affect(ch, Blindness.class, 1f);
+                    int effectiveDamage = ch.defenseProc( Dungeon.hero, (int) dmg );
+
+                    // 사격 스롯 판정
+                    if (Dungeon.hero.subClass == HeroSubClass.SNIPER) dr /= 2;
+                    effectiveDamage = Math.max( effectiveDamage - dr, 0 );
+
+                    if ( ch.buff( Vulnerable.class ) != null){
+                        effectiveDamage = (int) (effectiveDamage * 1.33f);
                     }
 
-                    if (Dungeon.hero.hasTalent(Talent.TAC_SHOT) && Dungeon.hero.buff(ChenShooterBuff.TACMove_tacshot.class) != null) {
-                        int min = Dungeon.hero.pointsInTalent(Talent.TAC_SHOT) / 2;
-                        int max = 1 + Dungeon.hero.pointsInTalent(Talent.TAC_SHOT) / 3;
+                    // Mark this as a ranged attack for talents that need to distinguish ranged vs melee
+                    Buff.affect(Dungeon.hero, RangedAttackTracker.class);
+                    effectiveDamage = Dungeon.hero.attackProc( ch, effectiveDamage );
 
-                        Ballistica trajectory = new Ballistica(curUser.pos, ch.pos, Ballistica.STOP_TARGET);
-                        trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
-                        WandOfBlastWave.throwChar(ch, trajectory, Random.IntRange(min, max)); // 넉백 효과
-
-                        Buff.detach(Dungeon.hero,ChenShooterBuff.TACMove_tacshot.class);
+                    // If the enemy is already dead, interrupt the attack.
+                    // This matters as defence procs can sometimes inflict self-damage, such as armor glyphs.
+                    if (!ch.isAlive()){
+                        Buff buff = Dungeon.hero.buff(RangedAttackTracker.class);
+                        if (buff != null) buff.detach();
+                        return;
                     }
+
+                    ch.damage( effectiveDamage, Dungeon.hero );
+
+                    // if enemy is not dead from the main attack, process true damage
+                    if (ch.isAlive() && trueDmg > 0) {
+                        ch.trueDamage(trueDmg, this);
+                    }
+
+                    Sample.INSTANCE.play(Assets.Sounds.HIT, 1, Random.Float(0.87f, 1.15f));
+
+                    if (specialFire) {
+                        specialFire(ch);
+                    }
+                    if (this instanceof C1_9mm) {
+                        if (Random.Int(8) == 0) Buff.affect(ch, Chill.class, 2f);
+                    }
+
+                    ch.sprite.burst(0xFFFFFFFF, buffedLvl() / 2 + 2);
+
+                    // 사격 그레이스롯 판정
+                    int bonusTurns = Dungeon.hero.hasTalent(Talent.SHARED_UPGRADES) ? this.buffedLvl() : 0;
+                    if (Dungeon.hero.subClass == HeroSubClass.SNIPER) Buff.prolong(Dungeon.hero, SnipersMark.class, SnipersMark.DURATION).set(ch.id(), bonusTurns);
+
+                    // 연계 블레이즈 판정
+                    if (Dungeon.hero.subClass == HeroSubClass.GLADIATOR) {
+                        Buff.affect(Dungeon.hero, Combo.class).hit(ch);
+
+                        if (Dungeon.hero.hasTalent(Talent.CLEAVE)) {
+                            if (Random.Int(10) < Dungeon.hero.pointsInTalent(Talent.CLEAVE)) {
+                                Buff.affect(Dungeon.hero, Combo.class).hit(ch);
+                            }
+                        }
+                    }
+
+                    if (Dungeon.hero.hasTalent(Talent.SPARKOFLIFE)) {
+                        if (1 + Dungeon.hero.pointsInTalent(Talent.SPARKOFLIFE) > Random.Int(33)) {
+                            Dungeon.hero.HP = Math.min(Dungeon.hero.HP + Dungeon.hero.HT / 20, Dungeon.hero.HT);
+                        }
+                    }
+
+                    // 산사수 첸 판정
+                    if (Dungeon.hero.subClass == HeroSubClass.SPSHOOTER && ch.isAlive() && Dungeon.hero.buff(ChenShooterBuff.TACMoveCooldown.class) == null) {
+                            Buff.prolong(Dungeon.hero, ChenShooterBuff.class, 5f).set(ch.id());
+                    }
+
+                    if (closerRange != null && ch.isAlive() && closerRange.state()) {
+                        if (Dungeon.hero.hasTalent(Talent.WATER_PLAY) && Random.Int(5) < Dungeon.hero.pointsInTalent(Talent.WATER_PLAY)) {
+                            Buff.affect(ch, Blindness.class, 1f);
+                        }
+
+                        if (Dungeon.hero.hasTalent(Talent.TAC_SHOT) && Dungeon.hero.buff(ChenShooterBuff.TACMove_tacshot.class) != null) {
+                            int min = Dungeon.hero.pointsInTalent(Talent.TAC_SHOT) / 2;
+                            int max = 1 + Dungeon.hero.pointsInTalent(Talent.TAC_SHOT) / 3;
+
+                            Ballistica trajectory = new Ballistica(curUser.pos, ch.pos, Ballistica.STOP_TARGET);
+                            trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
+                            WandOfBlastWave.throwChar(ch, trajectory, Random.IntRange(min, max)); // 넉백 효과
+
+                            Buff.detach(Dungeon.hero,ChenShooterBuff.TACMove_tacshot.class);
+                        }
+                    }
+                } else {
+                    String defense = ch.defenseVerb();
+                    ch.sprite.showStatus( CharSprite.NEUTRAL, defense );
+                    Sample.INSTANCE.play(Assets.Sounds.MISS);
                 }
+
             } else {
-                String defense = ch.defenseVerb();
-                ch.sprite.showStatus( CharSprite.NEUTRAL, defense );
-                Sample.INSTANCE.play(Assets.Sounds.MISS);
+                Dungeon.level.pressCell(bolt.collisionPos);
             }
 
-        } else {
-            Dungeon.level.pressCell(bolt.collisionPos);
-        }
+            Buff buff = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
+            if (buff != null) buff.detach();
+            buff = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
+            if (buff != null) buff.detach();
+            buff = Dungeon.hero.buff(RangedAttackTracker.class);
+            if (buff != null) buff.detach();
 
-        Buff buff = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
-        if (buff != null) buff.detach();
-        buff = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
-        if (buff != null) buff.detach();
+            if (Dungeon.hero.buff(Bonk.BonkBuff.class) != null) Buff.detach(Dungeon.hero, Bonk.BonkBuff.class);
 
-        if (Dungeon.hero.buff(Bonk.BonkBuff.class) != null) Buff.detach(Dungeon.hero, Bonk.BonkBuff.class);
+            Invisibility.dispel();
 
-        Invisibility.dispel();
-
-        boolean consumeBullet = false;
-
-        if (gunAccessories != null) {
-            consumeBullet = gunAccessories.GetSavingChance() < Random.Int(100);
-        }
-        if (closerRange != null && closerRange.state() && Dungeon.hero.hasTalent(Talent.FRUGALITY)) {
-            if (Random.Int(100) > Dungeon.hero.pointsInTalent(Talent.FRUGALITY) * 15) {
-                consumeBullet = true;
+            // Each source independently checks to save the bullet
+            // If ANY check succeeds, the bullet is saved
+            boolean savedBullet = false;
+            int bulletConsumeChance = Random.Int(100);
+            // Check if gun accessories saves the bullet
+            if (gunAccessories != null && gunAccessories.GetSavingChance() >= bulletConsumeChance) {
+                savedBullet = true;
             }
-        }
-        if (RingOfSharpshooting.ammoMultiplier(Dungeon.hero) * 100f < Random.Int(100)) {
-            consumeBullet = true;
-        }
 
-        if (consumeBullet) {
-            bullet -= 1;
-        }
-        updateQuickslot();
+            // Check if frugality talent saves the bullet
+            if (closerRange != null && closerRange.state() && Dungeon.hero.hasTalent(Talent.FRUGALITY)
+                && Dungeon.hero.pointsInTalent(Talent.FRUGALITY) * 15 >= bulletConsumeChance) {
+                savedBullet = true;
+            }
 
-        ACC = oldacc;
+            // Check if ring of sharpshooting saves the bullet
+            if (RingOfSharpshooting.ammoMultiplier(Dungeon.hero) * 100f >= bulletConsumeChance) {
+                savedBullet = true;
+            }
 
-        if (pala) { curUser.spendAndNext(fireDelayFactor(FIRE_DELAY_MULT / 4)); }
-        else curUser.spendAndNext(fireDelayFactor(FIRE_DELAY_MULT));
+            // Only consume if no source saved the bullet
+            if (!savedBullet) {
+                bullet = Math.max(0, bullet - 1);
+                specialBullet = Math.max(0, specialBullet - 1);
+            }
+            updateQuickslot();
 
-        if (ch != null && !ch.isAlive() && Dungeon.hero.hasTalent(Talent.BF_RULL) && Random.Int(5) < Dungeon.hero.pointsInTalent(Talent.BF_RULL)) {
-            Buff.affect(Dungeon.hero, Swiftthistle.TimeBubble.class).bufftime(1f);
+            if (pala) { curUser.spendAndNext(fireDelayFactor(curUser, FIRE_DELAY_MULT / 4)); }
+            else curUser.spendAndNext(fireDelayFactor(curUser, FIRE_DELAY_MULT));
+
+            if (ch != null && !ch.isAlive() && Dungeon.hero.hasTalent(Talent.BF_RULL) && Random.Int(5) < Dungeon.hero.pointsInTalent(Talent.BF_RULL)) {
+                Buff.affect(Dungeon.hero, Swiftthistle.TimeBubble.class).bufftime(1f);
+            }
+        } finally {
+            ACC = oldacc;
         }
     }
 
@@ -512,8 +546,8 @@ public class GunWeapon extends MeleeWeapon {
     }
 
     public String statsInfo() {
-        if (specialBullet > 0) return Messages.get(this, "stats_desc_sp", fireMin(), fireMax(), specialBullet);
-        return Messages.get(this, "stats_desc", fireMin(), fireMax());
+        if (specialBullet > 0) return Messages.get(this, "stats_desc_sp", fireMin(), fireMax(), specialBullet, getMinRange(), getMaxRange());
+        return Messages.get(this, "stats_desc", fireMin(), fireMax(), getMinRange(), getMaxRange());
     }
 
     private static final String BULLET = "bullet";
@@ -523,6 +557,7 @@ public class GunWeapon extends MeleeWeapon {
     private static final String SP = "spshot";
     private static final String SP_BULLET_COUNT = "spBulletCount";
     private static final String ACCESSORIES = "GunAccessories";
+    private static final String SPECIAL_FIRE = "specialFire";
 
     @Override
     public void storeInBundle(Bundle bundle) {
@@ -547,4 +582,8 @@ public class GunWeapon extends MeleeWeapon {
         gamza = bundle.getBoolean(GAMZA);
         gunAccessories = (Accessories) bundle.get(ACCESSORIES);
     }
+
+    // Marker buff to indicate the current attack is a ranged attack from a gun weapon
+    // Used to distinguish ranged attacks (onZap) from melee attacks (proc) with the same weapon
+    public static class RangedAttackTracker extends Buff {}
 }

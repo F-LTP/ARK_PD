@@ -28,7 +28,6 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
-
 public class KnightSKILL extends Buff implements ActionIndicator.Action {
     private float comboTime = 0f;
     private float initialComboTime = 5f;
@@ -93,7 +92,9 @@ public class KnightSKILL extends Buff implements ActionIndicator.Action {
 
     @Override
     public String desc() {
-        return Messages.get(this, "desc");
+        KnightSkillCombo counter = ((Hero)target).buff(KnightSkillCombo.class);
+        int stacks = counter != null ? (int) counter.count() : 0;
+        return Messages.get(this, "desc") + "\n\n" + Messages.get(this, "desc_stacks", stacks);
     }
 
     public KnightSKILL.ComboMove getHighestMove(){
@@ -154,10 +155,10 @@ public class KnightSKILL extends Buff implements ActionIndicator.Action {
         }
 
         public String desc(){
-            if (name() == "LIGHTSWORD") {
+            if (this == LIGHTSWORD) {
                 int dmgper = 0;
                 int bouns = 25;
-                if (Dungeon.hero.hasTalent(Talent.SKILL_MASTERY)) bouns = 30;
+                if (Dungeon.hero.hasTalent(Talent.SKILL_MASTERY)) bouns = 35;
 
                 KnightSkillCombo counter = Dungeon.hero.buff(KnightSkillCombo.class);
                 if (counter != null) {
@@ -243,7 +244,7 @@ public class KnightSKILL extends Buff implements ActionIndicator.Action {
                     break;
                 case LIGHTSWORD:
                     float countdamage = 0.25f;
-                    if (hero.pointsInTalent(Talent.SKILL_MASTERY) >= 1) countdamage = 0.3f;
+                    if (hero.pointsInTalent(Talent.SKILL_MASTERY) >= 1) countdamage = 0.35f;
                     dmg = Math.round(dmg * (counter.count() *countdamage));
                     break;
             }
@@ -277,18 +278,24 @@ public class KnightSKILL extends Buff implements ActionIndicator.Action {
                     }
                     if (counter.count() < 10) {
                         counter.countUp(1);
+                        if (counter.count() == 10) GLog.p(Messages.get(KnightSKILL.class, "combo_max"));
+                        else GLog.i(Messages.get(KnightSKILL.class, "combo_stack", (int)counter.count()));
                     }
                     break;
                 case SMASH:
                     hit(enemy);
                     if (counter.count() < 10) {
                         counter.countUp(1);
+                        if (counter.count() == 10) GLog.p(Messages.get(KnightSKILL.class, "combo_max"));
+                        else GLog.i(Messages.get(KnightSKILL.class, "combo_stack", (int)counter.count()));
                     }
                     break;
                 case KILLBLOW:
                     hit(enemy);
                     if (counter.count() < 10) {
                         counter.countUp(1);
+                        if (counter.count() == 10) GLog.p(Messages.get(KnightSKILL.class, "combo_max"));
+                        else GLog.i(Messages.get(KnightSKILL.class, "combo_stack", (int)counter.count()));
                     }
                     break;
                 case LIGHTSWORD:

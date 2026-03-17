@@ -6,38 +6,27 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Web;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.BlastParticle;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.BlueBlastParticle;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PurpleParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SkillBook;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAmplified;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.DamageWand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -48,6 +37,12 @@ public class StaffOfPurgatory extends Wand {
 
         collisionProperties = Ballistica.STOP_TARGET | Ballistica.STOP_SOLID;
     }
+    private int min(int lvl) { return 2 + lvl; }
+    private int max(int lvl) { return 4 + lvl * 3; }
+    private int min() { return min(buffedLvl()); }
+    private int max() { return max(buffedLvl()); }
+    private int aoeDamageRoll() { return Random.NormalIntRange(min(), max()); }
+
     @Override
     protected void onZap( Ballistica bolt ) {
 
@@ -88,12 +83,30 @@ public class StaffOfPurgatory extends Wand {
 
                 if (!Dungeon.bossLevel() || !(Dungeon.depth>27&&Dungeon.depth<30))  wandattack(ch, beamdis);
 
+                //area damage around both the hero and the swapped target
+                aoeBlast(Dungeon.hero.pos, aoeDamageRoll());
+                aoeBlast(ch.pos, aoeDamageRoll());
+
+                ch.damage(aoeDamageRoll(), this);
                 Buff.affect(ch, Cripple.class, 2 + buffedLvl());
 
             } else {
                 Dungeon.level.pressCell(bolt.collisionPos);
             }
         }
+    }
+
+    private void aoeBlast(int center, int dmg) {
+        for (int i : PathFinder.NEIGHBOURS8) {
+            int cell = center + i;
+            Char ch = Actor.findChar(cell);
+            if (ch != null && ch.alignment == Char.Alignment.ENEMY) {
+                ch.damage(dmg, this);
+                ch.sprite.centerEmitter().burst(BlastParticle.FACTORY, 3);
+            }
+        }
+        CellEmitter.get(center).burst(BlastParticle.FACTORY, 10);
+        Sample.INSTANCE.play(Assets.Sounds.BLAST);
     }
 
     private void wandattack(Char defender, int distance) {
@@ -127,6 +140,14 @@ public class StaffOfPurgatory extends Wand {
                 }
             }
         }
+    }
+
+    @Override
+    public String statsDesc() {
+        if (levelKnown)
+            return Messages.get(this, "stats_desc", min(), max());
+        else
+            return Messages.get(this, "stats_desc", min(0), max(0));
     }
 
     @Override

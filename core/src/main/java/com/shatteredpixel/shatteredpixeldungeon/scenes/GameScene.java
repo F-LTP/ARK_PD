@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DemonSpawner;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.miniboss.TheEndspeaker;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BannerSprites;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CircleArc;
@@ -57,6 +58,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportat
 import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.SeaLevel_part2;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
@@ -127,6 +129,8 @@ import java.util.Locale;
 public class GameScene extends PixelScene {
 
 	static GameScene scene;
+
+	public static boolean updateItemDisplays;
 
 	private SkinnedBlock water;
 	private DungeonTerrainTilemap tiles;
@@ -604,13 +608,23 @@ public class GameScene extends PixelScene {
 				case SECRETS:   GLog.w(Messages.get(this, "secrets"));  break;
 			}
 
-			for (Mob mob : Dungeon.level.mobs) {
+            if (Dungeon.level instanceof SeaLevel_part2 && Dungeon.depth >= 36 && Dungeon.depth <= 38
+                    && !TheEndspeaker.Status.spawnMsgShown) {
+                GLog.w(Messages.get(TheEndspeaker.class, "aspect_spawn"));
+                TheEndspeaker.Status.spawnMsgShown = true;
+            }
+            if (Dungeon.level instanceof SeaLevel_part2 && TheEndspeaker.Status.pendingDestroyMessage) {
+                GLog.w(Messages.get(TheEndspeaker.class, "aspect_destroy"));
+                TheEndspeaker.Status.pendingDestroyMessage = false;
+            }
+
+            for (Mob mob : Dungeon.level.mobs) {
 				if (!mob.buffs(ChampionEnemy.class).isEmpty()) {
 					GLog.w(Messages.get(ChampionEnemy.class, "warn"));
 				}
 			}
 
-			InterlevelScene.mode = InterlevelScene.Mode.NONE;
+            InterlevelScene.mode = InterlevelScene.Mode.NONE;
 
 			
 		}
@@ -683,7 +697,12 @@ public class GameScene extends PixelScene {
 		}
 
 		super.update();
-		
+
+		if (updateItemDisplays) {
+			updateItemDisplays = false;
+			QuickSlotButton.refresh();
+		}
+
 		if (!Emitter.freezeEmitters) water.offset( 0, -5 * Game.elapsed );
 
 		if (!Actor.processing() && Dungeon.hero.isAlive()) {
@@ -902,19 +921,22 @@ public class GameScene extends PixelScene {
 	}
 	
 	public static void add( Mob mob ) {
-		Dungeon.level.mobs.add( mob );
-		scene.addMobSprite( mob );
-		Actor.add( mob );
+        add( mob, 0);
 	}
 
 	public static void addSprite( Mob mob ) {
 		scene.addMobSprite( mob );
 	}
-	
+
 	public static void add( Mob mob, float delay ) {
 		Dungeon.level.mobs.add( mob );
-		scene.addMobSprite( mob );
-		Actor.addDelayed( mob, delay );
+        //mobs added on partial turns wait until next full turn to act
+        delay = (float)Math.ceil(Actor.now() + delay) - Actor.now();
+        if (scene != null) {
+            scene.addMobSprite(mob);
+            Actor.addDelayed(mob, delay);
+            mob.spendToWhole();
+        }
 	}
 	
 	public static void add( EmoIcon icon ) {

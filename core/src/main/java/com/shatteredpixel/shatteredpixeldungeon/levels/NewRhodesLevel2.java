@@ -2,7 +2,6 @@ package com.shatteredpixel.shatteredpixeldungeon.levels;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Closure;
@@ -23,11 +22,10 @@ import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_Healin
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_IdentifyBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_PotionBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_RingBox;
+import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_TGBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_ScrollBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_TransBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_WandBox;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
-import com.shatteredpixel.shatteredpixeldungeon.items.quest.QuestCat;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.watabou.noosa.Group;
@@ -197,14 +195,15 @@ public class NewRhodesLevel2 extends Level {
 
         // 특수 상점 관련
 
-        if (!Dungeon.buyFoodbox) drop( new Closure_FoodBox(), 3692 ).type = Heap.Type.FOR_SALE_28F;
-        if (!Dungeon.buyPotionbox) drop( new Closure_PotionBox(), 3693 ).type = Heap.Type.FOR_SALE_28F;
-        if (!Dungeon.buyScrollbox) drop( new Closure_ScrollBox(), 3694 ).type = Heap.Type.FOR_SALE_28F;
-        if (!Dungeon.buyIdentifybox) drop( new Closure_IdentifyBox(), 3695 ).type = Heap.Type.FOR_SALE_28F;
-        if (!Dungeon.buyHealbox) drop( new Closure_HealingBox(), 3696 ).type = Heap.Type.FOR_SALE_28F;
-        if (!Dungeon.buyWandbox) drop( new Closure_WandBox(), 3828 ).type = Heap.Type.FOR_SALE_28F;
-        if (!Dungeon.buyTransbox) drop( new Closure_TransBox(), 3830 ).type = Heap.Type.FOR_SALE_28F;
-        if (!Dungeon.buyRingbox) drop( new Closure_RingBox(), 3832 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_FoodBox(), 3692 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_PotionBox(), 3693 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_ScrollBox(), 3694 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_IdentifyBox(), 3695 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_HealingBox(), 3696 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_WandBox(), 3828 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_TransBox(), 3829 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_RingBox(), 3830 ).type = Heap.Type.FOR_SALE_28F;
+        drop( new Closure_TGBox(), 3832 ).type = Heap.Type.FOR_SALE_28F;
     }
 
     @Override

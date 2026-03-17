@@ -14,6 +14,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PurpleParticle
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAmplified;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.DamageWand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Platform;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.SeaTerror;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -40,7 +41,7 @@ public class StaffOfVigna extends DamageWand {
     }
 
     public int max(int lvl){
-        return 8+6*lvl+ RingOfAmplified.DamageBonus(Dungeon.hero) * 6;
+        return 8+6*lvl+ (Dungeon.hero != null ? RingOfAmplified.DamageBonus(Dungeon.hero) : 0) * 6;
     }
 
     @Override
@@ -116,7 +117,11 @@ public class StaffOfVigna extends DamageWand {
         int lvl = level + (chars.size()-1) + terrainBonus;
         for (Char ch : chars) {
             processSoulMark(ch, chargesPerCast());
-            ch.damage( damageRoll(lvl), this );
+            int dmg = damageRoll(lvl);
+            if (Random.Float() < critChance()) {
+                dmg = (int) (dmg * 1.5f); // 크리티컬 (레벨에 따라 확률 증가)
+            }
+            ch.damage( dmg, this );
             Buff.affect(ch, Vulnerable.class, 2 + lvl);
             ch.sprite.centerEmitter().burst( PurpleParticle.BURST, Random.IntRange( 1, 2 ) );
             ch.sprite.flash();
@@ -126,6 +131,23 @@ public class StaffOfVigna extends DamageWand {
     @Override
     public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
         //no direct effect, see magesStaff.reachfactor
+    }
+
+    private float critChance() {
+        if (buffedLvl() >= 10) return 1f;
+        return (float)(0.20 * Math.pow(5.0, buffedLvl() / 10.0));
+    }
+
+    private int critChancePct() {
+        return Math.round(critChance() * 100f);
+    }
+
+    @Override
+    public String statsDesc() {
+        if (levelKnown)
+            return Messages.get(this, "stats_desc", min(), max(), critChancePct());
+        else
+            return Messages.get(this, "stats_desc", min(0), max(0), 20);
     }
 
     private int distance() {

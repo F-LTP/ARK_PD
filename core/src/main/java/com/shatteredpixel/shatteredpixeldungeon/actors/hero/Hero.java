@@ -59,6 +59,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.IronSkin;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.KnightSKILL;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ShieldSlamCounter;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LanceCharge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
@@ -77,7 +78,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WindEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ghoul;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Monk;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Talu_BlackSnake;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.ImpShopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -199,6 +199,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SHISHIOH;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SanktaBet;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Suffering;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.NewHallsBossLevel;
@@ -445,6 +446,11 @@ public class Hero extends Char {
         STR = bundle.getInt(STRENGTH);
 
         belongings.restoreFromBundle(bundle);
+
+        if (belongings.getItem(ThrowingKnife.class) != null
+                && buff(ThrowingKnife.KnifeSafeguard.class) == null) {
+            Buff.affect(this, ThrowingKnife.KnifeSafeguard.class);
+        }
     }
 
     public static void preview(GamesInProgress.Info info, Bundle bundle) {
@@ -699,7 +705,6 @@ public class Hero extends Char {
         if (hasTalent(Talent.SHIELD_OF_LIGHT)) {
             int drplus_n = pointsInTalent(Talent.SHIELD_OF_LIGHT);
             if (HP <= HT/2) drplus_n*=2;
-            if (buff(RadiantKnight.class) != null) drplus_n*=2;
             dr += Random.NormalIntRange(0,drplus_n);
         }
 
@@ -1168,6 +1173,8 @@ public class Hero extends Char {
                             || item instanceof DriedRose.Petal
                             || item instanceof Key) {
                         //Do Nothing
+                    } else if (item instanceof ThrowingKnife && ((ThrowingKnife) item).duplicateDestroyed) {
+                        GLog.i(Messages.get(ThrowingKnife.class, "duplicate"));
                     } else {
 
                         //TODO make all unique items important? or just POS / SOU?
@@ -1460,16 +1467,17 @@ public class Hero extends Char {
         }
 
         if (buff(RadiantKnight.class) != null) {
-            if (subClass == HeroSubClass.SAVIOR) damage *= 1.55f;
-            else if (subClass == HeroSubClass.FLASH) damage *= 1.25f;
-            else damage *= 1.4f;
+            if (subClass == HeroSubClass.SAVIOR) damage *= 1.45f;
+            else if (subClass == HeroSubClass.FLASH) damage *= 1.2f;
+            else damage *= 1.3f;
 
             // 난입 특성
             if (hasTalent(Talent.PHASERUSH)) {
                 SealOfLight Seal = this.belongings.getItem(SealOfLight.class);
-                if (Seal != null)
+                if (Seal != null) {
                     Seal.charge(this, pointsInTalent(Talent.PHASERUSH));
-                Seal.updateQuickslot();
+                    Seal.updateQuickslot();
+                }
             }
             // 카시미어의 기사
             if (hasTalent(Talent.KNIGHT_OF_KAZIMIERZ) && Random.Int(5) == 0) {
@@ -1481,13 +1489,16 @@ public class Hero extends Char {
             }
         }
 
-        if (enemy.buff(Blindness.class) != null && hasTalent(Talent.FLASH_SPEAR)) {
-            BounsDamage += damage * (pointsInTalent(Talent.FLASH_SPEAR) * 0.1f);
+        // blindness chance handling
+        float blindChance = 0f;
+        if (hasTalent(Talent.EXORCISM))
+            blindChance += 0.05f + pointsInTalent(Talent.EXORCISM) * 0.05f;
+        if (buff(RadiantKnight.class) != null) {
+            SealOfLight hikariSeal = belongings.getItem(SealOfLight.class);
+            if (hikariSeal != null) blindChance += 0.05f + hikariSeal.level() * 0.01f;
         }
-
-        if (hasTalent(Talent.ETERNAL_GLORY) && Random.Int(10) < pointsInTalent(Talent.ETERNAL_GLORY)) {
-            Buff.affect(enemy, Blindness.class, 3);
-        }
+        if (blindChance > 0 && Random.Float() < blindChance)
+            Buff.affect(enemy, Blindness.class, 3f);
 
         if (buff(BreaktheDawn.BreakBuff.class) != null) {
             damage *= 2f;
@@ -1531,12 +1542,6 @@ public class Hero extends Char {
 
         if (hasTalent(Talent.SAVIOR_BELIEF) && enemy.buff(Roots.class) != null || enemy.buff(Paralysis.class) != null) {
             BounsDamage = damage * (pointsInTalent(Talent.SAVIOR_BELIEF) * 0.15f);
-        }
-
-        if (hasTalent(Talent.EXORCISM)) {
-            if (enemy.properties().contains(Property.SARKAZ)) {
-                BounsDamage += 1 + pointsInTalent(Talent.EXORCISM)*2;
-            }
         }
 
         if (Dungeon.hero.hasTalent(Talent.SAVIOR_BELIEF)) {
@@ -1616,6 +1621,13 @@ public class Hero extends Char {
             }
         }
 
+        // 구제자 방패 밀기
+        if (subClass == HeroSubClass.SAVIOR && damage > 0
+                && enemy instanceof Mob && Dungeon.level.adjacent(pos, enemy.pos)) {
+            ShieldSlamCounter slamCounter = Buff.affect(this, ShieldSlamCounter.class);
+            slamCounter.countUp(damage);
+        }
+
         if (damage > 0 && subClass == HeroSubClass.BERSERKER) {
             Berserk berserk = Buff.affect(this, Berserk.class);
             berserk.damage(damage);
@@ -1693,19 +1705,12 @@ public class Hero extends Char {
 
         // 니어 특성 관련
 
-        // 퇴마
-        if (hasTalent(Talent.EXORCISM)) {
-            if (enemy.properties().contains(Property.SARKAZ)) {
-                damage -= pointsInTalent(Talent.EXORCISM);
-            }
-        }
-
         if (HP <= HT/2) {
         if(hasTalent(Talent.RADIANTHERO)) {
             if (buff(RadiantKnight.class) == null && buff(Talent.RadiantHeroCooldown.class) == null && hasTalent(Talent.RADIANTHERO)) {
                 Buff.affect(this, RadiantKnight.class, RadiantKnight.DURATION);
 
-                float CoolDown = 900 - (pointsInTalent(Talent.RADIANTHERO) * 150);
+                float CoolDown = 700 - (pointsInTalent(Talent.RADIANTHERO) * 100);
                 Buff.affect(this, Talent.RadiantHeroCooldown.class, CoolDown);
 
                 GameScene.flash( 0x80FFFFFF );
@@ -1827,16 +1832,16 @@ public class Hero extends Char {
         }
 
         if (buff(RadiantKnight.class) != null && subClass != HeroSubClass.FLASH) {
-            float redu = 0.8f;
             if (subClass == HeroSubClass.SAVIOR) {
-                redu = 0.6f;
+                float saviorRedu = 0.4f;
                 if (hasTalent(Talent.HOPELIGHT)) {
-                    float hope = pointsInTalent(Talent.HOPELIGHT) * 0.05f;
-                    redu -= hope;
+                    saviorRedu += pointsInTalent(Talent.HOPELIGHT) * 0.05f;
                 }
+                int mitigation = Math.max(2, Math.round(dmg * saviorRedu));
+                dmg = Math.max(0, dmg - mitigation);
+            } else {
+                dmg = Math.max(0, dmg - Math.max(2, Math.round(dmg * 0.2f)));
             }
-            dmg *= redu;
-            dmg -= 2;
         }
 
         if (buff(Heat.class) != null) {

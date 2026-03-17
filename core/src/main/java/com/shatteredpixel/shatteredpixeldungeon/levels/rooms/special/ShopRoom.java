@@ -49,6 +49,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.SanityPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SmallRation;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfHolyFuror;
@@ -208,15 +209,22 @@ public class ShopRoom extends SpecialRoom {
 				itemsToSpawn.add(new PlateArmor().identify());
 				itemsToSpawn.add(new PotionOfHolyFuror());
 				break;
-			}
-			else {
+			} else if (Dungeon.extrastage_Sea) {
 				w = (MeleeWeapon) Generator.random(Generator.wepTiers[4]);
 				itemsToSpawn.add(Generator.random(Generator.misTiers[4]).quantity(2).identify());
 				itemsToSpawn.add(new PlateArmor().identify());
 				itemsToSpawn.add(new ScrollOfUpgrade());
-				itemsToSpawn.add(new ScrollOfUpgrade());
-				break;
-			}
+                itemsToSpawn.add(new SanityPotion());
+                itemsToSpawn.add(new SanityPotion());
+                break;
+			} else {
+                w = (MeleeWeapon) Generator.random(Generator.wepTiers[4]);
+                itemsToSpawn.add(Generator.random(Generator.misTiers[4]).quantity(2).identify());
+                itemsToSpawn.add(new PlateArmor().identify());
+                itemsToSpawn.add(new ScrollOfUpgrade());
+                itemsToSpawn.add(new ScrollOfUpgrade());
+            break;
+        }
 
 			case 36:
 				if (Dungeon.extrastage_Gavial) {
@@ -246,40 +254,38 @@ public class ShopRoom extends SpecialRoom {
             w2.identify();
             itemsToSpawn.add(w2);
         }
-		
-		itemsToSpawn.add( TippedDart.randomTipped(2) );
 
-		itemsToSpawn.add( new MerchantsBeacon() );
+        itemsToSpawn.add( TippedDart.randomTipped(2) );
 
+        itemsToSpawn.add( new MerchantsBeacon() );
 
-		if (!Dungeon.isChallenged(Challenges.NO_HERBALISM) || Dungeon.depth != 6)itemsToSpawn.add(ChooseBag(Dungeon.hero.belongings));
+        if (!Dungeon.isChallenged(Challenges.NO_HERBALISM) || Dungeon.depth != 6)itemsToSpawn.add(ChooseBag(Dungeon.hero.belongings));
 
+        itemsToSpawn.add( new PotionOfHealing() );
+        if (!Dungeon.isChallenged(Challenges.NO_HERBALISM)) itemsToSpawn.add( Generator.randomUsingDefaults( Generator.Category.POTION ) );
+        if (!Dungeon.isChallenged(Challenges.NO_HERBALISM)) itemsToSpawn.add( Generator.randomUsingDefaults( Generator.Category.POTION ) );
 
-		itemsToSpawn.add( new PotionOfHealing() );
-		if (!Dungeon.isChallenged(Challenges.NO_HERBALISM)) itemsToSpawn.add( Generator.randomUsingDefaults( Generator.Category.POTION ) );
-		if (!Dungeon.isChallenged(Challenges.NO_HERBALISM)) itemsToSpawn.add( Generator.randomUsingDefaults( Generator.Category.POTION ) );
+        itemsToSpawn.add( new ScrollOfIdentify() );
+        itemsToSpawn.add( new ScrollOfRemoveCurse() );
+        if (!Dungeon.isChallenged(Challenges.NO_HERBALISM)) itemsToSpawn.add( new ScrollOfMagicMapping() );
 
-		itemsToSpawn.add( new ScrollOfIdentify() );
-		itemsToSpawn.add( new ScrollOfRemoveCurse() );
-		if (!Dungeon.isChallenged(Challenges.NO_HERBALISM)) itemsToSpawn.add( new ScrollOfMagicMapping() );
-
-			for (int i = 0; i < 2; i++)
-				itemsToSpawn.add(Random.Int(2) == 0 ?
-						Generator.randomUsingDefaults(Generator.Category.POTION) :
-						Generator.randomUsingDefaults(Generator.Category.SCROLL));
+        for (int i = 0; i < 2; i++)
+            itemsToSpawn.add(Random.Int(2) == 0 ?
+                    Generator.randomUsingDefaults(Generator.Category.POTION) :
+                    Generator.randomUsingDefaults(Generator.Category.SCROLL));
 
 
 
-		itemsToSpawn.add( new SmallRation() );
-		itemsToSpawn.add( new SmallRation() );
-		itemsToSpawn.add( new SmallRation() );
+        itemsToSpawn.add( new SmallRation() );
+        itemsToSpawn.add( new SmallRation() );
+        itemsToSpawn.add( new SmallRation() );
 
-		itemsToSpawn.add( Generator.randomUsingDefaults( Generator.Category.ACCESSORIES ) );
-		
-		switch (Random.Int(7)){
-			case 0:
-				itemsToSpawn.add( new Bomb() );
-				break;
+        itemsToSpawn.add( Generator.randomUsingDefaults( Generator.Category.ACCESSORIES ) );
+
+        switch (Random.Int(7)){
+            case 0:
+                itemsToSpawn.add( new Bomb() );
+                break;
 			case 1:
 			case 2:
 				if (!Dungeon.isChallenged(Challenges.NO_HERBALISM)) itemsToSpawn.add( new Bomb.DoubleBomb() );
@@ -298,8 +304,8 @@ public class ShopRoom extends SpecialRoom {
 				break;
 		}
 
-		if (!Dungeon.isChallenged(Challenges.NO_HERBALISM)) itemsToSpawn.add( new Ankh() );
-		if (!Dungeon.isChallenged(Challenges.NO_HERBALISM)) itemsToSpawn.add( new StoneOfAugmentation() );
+        if (!Dungeon.isChallenged(Challenges.NO_HERBALISM)) itemsToSpawn.add( new Ankh() );
+        if (!Dungeon.isChallenged(Challenges.NO_HERBALISM)) itemsToSpawn.add( new StoneOfAugmentation() );
 
 		TimekeepersHourglass hourglass = Dungeon.hero.belongings.getItem(TimekeepersHourglass.class);
 		if (hourglass != null && hourglass.isIdentified() && !hourglass.cursed){

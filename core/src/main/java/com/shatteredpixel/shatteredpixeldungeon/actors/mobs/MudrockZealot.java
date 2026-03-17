@@ -5,11 +5,9 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Silence;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.EnragedSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ZealotSprite;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -28,6 +26,7 @@ public class MudrockZealot extends Mob {
         lootChance = 0.1f;
 
         immunities.add(Silence.class);
+        properties.add(Property.SARKAZ);
     }
 
     boolean barrier = true;

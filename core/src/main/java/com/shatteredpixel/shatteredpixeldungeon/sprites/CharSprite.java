@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.effects.DarkBlock;
 import com.shatteredpixel.shatteredpixeldungeon.effects.EmoIcon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
+import com.watabou.noosa.Halo;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.IceBlock;
 import com.shatteredpixel.shatteredpixeldungeon.effects.ShieldHalo;
@@ -112,6 +113,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	protected ShieldHalo shield;
 	protected AlphaTweener invisible;
 	protected Flare aura;
+	protected Halo ring;
 	
 	protected EmoIcon emo;
 	protected CharHealthIndicator health;
@@ -296,15 +298,20 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		jump( from, to, callback, distance * 2, distance * 0.1f );
 	}
 
-	public void jump( int from, int to, Callback callback, float height, float duration ) {
-		jumpCallback = callback;
+    public void dash( int from, int to, Callback callback ) {
+        float distance = Dungeon.level.trueDistance( from, to );
+        jump( from, to, callback, distance/2, distance * 0.1f );
+    }
 
-		jumpTweener = new JumpTweener( this, worldToCamera( to ), height, duration );
-		jumpTweener.listener = this;
-		parent.add( jumpTweener );
+    public void jump( int from, int to, Callback callback, float height, float duration ) {
+        jumpCallback = callback;
 
-		turnTo( from, to );
-	}
+        jumpTweener = new JumpTweener( this, worldToCamera( to ), height, duration );
+        jumpTweener.listener = this;
+        parent.add( jumpTweener );
+
+        turnTo( from, to );
+    }
 
 	public void die() {
 		sleeping = false;
@@ -502,13 +509,17 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	}
 
 	public void aura( int color ){
+		aura(color, 90);
+	}
+
+	public void aura( int color, float angularSpeed ){
 		if (aura != null){
 			aura.killAndErase();
 		}
 		float size = Math.max(width(), height());
 		size = Math.max(size+4, 16);
 		aura = new Flare(5, size);
-		aura.angularSpeed = 90;
+		aura.angularSpeed = angularSpeed;
 		aura.color(color, true).show(this, 0);
 	}
 
@@ -517,6 +528,36 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 			aura.killAndErase();
 			aura = null;
 		}
+	}
+
+	public void ring( int color ){
+		if (ring != null){
+			ring.killAndErase();
+		}
+		float radius = (float)Math.sqrt(Math.pow(width()/2f, 2) + Math.pow(height()/2f, 2));
+		ring = new Halo(radius, color, 0.5f);
+		ring.point(x + width()/2, y + height()/2);
+		parent.addToBack(ring);
+	}
+
+	public void clearRing(){
+		if (ring != null){
+			ring.killAndErase();
+			ring = null;
+		}
+	}
+
+	public void shieldHalo( int color ){
+		if (shield != null) shield.putOut();
+		GameScene.effect( shield = new ShieldHalo( this, color ) );
+	}
+
+	public boolean hasActiveShield(){
+		return shield != null && shield.alive;
+	}
+
+	public void clearShieldHalo(){
+		if (shield != null) shield.putOut();
 	}
 	
 	@Override
@@ -550,6 +591,11 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		if (aura != null){
 			aura.visible = visible;
 			aura.point(center());
+		}
+		if (ring != null && ring.alive){
+			ring.visible = visible;
+			ring.point(x + width()/2, y + height()/2);
+			ring.am = 0.4f + 0.15f * (float)Math.sin(Game.timeTotal * Math.PI);
 		}
 		if (sleeping) {
 			showSleep();
@@ -647,13 +693,16 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	@Override
 	public void kill() {
 		super.kill();
-		
+
 		hideEmo();
-		
+
 		for( State s : State.values()){
 			remove(s);
 		}
-		
+
+		// ring is parented to the scene group (not the sprite), so it must be cleaned up explicitly
+		clearRing();
+
 		if (health != null){
 			health.killAndErase();
 		}

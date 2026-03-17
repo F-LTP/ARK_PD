@@ -90,6 +90,8 @@ public class Isharmla extends Mob {
         trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
         WandOfBlastWave.throwChar(Dungeon.hero, trajectory, 6); // 넉백 효과
 
+        IsharmlaSeabornHead.resetBoss();
+
         IsharmlaSeabornHead boss1 = new IsharmlaSeabornHead();
         boss1.pos = 197;
         boss1.notice();
@@ -137,9 +139,10 @@ public class Isharmla extends Mob {
 
         if (summonCooldown <= 0) {
             this.damage(250,this);
-            if (this.isAlive()) {
-                SummonEnemy();
+            if (!this.isAlive()) {
+                return super.act(); // detach() already ran via die(); skip shield code
             }
+            SummonEnemy();
         } else {
             summonCooldown--;
         }

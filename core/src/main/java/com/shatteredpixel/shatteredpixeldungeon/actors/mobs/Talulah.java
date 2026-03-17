@@ -88,6 +88,8 @@ public class Talulah extends Mob {
 
 		properties.add(Property.BOSS);
 		properties.add(Property.IMMOVABLE);
+		properties.add(Property.INFECTED);
+		properties.add(Property.SARKAZ);
 	}
 
 	private int phase = 0;
@@ -433,14 +435,13 @@ public class Talulah extends Mob {
 
 		GameScene.bossSlain();
         Dungeon.level.drop(new Certificate(25), pos).sprite.drop(pos);
-		Dungeon.level.unseal();
+        Dungeon.level.unseal();
 		super.die( cause );
 
 		yell( Messages.get(this, "defeated") );
 		if (Dungeon.isChallenged(Challenges.SPECIAL_BOSS)) Badges.validateroaringflare();
 		if (Dungeon.isChallenged(Challenges.SPECIAL_BOSS) && Dungeon.mboss4 == 1 && Dungeon.mboss9 == 1 && Dungeon.mboss14 == 1 && Dungeon.mboss19 == 1)
             Badges.validateeviltimeend();
-		Badges.validateChenUnlock();
 	}
 
 	@Override

@@ -28,17 +28,15 @@ import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.TomorrowRogueNight;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EndspeakerAspect;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.miniboss.TheEndspeaker;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfMindVision;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.SeaLevel_part2;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
 import com.shatteredpixel.shatteredpixeldungeon.ui.GameLog;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -59,6 +57,8 @@ import com.watabou.utils.DeviceCompat;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class InterlevelScene extends PixelScene {
 	
@@ -370,8 +370,21 @@ public class InterlevelScene extends PixelScene {
 	}
 
 	private void descend() throws IOException {
+        if (Dungeon.level instanceof SeaLevel_part2 && (Dungeon.depth >= 36 && Dungeon.depth <= 38) && Dungeon.level.mobs != null) {
+            List<Mob> mobsToDestroy = new ArrayList<>();
+            for (Mob mob : Dungeon.level.mobs) {
+                if ((mob instanceof TheEndspeaker.AspectSmall
+                        || mob instanceof TheEndspeaker.AspectMedium
+                        || mob instanceof TheEndspeaker.AspectLarge) && mob.isAlive()) {
+                    mobsToDestroy.add(mob);
+                }
+            }
+            for (Mob mob : mobsToDestroy) {
+                mob.destroy();
+            }
+        }
 
-		if (Dungeon.hero == null) {
+        if (Dungeon.hero == null) {
 			Mob.clearHeldAllies();
 			Dungeon.init();
 			if (noStory) {
@@ -385,7 +398,9 @@ public class InterlevelScene extends PixelScene {
 		}
 
 		Level level;
-		if (Dungeon.depth >= Statistics.deepestFloor) {
+        if ((Dungeon.depth >= 27 && Dungeon.depth <= 30)) {
+            level = handleDescendRhodes();
+        } else if (Dungeon.depth >= Statistics.deepestFloor) {
 			level = Dungeon.newLevel();
 		} else {
 			Dungeon.depth++;
@@ -394,13 +409,22 @@ public class InterlevelScene extends PixelScene {
 		Dungeon.switchLevel( level, level.entrance );
 	}
 
+    private Level handleDescendRhodes() throws IOException {
+        if (Dungeon.depth >= Dungeon.highestRhodesGenerated) {
+            return Dungeon.newLevel();
+        } else {
+            Dungeon.depth++;
+            return Dungeon.loadLevel( GamesInProgress.curSlot );
+        }
+    }
+
 	private void descend_27() throws IOException {
 		Mob.holdAllies( Dungeon.level );
 		Dungeon.saveAll();
 
 		Level level;
 		Dungeon.depth=26;
-		level = Dungeon.newLevel();
+		level = handleDescendRhodes();
 		Dungeon.switchLevel( level, level.entrance );
 	}
 	
@@ -434,6 +458,7 @@ public class InterlevelScene extends PixelScene {
 	private void ascend_27() throws IOException {
 		Mob.holdAllies( Dungeon.level );
 
+        Dungeon.saveAll();
 		Dungeon.depth = 1;
 		Level level = Dungeon.loadLevel( GamesInProgress.curSlot );
 		Dungeon.switchLevel( level, level.entrance );

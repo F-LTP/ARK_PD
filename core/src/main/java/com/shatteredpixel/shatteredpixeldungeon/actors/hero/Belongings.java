@@ -194,7 +194,7 @@ public class Belongings implements Iterable<Item> {
 	
 	public void identify() {
 		for (Item item : this) {
-			item.identify();
+			item.identify(false);
 		}
 	}
 	

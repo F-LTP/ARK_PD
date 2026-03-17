@@ -14,6 +14,7 @@ public class StrikerElite extends Striker {
 
         loot = new ScrollOfTeleportation();
         lootChance = 1f;
+        properties.add(Property.INFECTED);
     }
     @Override
     public int damageRoll() {

@@ -31,8 +31,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RevealedArea;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.miniboss.TheEndspeaker;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ceylon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Dario;
@@ -64,7 +64,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.NewRhodesLevel3;
 import com.shatteredpixel.shatteredpixeldungeon.levels.NewRhodesLevel4;
 import com.shatteredpixel.shatteredpixeldungeon.levels.HallsLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.LastLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.LastShopLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.NewCavesBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.NewCityBossLevel;
@@ -219,15 +218,7 @@ public class Dungeon {
     public static boolean killcat; // 엔딩 씬에서 켈시 하극상 출현용.
 
 	public static int QuestCatPoint;
-
-	public static boolean buyFoodbox;
-	public static boolean buyPotionbox;
-	public static boolean buyScrollbox;
-	public static boolean buyIdentifybox;
-	public static boolean buyHealbox;
-	public static boolean buyWandbox;
-	public static boolean buyTransbox;
-	public static boolean buyRingbox;
+    public static int highestRhodesGenerated;
 	
 	public static HashSet<Integer> chapters;
 
@@ -309,16 +300,8 @@ public class Dungeon {
 		NPC_Phantom.QuestClear = false;
 		FrostLeaf.QuestClear = false;
 
-		buyFoodbox = false;
-		buyPotionbox = false;
-		buyScrollbox = false;
-		buyIdentifybox = false;
-		buyHealbox = false;
-		buyWandbox = false;
-		buyTransbox = false;
-		buyRingbox = false;
-
 		QuestCatPoint = Random.Int(2);
+        highestRhodesGenerated = -1;
 
 		droppedItems = new SparseArray<>();
 
@@ -331,6 +314,7 @@ public class Dungeon {
 		Blacksmith.Quest.reset();
         Imp.Quest.reset();
         Dario.Quest.reset();
+        TheEndspeaker.Status.reset();
 
 		Generator.fullReset();
 		hero = new Hero();
@@ -352,7 +336,11 @@ public class Dungeon {
 		
 		depth++;
 		if (depth > Statistics.deepestFloor) {
-			if (!(depth >= 27 && depth <= 30)) Statistics.deepestFloor = depth;
+			if (depth >= 27 && depth <= 30) {
+                Dungeon.highestRhodesGenerated = depth;
+            } else {
+                Statistics.deepestFloor = depth;
+            }
 			if (Statistics.deepestFloor <= 1) Statistics.deepestFloor = 1;
 			
 			if (Statistics.qualifiedForNoKilling) {
@@ -664,14 +652,7 @@ public class Dungeon {
 	private static final String JESI_QUESTCLEAR    = "Jessica.QuestClear";
 	private static final String LEAF_QUESTCLEAR    = "FrostLeaf.QuestClear";
 
-	private static final String BUY_FOOD = "buyFoodbox";
-	private static final String BUY_POTION = "buyPotionbox";
-	private static final String BUY_SCROLL = "buyScrollbox";
-	private static final String BUY_IDENTIFY = "buyIdentifybox";
-	private static final String BUY_HEAL = "buyHealbox";
-	private static final String BUY_WAND = "buyWandbox";
-	private static final String BUY_TRANS = "buyTransbox";
-	private static final String BUY_RING = "buyRingbox";
+	private static final String HIGHEST_RHODES_GENERATED = "highestRhodesGenerated";
 
 	private static final String MULA_COUNT = "mulaCount";
 
@@ -718,14 +699,7 @@ public class Dungeon {
 
 			bundle.put (CATQUEST, QuestCatPoint);
 
-			bundle.put (BUY_FOOD, buyFoodbox);
-			bundle.put (BUY_POTION, buyPotionbox);
-			bundle.put (BUY_SCROLL, buyScrollbox);
-			bundle.put (BUY_IDENTIFY, buyIdentifybox);
-			bundle.put (BUY_HEAL, buyHealbox);
-			bundle.put (BUY_WAND, buyWandbox);
-			bundle.put (BUY_TRANS, buyTransbox);
-			bundle.put (BUY_RING, buyRingbox);
+			bundle.put (HIGHEST_RHODES_GENERATED, highestRhodesGenerated);
 
 			for (int d : droppedItems.keyArray()) {
 				bundle.put(Messages.format(DROPPED, d), droppedItems.get(d));
@@ -759,6 +733,7 @@ public class Dungeon {
 			Statistics.storeInBundle( bundle );
 			Notes.storeInBundle( bundle );
 			Generator.storeInBundle( bundle );
+			TheEndspeaker.Status.storeInBundle( bundle );
 
             int[] bundleArr = new int[generatedLevels.size()];
             for (int i = 0; i < generatedLevels.size(); i++){
@@ -879,8 +854,13 @@ public class Dungeon {
                 }
             }
 
+            int maxDropFloor = 26;
+            for (int floor : generatedLevels) {
+                if (floor > maxDropFloor) maxDropFloor = floor;
+            }
+
             droppedItems = new SparseArray<>();
-            for (int i=1; i <= 26; i++) {
+            for (int i=1; i <= maxDropFloor; i++) {
 
                 //dropped items
                 ArrayList<Item> items = new ArrayList<>();
@@ -941,17 +921,11 @@ public class Dungeon {
 		Jessica.QuestClear = bundle.getBoolean(JESI_QUESTCLEAR);
 		FrostLeaf.QuestClear = bundle.getBoolean(LEAF_QUESTCLEAR);
 
-		buyFoodbox = bundle.getBoolean(BUY_FOOD);
-		buyPotionbox = bundle.getBoolean(BUY_POTION);
-		buyScrollbox = bundle.getBoolean(BUY_SCROLL);
-		buyIdentifybox = bundle.getBoolean(BUY_IDENTIFY);
-		buyHealbox = bundle.getBoolean(BUY_HEAL);
-		buyWandbox = bundle.getBoolean(BUY_WAND);
-		buyTransbox = bundle.getBoolean(BUY_TRANS);
-		buyRingbox = bundle.getBoolean(BUY_RING);
-		
+        highestRhodesGenerated = bundle.contains(HIGHEST_RHODES_GENERATED) ? bundle.getInt(HIGHEST_RHODES_GENERATED) : -1;
+
 		Statistics.restoreFromBundle( bundle );
 		Generator.restoreFromBundle( bundle );
+		TheEndspeaker.Status.restoreFromBundle( bundle );
 	}
 	
 	public static Level loadLevel( int save ) throws IOException {
@@ -1001,13 +975,17 @@ public class Dungeon {
 	public static void fail( Class cause ) {
 		if (hero.belongings.getItem( Ankh.class ) == null) {
             updateLevelExplored();
+            Statistics.gameWon = false;
             Rankings.INSTANCE.submit( false, cause );
 		}
 	}
 	
-	public static void win( Class cause ) {
+	public static void win( Object cause ) {
 
-		hero.belongings.identify();
+        updateLevelExplored();
+        Statistics.gameWon = true;
+        Badges.validateChenUnlock();
+        hero.belongings.identify();
 
 		Rankings.INSTANCE.submit( true, cause );
 	}

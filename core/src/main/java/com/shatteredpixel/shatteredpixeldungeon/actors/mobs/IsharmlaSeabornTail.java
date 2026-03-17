@@ -20,7 +20,7 @@ public class IsharmlaSeabornTail extends Mob {
 
         HP = HT = 1000;
 
-        defenseSkill = 25;
+        defenseSkill = 20;
 
         actPriority = MOB_PRIO-1;
 
@@ -63,7 +63,7 @@ public class IsharmlaSeabornTail extends Mob {
             return INFINITE_EVASION;
         }
 
-        else return 20;
+        else return defenseSkill;
     }
 
     // 캐릭터가 물 위라면 어디든지 공격 가능
@@ -103,7 +103,8 @@ public class IsharmlaSeabornTail extends Mob {
         if (isDead) return;
 
         // 캐릭터가 물 밖이라면 데미지를 입지 않습니다
-        if (src instanceof Hero && Dungeon.level.map[Dungeon.hero.pos] == Terrain.EMPTY) {
+        int heroTile = Dungeon.level.map[Dungeon.hero.pos];
+        if (heroTile == Terrain.EMPTY || heroTile == Terrain.EMPTY_DECO) {
             return;
         }
 

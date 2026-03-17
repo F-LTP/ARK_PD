@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.wands;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.TomorrowRogueNight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
@@ -259,7 +258,7 @@ public class CursedWand {
 					GameScene.add(sheep);
 					CellEmitter.get(sheep.pos).burst(Speck.factory(Speck.WOOL), 4);
 					Sample.INSTANCE.play(Assets.Sounds.PUFF);
-					Sample.INSTANCE.play(Assets.Sounds.SHEEP);
+					Sample.INSTANCE.play(Assets.Sounds.SHEEP, 0.5f);
 				} else {
 					return cursedEffect(origin, user, targetPos);
 				}

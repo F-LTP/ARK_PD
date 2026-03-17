@@ -52,7 +52,7 @@ public class GreenCat extends NPC {
     @Override
     protected boolean act() {
 
-        if (Dungeon.level.heroFOV[pos] && Dungeon.hero.belongings.getItem(Amulet.class) != null) {
+        if (Dungeon.level.heroFOV[pos] && (Dungeon.hero.belongings.getItem(Amulet.class) != null || Dungeon.doctorSaved)) {
             if (!seenBefore) {
                 yell( Messages.get(this, "wellcom", Dungeon.hero.heroClass.title() ) );
             }

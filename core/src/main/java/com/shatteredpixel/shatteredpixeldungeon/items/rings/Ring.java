@@ -204,10 +204,10 @@ public class Ring extends KindofMisc {
 	}
 	
 	@Override
-	public Item identify() {
+	public Item identify(boolean byHero) {
 		setKnown();
 		levelsToID = 0;
-		return super.identify();
+		return super.identify(byHero);
 	}
 	
 	@Override
@@ -311,6 +311,7 @@ public class Ring extends KindofMisc {
 	}
 
 	public static int getBuffedBonus(Char target, Class<?extends RingBuff> type){
+        if (target == null) return 0;
 		int bonus = 0;
 		for (RingBuff buff : target.buffs(type)) {
 			bonus += buff.buffedLvl();

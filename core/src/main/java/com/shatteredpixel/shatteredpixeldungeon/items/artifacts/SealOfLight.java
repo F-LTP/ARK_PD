@@ -2,13 +2,13 @@ package com.shatteredpixel.shatteredpixeldungeon.items.artifacts;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bless;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ShieldSlamCounter;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RadiantKnight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
@@ -17,12 +17,12 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMirrorImage;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 
@@ -31,7 +31,7 @@ public class SealOfLight extends Artifact {
         image = ItemSpriteSheet.ARTIFACT_NEARL;
         defaultAction = AC_HIKARI;
 
-        levelCap = 0;
+        levelCap = 10;
 
         charge = 100;
         partialCharge = 0;
@@ -65,7 +65,7 @@ public class SealOfLight extends Artifact {
                 else if (cursed) GLog.i(Messages.get(this, "cursed"));
                 else if (charge < 100) GLog.i(Messages.get(this, "no_charge"));
                 else {
-                    Buff.affect(hero, RadiantKnight.class, RadiantKnight.DURATION);
+                    Buff.affect(hero, RadiantKnight.class, RadiantKnight.DURATION + level() * 0.5f);
 
                     if (hero.subClass == HeroSubClass.KNIGHT) {
                         Buff.affect(hero, Haste.class, 5f +  hero.pointsInTalent(Talent.QUICK_TACTICS));
@@ -74,6 +74,7 @@ public class SealOfLight extends Artifact {
                         boolean knightglory = (hero.hasTalent(Talent.KNIGHT_GLORY));
                         for (Mob mob : Dungeon.level.mobs.toArray( new Mob[0] )) {
                             if (mob.alignment != Char.Alignment.ALLY && Dungeon.level.heroFOV[mob.pos]) {
+                                mob.damage(damageRoll(hero), this);
                                 Buff.affect(mob, Blindness.class, 5f);
                                 if (knightglory) Buff.affect(mob, Weakness.class, hero.pointsInTalent(Talent.KNIGHT_GLORY) * 3);
                             }
@@ -82,6 +83,12 @@ public class SealOfLight extends Artifact {
 
                     if (hero.hasTalent(Talent.BLESSED_CHAMPION)) {
                         Buff.affect(hero, Bless.class, 15f *  hero.pointsInTalent(Talent.BLESSED_CHAMPION));
+                        // Instant shield slam stack charge
+                        if (hero.subClass == HeroSubClass.SAVIOR) {
+                            ShieldSlamCounter slamCounter = Buff.affect(hero, ShieldSlamCounter.class);
+                            float chargePercent = hero.pointsInTalent(Talent.BLESSED_CHAMPION) * 0.1f;
+                            slamCounter.countUp(Math.round(slamCounter.getCap() * chargePercent));
+                        }
                     }
 
                     if (hero.hasTalent(Talent.PEGASUS_AURA)) {
@@ -90,15 +97,31 @@ public class SealOfLight extends Artifact {
                         Buff.affect(hero, Barrier.class).setShield(Barrior);
                     }
 
-                    if (hero.hasTalent(Talent.QUICK_TACTICS)) hero.spendAndNext(0f);
+                    if (hero.subClass == HeroSubClass.KNIGHT) hero.spendAndNext(0f);
                     else hero.spendAndNext(1f);
                     GameScene.flash( 0x80FFFFFF );
                     Sample.INSTANCE.play(Assets.Sounds.SKILL_BABYNIGHT);
                     charge = 0;
+                    exp++;
+                    if (exp >= 2 && level() < levelCap) {
+                        upgrade();
+                        exp -= 2;
+                        GLog.p(Messages.get(this, "levelup"));
+                    }
                     updateQuickslot();
                 }
             }
         }
+    }
+
+    private int damageRoll(Hero hero) {
+        int min = 1 + level();
+        int max = 6 + level() * 2;
+        float damage = Random.NormalIntRange(min, max);
+        if (hero.hasTalent(Talent.ETERNAL_GLORY)) {
+            damage *= 1f + hero.pointsInTalent(Talent.ETERNAL_GLORY) * 0.15f;
+        }
+        return (int) damage;
     }
 
     @Override
@@ -136,10 +159,11 @@ public class SealOfLight extends Artifact {
             LockedFloor lock = target.buff(LockedFloor.class);
             if ((lock == null || lock.regenOn())) {
                 if (charge < chargeCap && !cursed) {
-                    // 약 300 턴마다 100%충전 (기본)
-                    float chargeGain = 0.34f;
-                    if (Dungeon.hero.subClass == HeroSubClass.SAVIOR) chargeGain += 0.07f;
-                    if (Dungeon.hero.subClass == HeroSubClass.FLASH) chargeGain += 0.51f;
+                    // 약 200 턴마다 100%충전 (기본)
+                    float chargeGain = 0.50f;
+                    if (Dungeon.hero.subClass == HeroSubClass.SAVIOR) chargeGain += 0.10f;
+                    if (Dungeon.hero.subClass == HeroSubClass.FLASH) chargeGain += 0.50f;
+                    chargeGain += level() * 0.02f;
                     if (Dungeon.hero.hasTalent(Talent.LIGHT_OF_GLORY)) chargeGain += Dungeon.hero.pointsInTalent(Talent.LIGHT_OF_GLORY) * 0.05f;
 
                     chargeGain *= RingOfEnergy.artifactChargeMultiplier(target);

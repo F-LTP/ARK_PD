@@ -66,7 +66,7 @@ public enum Rankings {
 	public int totalNumber;
 	public int wonNumber;
 
-	public void submit( boolean win, Class cause ) {
+	public void submit( boolean win, Object cause ) {
 
 		load();
 		

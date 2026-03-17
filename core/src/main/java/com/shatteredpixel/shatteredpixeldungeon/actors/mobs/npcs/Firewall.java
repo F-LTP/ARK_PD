@@ -43,7 +43,7 @@ public class Firewall extends NPC {
 
     @Override
     public boolean interact(Char c) {
-        if (Dungeon.hero.belongings.getItem(Amulet.class) != null) {
+        if (Dungeon.hero.belongings.getItem(Amulet.class) != null || Dungeon.doctorSaved) {
             CellEmitter.get(pos).burst(BlastParticle.FACTORY, 10);
             die(this);
         }

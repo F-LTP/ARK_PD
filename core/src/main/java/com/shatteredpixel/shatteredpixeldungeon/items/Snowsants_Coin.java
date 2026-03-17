@@ -39,7 +39,7 @@ public class Snowsants_Coin extends Item {
     }
 
     protected String inventoryTitle = Messages.get( StoneOfIntuition.class, "inv_title");
-    protected WndBag.Mode mode = WndBag.Mode.ALL;
+    protected WndBag.Mode mode = WndBag.Mode.INTUITIONABLE;
 
     @Override
     public ArrayList<String> actions(Hero hero) {

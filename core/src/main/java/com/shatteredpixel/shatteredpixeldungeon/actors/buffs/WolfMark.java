@@ -69,9 +69,11 @@ public class WolfMark extends FlavourBuff implements ActionIndicator.Action  {
 
     @Override
     public void detach() {
-        for (Item item : theknife) {
-            if (!item.collect()) {
-                Dungeon.level.drop(item, target.pos).sprite.drop();
+        if (theknife != null) {
+            for (Item item : theknife) {
+                if (!item.collect()) {
+                    Dungeon.level.drop(item, target.pos).sprite.drop();
+                }
             }
         }
 

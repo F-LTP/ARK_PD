@@ -1,7 +1,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Combo;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.KnightSKILL;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.KnightSkillCombo;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -22,13 +23,22 @@ public class WndKnightSkill extends Window {
         int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
 
         float pos = MARGIN;
-        RenderedTextBlock title = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(this, "title")), 9);
+        RenderedTextBlock title = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(this, "title")), 8);
+        KnightSkillCombo counter = Dungeon.hero.buff(KnightSkillCombo.class);
+        int stacks = (int) (counter != null ? counter.count() : 0);
+        RenderedTextBlock stackText = PixelScene.renderTextBlock(Messages.get(this, "stack", stacks), 7);
+
         title.hardlight(TITLE_COLOR);
-        title.setPos((width-title.width())/2, pos);
+        title.setPos((width-title.width()-stackText.width())/2, pos);
         title.maxWidth(width - MARGIN * 2);
         add(title);
 
-        pos = title.bottom() + 3*MARGIN;
+        stackText.hardlight(stacks == 10 ? 0xFFCC00 : 0xCCCCCC);
+        stackText.setPos(title.right() + MARGIN, pos);
+
+        add(stackText);
+
+        pos = stackText.bottom() + 3*MARGIN;
 
         Image icon;
         icon = Icons.get(Icons.COMBO);

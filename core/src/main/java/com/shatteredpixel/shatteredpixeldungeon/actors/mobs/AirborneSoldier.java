@@ -11,7 +11,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.AirborneSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.InfantrySprite;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -32,6 +31,7 @@ public class AirborneSoldier extends Mob{
     loot = Gold .class;
     lootChance = 0.3f;
     immunities.add(Silence.class);
+    properties.add(Property.INFECTED);
 }
 
     @Override

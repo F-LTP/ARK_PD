@@ -26,18 +26,30 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.AnnihilationGear;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.DewVial;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK2.AncientKin;
-import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK2.Bookancientkin;
+import com.shatteredpixel.shatteredpixeldungeon.items.StaffKit;
 import com.shatteredpixel.shatteredpixeldungeon.items.TomeOfMastery;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.PlateArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAugmentation;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfEnchantment;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfBreeze;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfCorrupting;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.KazemaruWeapon;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.SeaPlatform;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfGreyy;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfPodenco;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfPurgatory;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfShining;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfSnowsant;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfSuzuran;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfVigna;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfWeedy;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.R4C;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ForceCube;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SkillBook;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
@@ -152,6 +164,7 @@ public enum HeroClass {
 
 		if (DeviceCompat.isDebug()) {
             new VelvetPouch().collect();
+            new MagicalHolster().collect();
 
             new PotionOfStrength().identify().quantity(40).collect();
             new PotionOfExperience().identify().quantity(40).collect();
@@ -162,13 +175,23 @@ public enum HeroClass {
             new Amulet().collect();
             new Heamyo().collect();
             new PlateArmor().identify().upgrade(10).collect();
+            new R4C().identify().upgrade(10).collect();
+            new ForceCube().quantity(40).collect();
             new TomeOfMastery().collect();
+            new StoneOfAugmentation().quantity(5).collect();
+            new StoneOfEnchantment().quantity(40).collect();
 
-            new SeaPlatform.LittleHandy().quantity(40).collect();
-            new Bookancientkin().collect();
-            new StaffOfCorrupting().identify().collect();
-
-            new KazemaruWeapon().identify().collect();
+//            new StaffOfBreeze().identify().collect();
+//            new StaffOfCorrupting().identify().collect();
+//            new StaffOfGreyy().identify().collect();
+//            new StaffOfPodenco().identify().collect();
+//            new StaffOfPurgatory().identify().collect();
+//            new StaffOfShining().identify().collect();
+//            new StaffOfSnowsant().identify().collect();
+//            new StaffOfSuzuran().identify().collect();
+//            new StaffOfVigna().identify().collect();
+//            new StaffOfWeedy().identify().collect();
+//            new StaffKit().collect();
         }
 
 		Dungeon.LimitedDrops.FOOD_BAG.drop();
@@ -261,6 +284,7 @@ public enum HeroClass {
 
 		ThrowingKnife knives = new ThrowingKnife();
 		knives.quantity(1).collect();
+		Buff.affect(hero, ThrowingKnife.KnifeSafeguard.class);
 		Dungeon.quickslot.setSlot(0, cloak);
 		Dungeon.quickslot.setSlot(1, knives);
 

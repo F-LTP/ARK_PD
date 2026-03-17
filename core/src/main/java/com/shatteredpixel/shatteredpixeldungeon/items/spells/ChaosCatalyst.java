@@ -34,7 +34,8 @@ public class ChaosCatalyst extends InventorySpell{
     @Override
     protected void onItemSelected(Item item) {
 
-        item.level(1);
+        item.level(0);
+        item.upgrade();
         Sample.INSTANCE.play(Assets.Sounds.EVOKE);
         Dungeon.hero.spendAndNext(1f);
         updateQuickslot();

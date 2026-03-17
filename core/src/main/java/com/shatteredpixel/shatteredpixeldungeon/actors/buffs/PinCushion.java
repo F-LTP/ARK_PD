@@ -36,6 +36,13 @@ public class PinCushion extends Buff {
 
 	private ArrayList<MissileWeapon> items = new ArrayList<>();
 
+	public boolean containsType(Class<? extends Item> type) {
+		for (Item item : items) {
+			if (type.isInstance(item)) return true;
+		}
+		return false;
+	}
+
 	public void stick(MissileWeapon projectile){
 		for (Item item : items){
 			if (item.isSimilar(projectile)){

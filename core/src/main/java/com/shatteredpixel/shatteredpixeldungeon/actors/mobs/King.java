@@ -68,8 +68,9 @@ public class King extends Mob {
 		Undead.count = 0;
 
 		properties.add(Property.BOSS);
+		properties.add(Property.INFECTED);
 	}
-	
+
 	private boolean nextPedestal = true;
 	
 	private static final String PEDESTAL = "pedestal";

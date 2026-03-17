@@ -113,7 +113,7 @@ scenes.titlescene.about=소개
 scenes.titlescene.support=버그 픽스
 scenes.titlescene$changesbutton.title=업데이트가 있습니다!
 scenes.titlescene$changesbutton.versioned_title=업데이트:
-scenes.titlescene$changesbutton.desc=0.5.0-B5 업데이트
+scenes.titlescene$changesbutton.desc=0.5.0 업데이트
 scenes.titlescene$changesbutton.update=업데이트 페이지로 이동
 scenes.titlescene$changesbutton.changes=현재 변경 사항 화면
 
