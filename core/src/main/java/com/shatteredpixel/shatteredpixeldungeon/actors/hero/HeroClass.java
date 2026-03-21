@@ -653,7 +653,7 @@ import com.watabou.utils.DeviceCompat;
 	
 	public static HeroClass restoreInBundle( Bundle bundle ) {
 		String value = bundle.getString( CLASS );
-		return value.length() > 0 ? valueOf( value ) : ROGUE;
+        return !value.isEmpty() ? valueOf( value ) : ROGUE;
 	}
 
 }

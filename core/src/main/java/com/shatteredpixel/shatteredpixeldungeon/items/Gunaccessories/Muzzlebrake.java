@@ -9,6 +9,7 @@ public class Muzzlebrake extends Accessories {
         ACCcorrectionvalue = 1f;
         DLYcorrectionvalue = 0.8f;
         DMGcorrectionvalue = 0.9f;
+        CONEcorrectionvalue = 1.15f;
         SavingChancevalue = 0;
     }
 }

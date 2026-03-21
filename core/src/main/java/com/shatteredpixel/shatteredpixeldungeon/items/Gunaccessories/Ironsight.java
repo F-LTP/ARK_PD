@@ -9,6 +9,7 @@ public class Ironsight extends Accessories {
         ACCcorrectionvalue = 1.15f;
         DLYcorrectionvalue = 1f;
         DMGcorrectionvalue = 1f;
+        CONEcorrectionvalue = 0.80f;
         SavingChancevalue = 0;
     }
 }

@@ -236,6 +236,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.BladeDemon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Beowulf;
 
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.C1_9mm;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Cassidy;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.CatGun;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ChenSword;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.CrabGun;
@@ -263,6 +264,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.KazemaruWeapo
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.KollamSword;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LoneJourney;
 
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.M870;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MinosFury;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Niansword;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.PatriotSpear;
@@ -537,11 +539,12 @@ public class Generator {
                     Halberd.class,
                     FlameKatana.class,
                     Usg.class,
+                    Cassidy.class,
 
                     Enfild.class,
                     Firmament.class
             };
-            WEP_T2.probs = new float[]{4, 5, 4, 4, 4, 5, 3, 4, 0, 0};
+            WEP_T2.probs = new float[]{4, 5, 4, 4, 4, 5, 3, 4, 3, 0, 0};
 
             WEP_T3.classes = new Class<?>[]{
                     Sword.class,
@@ -605,6 +608,7 @@ public class Generator {
                     LoneJourney.class,
                     Echeveria.class,
                     Suffering.class,
+                    M870.class,
                     CatGun.class,
                     ImageoverForm.class,
                     KollamSword.class,
@@ -614,7 +618,7 @@ public class Generator {
                     SakuraSword.class
             };
 
-            WEP_T5.probs = new float[]{4, 3, 3, 4, 4, 4, 4, 3, 3, 4, 4, 4, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0};
+            WEP_T5.probs = new float[]{4, 3, 3, 4, 4, 4, 4, 3, 3, 4, 4, 4, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0};
 
 
             //see Generator.randomArmor

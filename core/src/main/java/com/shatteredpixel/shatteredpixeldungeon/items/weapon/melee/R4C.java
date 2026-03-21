@@ -2,7 +2,11 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CloserangeShot;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.IsekaiItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
@@ -57,6 +61,32 @@ public class R4C extends GunWeapon {
         Ballistica trajectory = new Ballistica(curUser.pos, ch.pos, Ballistica.STOP_TARGET);
         trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
         WandOfBlastWave.throwChar(ch, trajectory, 2); // 넉백 효과
+    }
+
+    @Override
+    protected void onZap(Ballistica bolt) {
+        CloserangeShot closerRange = Dungeon.hero.buff(CloserangeShot.class);
+        float oldacc = ACC;
+        boolean pala = false;
+        boolean anyKill = false;
+        try {
+            Char ch = Actor.findChar(bolt.collisionPos);
+            if (ch != null) {
+                if (Dungeon.hero.belongings.getItem(IsekaiItem.class) != null
+                        && Dungeon.hero.belongings.getItem(IsekaiItem.class).isEquipped(Dungeon.hero)
+                        && ch.buff(Paralysis.class) != null) {
+                    pala = true;
+                }
+                Buff.affect(Dungeon.hero, RangedAttackTracker.class);
+                processGunHit(ch, 1f, true);
+                if (!ch.isAlive()) anyKill = true;
+            } else {
+                Dungeon.level.pressCell(bolt.collisionPos);
+            }
+            postShotCleanup(closerRange, pala, anyKill);
+        } finally {
+            ACC = oldacc;
+        }
     }
 
     @Override

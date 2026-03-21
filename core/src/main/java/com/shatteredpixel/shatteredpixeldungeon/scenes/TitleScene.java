@@ -112,7 +112,7 @@ public class TitleScene extends PixelScene {
 		StyledButton btnPlay = new StyledButton(GREY_TR, Messages.get(this, "enter")){
 			@Override
 			protected void onClick() {
-				if (GamesInProgress.checkAll().size() == 0){
+                if (GamesInProgress.checkAll().isEmpty()){
 					GamesInProgress.selectedClass = null;
 					GamesInProgress.curSlot = 1;
 					TomorrowRogueNight.switchScene(HeroSelectScene.class);
@@ -263,7 +263,7 @@ public class TitleScene extends PixelScene {
 		@Override
 		protected void onClick() {
 			TomorrowRogueNight.scene().addToFront(new WndOptions(
-					Messages.get(this, "versioned_title") + "ver0.5.0",
+					Messages.get(this, "versioned_title") + "ver0.5.1",
 					Messages.get(this, "desc"),
 					Messages.get(this, "update"),
 					Messages.get(this, "changes")

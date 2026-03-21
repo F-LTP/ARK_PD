@@ -3,47 +3,48 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Slow;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
-import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
-public class SG_CQB extends ShotgunWeapon {
+public class Cassidy extends ShotgunWeapon {
 
     {
-        image = ItemSpriteSheet.SG_CQB;
+        image = ItemSpriteSheet.CASSIDY;
         hitSound = Assets.Sounds.HIT_SHOTGUN;
-        hitSoundPitch = 0.9f;
+        hitSoundPitch = 1.0f;
 
-        FIRE_DELAY_MULT = 1.5f;
-        bulletMax = 7;
-        MAX_RANGE = 4;
+        FIRE_DELAY_MULT = 0.75f;
+        bulletMax = 2;
+        MAX_RANGE = 3;
 
         PELLET_COUNT = 5;
-        CONE_DEGREES = 60f;
+        CONE_DEGREES = 45f;
         EXTRA_PELLET_MULT = 0.33f;
 
         usesTargeting = true;
         defaultAction = AC_ZAP;
-        tier = 4;
+        tier = 2;
     }
 
     @Override
     public int fireMin() {
-        return (tier - 2) + bulletTier + level() / 2
+        return 4 + ((tier) + bulletTier + level())
                 + RingOfSharpshooting.levelDamageBonus(Dungeon.hero);
     }
 
     @Override
     public int fireMax() {
-        return tier * 2 + bulletTier * 2 + level() * (tier - 1)
+        return 6
+                + tier * 2
+                + bulletTier * 3
+                + level() * tier
                 + RingOfSharpshooting.levelDamageBonus(Dungeon.hero) * 2;
     }
 
     @Override
     protected void specialFire(Char ch) {
-        Ballistica trajectory = new Ballistica(Dungeon.hero.pos, ch.pos, Ballistica.STOP_TARGET);
-        trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
-        WandOfBlastWave.throwChar(ch, trajectory, 2);
+        Buff.affect(ch, Slow.class, 3f);
     }
 }
