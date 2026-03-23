@@ -645,7 +645,7 @@ public abstract class Char extends Actor {
         }
 
         shielded -= dmg;
-        HP -= dmg;
+        if (!Dummy.kkdy && !ImmortalShield.isImmortal(this)) HP -= dmg;
 
         if (sprite != null) {
             sprite.showStatus(HP > HT / 2 ?

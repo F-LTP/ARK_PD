@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
@@ -247,6 +248,7 @@ public class TimekeepersHourglass extends Artifact {
 		
 		{
 			type = buffType.POSITIVE;
+            actPriority = BUFF_PRIO-3; //acts after all other buffs, so they are prevented
 		}
 
 		@Override
@@ -254,23 +256,29 @@ public class TimekeepersHourglass extends Artifact {
 
 			if (super.attachTo(target)) {
 
+                Invisibility.dispel();
+
 				int usedCharge = Math.min(charge, 2);
 				//buffs always act last, so the stasis buff should end a turn early.
-				spend((5*usedCharge) - 1);
-				((Hero) target).spendAndNext(5*usedCharge);
+				spend(5*usedCharge);
 
 				//shouldn't punish the player for going into stasis frequently
 				Hunger hunger = Buff.affect(target, Hunger.class);
-				if (hunger != null && !hunger.isStarving())
-					hunger.satisfy(5*usedCharge);
+				if (hunger != null && !hunger.isStarving()) {
+                    hunger.satisfy(5 * usedCharge);
+                }
 
 				charge -= usedCharge;
 
 				target.invisible++;
+                target.paralysed++;
+                target.next();
 
 				updateQuickslot();
 
-				Dungeon.observe();
+                if (Dungeon.hero != null) {
+                    Dungeon.observe();
+                }
 
 				return true;
 			} else {
@@ -286,8 +294,8 @@ public class TimekeepersHourglass extends Artifact {
 
 		@Override
 		public void detach() {
-			if (target.invisible > 0)
-				target.invisible --;
+            if (target.invisible > 0) target.invisible--;
+            if (target.paralysed > 0) target.paralysed--;
 			super.detach();
 			activeBuff = null;
 			Dungeon.observe();
@@ -295,9 +303,12 @@ public class TimekeepersHourglass extends Artifact {
 
 		@Override
 		public void fx(boolean on) {
-			if (on) target.sprite.add( CharSprite.State.INVISIBLE );
-			else if (target.invisible == 0) target.sprite.remove( CharSprite.State.INVISIBLE );
-		}
+            if (on) target.sprite.add( CharSprite.State.PARALYSED );
+            else {
+                if (target.paralysed == 0) target.sprite.remove( CharSprite.State.PARALYSED );
+                if (target.invisible == 0) target.sprite.remove( CharSprite.State.INVISIBLE );
+            }
+        }
 	}
 
 	public class timeFreeze extends ArtifactBuff {
