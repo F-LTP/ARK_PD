@@ -81,7 +81,7 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
             stage = Math.min(stage,4);
 		if (Dungeon.depth == 21 && Dungeon.level instanceof LastShopLevel)
             stage--;
-        if ((Dungeon.depth >= 27 && Dungeon.depth <= 30) || Dungeon.extrastage_Gavial) {
+        if (Dungeon.isInRhodes() || Dungeon.extrastage_Gavial) {
             stage = 3; // 가비알 / 로도스 추가처리
         } else if (Dungeon.extrastage_Sea && Dungeon.depth >= 31) {
             stage = 0;

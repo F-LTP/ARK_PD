@@ -377,19 +377,7 @@ public class InterlevelScene extends PixelScene {
 	}
 
 	private void descend() throws IOException {
-        if (Dungeon.level instanceof SeaLevel_part2 && (Dungeon.depth >= 36 && Dungeon.depth <= 38) && Dungeon.level.mobs != null) {
-            List<Mob> mobsToDestroy = new ArrayList<>();
-            for (Mob mob : Dungeon.level.mobs) {
-                if ((mob instanceof TheEndspeaker.AspectSmall
-                        || mob instanceof TheEndspeaker.AspectMedium
-                        || mob instanceof TheEndspeaker.AspectLarge) && mob.isAlive()) {
-                    mobsToDestroy.add(mob);
-                }
-            }
-            for (Mob mob : mobsToDestroy) {
-                mob.destroy();
-            }
-        }
+        TheEndspeaker.Status.destroyAspects();
 		if (Dungeon.hero == null) {
 			Mob.clearHeldAllies();
 			Dungeon.init();
@@ -404,7 +392,7 @@ public class InterlevelScene extends PixelScene {
 		}
 
 		Level level;
-        if ((Dungeon.depth >= 27 && Dungeon.depth <= 30)) {
+        if (Dungeon.isInRhodes()) {
             level = handleDescendRhodes();
         } else if (Dungeon.depth >= Statistics.deepestFloor) {
 			level = Dungeon.newLevel();
@@ -435,8 +423,9 @@ public class InterlevelScene extends PixelScene {
 	}
 	
 	private void fall() throws IOException {
-		
-		Mob.holdAllies( Dungeon.level );
+        TheEndspeaker.Status.destroyAspects();
+
+        Mob.holdAllies( Dungeon.level );
 		
 		Buff.affect( Dungeon.hero, Chasm.Falling.class );
 		Dungeon.saveAll();

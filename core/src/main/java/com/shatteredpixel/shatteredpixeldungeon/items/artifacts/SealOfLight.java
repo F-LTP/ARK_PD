@@ -158,7 +158,7 @@ public class SealOfLight extends Artifact {
         @Override
         public boolean act() {
             LockedFloor lock = target.buff(LockedFloor.class);
-            if ((lock == null || lock.regenOn())) {
+            if ((lock == null || lock.regenOn()) && !Dungeon.isInRhodes()) {
                 if (charge < chargeCap && !cursed) {
                     // 약 300 턴마다 100%충전 (기본)
                     float chargeGain = 0.50f;

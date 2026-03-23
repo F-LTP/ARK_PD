@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.BombtailSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -60,39 +61,120 @@ public class Skeleton extends Mob {
 		properties.add(Property.DRONE);
 		immunities.add(Silence.class);
 	}
-	
-	@Override
+
+    private boolean hasPrimed = false;
+    private boolean explodeNextTurn = false;
+    private Object primeCause = null;
+
+    public boolean isPrimed() {
+        return explodeNextTurn;
+    }
+
+    private static final String HAS_PRIMED = "has_primed";
+    private static final String EXPLODE_NEXT_TURN = "explode_next_turn";
+
+    @Override
+    public void storeInBundle( Bundle bundle ) {
+        super.storeInBundle( bundle );
+        bundle.put( HAS_PRIMED, hasPrimed );
+        bundle.put( EXPLODE_NEXT_TURN, explodeNextTurn );
+    }
+
+    @Override
+    public void restoreFromBundle( Bundle bundle ) {
+        super.restoreFromBundle( bundle );
+        hasPrimed = bundle.getBoolean( HAS_PRIMED );
+        explodeNextTurn = bundle.getBoolean( EXPLODE_NEXT_TURN );
+    }
+
+    @Override
+    public void damage( int dmg, Object src ) {
+        primeCause = src;
+        super.damage( dmg, src );
+    }
+
+
+    @Override
 	public int damageRoll() {
 		return Random.NormalIntRange( 1, 1 );
 	}
-	
-	@Override
+
+    @Override
+    public boolean isInvulnerable( Class effect ) {
+        return explodeNextTurn || super.isInvulnerable( effect );
+    }
+
+    @Override
+    public boolean isAlive() {
+        return HP > 0 || explodeNextTurn;
+    }
+
+    private void triggerExplosionPrime() {
+        hasPrimed = true;
+        explodeNextTurn = true;
+        forcePostpone( TICK );
+        if (sprite != null) {
+            sprite.tint( 0xFF0000, 0.5f );
+        }
+        if (Dungeon.level.heroFOV[pos]) {
+            GLog.w( Messages.get(this, "about_to_explode") );
+            Dungeon.hero.interrupt();
+        }
+    }
+
+    @Override
+    protected boolean act() {
+        if (explodeNextTurn) {
+            explode();
+            return true;
+        }
+        return super.act();
+    }
+
+    @Override
 	public void die( Object cause ) {
-		
-		super.die( cause );
-		
-		if (cause == Chasm.class) return;
-		
+        if (cause == Chasm.class) {
+            super.die( cause );
+            return;
+        }
+
+        //if killed directly (e.g. Grim, Doom, Necromancer death),
+        //prime the explosion instead of dying — it will explode on its next act()
+        if (!hasPrimed) {
+            HP = 0;
+            primeCause = cause;
+            triggerExplosionPrime();
+        } else if (!explodeNextTurn) {
+            //explodeNextTurn was cleared by explode(), actually die now
+            super.die( cause );
+        }
+        //otherwise already primed, do nothing — let act() explode
+    }
+
+    private void explode() {
 		boolean heroKilled = false;
 		for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
 			Char ch = findChar( pos + PathFinder.NEIGHBOURS8[i] );
 			if (ch != null && ch.isAlive()) {
-				int damage = Random.NormalIntRange(17, 25);
-				damage = Math.max( 0,  damage - (ch.drRoll() +  ch.drRoll()) );
+				int damage = Random.NormalIntRange(21, 29);
+                damage = Math.max( 0,  damage - ch.drRoll() );
 				ch.damage( damage, this );
 				if (ch == Dungeon.hero && !ch.isAlive()) {
 					heroKilled = true;
 				}
-				if (Dungeon.isChallenged(Challenges.TACTICAL_UPGRADE) && !(ch instanceof Necromancer)) {
+                if (ch.isAlive() && Dungeon.isChallenged(Challenges.TACTICAL_UPGRADE) && !(ch instanceof Necromancer)) {
 					Buff.affect(ch, Burning.class).reignite(ch);
 				}
 			}
 		}
-		
+
 		if (Dungeon.level.heroFOV[pos]) {
 			Sample.INSTANCE.play( Assets.Sounds.BONES );
 		}
-		
+
+        explodeNextTurn = false;
+        die( primeCause );
+
 		if (heroKilled) {
 			Dungeon.fail( getClass() );
 			GLog.n( Messages.get(this, "explo_kill") );

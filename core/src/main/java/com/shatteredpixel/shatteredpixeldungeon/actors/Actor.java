@@ -78,7 +78,16 @@ public abstract class Actor implements Bundlable {
 			}
 		}
 	}
-	
+
+    //forces the actor to act at now + time, even if currently scheduled later
+    protected void forcePostpone( float time ) {
+        this.time = now + time;
+        float ex = Math.abs(this.time % 1f);
+        if (ex < .001f){
+            this.time = Math.round(this.time);
+        }
+    }
+
 	public float cooldown() {
 		return time - now;
 	}

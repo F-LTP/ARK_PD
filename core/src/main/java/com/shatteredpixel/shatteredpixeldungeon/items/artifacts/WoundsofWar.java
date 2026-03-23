@@ -100,7 +100,7 @@ public class WoundsofWar extends Artifact {
     public class cameraRecharge extends ArtifactBuff {
         public boolean act() {
             LockedFloor lock = target.buff(LockedFloor.class);
-            if (activeBuff == null && (lock == null || lock.regenOn()) && !(Dungeon.depth >= 26 && Dungeon.depth <= 30)) {
+            if (activeBuff == null && (lock == null || lock.regenOn()) && !Dungeon.isInRhodes()) {
                 if (charge < chargeCap && !cursed) {
                     // 200 턴마다 100%충전 (기본)
                     float chargeGain = 0.0045f + level() * 0.0001f;

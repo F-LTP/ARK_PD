@@ -37,8 +37,8 @@ public class ShotgunWeapon extends GunWeapon {
 
     protected String coneDesc() {
         float cone = effectiveCone();
-        if (cone <= 45f) return Messages.get(ShotgunWeapon.class, "cone_narrow");
-        if (cone >= 75f) return Messages.get(ShotgunWeapon.class, "cone_wide");
+        if (cone <= 50f) return Messages.get(ShotgunWeapon.class, "cone_narrow");
+        if (cone >= 70f) return Messages.get(ShotgunWeapon.class, "cone_wide");
         return Messages.get(ShotgunWeapon.class, "cone_typical");
     }
 

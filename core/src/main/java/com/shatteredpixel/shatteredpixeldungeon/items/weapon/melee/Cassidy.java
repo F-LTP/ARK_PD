@@ -20,7 +20,7 @@ public class Cassidy extends ShotgunWeapon {
         MAX_RANGE = 3;
 
         PELLET_COUNT = 5;
-        CONE_DEGREES = 45f;
+        CONE_DEGREES = 60f;
         EXTRA_PELLET_MULT = 0.33f;
 
         usesTargeting = true;

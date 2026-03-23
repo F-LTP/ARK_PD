@@ -354,7 +354,7 @@ public class Necromancer extends Mob {
 		{
 			state = WANDERING;
 			
-			spriteClass = BombtailSprite.class;
+			spriteClass = NecroSkeletonSprite.class;
 			
 			//no loot or exp
 			maxLvl = -5;

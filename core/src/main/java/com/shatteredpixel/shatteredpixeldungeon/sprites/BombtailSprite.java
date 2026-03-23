@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Skeleton;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.watabou.noosa.TextureFilm;
 
@@ -57,7 +58,15 @@ public class BombtailSprite extends MobSprite {
 			emitter().burst( Speck.factory( Speck.BONE ), 6 );
 		}
 	}
-	
+
+    @Override
+    public void resetColor() {
+        super.resetColor();
+        if (ch instanceof Skeleton && ((Skeleton)ch).isPrimed()) {
+            tint(0xFF0000, 0.5f);
+        }
+    }
+
 	@Override
 	public int blood() {
 		return 0xFFcccccc;

@@ -93,7 +93,7 @@ public class IsekaiItem extends Artifact {
     public class IsekaiBuff extends ArtifactBuff {
         public boolean act() {
             LockedFloor lock = target.buff(LockedFloor.class);
-            if (activeBuff == null && (lock == null || lock.regenOn()) && !(Dungeon.depth >= 26 && Dungeon.depth <= 30)) {
+            if (activeBuff == null && (lock == null || lock.regenOn()) && !Dungeon.isInRhodes()) {
                 if (charge < chargeCap && !cursed) {
                     // 500 턴마다 100%충전 (기본)
                     float chargeGain = 0.18f;
