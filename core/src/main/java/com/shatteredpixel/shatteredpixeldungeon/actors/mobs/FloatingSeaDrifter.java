@@ -50,8 +50,9 @@ public class FloatingSeaDrifter extends Mob {
     @Override
     public int defenseSkill(Char enemy) {
         if (enemy instanceof Hero) {
-            if (Dungeon.hero.belongings.weapon instanceof MissileWeapon
-                    || Dungeon.hero.belongings.weapon instanceof GunWeapon) {
+            if (Dungeon.hero.belongings.weapon != null &&
+                    (Dungeon.hero.belongings.weapon instanceof MissileWeapon
+                            || Dungeon.hero.belongings.weapon instanceof GunWeapon)) {
                 return 0;
             }
         }

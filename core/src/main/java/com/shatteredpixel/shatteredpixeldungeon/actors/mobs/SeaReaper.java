@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.NervousImpairment;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Dario;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SanityPotion;
@@ -70,8 +71,8 @@ public class SeaReaper extends Mob {
             firstHit = true;
         }
 
-        if (awake) {
-
+        boolean isCorrupted = buff(Corruption.class) != null;
+        if (awake && !isCorrupted) {
             for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
                 Char ch = findChar(pos + PathFinder.NEIGHBOURS8[i]);
                 if (ch != null && ch.isAlive() && ch.alignment == Alignment.ALLY) {
