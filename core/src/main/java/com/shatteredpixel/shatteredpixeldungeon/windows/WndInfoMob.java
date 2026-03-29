@@ -70,7 +70,7 @@ public class WndInfoMob extends WndTitledMessage {
                 float scale = (width - GAP*2) / image.width();
                 image.scale.set(scale, scale);
             }
-			
+
 			image.x = 0;
 			image.y = Math.max( 0, name.height() + health.height() - image.height() );
 
@@ -92,7 +92,12 @@ public class WndInfoMob extends WndTitledMessage {
                 buffs.setRect(name.right(), name.bottom() - BuffIndicator.SIZE-2, w - name.width(), 8);
             }
 
-            height = Math.max(image.y + image.height(), health.bottom());
+            if (!buffs.allBuffsVisible()) {
+                buffs.setRect(0, health.bottom() + GAP, width, 8);
+                height = Math.max(image.y + image.height(), buffs.bottom());
+            } else {
+                height = Math.max(image.y + image.height(), health.bottom());
+            }
 		}
 	}
 }

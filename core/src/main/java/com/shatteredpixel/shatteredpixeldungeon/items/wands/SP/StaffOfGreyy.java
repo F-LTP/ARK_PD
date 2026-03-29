@@ -39,11 +39,11 @@ public class StaffOfGreyy extends DamageWand {
     private ArrayList<Lightning.Arc> arcs = new ArrayList<>();
 
     public int min(int lvl){
-        return 3+lvl;
+        return 6+lvl;
     }
 
     public int max(int lvl){
-        return 8+4*lvl+ RingOfAmplified.DamageBonus(Dungeon.hero) * 4;
+        return 9+4*lvl+ RingOfAmplified.DamageBonus(Dungeon.hero) * 4;
     }
 
     @Override

@@ -50,7 +50,7 @@ public class IsharmlaSeabornBody extends Mob {
             return INFINITE_EVASION;
         }
 
-        else return defenseSkill;
+        else return super.defenseSkill(enemy);
     }
 
     // 공격불가

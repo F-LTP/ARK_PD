@@ -103,6 +103,6 @@ public class SanktaBet extends MeleeWeapon {
 
     @Override
     public String status() {
-        if (this.isIdentified()) return charge + "/" + 5;
+        if (this.isIdentified()) return (int)charge + "/" + 5;
         else return null;}
 }

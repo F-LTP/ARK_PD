@@ -352,6 +352,14 @@ public class TheEndspeaker extends Mob {
         spellAbsorptionCooldown--;
     }
 
+    @Override
+    public boolean isImmune(Class effect) {
+        if (effect == Silence.class && !Status.abilityCcImmune) {
+            return false;
+        }
+        return super.isImmune(effect);
+    }
+
     private boolean isSilenced() {
         return buff(Silence.class) != null;
     }
@@ -1047,6 +1055,26 @@ public class TheEndspeaker extends Mob {
                     default:
                         break;
                 }
+            }
+        }
+
+        public static void destroyAspects() {
+            if (!(Dungeon.level instanceof SeaLevel_part2)
+                    || Dungeon.depth < 36 || Dungeon.depth > 38
+                    || Dungeon.level.mobs == null) {
+                return;
+            }
+            ArrayList<Mob> toDestroy = new ArrayList<>();
+            for (Mob mob : Dungeon.level.mobs) {
+                if ((mob instanceof AspectSmall
+                        || mob instanceof AspectMedium
+                        || mob instanceof AspectLarge) && mob.isAlive()) {
+                    toDestroy.add(mob);
+                }
+            }
+            for (Mob mob : toDestroy) {
+                mob.EXP = 0;
+                mob.destroy();
             }
         }
 

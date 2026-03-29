@@ -244,7 +244,10 @@ public class ItemSpriteSheet {
 	public static final int MIDSWORD           = WEP_TIER2+6;
 	public static final int FIRMAMENT           = WEP_TIER2+7;
 	public static final int FIRE_KATANA           = WEP_TIER2+8;
+
 	public static final int USG           = WEP_TIER2+9;
+
+    public static final int CASSIDY           = WEP_TIER2+10;
 
 	static{
 		assignItemRect(SHORTSWORD,      16, 16);
@@ -257,6 +260,7 @@ public class ItemSpriteSheet {
 		assignItemRect(FIRMAMENT,            16, 16);
 		assignItemRect(FIRE_KATANA,            16, 16);
 		assignItemRect(USG,            16, 16);
+        assignItemRect(CASSIDY,            16, 16);
 
 	}
 
@@ -274,6 +278,7 @@ public class ItemSpriteSheet {
 	public static final int FLAG     = WEP_TIER3+10;
 	public static final int DP27     = WEP_TIER3+11;
 	public static final int C1     = WEP_TIER3+12;
+    public static final int M870     = WEP_TIER3+13;
 
 	static{
 		assignItemRect(SWORD,           16, 16);
@@ -289,6 +294,7 @@ public class ItemSpriteSheet {
 		assignItemRect(FLAG,            16, 16);
 		assignItemRect(DP27,            16, 16);
 		assignItemRect(C1,            16, 16);
+        assignItemRect(M870,            16, 16);
 
 
 	}

@@ -246,6 +246,10 @@ public class BuffIndicator extends Component {
 		}
 	}
 	
+	public boolean allBuffsVisible() {
+		return buffIcons.isEmpty() || buffIcons.size() * (SIZE + 2) <= width;
+	}
+
 	public static void refreshHero() {
 		if (heroInstance != null) {
 			heroInstance.needsRefresh = true;

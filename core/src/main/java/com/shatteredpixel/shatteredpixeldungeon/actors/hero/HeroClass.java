@@ -32,23 +32,15 @@ import com.shatteredpixel.shatteredpixeldungeon.items.AnnihilationGear;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.DewVial;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.StaffKit;
 import com.shatteredpixel.shatteredpixeldungeon.items.TomeOfMastery;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.PlateArmor;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAugmentation;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfEnchantment;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfBreeze;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfCorrupting;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfGreyy;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfPodenco;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfPurgatory;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfShining;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfSnowsant;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfSuzuran;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfVigna;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfWeedy;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfSilence;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Cassidy;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.M870;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.R4C;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SG_CQB;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ForceCube;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SkillBook;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
@@ -176,10 +168,17 @@ public enum HeroClass {
             new Heamyo().collect();
             new PlateArmor().identify().upgrade(10).collect();
             new R4C().identify().upgrade(10).collect();
+            new SG_CQB().identify().collect();
+            new M870().identify().collect();
+            new Cassidy().identify().collect();
             new ForceCube().quantity(40).collect();
             new TomeOfMastery().collect();
             new StoneOfAugmentation().quantity(5).collect();
             new StoneOfEnchantment().quantity(40).collect();
+
+            new WandOfSilence().identify().collect();
+            new PotionOfLiquidFlame().identify().collect();
+            new PotionOfInvisibility().quantity(40).identify().collect();
 
 //            new StaffOfBreeze().identify().collect();
 //            new StaffOfCorrupting().identify().collect();
@@ -608,7 +607,7 @@ public enum HeroClass {
 	
 	public static HeroClass restoreInBundle( Bundle bundle ) {
 		String value = bundle.getString( CLASS );
-		return value.length() > 0 ? valueOf( value ) : ROGUE;
+		return !value.isEmpty() ? valueOf( value ) : ROGUE;
 	}
 
 }

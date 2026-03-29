@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Silence;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -104,9 +105,9 @@ public class Longsword extends MeleeWeapon {
 		return Messages.get(this, "stats_desc");
 	}
 
-	public void SPCharge(int n) {
+	public void SPCharge(float n) {
 		if (Random.Int(11) < 2) {
-			arts += n;
+			arts += (int)n;
 			if (artscap < arts) arts = artscap;
 			updateQuickslot();
 		}
@@ -217,6 +218,8 @@ public class Longsword extends MeleeWeapon {
 
 		arts -=1;
 		updateQuickslot();
+
+		Invisibility.dispel();
 
 		if (arts <= 0) curUser.spendAndNext(1f);
 	}

@@ -4,12 +4,9 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Lens;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
-import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
-import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK2.WolfPack;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.Skill;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -34,16 +31,16 @@ public class Panorama extends Skill {
                 if (Actor.findChar(target) != null && target != curUser.pos)
                     cell = route.path.get(route.dist - 1);
 
-                Sample.INSTANCE.play( Assets.Sounds.SKILL_BASIC );
+                Sample.INSTANCE.play(Assets.Sounds.SKILL_BASIC);
                 Lens Lens = new Lens();
                 Lens.pos = cell;
-                Buff.affect(Dungeon.hero, TalismanOfForesight.CharAwareness.class, 999).charID = Lens.id();
+                Buff.append(Dungeon.hero, TalismanOfForesight.CharAwareness.class, 999).charID = Lens.id();
                 GameScene.add(Lens, 1f);
-                CellEmitter.get( Lens.pos ).burst( Speck.factory( Speck.WOOL ), 10 );
+                CellEmitter.get(Lens.pos).burst(Speck.factory(Speck.WOOL), 10);
                 Dungeon.level.occupyCell(Lens);
             }
 
-            curUser.spendAndNext( 1 );
+            curUser.spendAndNext(1);
         }
 
         @Override

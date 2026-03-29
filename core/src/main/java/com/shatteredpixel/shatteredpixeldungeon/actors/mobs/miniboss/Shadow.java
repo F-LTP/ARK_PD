@@ -7,7 +7,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ParalyticGas;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.StenchGas;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
@@ -33,7 +32,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -96,7 +94,8 @@ public class Shadow extends Mob {
 
     @Override
     public int defenseSkill(Char enemy) {
-        return defenseSkillTable[ShadowLevel];
+        this.defenseSkill = defenseSkillTable[ShadowLevel];
+        return super.defenseSkill(enemy);
     }
 
     @Override
@@ -226,7 +225,8 @@ public class Shadow extends Mob {
 
         @Override
         public int defenseSkill(Char enemy) {
-            return defenseSkillTable[ShadowLevel] * 2;
+            this.defenseSkill = defenseSkillTable[ShadowLevel] * 2;
+            return super.defenseSkill(enemy);
         }
 
         @Override
@@ -457,7 +457,8 @@ public class Shadow extends Mob {
 
         @Override
         public int defenseSkill(Char enemy) {
-            return defenseSkillTable[ShadowLevel] * 2;
+            this.defenseSkill = defenseSkillTable[ShadowLevel] * 2;
+            return super.defenseSkill(enemy);
         }
 
         @Override

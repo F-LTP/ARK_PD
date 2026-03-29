@@ -51,7 +51,7 @@ public class IsharmlaSeabornHead extends Mob {
 
         defenseSkill = 20;
 
-        actPriority = MOB_PRIO-1;
+        actPriority = MOB_PRIO - 1;
 
         properties.add(Property.SEA);
         properties.add(Property.BOSS);
@@ -77,7 +77,7 @@ public class IsharmlaSeabornHead extends Mob {
     }
 
     @Override
-    public int attackSkill( Char target ) {
+    public int attackSkill(Char target) {
         return 50;
     }
 
@@ -93,9 +93,7 @@ public class IsharmlaSeabornHead extends Mob {
         // 캐릭터가 물 밖이라면 데미지를 입지 않습니다
         if (enemy instanceof Hero && Dungeon.level.map[enemy.pos] == Terrain.EMPTY) {
             return INFINITE_EVASION;
-        }
-
-        else return defenseSkill;
+        } else return super.defenseSkill(enemy);
     }
 
     // 사거리 2
@@ -164,7 +162,7 @@ public class IsharmlaSeabornHead extends Mob {
             int dmg = Random.NormalIntRange(12, 34);
 
             for (Char ch : affected) {
-                ch.damage(dmg, this );
+                ch.damage(dmg, this);
                 if (Dungeon.level.heroFOV[pos]) {
                     ch.sprite.flash();
                     CellEmitter.center(pos).burst(PurpleParticle.BURST, Random.IntRange(1, 2));
@@ -224,7 +222,8 @@ public class IsharmlaSeabornHead extends Mob {
     }
 
     @Override
-    public void die(Object cause) { }
+    public void die(Object cause) {
+    }
 
     @Override
     public boolean isAlive() {
@@ -277,7 +276,7 @@ public class IsharmlaSeabornHead extends Mob {
         waveAbility.setStartPos();
     }
 
-    private static final String IS_DEAD_HEAD  = "isDeadHead";
+    private static final String IS_DEAD_HEAD = "isDeadHead";
     private static final String LASER_COOLDOWN = "laserCooldown";
     private static final String IS_ANGRY = "isAngry";
     private static final String IS_ENRAGED = "isEnraged";
@@ -286,18 +285,19 @@ public class IsharmlaSeabornHead extends Mob {
     private static final String WAVE_COOLDOWN = "waveCooldown";
 
     @Override
-    public void storeInBundle( Bundle bundle ) {
-        super.storeInBundle( bundle );
-        bundle.put( IS_DEAD_HEAD, isDead);
-        bundle.put( IS_ANGRY, isAngry);
-        bundle.put( IS_ENRAGED, isEnraged);
-        bundle.put( IS_HEAD_ENRAGED, isHeadEnraged);
+    public void storeInBundle(Bundle bundle) {
+        super.storeInBundle(bundle);
+        bundle.put(IS_DEAD_HEAD, isDead);
+        bundle.put(IS_ANGRY, isAngry);
+        bundle.put(IS_ENRAGED, isEnraged);
+        bundle.put(IS_HEAD_ENRAGED, isHeadEnraged);
 
-        bundle.put( LASER_COOLDOWN, laserCooldown);
-        bundle.put( ENRAGE_DURATION, enrageDuration);
-        bundle.put( WAVE_COOLDOWN, waveCooldown);
+        bundle.put(LASER_COOLDOWN, laserCooldown);
+        bundle.put(ENRAGE_DURATION, enrageDuration);
+        bundle.put(WAVE_COOLDOWN, waveCooldown);
     }
 
+    @Override
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
 
@@ -371,13 +371,13 @@ public class IsharmlaSeabornHead extends Mob {
             int index = 0;
             for (int cell : cells) {
                 outArr[index] = cell;
-                index ++;
+                index++;
             }
             return outArr;
         }
 
         private void addLeft(int cell, int width, Set<Integer> cells) {
-            for (int i = 1; i <= width; i ++) {
+            for (int i = 1; i <= width; i++) {
                 if (!Dungeon.level.solid[cell - i]) {
                     cells.add(cell - i);
                 }
@@ -385,7 +385,7 @@ public class IsharmlaSeabornHead extends Mob {
         }
 
         private void addRight(int cell, int width, Set<Integer> cells) {
-            for (int i = 1; i <= width; i ++) {
+            for (int i = 1; i <= width; i++) {
                 if (!Dungeon.level.solid[cell + i]) {
                     cells.add(cell + i);
                 }
@@ -406,7 +406,7 @@ public class IsharmlaSeabornHead extends Mob {
 
         private void setStartPos() {
             int newStart = 199;
-            for (int i = 0; i < 10; i ++) {
+            for (int i = 0; i < 10; i++) {
                 newStart = Random.Int(169 + width / 2, 187 - width / 2);
                 if (previousStart != newStart) {
                     break;
@@ -469,10 +469,7 @@ public class IsharmlaSeabornHead extends Mob {
                                     && !(ch instanceof IsharmlaSeabornBody)
                                     && !(ch instanceof IsharmlaSeabornTail)) {
                                 Buff.prolong(ch, Blindness.class, 3f);
-                                if (ch.buff(NervousImpairment.class) == null) {
-                                    Buff.affect(ch, NervousImpairment.class);
-                                }
-                                ch.buff(NervousImpairment.class).sum(40);
+                                Buff.affect(ch, NervousImpairment.class).sum(40);
                                 ch.damage(Random.Int(25, 55), this);
                             }
 
@@ -505,15 +502,15 @@ public class IsharmlaSeabornHead extends Mob {
     protected class Hunting implements AiState {
 
         @Override
-        public boolean act( boolean enemyInFOV, boolean justAlerted ) {
+        public boolean act(boolean enemyInFOV, boolean justAlerted) {
             enemySeen = enemyInFOV;
-            if (enemyInFOV && !isCharmedBy( enemy ) && canAttack( enemy )) {
+            if (enemyInFOV && !isCharmedBy(enemy) && canAttack(enemy)) {
 
                 target = enemy.pos;
-                return doAttack( enemy );
+                return doAttack(enemy);
 
             } else {
-                spend( TICK );
+                spend(TICK);
                 return true;
             }
         }

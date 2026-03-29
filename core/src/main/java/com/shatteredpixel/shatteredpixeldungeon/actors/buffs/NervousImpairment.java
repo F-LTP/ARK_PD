@@ -19,6 +19,7 @@ public class NervousImpairment extends Buff {
 
     public void sum(float nervousDamage) {
         currentDamage = Math.min(100, currentDamage + nervousDamage);
+        if (currentDamage <= 0) detach();
         if (currentDamage >= limit) burst();
     }
 

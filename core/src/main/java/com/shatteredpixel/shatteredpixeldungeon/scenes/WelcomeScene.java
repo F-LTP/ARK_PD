@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
-import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.Rankings;
@@ -30,7 +29,6 @@ import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.TomorrowRogueNight;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BannerSprites;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
@@ -44,11 +42,9 @@ import com.watabou.noosa.Image;
 import com.watabou.utils.FileUtils;
 import com.watabou.utils.RectF;
 
-import java.util.Locale;
-
 public class WelcomeScene extends PixelScene {
 
-	private static final int LATEST_UPDATE = TomorrowRogueNight.v0_5_0;
+	private static final int LATEST_UPDATE = TomorrowRogueNight.v0_5_1;
 
     //used so that the game does not keep showing the window forever if cleaning fails
     private static boolean triedCleaningTemp = false;
@@ -75,7 +71,7 @@ public class WelcomeScene extends PixelScene {
             return;
         }
 
-		if (TomorrowRogueNight.versionCode == previousVersion && !SPDSettings.intro()) {
+        if (TomorrowRogueNight.versionCode == previousVersion && !SPDSettings.intro()) {
 			TomorrowRogueNight.switchNoFade(TitleScene.class);
 			return;
 		}
@@ -129,7 +125,7 @@ public class WelcomeScene extends PixelScene {
                         updateVersion(previousVersion);
                     }
 
-					SPDSettings.version(TomorrowRogueNight.versionCode);
+                    SPDSettings.version(TomorrowRogueNight.versionCode);
                     GamesInProgress.selectedClass = null;
                     GamesInProgress.curSlot = GamesInProgress.firstEmpty();
                     if (GamesInProgress.curSlot == -1 || Rankings.INSTANCE.totalNumber > 0){
@@ -201,7 +197,7 @@ public class WelcomeScene extends PixelScene {
 
 	}
 
-	private void updateVersion(int previousVersion){
+	private void updateVersion(int previousVersion) {
 
         //update rankings, to update any data which may be outdated
         if (previousVersion < LATEST_UPDATE){
@@ -234,7 +230,7 @@ public class WelcomeScene extends PixelScene {
             Journal.saveGlobal();
 		}
 
-		SPDSettings.version(TomorrowRogueNight.versionCode);
+        SPDSettings.version(TomorrowRogueNight.versionCode);
 	}
 	
 }

@@ -409,9 +409,11 @@ public class AlchemyScene extends PixelScene {
 		if (recipe != null){
 			provider.spendEnergy(recipe.cost(ingredients));
 			energyLeft.text(Messages.get(AlchemyScene.class, "energy", availableEnergy()));
+			RectF insets = getCommonInsets();
+			int h = (int)(Camera.main.height - insets.top - insets.bottom);
 			energyLeft.setPos(
-					(Camera.main.width - energyLeft.width())/2,
-					Camera.main.height - 5 - energyLeft.height()
+					centerW - energyLeft.width()/2,
+					insets.top + h - 8 - energyLeft.height()
 			);
 			
 			result = recipe.brew(ingredients);

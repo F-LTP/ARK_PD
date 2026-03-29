@@ -64,13 +64,14 @@ public class Sea_Octo extends Mob {
     }
 
     @Override
-    public int attackSkill( Char target ) {
+    public int attackSkill(Char target) {
         return 36;
     }
 
     @Override
     public int drRoll() {
-        return Random.NormalIntRange(0, 18); }
+        return Random.NormalIntRange(0, 18);
+    }
 
     @Override
     public int attackProc(Char enemy, int damage) {
@@ -79,26 +80,24 @@ public class Sea_Octo extends Mob {
 
         if (Dungeon.depth == 39) ndamage /= 2;
 
-        if (enemy instanceof Hero || enemy instanceof DriedRose.GhostHero) {
-            if (enemy.buff(NervousImpairment.class) == null) {
-                Buff.affect(enemy, NervousImpairment.class);
-            } else enemy.buff(NervousImpairment.class).sum(ndamage);
+        if (enemy.alignment == Alignment.ALLY) {
+            Buff.affect(enemy, NervousImpairment.class).sum(ndamage);
         }
 
         return super.attackProc(enemy, damage);
     }
 
-    private static final String VAL   = "firstTEEROR";
+    private static final String VAL = "firstTEEROR";
 
     @Override
-    public void storeInBundle( Bundle bundle ) {
-        super.storeInBundle( bundle );
-        bundle.put( VAL, terrorSpawned);
+    public void storeInBundle(Bundle bundle) {
+        super.storeInBundle(bundle);
+        bundle.put(VAL, terrorSpawned);
     }
 
     @Override
-    public void restoreFromBundle( Bundle bundle ) {
-        super.restoreFromBundle( bundle );
+    public void restoreFromBundle(Bundle bundle) {
+        super.restoreFromBundle(bundle);
         terrorSpawned = bundle.getBoolean(VAL);
     }
 

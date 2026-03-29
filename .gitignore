@@ -99,3 +99,4 @@ fabric.properties
 /android/release/
 /.claude/settings.local.json
 /.claude/
+CLAUDE.md

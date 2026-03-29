@@ -14,10 +14,10 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PurpleParticle
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAmplified;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.DamageWand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Platform;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.SeaTerror;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -28,7 +28,8 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 
 public class StaffOfVigna extends DamageWand {
-    private static ItemSprite.Glowing COL = new ItemSprite.Glowing( 0xDC143C );
+    private static ItemSprite.Glowing COL = new ItemSprite.Glowing(0xDC143C);
+
     {
         image = ItemSpriteSheet.WAND_DISINTEGRATION;
 
@@ -36,12 +37,12 @@ public class StaffOfVigna extends DamageWand {
     }
 
 
-    public int min(int lvl){
-        return 4+lvl;
+    public int min(int lvl) {
+        return 4 + lvl;
     }
 
-    public int max(int lvl){
-        return 8+6*lvl+ (Dungeon.hero != null ? RingOfAmplified.DamageBonus(Dungeon.hero) : 0) * 6;
+    public int max(int lvl) {
+        return 8 + 5 * lvl + (Dungeon.hero != null ? RingOfAmplified.DamageBonus(Dungeon.hero) : 0) * 5;
     }
 
     @Override
@@ -55,7 +56,7 @@ public class StaffOfVigna extends DamageWand {
     }
 
     @Override
-    protected void onZap( Ballistica beam ) {
+    protected void onZap(Ballistica beam) {
 
         boolean terrainAffected = false;
 
@@ -71,14 +72,14 @@ public class StaffOfVigna extends DamageWand {
         for (int c : beam.subPath(1, maxDistance)) {
 
             Char ch;
-            if ((ch = Actor.findChar( c )) != null) {
+            if ((ch = Actor.findChar(c)) != null) {
 
                 //we don't want to count passed terrain after the last enemy hit. That would be a lot of bonus levels.
                 //terrainPassed starts at 2, equivalent of rounding up when /3 for integer arithmetic.
-                terrainBonus += terrainPassed/3;
-                terrainPassed = terrainPassed%3;
+                terrainBonus += terrainPassed / 3;
+                terrainPassed = terrainPassed % 3;
 
-                chars.add( ch );
+                chars.add(ch);
             }
 
             if (Dungeon.level.solid[c]) {
@@ -87,8 +88,8 @@ public class StaffOfVigna extends DamageWand {
 
             if (Dungeon.level.flamable[c]) {
 
-                Dungeon.level.destroy( c );
-                GameScene.updateMap( c );
+                Dungeon.level.destroy(c);
+                GameScene.updateMap(c);
                 terrainAffected = true;
 
             }
@@ -96,34 +97,34 @@ public class StaffOfVigna extends DamageWand {
             SeaTerror seaTerror = Dungeon.level.seaTerrors.get(c);
             if (seaTerror != null) {
                 seaTerror.destroy();
-                GameScene.updateMap( c );
+                GameScene.updateMap(c);
                 terrainAffected = true;
             }
 
             Platform platform = Dungeon.level.platforms.get(c);
             if (platform != null) {
                 platform.destroy();
-                GameScene.updateMap( c );
+                GameScene.updateMap(c);
                 terrainAffected = true;
             }
 
-            CellEmitter.center( c ).burst( PurpleParticle.BURST, Random.IntRange( 1, 2 ) );
+            CellEmitter.center(c).burst(PurpleParticle.BURST, Random.IntRange(1, 2));
         }
 
         if (terrainAffected) {
             Dungeon.observe();
         }
 
-        int lvl = level + (chars.size()-1) + terrainBonus;
+        int lvl = level + (chars.size() - 1) + terrainBonus;
         for (Char ch : chars) {
             processSoulMark(ch, chargesPerCast());
             int dmg = damageRoll(lvl);
             if (Random.Float() < critChance()) {
-                dmg = (int) (dmg * 1.5f); // 크리티컬 (레벨에 따라 확률 증가)
+                dmg = (int) (dmg * 1.35f); // 크리티컬 (레벨에 따라 확률 증가)
             }
-            ch.damage( dmg, this );
+            ch.damage(dmg, this);
             Buff.affect(ch, Vulnerable.class, 2 + lvl);
-            ch.sprite.centerEmitter().burst( PurpleParticle.BURST, Random.IntRange( 1, 2 ) );
+            ch.sprite.centerEmitter().burst(PurpleParticle.BURST, Random.IntRange(1, 2));
             ch.sprite.flash();
         }
     }
@@ -134,8 +135,8 @@ public class StaffOfVigna extends DamageWand {
     }
 
     private float critChance() {
-        if (buffedLvl() >= 10) return 1f;
-        return (float)(0.20 * Math.pow(5.0, buffedLvl() / 10.0));
+        if (buffedLvl() >= 12) return 1f;
+        return (float) (0.20 * Math.pow(5.0, buffedLvl() / 12.0));
     }
 
     private int critChancePct() {
@@ -155,10 +156,10 @@ public class StaffOfVigna extends DamageWand {
     }
 
     @Override
-    protected void fx( Ballistica beam, Callback callback ) {
+    protected void fx(Ballistica beam, Callback callback) {
 
         int cell = beam.path.get(Math.min(beam.dist, distance()));
-        curUser.sprite.parent.add(new Beam.DeathRay(curUser.sprite.center(), DungeonTilemap.raisedTileCenterToWorld( cell )));
+        curUser.sprite.parent.add(new Beam.DeathRay(curUser.sprite.center(), DungeonTilemap.raisedTileCenterToWorld(cell)));
         callback.call();
     }
 

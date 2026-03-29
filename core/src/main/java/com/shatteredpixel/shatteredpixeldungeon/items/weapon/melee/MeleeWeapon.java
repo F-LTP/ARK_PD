@@ -36,7 +36,7 @@ public class MeleeWeapon extends Weapon {
 	
 	public int tier;
 
-	public int charge = 100;
+	public float charge = 100;
 	public int chargeCap = 100;
 
 	@Override
@@ -55,8 +55,8 @@ public class MeleeWeapon extends Weapon {
 		return STRReq(tier, lvl);
 	}
 
-	public void SPCharge(int value) {
-		int chargevalue = value;
+	public void SPCharge(float value) {
+		float chargevalue = value;
 		chargevalue *= RingOfMistress.SPMultiplier(Dungeon.hero);
 		charge = Math.min(charge+chargevalue, chargeCap);
 		updateQuickslot();
@@ -159,8 +159,8 @@ public class MeleeWeapon extends Weapon {
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
-		if (chargeCap > 0) charge = Math.min(chargeCap, bundle.getInt(CHARGE));
-		else charge = bundle.getInt(CHARGE);
+		if (chargeCap > 0) charge = Math.min(chargeCap, bundle.getFloat(CHARGE));
+		else charge = bundle.getFloat(CHARGE);
 	}
 
 

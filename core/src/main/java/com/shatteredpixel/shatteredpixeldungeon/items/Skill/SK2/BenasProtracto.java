@@ -27,6 +27,11 @@ public class BenasProtracto extends Skill {
             if (Actor.findChar(p) == null && Dungeon.level.passable[p]) {
                 respawnPoints.add(p); } }
 
+        if (respawnPoints.isEmpty()) {
+            curUser.spendAndNext(1);
+            return;
+        }
+
         int index = Random.index(respawnPoints);
 
         MirrorImage mob = new MirrorImage();

@@ -9,7 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.Sea_CrawlerSprite;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
-public class SeaCapsule extends Mob{
+public class SeaCapsule extends Mob {
     {
         spriteClass = Sea_CrawlerSprite.class;
 
@@ -31,7 +31,7 @@ public class SeaCapsule extends Mob{
     }
 
     @Override
-    public int attackSkill( Char target ) {
+    public int attackSkill(Char target) {
         return 30;
     }
 
@@ -43,12 +43,9 @@ public class SeaCapsule extends Mob{
     @Override
     public int defenseProc(Char enemy, int damage) {
         for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
-            Char ch = findChar( pos + PathFinder.NEIGHBOURS8[i] );
+            Char ch = findChar(pos + PathFinder.NEIGHBOURS8[i]);
             if (ch != null && ch.isAlive() && ch.alignment == Alignment.ALLY) {
-                if (ch.buff(NervousImpairment.class) == null) {
-                    Buff.affect(ch, NervousImpairment.class);
-                }
-                ch.buff(NervousImpairment.class).sum(20);
+                Buff.affect(ch, NervousImpairment.class).sum(20);
             }
         }
 
@@ -56,7 +53,7 @@ public class SeaCapsule extends Mob{
     }
 
     @Override
-    public void die( Object cause ) {
+    public void die(Object cause) {
         super.die(cause);
         Dario.Quest.process();
     }

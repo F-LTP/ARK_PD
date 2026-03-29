@@ -79,6 +79,7 @@ public class Suffering extends MeleeWeapon {
                 Buff.affect(Dungeon.hero, Burning.class).reignite(Dungeon.hero,4f);
                 cursedKnown = true;
                 charge = 0;
+                updateQuickslot();
             }
         }
     }
@@ -224,7 +225,7 @@ public class Suffering extends MeleeWeapon {
     }
 
     @Override
-    public void SPCharge(int value) {
+    public void SPCharge(float value) {
         if(setbouns()) value *= 2;
         super.SPCharge(value);
     }
@@ -240,7 +241,7 @@ public class Suffering extends MeleeWeapon {
     @Override
     public String status() {
         if (chargeCap == 100)
-            return Messages.format("%d%%", charge);
+            return Messages.format("%d%%", (int)charge);
         return null;
     }
 

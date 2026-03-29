@@ -31,120 +31,121 @@ import com.watabou.utils.PlatformSupport;
 
 public class TomorrowRogueNight extends Game {
 
-	//variable constants for specific older versions of shattered, used for data conversion
-	//versions older than v0.7.5e are no longer supported, and data from them is ignored
-	public static final int v0_5_0_b4 = 583;
+    //variable constants for specific older versions of shattered, used for data conversion
+    //versions older than v0.7.5e are no longer supported, and data from them is ignored
+    public static final int v0_5_0_b4 = 583;
     public static final int v0_5_0_b5 = 600;
     public static final int v0_5_0_b5_hotfix = 602;
     public static final int v0_5_0_b5_hotfix2 = 603;
     public static final int v0_5_0 = 627;
-	
-	public TomorrowRogueNight(PlatformSupport platform ) {
-		super( sceneClass == null ? WelcomeScene.class : sceneClass, platform );
+    public static final int v0_5_1 = 644;
 
-		//v0.8.0
-		com.watabou.utils.Bundle.addAlias(
-				com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredBrute.class,
-				"com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Shielded");
-		com.watabou.utils.Bundle.addAlias(
-				com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100.class,
-				"com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Shaman");
-		com.watabou.utils.Bundle.addAlias(
-				com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental.FireElemental.class,
-				"com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental");
-		com.watabou.utils.Bundle.addAlias(
-				com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental.NewbornFireElemental.class,
-				"com.shatteredpixel.shatteredpixeldungeon.actors.mobs.NewbornElemental");
-		com.watabou.utils.Bundle.addAlias(
-				com.shatteredpixel.shatteredpixeldungeon.actors.mobs.OldDM300.class,
-				"com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300");
-		com.watabou.utils.Bundle.addAlias(
-				com.shatteredpixel.shatteredpixeldungeon.levels.OldCavesBossLevel.class,
-				"com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel" );
-		com.watabou.utils.Bundle.addAlias(
-				com.shatteredpixel.shatteredpixeldungeon.levels.OldCityBossLevel.class,
-				"com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel" );
-		com.watabou.utils.Bundle.addAlias(
-				com.shatteredpixel.shatteredpixeldungeon.levels.OldHallsBossLevel.class,
-				"com.shatteredpixel.shatteredpixeldungeon.levels.HallsBossLevel" );
-		
-	}
-	
-	@Override
-	public void create() {
-		super.create();
+    public TomorrowRogueNight(PlatformSupport platform) {
+        super(sceneClass == null ? WelcomeScene.class : sceneClass, platform);
 
-		updateSystemUI();
-		SPDAction.loadBindings();
-		
-		Music.INSTANCE.enable( SPDSettings.music() );
-		Music.INSTANCE.volume( SPDSettings.musicVol()*SPDSettings.musicVol()/100f );
-		Sample.INSTANCE.enable( SPDSettings.soundFx() );
-		Sample.INSTANCE.volume( SPDSettings.SFXVol()*SPDSettings.SFXVol()/100f );
+        //v0.8.0
+        com.watabou.utils.Bundle.addAlias(
+                com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredBrute.class,
+                "com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Shielded");
+        com.watabou.utils.Bundle.addAlias(
+                com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100.class,
+                "com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Shaman");
+        com.watabou.utils.Bundle.addAlias(
+                com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental.FireElemental.class,
+                "com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental");
+        com.watabou.utils.Bundle.addAlias(
+                com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental.NewbornFireElemental.class,
+                "com.shatteredpixel.shatteredpixeldungeon.actors.mobs.NewbornElemental");
+        com.watabou.utils.Bundle.addAlias(
+                com.shatteredpixel.shatteredpixeldungeon.actors.mobs.OldDM300.class,
+                "com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300");
+        com.watabou.utils.Bundle.addAlias(
+                com.shatteredpixel.shatteredpixeldungeon.levels.OldCavesBossLevel.class,
+                "com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel");
+        com.watabou.utils.Bundle.addAlias(
+                com.shatteredpixel.shatteredpixeldungeon.levels.OldCityBossLevel.class,
+                "com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel");
+        com.watabou.utils.Bundle.addAlias(
+                com.shatteredpixel.shatteredpixeldungeon.levels.OldHallsBossLevel.class,
+                "com.shatteredpixel.shatteredpixeldungeon.levels.HallsBossLevel");
 
-		Sample.INSTANCE.load( Assets.Sounds.all );
-		
-	}
+    }
 
-	public static void switchNoFade(Class<? extends PixelScene> c){
-		switchNoFade(c, null);
-	}
+    @Override
+    public void create() {
+        super.create();
 
-	public static void switchNoFade(Class<? extends PixelScene> c, SceneChangeCallback callback) {
-		PixelScene.noFade = true;
-		switchScene( c, callback );
-	}
-	
-	public static void seamlessResetScene(SceneChangeCallback callback) {
-		if (scene() instanceof PixelScene){
-			((PixelScene) scene()).saveWindows();
-			switchNoFade((Class<? extends PixelScene>) sceneClass, callback );
-		} else {
-			resetScene();
-		}
-	}
-	
-	public static void seamlessResetScene(){
-		seamlessResetScene(null);
-	}
-	
-	@Override
-	protected void switchScene() {
-		super.switchScene();
-		if (scene instanceof PixelScene){
-			((PixelScene) scene).restoreWindows();
-		}
-	}
-	
-	@Override
-	public void resize( int width, int height ) {
-		if (width == 0 || height == 0){
-			return;
-		}
+        updateSystemUI();
+        SPDAction.loadBindings();
 
-		if (scene instanceof PixelScene &&
-				(height != Game.height || width != Game.width)) {
-			PixelScene.noFade = true;
-			((PixelScene) scene).saveWindows();
-		}
+        Music.INSTANCE.enable(SPDSettings.music());
+        Music.INSTANCE.volume(SPDSettings.musicVol() * SPDSettings.musicVol() / 100f);
+        Sample.INSTANCE.enable(SPDSettings.soundFx());
+        Sample.INSTANCE.volume(SPDSettings.SFXVol() * SPDSettings.SFXVol() / 100f);
 
-		super.resize( width, height );
+        Sample.INSTANCE.load(Assets.Sounds.all);
 
-		updateDisplaySize();
+    }
 
-	}
-	
-	@Override
-	public void destroy(){
-		super.destroy();
-		GameScene.endActorThread();
-	}
-	
-	public void updateDisplaySize(){
-		platform.updateDisplaySize();
-	}
+    public static void switchNoFade(Class<? extends PixelScene> c) {
+        switchNoFade(c, null);
+    }
 
-	public static void updateSystemUI() {
-		platform.updateSystemUI();
-	}
+    public static void switchNoFade(Class<? extends PixelScene> c, SceneChangeCallback callback) {
+        PixelScene.noFade = true;
+        switchScene(c, callback);
+    }
+
+    public static void seamlessResetScene(SceneChangeCallback callback) {
+        if (scene() instanceof PixelScene) {
+            ((PixelScene) scene()).saveWindows();
+            switchNoFade((Class<? extends PixelScene>) sceneClass, callback);
+        } else {
+            resetScene();
+        }
+    }
+
+    public static void seamlessResetScene() {
+        seamlessResetScene(null);
+    }
+
+    @Override
+    protected void switchScene() {
+        super.switchScene();
+        if (scene instanceof PixelScene) {
+            ((PixelScene) scene).restoreWindows();
+        }
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        if (width == 0 || height == 0) {
+            return;
+        }
+
+        if (scene instanceof PixelScene &&
+                (height != Game.height || width != Game.width)) {
+            PixelScene.noFade = true;
+            ((PixelScene) scene).saveWindows();
+        }
+
+        super.resize(width, height);
+
+        updateDisplaySize();
+
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        GameScene.endActorThread();
+    }
+
+    public void updateDisplaySize() {
+        platform.updateDisplaySize();
+    }
+
+    public static void updateSystemUI() {
+        platform.updateSystemUI();
+    }
 }
