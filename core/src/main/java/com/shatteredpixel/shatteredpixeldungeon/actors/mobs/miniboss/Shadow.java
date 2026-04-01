@@ -95,10 +95,11 @@ public class Shadow extends Mob {
         return attackSkillTable[ShadowLevel];
     }
 
-    //@Override
-    //public int defenseSkill(Char enemy) {
-    //    return defenseSkillTable[ShadowLevel];
-    //}//change from budding
+    @Override
+    public int defenseSkill(Char enemy) {
+        this.defenseSkill = defenseSkillTable[ShadowLevel];
+        return super.defenseSkill(enemy);
+    }
 
     @Override
     public int damageRoll() {
@@ -229,8 +230,9 @@ public class Shadow extends Mob {
 
         @Override
         public int defenseSkill(Char enemy) {
-            return super.defenseSkill(enemy) * 2;
-        }//change from budding
+            this.defenseSkill = defenseSkillTable[ShadowLevel] * 2;
+            return super.defenseSkill(enemy);
+        }
 
         @Override
         protected boolean act() {
@@ -460,8 +462,9 @@ public class Shadow extends Mob {
 
         @Override
         public int defenseSkill(Char enemy) {
-            return super.defenseSkill(enemy) * 2;
-        }//change from budding
+            this.defenseSkill = defenseSkillTable[ShadowLevel] * 2;
+            return super.defenseSkill(enemy);
+        }
 
         @Override
         public int attackProc(Char enemy, int damage) {

@@ -37,7 +37,7 @@ public class Panorama extends Skill {
                 Sample.INSTANCE.play( Assets.Sounds.SKILL_BASIC );
                 Lens Lens = new Lens();
                 Lens.pos = cell;
-                Buff.append(Dungeon.hero, TalismanOfForesight.CharAwareness.class, 999).charID = Lens.id();//change from budding
+                Buff.append(Dungeon.hero, TalismanOfForesight.CharAwareness.class, 999).charID = Lens.id();
                 GameScene.add(Lens, 1f);
                 CellEmitter.get( Lens.pos ).burst( Speck.factory( Speck.WOOL ), 10 );
                 Dungeon.level.occupyCell(Lens);

@@ -17,6 +17,7 @@ public class Cassidy extends ShotgunWeapon {
 
         FIRE_DELAY_MULT = 0.75f;
         bulletMax = 2;
+        bullet = bulletMax;
         MAX_RANGE = 3;
 
         PELLET_COUNT = 5;

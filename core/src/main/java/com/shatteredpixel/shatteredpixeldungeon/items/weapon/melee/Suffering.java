@@ -80,6 +80,7 @@ public class Suffering extends MeleeWeapon {
                 Buff.affect(Dungeon.hero, Burning.class).reignite(Dungeon.hero,4f);
                 cursedKnown = true;
                 charge = 0;
+                updateQuickslot();
             }
         }
     }

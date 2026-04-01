@@ -8,6 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -84,7 +85,7 @@ public class Gamzashield extends MeleeWeapon {
 
         super.execute(hero, action);
 
-        if (action.equals(AC_ZAP)) {
+        if (action.equals(AC_ZAP) && isEquipped(hero)) {
             curUser = hero;
             curItem = this;
             GameScene.selectCell(zapper);
@@ -208,6 +209,7 @@ public class Gamzashield extends MeleeWeapon {
         if (ch != null) {
             affectTarget(ch);
         }
+        Invisibility.dispel();
     }
 
     private void affectTarget(Char ch) {

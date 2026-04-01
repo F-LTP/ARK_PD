@@ -95,7 +95,12 @@ public class WndInfoMob extends WndTitledMessage {
                 buffs.setRect(name.right(), name.bottom() - BuffIndicator.SIZE-2, w - name.width(), 8);
             }
 
-            height = Math.max(image.y + image.height(), health.bottom());
+            if (!buffs.allBuffsVisible()) {
+                buffs.setRect(0, health.bottom() + GAP, width, 8);
+                height = Math.max(image.y + image.height(), buffs.bottom());
+            } else {
+                height = Math.max(image.y + image.height(), health.bottom());
+            }
 		}
 	}
 }

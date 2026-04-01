@@ -1,11 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.items;
 
-import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SkillBook;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -44,16 +40,16 @@ public class RandomBox extends Item {
             hero.sprite.operate( hero.pos );
 
             detach( hero.belongings.backpack );
-            Randomreward(Random.IntRange(0,9)); }
+            randomReward(Random.IntRange(0,9)); }
         }
 
 
-    public void Randomreward(int i) {
+    public void randomReward(int i) {
         if (i < 6) {
             if (Random.Int(5) < 3) { GetGold_low();
             } else GetGold_high(); }
-        else if (i < 8) { GetSkill(); }
-        else GetWeapon();
+        else if (i < 8) { getSkill(); }
+        else getWeapon();
     }
 
     public void GetGold_low()
@@ -62,7 +58,7 @@ public class RandomBox extends Item {
     public void GetGold_high()
     { new Gold(Random.IntRange(300,1000)).doPickUp(Dungeon.hero); }
 
-    public void GetSkill(){
+    public void getSkill(){
         int chance = Random.IntRange(0, 50);
 
         chance += Random.IntRange(-10,Dungeon.hero.lvl);
@@ -83,39 +79,36 @@ public class RandomBox extends Item {
         }
     }
 
-    public void GetWeapon() {
+    public void getWeapon() {
         int chance = Random.IntRange(0, 50);
 
         chance += Random.IntRange(-5, Dungeon.hero.STR);
-        int weaponbuffedlvl8 = 0;//change from budding
-        if (Dungeon.hero.belongings.weapon != null) weaponbuffedlvl8=Dungeon.hero.belongings.weapon.buffedLvl() * 8;
-        chance += Random.IntRange(0, weaponbuffedlvl8);
+        if (Dungeon.hero.belongings.weapon != null) {
+            chance += Random.IntRange(0, Dungeon.hero.belongings.weapon.buffedLvl() * 8);
+        }
+        //determine weapon tier based on roll
+        int tier;
+        if      (chance > 65) tier = 4;
+        else if (chance > 50) tier = 3;
+        else if (chance > 35) tier = 2;
+        else                  tier = 1;
 
-        Weapon n;
+        Generator.Category c = Generator.wepTiers[tier];
+        Weapon n = (MeleeWeapon) Reflection.newInstance(c.classes[Random.chances(c.probs)]);
+        //determine upgrade level based on depth + armor
+        int upChance = Random.IntRange(0,25);
 
-        if (chance > 65) { Generator.Category c = Generator.wepTiers[4];
-        n = (MeleeWeapon)Reflection.newInstance(c.classes[Random.chances(c.probs)]);}
-        else if (chance > 50) { Generator.Category c = Generator.wepTiers[3];
-            n = (MeleeWeapon)Reflection.newInstance(c.classes[Random.chances(c.probs)]);}
-        else if (chance > 35) { Generator.Category c = Generator.wepTiers[2];
-            n = (MeleeWeapon)Reflection.newInstance(c.classes[Random.chances(c.probs)]);}
-        else { Generator.Category c = Generator.wepTiers[1];
-            n = (MeleeWeapon)Reflection.newInstance(c.classes[Random.chances(c.probs)]);}
+        upChance += Random.IntRange(-10, Dungeon.depth);
+        if (Dungeon.hero.belongings.armor != null) {
+            upChance += Random.IntRange(-5, Dungeon.hero.belongings.armor.buffedLvl() * 3);
+        }
 
-        int upchacne = Random.IntRange(0,25);
-
-        upchacne += Random.IntRange(-10, Dungeon.depth);
-        int armorbuffedlvl3 =-5;//change from budding
-        if (Dungeon.hero.belongings.armor !=null)armorbuffedlvl3 = Dungeon.hero.belongings.armor.buffedLvl() * 3;
-        upchacne += Random.IntRange(-5,armorbuffedlvl3 );
-
-        if(upchacne > 35) n.level(4);
-        else if(upchacne > 20) n.level(3);
-        else if (upchacne > 12) n.level(2);
-        else if (upchacne < -8) n.level(-2);
-        else if(upchacne < 0) n.level(1);
+        if(upChance > 35) n.level(4);
+        else if(upChance > 20) n.level(3);
+        else if (upChance > 12) n.level(2);
+        else if (upChance < -8) n.level(-2);
+        else if(upChance < 0) n.level(-1);
         else n.level(0);
-
 
         Dungeon.level.drop(n, Dungeon.hero.pos).sprite.drop(Dungeon.hero.pos);
     }

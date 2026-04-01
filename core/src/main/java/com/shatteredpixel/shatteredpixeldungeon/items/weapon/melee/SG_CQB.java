@@ -17,6 +17,7 @@ public class SG_CQB extends ShotgunWeapon {
 
         FIRE_DELAY_MULT = 1.5f;
         bulletMax = 7;
+        bullet = bulletMax;
         MAX_RANGE = 4;
 
         PELLET_COUNT = 5;

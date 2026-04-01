@@ -54,13 +54,7 @@ public class SkillBook extends Item {
 
 
         if (action.equals(AC_ACT)) {
-         /*   if (Dungeon.depth > 30 && Dungeon.extrastage_Sea){//change from budding
-            if (hero.buff(NervousImpairment.class) == null) {
-                Buff.affect(hero, NervousImpairment.class);
-            } else {
-                hero.buff(NervousImpairment.class).Sum(25);
-            }
-        }*/
+
             GameScene.show(
                     new WndOptions(Messages.get(this, "name"),
                             Messages.get(this, "wnddesc") + infoWnd(),
@@ -70,96 +64,37 @@ public class SkillBook extends Item {
 
                         @Override
                         protected void onSelect(int index) {
-                            int energy_cost[] = {30,60,100};
-                            int lowest_cost[] ={5,10,15};
-                            float real_cost=energy_cost[index]/(RingOfSunLight.SPBonus(Dungeon.hero));
-                            if (real_cost<lowest_cost[index]) real_cost=lowest_cost[index];
-                            if ((index==0 && hero.SK1==null) || (index==1 && hero.SK2==null) || (index==2 && hero.SK3==null)){
-                                GLog.w(Messages.get(SkillBook.class, "no_skill"));
-                            }
-                            else{
-                                if (charge < real_cost && !Dungeon.isChallenged(TEST)){//change from budding
-                                    GLog.w(Messages.get(SkillBook.class, "low_charge"));
-                                }
-                                else {
-                                    if (!(Dungeon.isChallenged(Challenges.TEST))){charge-=real_cost;}
-                                    updateQuickslot();
-                                    switch (index){
-                                        case 0:hero.SK1.doSkill();break;
-                                        case 1:hero.SK2.doSkill();break;
-                                        case 2:hero.SK3.doSkill();break;
-                                    }
-                                    Talent.onSkillUsed(Dungeon.hero);
-
-                                }
-                            }
-                            /*if (index == 0) {
-                                if (hero.SK1 != null) {
-                                    if (charge < 30) {
-                                        GLog.w(Messages.get(SkillBook.class, "low_charge"));
-                                    } else {
-                                        float chargeDown = 30 / (RingOfSunLight.SPBonus(Dungeon.hero));
-                                        if (chargeDown < 5) chargeDown = 5;
-                                        charge -= chargeDown;
-                                        updateQuickslot();
-                                        hero.SK1.doSkill();
-                                        Talent.onSkillUsed(Dungeon.hero);
-
-                                        if (Dungeon.isChallenged(Challenges.DECISIVE_BATTLE)) {
-                                            if (hero.buff(NervousImpairment.class) == null) {
-                                                Buff.affect(hero, NervousImpairment.class);
-                                                hero.buff(NervousImpairment.class).Sum(25);
-                                            } else {
-                                                hero.buff(NervousImpairment.class).Sum(25);
-                                            }
-                                        }
-                                    }
-                                } else GLog.w(Messages.get(SkillBook.class, "no_skill"));
+                            Skill skill = null;
+                            int cost = 0;
+                            int minCost = 0;
+                            if (index == 0) {
+                                skill = hero.SK1;
+                                cost = 30;
+                                minCost = 5;
                             } else if (index == 1) {
-                                if (hero.SK2 != null) {
-                                    if (charge < 60) {
-                                        GLog.w(Messages.get(SkillBook.class, "low_charge"));
-                                    } else {
-                                        float chargeDown = 60 / (RingOfSunLight.SPBonus(Dungeon.hero));
-                                        if (chargeDown < 10) chargeDown = 10;
-                                        charge -= chargeDown;
-                                        updateQuickslot();
-                                        hero.SK2.doSkill();
-                                        Talent.onSkillUsed(Dungeon.hero);
-
-                                        if (Dungeon.isChallenged(Challenges.DECISIVE_BATTLE)) {
-                                            if (hero.buff(NervousImpairment.class) == null) {
-                                                Buff.affect(hero, NervousImpairment.class);
-                                                hero.buff(NervousImpairment.class).Sum(25);
-                                            } else {
-                                                hero.buff(NervousImpairment.class).Sum(25);
-                                            }
-                                        }
-                                    }
-                                } else GLog.w(Messages.get(SkillBook.class, "no_skill"));
+                                skill = hero.SK2;
+                                cost = 60;
+                                minCost = 10;
                             } else if (index == 2) {
-                                if (hero.SK3 != null) {
-                                    if (charge < 100) {
-                                        GLog.w(Messages.get(SkillBook.class, "low_charge"));
-                                    } else {
-                                        float chargeDown = 100 / (RingOfSunLight.SPBonus(Dungeon.hero));
-                                        if (chargeDown < 15) chargeDown = 15;
-                                        charge -= chargeDown;
-                                        updateQuickslot();
-                                        hero.SK3.doSkill();
-                                        Talent.onSkillUsed(Dungeon.hero);
+                                skill = hero.SK3;
+                                cost = 100;
+                                minCost = 15;
+                            }
+                            if (skill == null) {
+                                GLog.w(Messages.get(SkillBook.class, "no_skill"));
+                                return;
+                            }
+                            if (charge < cost && !Dungeon.isChallenged(TEST)) {
+                                GLog.w(Messages.get(SkillBook.class, "low_charge"));
+                                return;
+                            }
+                            float chargeDown = cost / (RingOfSunLight.SPBonus(Dungeon.hero));
+                            if (chargeDown < minCost) chargeDown = minCost;
+                            charge -= chargeDown;
+                            updateQuickslot();
 
-                                        if (Dungeon.isChallenged(Challenges.DECISIVE_BATTLE)) {
-                                            if (hero.buff(NervousImpairment.class) == null) {
-                                                Buff.affect(hero, NervousImpairment.class);
-                                                hero.buff(NervousImpairment.class).Sum(25);
-                                            } else {
-                                                hero.buff(NervousImpairment.class).Sum(25);
-                                            }
-                                        }
-                                    }
-                                } else GLog.w(Messages.get(SkillBook.class, "no_skill"));
-                            }*/
+                            skill.doSkill();
+                            Talent.onSkillUsed(Dungeon.hero);
                         }
                     });
         }

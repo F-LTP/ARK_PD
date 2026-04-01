@@ -26,7 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Dummy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Skeleton;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -74,12 +74,12 @@ public class Heamyo extends MeleeWeapon {
             if (cell == null) return;
 
             Char existing = Actor.findChar(cell);
-            if (existing instanceof Dummy) {
+            if (existing instanceof Skeleton) {
                 existing.die(null);
             } else if (existing != null) {
                 GLog.w("Cell occupied by " + existing.getClass().getSimpleName());
             } else if (Dungeon.level.passable[cell] || Dungeon.level.avoid[cell]) {
-                Dummy dummy = new Dummy();
+                Skeleton dummy = new Skeleton();
                 dummy.pos = cell;
                 Dungeon.level.occupyCell(dummy);
                 GameScene.add(dummy);
@@ -88,13 +88,13 @@ public class Heamyo extends MeleeWeapon {
 
         @Override
         public String prompt() {
-            return "召唤/删除训练娃娃";
+            return "훈련인형 소환/삭제";
         }
     };
 
     @Override
     public int max(int lvl) {
-        return  100000000;
+        return 100000000;
     }
 
     @Override
@@ -106,13 +106,13 @@ public class Heamyo extends MeleeWeapon {
     }
 
     @Override
-    public int defenseFactor( Char owner ) {
-        return 600+300*buffedLvl();    //6 extra defence, plus 3 per level;
+    public int defenseFactor(Char owner) {
+        return 600 + 300 * buffedLvl();    //6 extra defence, plus 3 per level;
     }
 
-    public String statsInfo(){
-        if (isIdentified()){
-            return Messages.get(this, "stats_desc", 6+3*buffedLvl());
+    public String statsInfo() {
+        if (isIdentified()) {
+            return Messages.get(this, "stats_desc", 6 + 3 * buffedLvl());
         } else {
             return Messages.get(this, "typical_stats_desc", 6);
         }

@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Slow;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.watabou.utils.Random;
 
 public class Usg extends GunWeapon {
     {
@@ -15,6 +16,7 @@ public class Usg extends GunWeapon {
         FIRE_DELAY_MULT = 1f;
 
         bulletMax = 21;
+        bullet = Random.Int(bulletMax / 2, bulletMax + 1);
         MIN_RANGE = 1;
         MAX_RANGE = 3;
 

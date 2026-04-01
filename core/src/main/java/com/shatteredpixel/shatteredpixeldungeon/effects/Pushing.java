@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.effects;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
@@ -36,14 +37,16 @@ public class Pushing extends Actor {
 	private int to;
 	
 	private Effect effect;
+    private Char ch;
 
 	private Callback callback;
 
 	{
-		actPriority = VFX_PRIO;
+		actPriority = VFX_PRIO+10;
 	}
 	
 	public Pushing( Char ch, int from, int to ) {
+        this.ch = ch;
 		sprite = ch.sprite;
 		this.from = from;
 		this.to = to;
@@ -57,15 +60,19 @@ public class Pushing extends Actor {
 	
 	@Override
 	protected boolean act() {
-		if (sprite != null) {
-			
-			if (effect == null) {
-				new Effect();
-			}
-		}
+        Actor.remove( Pushing.this );
 
-		Actor.remove( Pushing.this );
-
+        if (sprite != null && sprite.parent != null) {
+            if (Dungeon.level.heroFOV[from] || Dungeon.level.heroFOV[to]){
+                sprite.visible = true;
+            }
+            if (effect == null) {
+                new Effect();
+            }
+        } else {
+            if (callback != null) callback.call();
+            return true;
+        }
 		//so that all pushing effects at the same time go simultaneously
 		for ( Actor actor : Actor.all() ){
 			if (actor instanceof Pushing && actor.cooldown() == 0)

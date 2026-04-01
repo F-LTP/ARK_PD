@@ -46,10 +46,7 @@ public class SeaCapsule extends Mob{
         for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
             Char ch = findChar( pos + PathFinder.NEIGHBOURS8[i] );
             if (ch != null && ch.isAlive() && ch.alignment == Alignment.ALLY) {
-                if (ch.buff(NervousImpairment.class) == null) {
-                    Buff.affect(ch, NervousImpairment.class);
-                }
-                ch.buff(NervousImpairment.class).sum(20);
+                Buff.affect(ch, NervousImpairment.class).sum(20);
             }
         }
 

@@ -29,11 +29,11 @@ public class StaffOfLeaf extends DamageWand {
     }
 
     public int min(int lvl){
-        return 1;
+        return 2;
     }
 
     public int max(int lvl){
-        return 5+5*lvl+ RingOfAmplified.DamageBonus(Dungeon.hero) * 5;
+        return 6+5*lvl+ RingOfAmplified.DamageBonus(Dungeon.hero) * 5;
     }
 
     @Override

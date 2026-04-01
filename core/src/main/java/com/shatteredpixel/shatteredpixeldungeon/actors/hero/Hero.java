@@ -582,7 +582,7 @@ public class Hero extends Char {
 
         if (hasTalent(Talent.PEGASUS_AURA) && buff(RadiantKnight.class) != null) {
             float bouns = 1f;
-            bouns += pointsInTalent(Talent.PEGASUS_AURA) / 10.0f;//change from budding
+            bouns += pointsInTalent(Talent.PEGASUS_AURA) / 10.0f;
 
             accuracy *= bouns;
         }
@@ -600,9 +600,7 @@ public class Hero extends Char {
         if (Dungeon.hero.hasTalent(Talent.DRAGONS_SWORD)) {
             float bouns = 1f;
             ChenCombo combo = buff(ChenCombo.class);
-            if (combo != null) bouns += combo.getComboCount() * 0.02f;
-            float maxbouns = 1f + pointsInTalent(Talent.DRAGONS_SWORD) * 0.1f;//change from budding
-            if (bouns > maxbouns) bouns = maxbouns;//change from budding
+            if (combo != null) bouns += Math.min(combo.getComboCount() * 0.02f, pointsInTalent(Talent.DRAGONS_SWORD) * 0.10f);
             accuracy *= bouns;
         }
 
@@ -690,7 +688,7 @@ public class Hero extends Char {
 
         if (buff(IronSkin.class) != null) dr += Random.NormalIntRange(0,2);
 
-        if (hasTalent(Talent.TACTICAL_SHIELD) && belongings.armor!=null) {//change from budding
+        if (hasTalent(Talent.TACTICAL_SHIELD) && belongings.armor!=null) {
             int drplus = belongings.armor.buffedLvl() * 2;
             drplus = Math.min(drplus, 1 + pointsInTalent(Talent.TACTICAL_SHIELD) * 3);
             dr += Random.NormalIntRange(0,drplus);
@@ -1448,7 +1446,7 @@ public class Hero extends Char {
     @Override
     public int attackProc(final Char enemy, int damage) {
         damage = super.attackProc(enemy, damage);
-        float BounsDamage = 0;
+        float bounsDamage = 0;
 
         KindOfWeapon wep = belongings.weapon;
 
@@ -1460,7 +1458,7 @@ public class Hero extends Char {
 
         if (enemy instanceof Mob) {
             if (((Mob) enemy).surprisedBy(this)) {
-                BounsDamage += damage * (RingOfAssassin.supriseattackbouns(this) - 1f);}
+                bounsDamage += damage * (RingOfAssassin.supriseattackbouns(this) - 1f);}
         }
 
         AnnihilationGear Gear = this.belongings.getItem(AnnihilationGear.class);
@@ -1473,7 +1471,7 @@ public class Hero extends Char {
         if (hasTalent(Talent.WEAKNESS_COVER)) {
             int geardmg = Gear.level();
             geardmg *= Random.IntRange(pointsInTalent(Talent.WEAKNESS_COVER) - 1, 2);
-            BounsDamage += geardmg;
+            bounsDamage += geardmg;
         }
 
         if (buff(RadiantKnight.class) != null) {
@@ -1551,7 +1549,7 @@ public class Hero extends Char {
         }
 
         if (hasTalent(Talent.SAVIOR_BELIEF) && (enemy.buff(Roots.class) != null || enemy.buff(Paralysis.class) != null)) {
-            BounsDamage += damage * (pointsInTalent(Talent.SAVIOR_BELIEF) * 0.15f);//change from budding
+            bounsDamage += damage * (pointsInTalent(Talent.SAVIOR_BELIEF) * 0.15f);//change from budding
         }
 
 
@@ -1591,16 +1589,16 @@ public class Hero extends Char {
         if (heat != null) {
             boolean heatbouns = (heat.power() >= 50f);
             if (heat.state() == Heat.State.OVERHEAT) {
-                BounsDamage += damage * 0.5f;
+                bounsDamage += damage * 0.5f;
                 heatbouns = true;
             }
 
             if (heatbouns && hasTalent(Talent.HEAT_BLOW)) {
-                BounsDamage += damage * (0.05f + (pointsInTalent(Talent.HEAT_BLOW) * 0.05f));
+                bounsDamage += damage * (0.05f + (pointsInTalent(Talent.HEAT_BLOW) * 0.05f));
             }
 
             if (hasTalent(Talent.HEAT_OF_ABSORPTION) && heat.state() == Heat.State.OVERHEAT) {
-                int heal = Math.min(10, (int) ((damage + BounsDamage) * (0.01f + (pointsInTalent(Talent.HEAT_OF_ABSORPTION) * 0.01f))));
+                int heal = Math.min(10, (int) ((damage + bounsDamage) * (0.01f + (pointsInTalent(Talent.HEAT_OF_ABSORPTION) * 0.01f))));
                 if (heal > 0) {
                     HP = Math.min(HP + heal, HT);
                     sprite.showStatus(CharSprite.POSITIVE, "+%dHP", heal);
@@ -1615,7 +1613,7 @@ public class Hero extends Char {
             }
         }
 
-        damage += BounsDamage;
+        damage += bounsDamage;
 
         return damage;
     }
@@ -1707,9 +1705,8 @@ public class Hero extends Char {
             for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
                 if (Dungeon.level.adjacent(mob.pos, this.pos) && mob.alignment != Char.Alignment.ALLY) {
                     mob.damage(Math.min(drRoll(), mob.HT / 3), this);
-                    if (!enemy.isAlive() && enemy instanceof Ghoul == false) {
+                    if (!enemy.isAlive() && !(enemy instanceof Ghoul)) {
                         CellEmitter.center(enemy.pos).burst(BlastParticle.FACTORY, 10);
-                        //enemy.sprite.killAndErase();//change from budding
                     }
                 }
             }

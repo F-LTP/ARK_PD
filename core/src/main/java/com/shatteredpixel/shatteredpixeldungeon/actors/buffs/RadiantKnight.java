@@ -1,8 +1,11 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 
 public class RadiantKnight extends FlavourBuff {
@@ -41,6 +44,13 @@ public class RadiantKnight extends FlavourBuff {
     public void fx(boolean on) {
         if (on) target.sprite.add(CharSprite.State.HIKARI);
         else target.sprite.remove(CharSprite.State.HIKARI);
+        if (target instanceof Hero) {
+            Hero hero = (Hero) target;
+            if (hero.heroClass == HeroClass.NEARL) {
+                ((HeroSprite) target.sprite).spearForm = on && hero.CharSkin == 0;
+                ((HeroSprite) target.sprite).updateArmor();
+            }
+        }
     }
 
 }

@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.BombtailSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -68,6 +69,13 @@ public class Skeleton extends Mob {
 
     public boolean isPrimed() {
         return explodeNextTurn;
+    }
+
+    @Override
+    public CharSprite sprite() {
+        CharSprite s = super.sprite();
+        if (explodeNextTurn) s.tint( 0xFF0000, 0.5f );
+        return s;
     }
 
     private static final String HAS_PRIMED = "has_primed";
@@ -173,7 +181,7 @@ public class Skeleton extends Mob {
 		}
 
         explodeNextTurn = false;
-        die( primeCause );
+        die( primeCause != null ? primeCause : this );
 
 		if (heroKilled) {
 			Dungeon.fail( getClass() );

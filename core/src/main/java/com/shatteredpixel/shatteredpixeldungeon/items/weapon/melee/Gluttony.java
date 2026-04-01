@@ -11,7 +11,10 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.items.Bonk;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -63,6 +66,11 @@ public class Gluttony extends MeleeWeapon {
                     charge -= 50;
                     Sample.INSTANCE.play(Assets.Sounds.BLAST);
                     hero.sprite.zap(hero.pos);
+                    Buff buff = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
+                    if (buff != null) buff.detach();
+                    buff = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
+                    if (buff != null) buff.detach();
+                    if (Dungeon.hero.buff(Bonk.BonkBuff.class) != null) Buff.detach(Dungeon.hero, Bonk.BonkBuff.class);
                     Invisibility.dispel();
                     updateQuickslot();
                     hero.spendAndNext(1f);
@@ -71,7 +79,7 @@ public class Gluttony extends MeleeWeapon {
             else {
                 Buff.affect(hero, Roots.class, 5f);
                 cursedKnown = true;
-                charge -= 50;
+                charge = Math.max(0, charge - 50);
                 Invisibility.dispel();
                 updateQuickslot();
                 hero.spendAndNext(1f);

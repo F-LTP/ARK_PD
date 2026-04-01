@@ -31,7 +31,6 @@ import com.watabou.gltextures.TextureCache;
 import com.watabou.glwrap.Blending;
 import com.watabou.glwrap.Vertexbuffer;
 import com.watabou.input.InputHandler;
-import com.watabou.input.PointerEvent;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
@@ -217,7 +216,11 @@ public class Game implements ApplicationListener {
 		instance.requestedReset = true;
 		instance.onChange = callback;
 	}
-	
+
+    public static boolean switchingScene() {
+        return instance.requestedReset;
+    }
+
 	public static Scene scene() {
 		return instance.scene;
 	}

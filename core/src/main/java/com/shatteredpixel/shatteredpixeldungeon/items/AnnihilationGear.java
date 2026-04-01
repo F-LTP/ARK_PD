@@ -297,7 +297,6 @@ public class Spriteex extends MissileWeapon {
 
     @Override
     protected void onThrow( int cell ) {
-        Char enemy = Actor.findChar( cell );
         parent = null;
         Splash.at( cell, 0xCC99FFFF, 1 );
         isHit(cell);
@@ -354,13 +353,13 @@ public class Spriteex extends MissileWeapon {
         }
 
         if (Dungeon.hero.hasTalent(Talent.POWERGEAR)) {
-            Ballistica trajectory = new Ballistica(curUser.pos, enemy.pos, Ballistica.STOP_TARGET);
+            Ballistica trajectory = new Ballistica(Dungeon.hero.pos, enemy.pos, Ballistica.STOP_TARGET);
             trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
             WandOfBlastWave.throwChar(enemy, trajectory, Dungeon.hero.pointsInTalent(Talent.POWERGEAR)); // 넉백 효과
         }
 
         int dmg = Random.NormalIntRange(min(), max());
-        if (curUser.buff(Rose_Force.class) != null) {
+        if (Dungeon.hero.buff(Rose_Force.class) != null) {
             if (Dungeon.hero.hasTalent(Talent.FOCUSED_ATTACK)) {
                 dmg *= 1.5f + (float) Dungeon.hero.pointsInTalent(Talent.FOCUSED_ATTACK) * 0.15f;
             } else dmg *= 1.5f;
@@ -387,7 +386,7 @@ public class Spriteex extends MissileWeapon {
 
         // 마법 부여 효과
 
-        if (curUser.subClass == HeroSubClass.DESTROYER){
+        if (Dungeon.hero.subClass == HeroSubClass.DESTROYER){
             switch (arts) {
                 case 0: default: break;
                 case 1:
@@ -396,29 +395,29 @@ public class Spriteex extends MissileWeapon {
                 case 2:
                     for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
                     if (Dungeon.level.adjacent(mob.pos, enemy.pos) && mob.alignment != Char.Alignment.ALLY && mob != enemy) {
-                        mob.damage(5 + buffedLvl() * 3, curUser);
+                        mob.damage(5 + buffedLvl() * 3, Dungeon.hero);
                     }}
                     break;
                 case 3:
-                    int distance = Dungeon.level.distance(curUser.pos, enemy.pos) - 1;
+                    int distance = Dungeon.level.distance(Dungeon.hero.pos, enemy.pos) - 1;
                     float DamageLevel = 1.1f + (0.008f * buffedLvl());
                     if (distance < 3) break;
                     else if (distance < 5) dmg = Math.round(dmg * DamageLevel);
                     else dmg = Math.round(dmg * (DamageLevel * 1.2f));
                     break;
             }}
-        else if (curUser.subClass == HeroSubClass.GUARDIAN){
+        else if ( Dungeon.hero.subClass == HeroSubClass.GUARDIAN){
             switch (arts) {
                 case 0: default: break;
                 case 1:
                     if (artsused < 2) {
-                        Buff.affect(curUser, MagicImmune.class, 3f);
+                        Buff.affect( Dungeon.hero, MagicImmune.class, 3f);
                         artsused++;
                     }
                     break;
                 case 2:
                     if (artsused < 2) {
-                        if (enemy.HP < enemy.HT /2 && enemy.properties().contains(Char.Property.BOSS) == false && enemy.properties().contains(Char.Property.MINIBOSS) == false) {
+                        if (enemy.HP < enemy.HT /2 && !enemy.properties().contains(Char.Property.BOSS) && !enemy.properties().contains(Char.Property.MINIBOSS)) {
                             enemy.damage(999, new Naginata.naginataSkill());//change from budding
                             //dmg = 999;
                             artsused++;
@@ -442,12 +441,12 @@ public class Spriteex extends MissileWeapon {
         else if (enemy instanceof Talulah) { dmg *= 0.65f; } // 탈룰라? 를 상대로 피해 35%감소
         else if (enemy instanceof Mon3tr) { dmg *= 0.85f; } // Mon3tr를 상대로 피해 15%감소
 
-        enemy.damage(dmg, curUser);
+        enemy.damage(dmg,  Dungeon.hero);
 
 
         // 서브 직업이 파괴라면, 집중 버프 부여
-        if (curUser.subClass == HeroSubClass.DESTROYER)
-            Buff.affect(curUser, Rose_Force.class, Rose_Force.DURATION);
+        if ( Dungeon.hero.subClass == HeroSubClass.DESTROYER)
+            Buff.affect( Dungeon.hero, Rose_Force.class, Rose_Force.DURATION);
 
         // 마비
         if (enemy.isAlive()) {
@@ -488,10 +487,8 @@ public class Spriteex extends MissileWeapon {
      }
 
      public Weapon.Augment WeaponAug() {
-      if (Dungeon.hero.belongings.weapon == null) return Weapon.Augment.NONE;
-      if (Dungeon.hero.belongings.weapon instanceof Pickaxe) return Weapon.Augment.NONE;
-       Weapon.Augment wep = ((MeleeWeapon)Dungeon.hero.belongings.weapon).augment;//change from budding
-       return wep;
+        if (!(Dungeon.hero.belongings.weapon instanceof MeleeWeapon)) return Weapon.Augment.NONE;
+        return ((MeleeWeapon) Dungeon.hero.belongings.weapon).augment;
      }
 
      public static class WarCatBuff1 extends Buff {}

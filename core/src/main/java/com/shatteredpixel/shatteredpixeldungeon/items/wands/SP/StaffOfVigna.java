@@ -41,7 +41,7 @@ public class StaffOfVigna extends DamageWand {
     }
 
     public int max(int lvl){
-        return 8+6*lvl+ (Dungeon.hero != null ? RingOfAmplified.DamageBonus(Dungeon.hero) : 0) * 6;
+        return 8+5*lvl+ (Dungeon.hero != null ? RingOfAmplified.DamageBonus(Dungeon.hero) : 0) * 5;
     }
 
     @Override
@@ -117,7 +117,7 @@ public class StaffOfVigna extends DamageWand {
             processSoulMark(ch, chargesPerCast());
             int dmg = damageRoll(lvl);
             if (Random.Float() < critChance()) {
-                dmg = (int) (dmg * 1.5f); // 크리티컬 (레벨에 따라 확률 증가)
+                dmg = (int) (dmg * 1.35f); // 크리티컬 (레벨에 따라 확률 증가)
             }
             ch.damage( dmg, this );
             Buff.affect(ch, Vulnerable.class, 2 + lvl);
@@ -132,8 +132,8 @@ public class StaffOfVigna extends DamageWand {
     }
 
     private float critChance() {
-        if (buffedLvl() >= 10) return 1f;
-        return (float)(0.20 * Math.pow(5.0, buffedLvl() / 10.0));
+        if (buffedLvl() >= 12) return 1f;
+        return (float)(0.20 * Math.pow(5.0, buffedLvl() / 12.0));
     }
 
     private int critChancePct() {

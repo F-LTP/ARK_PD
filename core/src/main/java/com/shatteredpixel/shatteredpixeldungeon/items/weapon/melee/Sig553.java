@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Silence;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.watabou.utils.Random;
 
 public class Sig553 extends GunWeapon {
     {
@@ -17,6 +18,7 @@ public class Sig553 extends GunWeapon {
         FIRE_DELAY_MULT = 0.75f;
 
         bulletMax = 31;
+        bullet = Random.Int(bulletMax / 2, bulletMax + 1);
         MIN_RANGE = 2;
         MAX_RANGE = 6;
 

@@ -131,8 +131,10 @@ public class Ceylon extends NPC {
         public static ArmorUpKit reward;
 
         public static void reset() {
+            alternative = false;
             spawned = false;
-
+            given = false;
+            completed = false;
             reward = null;
         }
 

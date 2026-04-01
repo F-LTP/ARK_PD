@@ -10,7 +10,62 @@ import java.util.ArrayList;
 
 public class v0_5_X_Changes {
     public static void addAllChanges(ArrayList<ChangeInfo> changeInfos) {
+        add_v0_5_1_Changes(changeInfos);
         add_v0_5_0_Changes(changeInfos);
+    }
+
+    public static void add_v0_5_1_Changes(ArrayList<ChangeInfo> changeInfos) {
+        ChangeInfo changes = new ChangeInfo("v0.5.1", true, "");
+        changes.hardlight(Window.TITLE_COLOR);
+        changeInfos.add(changes);
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+        changes.hardlight(Window.TITLE_COLOR);
+        changes.addButton(new ChangeButton(Icons.get(Icons.WEP), "산탄총",
+                "새로운 사격무기 종류인 _산탄총_이 추가되었습니다. 탄약수는 적지만 광역딜과 강력한 단일 딜링 능력을 가진 무기입니다." + "\n\n" +
+                        "_캐시디_ 2티어 산탄총입니다. 2발만 장전 가능하지만 대가로 매우 강한 공격력을 가진 샷건입니다." + "\n\n" +
+                        "_SG CQB_ 4티어 산탄총입니다. 무난한 샷건입니다." + "\n\n" +
+                        "_M870_ 5티어 산탄총입니다. 더욱 많은 펠릿을 발사하지만 집탄률이 낮습니다."));
+        changeInfos.add(changes);
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+        changes.hardlight(CharSprite.WARNING);
+        changes.addButton(new ChangeButton(Icons.get(Icons.WEP), "부착물 변경",
+                "_부착물_들이 산탄총에 대한 전용 효과를 가지게 되었습니다."));
+        changes.addButton(new ChangeButton(Icons.get(Icons.ALERT), "폭발새 변경",
+                "_폭발새_이 1턴 딜레이 후 폭발하도록 변경되었습니다."));
+        changes.addButton(new ChangeButton(Icons.get(Icons.WEP), "무기 스킬 변경",
+                "공격형 _무기 스킬_ 사용 시 투명 해제 및 시간정지가 중단됩니다."));
+        changes.addButton(new ChangeButton(Icons.get(Icons.ARKPD), "머드락 스킨",
+                "_머드락_ 스킨 해금 조건이 변경되었습니다: 협약 3개 이상으로 클리어"));
+        changes.addButton(new ChangeButton(Icons.get(Icons.BUG_KILL), "버그 수정",
+                "_위매니의 의지_가 더 이상 침묵에 면역이 아닙니다." + "\n\n" +
+                        "아이템이 _퀵슬롯_에서 정상적으로 유지되도록 수정했습니다." + "\n\n" +
+                        "_신경손상_이 음수로 내려가지 않도록 수정했습니다." + "\n\n" +
+                        "_빛의 인장_이 로도스에서 충전되지 않도록 수정했습니다." + "\n\n" +
+                        "다양한 크래시 및 프리즈를 수정했습니다."));
+        changeInfos.add(changes);
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
+        changes.hardlight(CharSprite.POSITIVE);
+        changes.addButton(new ChangeButton(Icons.get(Icons.WEP), "사격무기 상향",
+                "재장전 시간이 2턴으로 변경되었습니다. (OTs-03, DP27, 6P41은 3턴 유지)" + "\n\n" +
+                        "더 많은 탄약을 가진 채로 드롭됩니다."));
+        changes.addButton(new ChangeButton(Icons.get(Icons.WEP_WOND), "스태프 상향",
+                "_스태프 오브 리프_ 데미지가 1~5(+5)에서 2~6(+5)로 증가했습니다." + "\n\n" +
+                        "_스태프 오브 그레이_ 데미지가 3(+1)~8(+4)에서 6(+1)~9(+4)로 증가했습니다."));
+        changes.addButton(new ChangeButton(Icons.get(Icons.ENEMY_BUFFS), "폭발새 상향",
+                "폭발 데미지가 17~25에서 21~29로 증가했습니다." + "\n\n" +
+                        "더이상 폭발 데미지가 방어도의 두배 효과를 받지 않습니다."));
+        changeInfos.add(changes);
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
+        changes.hardlight(CharSprite.NEGATIVE);
+        changes.addButton(new ChangeButton(Icons.get(Icons.WEP_WOND), "스태프 오브 비그나 하향",
+                "치명타 데미지가 +50%에서 +35%로 감소했습니다." + "\n\n" +
+                        "치명타 확률이 감소했습니다. +12에서 확정 치명타가 발생합니다." + "\n\n" +
+                        "데미지가 4(+1)~8(+6)에서 4(+1)~8(+5)로 감소했습니다."));
+        changeInfos.add(changes);
     }
 
     public static void add_v0_5_0_Changes(ArrayList<ChangeInfo> changeInfos) {
@@ -53,7 +108,7 @@ public class v0_5_X_Changes {
                 "_빛의 인장_이 최대 10레벨까지 성장할 수 있게 되었습니다." + "\n\n" +
                         "_섬광_ 직군은 빛의 인장 발동시 시야 내 모든 적에게 데미지를 줍니다." + "\n\n" +
                         "_구제자_ 직군은 새로운 액티브 스킬 _방패 밀기_가 추가되었습니다. 피해를 받을수록 충전되며, 데미지와 마비, 넉백을 줍니다." + "\n\n" +
-                        "_기사_ 직군은 빛의 인장 발동시 더 이상 턴을 소모하지 않습니다."  + "\n\n" +
+                        "_기사_ 직군은 빛의 인장 발동시 더 이상 턴을 소모하지 않습니다." + "\n\n" +
                         "여러 특성이 변경되었습니다."));
         changes.addButton(new ChangeButton(Icons.get(Icons.AMIYA), "아미야 변경",
                 "_스태프 개조 키트_로 _흑요석 반지_의 무기 티어를 영구적으로 2단계 올릴 수 있습니다."));

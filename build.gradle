@@ -14,7 +14,7 @@ allprojects {
         appName = '明日方舟地牢注解版'
         appPackageName = 'com.shatteredpixel.tomorrowpixel'
 
-        appVersionCode = 26031722
+        appVersionCode = 26033019
         appVersionName = '0.5.1'
 
         appJavaCompatibility = JavaVersion.VERSION_11

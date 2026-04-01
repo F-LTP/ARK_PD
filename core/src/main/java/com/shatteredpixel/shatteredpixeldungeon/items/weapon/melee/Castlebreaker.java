@@ -206,7 +206,7 @@ public class Castlebreaker extends MeleeWeapon {
 			Dungeon.level.pressCell(bolt.collisionPos);
 		}
 		charge -=40;
-		Buff buff = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);//change from budding
+		Buff buff = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
 		if (buff != null) buff.detach();
 		buff = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
 		if (buff != null) buff.detach();

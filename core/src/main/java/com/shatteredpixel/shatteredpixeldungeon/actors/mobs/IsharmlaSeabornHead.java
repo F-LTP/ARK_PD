@@ -94,7 +94,7 @@ public class IsharmlaSeabornHead extends Mob {
             return INFINITE_EVASION;
         }
 
-        else return defenseSkill;
+        else return super.defenseSkill(enemy);
     }
 
     // 사거리 2
@@ -293,6 +293,7 @@ public class IsharmlaSeabornHead extends Mob {
         bundle.put( WAVE_COOLDOWN, waveCooldown);
     }
 
+    @Override
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
 
@@ -464,10 +465,7 @@ public class IsharmlaSeabornHead extends Mob {
                                     && !(ch instanceof IsharmlaSeabornBody)
                                     && !(ch instanceof IsharmlaSeabornTail)) {
                                 Buff.prolong(ch, Blindness.class, 3f);
-                                if (ch.buff(NervousImpairment.class) == null) {
-                                    Buff.affect(ch, NervousImpairment.class);
-                                }
-                                ch.buff(NervousImpairment.class).sum(40);
+                                Buff.affect(ch, NervousImpairment.class).sum(40);
                                 ch.damage(Random.Int(25, 55), this);
                             }
 

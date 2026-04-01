@@ -56,8 +56,8 @@ public class GunWeapon extends MeleeWeapon {
     protected static final int RELOAD_AMOUNT = 31;
 
     protected int bulletTier = 3;
-    protected int bullet = 5;
     protected int bulletMax = 25;
+    protected int bullet = 0;
     protected int specialBullet = 0;
     protected boolean specialFire = false; // 특수 사격 여부
     protected boolean gamza = false; // 썬더볼트 장착 여부
@@ -65,7 +65,7 @@ public class GunWeapon extends MeleeWeapon {
     protected int MIN_RANGE = 1;
     protected int MAX_RANGE = 4;
 
-    protected float RELOAD_DELAY = 3f;
+    protected float RELOAD_DELAY = 2f;
 
     @Override
     public int max(int lvl) {
@@ -234,7 +234,7 @@ public class GunWeapon extends MeleeWeapon {
 
         if (action.equals(AC_RELOAD)) {
             curUser = hero;
-            GameScene.selectItem(itemSelector, WndBag.Mode.MISSILEWEAPON, Messages.get(this, "prompt"));
+            GameScene.selectItem(itemSelector, WndBag.Mode.MISSILEWEAPON, Messages.get(this, "reload_prompt"));
             QuickSlotButton.cancel();
         }
 
@@ -382,7 +382,9 @@ public class GunWeapon extends MeleeWeapon {
                 effectiveDamage = (int) (effectiveDamage * 1.33f);
             }
 
-            effectiveDamage = Dungeon.hero.attackProc( ch, effectiveDamage );
+            if (triggerTalentProcs) {
+                effectiveDamage = Dungeon.hero.attackProc( ch, effectiveDamage );
+            }
 
             // If the enemy is already dead, interrupt the attack.
             // This matters as defence procs can sometimes inflict self-damage, such as armor glyphs.
@@ -402,13 +404,14 @@ public class GunWeapon extends MeleeWeapon {
             if (triggerTalentProcs && specialFire) {
                 specialFire(ch);
             }
-            if (this instanceof C1_9mm) {
-                if (Random.Int(8) == 0) Buff.affect(ch, Chill.class, 2f);
-            }
+
 
             ch.sprite.burst(0xFFFFFFFF, buffedLvl() / 2 + 2);
 
             if (triggerTalentProcs) {
+                if (this instanceof C1_9mm) {
+                    if (Random.Int(8) == 0) Buff.affect(ch, Chill.class, 2f);
+                }
                 // 사격 그레이스롯 판정
                 int bonusTurns = Dungeon.hero.hasTalent(Talent.SHARED_UPGRADES) ? this.buffedLvl() : 0;
                 if (Dungeon.hero.subClass == HeroSubClass.SNIPER) Buff.prolong(Dungeon.hero, SnipersMark.class, SnipersMark.DURATION).set(ch.id(), bonusTurns);
@@ -475,23 +478,21 @@ public class GunWeapon extends MeleeWeapon {
         Invisibility.dispel();
 
         // Each source independently checks to save the bullet
-        // If ANY check succeeds, the bullet is saved
         boolean savedBullet = false;
-        int bulletConsumeChance = Random.Int(100);
+
         // Check if gun accessories saves the bullet
-        if (gunAccessories != null && gunAccessories.GetSavingChance() >= bulletConsumeChance) {
+        if (gunAccessories != null && Random.Int(100) < gunAccessories.GetSavingChance()) {
             savedBullet = true;
         }
 
         // Check if frugality talent saves the bullet
         if (closerRange != null && closerRange.state() && Dungeon.hero.hasTalent(Talent.FRUGALITY)
-                && Dungeon.hero.pointsInTalent(Talent.FRUGALITY) * 15 >= bulletConsumeChance) {
+                && Random.Int(100) < Dungeon.hero.pointsInTalent(Talent.FRUGALITY) * 15) {
             savedBullet = true;
         }
 
         // Check if ring of sharpshooting saves the bullet
-        float ammoMult = RingOfSharpshooting.ammoMultiplier(Dungeon.hero);
-        if (ammoMult > 0f && ammoMult * 100f >= bulletConsumeChance) {
+        if (Random.Float() < RingOfSharpshooting.ammoMultiplier(Dungeon.hero)) {
             savedBullet = true;
         }
 
@@ -559,7 +560,6 @@ public class GunWeapon extends MeleeWeapon {
     private static final String SP = "spshot";
     private static final String SP_BULLET_COUNT = "spBulletCount";
     private static final String ACCESSORIES = "GunAccessories";
-    private static final String SPECIAL_FIRE = "specialFire";
 
     @Override
     public void storeInBundle(Bundle bundle) {

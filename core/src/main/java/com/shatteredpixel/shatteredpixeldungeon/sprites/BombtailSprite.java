@@ -62,7 +62,7 @@ public class BombtailSprite extends MobSprite {
     @Override
     public void resetColor() {
         super.resetColor();
-        if (ch instanceof Skeleton && ((Skeleton)ch).isPrimed()) {
+        if (ch != null && ch instanceof Skeleton && ((Skeleton)ch).isPrimed()) {
             tint(0xFF0000, 0.5f);
         }
     }

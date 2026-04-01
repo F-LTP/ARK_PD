@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Slow;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.watabou.utils.Random;
 
 public class Pkp extends GunWeapon {
     {
@@ -15,8 +16,10 @@ public class Pkp extends GunWeapon {
         hitSoundPitch = 0.9f;
 
         FIRE_DELAY_MULT = 0.5f;
+        RELOAD_DELAY = 3f;
 
         bulletMax = 101;
+        bullet = Random.Int(bulletMax / 2, bulletMax + 1);
         MIN_RANGE = 1;
         MAX_RANGE = 4;
 

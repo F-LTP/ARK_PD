@@ -88,9 +88,15 @@ public class ShotgunWeapon extends GunWeapon {
             rays.add(centerBolt);
         }
 
-        if (coneCells.size() <= PELLET_COUNT - 1) {
-            // Fewer unique spread cells than needed — use all of them
-            for (int cell : coneCells) {
+        if (coneCells.isEmpty()) {
+            // No spread cells found — duplicate center pellet for all remaining
+            for (int i = 0; i < PELLET_COUNT - 1; i++) {
+                rays.add(new Ballistica(from, centerFarCell, Ballistica.PROJECTILE));
+            }
+        } else if (coneCells.size() <= PELLET_COUNT - 1) {
+            // Fewer unique spread cells than needed — sample with replacement
+            for (int i = 0; i < PELLET_COUNT - 1; i++) {
+                int cell = coneCells.get(Random.Int(coneCells.size()));
                 rays.add(new Ballistica(from, cell, Ballistica.PROJECTILE));
             }
         } else {

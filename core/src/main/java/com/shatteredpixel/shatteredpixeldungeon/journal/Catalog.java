@@ -168,6 +168,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.AssassinsBlad
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.BattleAxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Beowulf;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.C1_9mm;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Cassidy;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.CatGun;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.CrabGun;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Crossbow;
@@ -190,6 +191,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gauntlet;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.KazemaruWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.KollamSword;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LoneJourney;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.M870;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Ots03;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Pkp;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SG_CQB;
@@ -290,6 +292,7 @@ public enum Catalog {
 		WEAPONS.seen.put( Halberd.class,                       false);
 		WEAPONS.seen.put( FlameKatana.class,                       false);
 		WEAPONS.seen.put( Usg.class,                   false);
+        WEAPONS.seen.put( Cassidy.class,                   false);
 
 		WEAPONS.seen.put( Sword.class,                      false);
 		WEAPONS.seen.put( ThermiteBlade.class,                       false);
@@ -319,7 +322,7 @@ public enum Catalog {
 		WEAPONS.seen.put( KazemaruWeapon.class,                   false);
 		WEAPONS.seen.put( Beowulf.class,                   false);
 		WEAPONS.seen.put( Ots03.class,                   false);
-		//WEAPONS.seen.put( SG_CQB.class,                   false);
+		WEAPONS.seen.put( SG_CQB.class,                   false);
 
 		WEAPONS.seen.put( Greatsword.class,                 false);
 		WEAPONS.seen.put( Laevateinn.class,                  false);
@@ -332,6 +335,7 @@ public enum Catalog {
 		WEAPONS.seen.put( SwordofArtorius.class,                   false);
 		WEAPONS.seen.put( DivineAvatar.class,                false);
 		WEAPONS.seen.put( R4C.class,                false);
+        WEAPONS.seen.put( M870.class,                false);
 		WEAPONS.seen.put( Pkp.class,                   false);
 		WEAPONS.seen.put( RadiantSpear.class,                false);
 		WEAPONS.seen.put( KRISSVector.class,                false);

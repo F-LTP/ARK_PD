@@ -579,7 +579,7 @@ public class Generator {
                     WarJournalist.class,
                     KazemaruWeapon.class,
                     Beowulf.class,
-                    //SG_CQB.class,산탄총의 프롭 등록되지 않음
+                    SG_CQB.class,//산탄총의 프롭 등록되지 않음
                     DP27.class,
                     Ots03.class,
 
@@ -588,7 +588,7 @@ public class Generator {
                     GoldDogSword.class,
                     SanktaBet.class
             };
-            WEP_T4.probs = new float[]{4, 5, 4, 4, 3, 4, 4, 4, 3, 3, 2, 4, 2, 3, 4, 4, 4, 3, 0, 0, 0, 0};
+            WEP_T4.probs = new float[]{4, 5, 4, 4, 3, 4, 4, 4, 3, 3, 2, 4, 2, 3, 4, 4, 4, 3, 3, 0, 0, 0, 0};
 
             WEP_T5.classes = new Class<?>[]{
                     Greatsword.class,

@@ -13,6 +13,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.watabou.utils.Random;
 
 public class R4C extends GunWeapon {
     {
@@ -23,6 +24,7 @@ public class R4C extends GunWeapon {
         FIRE_DELAY_MULT = 0.75f;
 
         bulletMax = 31;
+        bullet = Random.Int(bulletMax / 2, bulletMax + 1);
         MIN_RANGE = 2;
         MAX_RANGE = 6;
 

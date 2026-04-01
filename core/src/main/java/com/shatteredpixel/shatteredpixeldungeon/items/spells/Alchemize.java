@@ -46,15 +46,17 @@ public class Alchemize extends Spell implements AlchemyScene.AlchemyProvider {
 		AlchemyScene.setProvider(this);
 		TomorrowRogueNight.switchScene(AlchemyScene.class);
 	}
-	
+
+    private int energy = 4;
+
 	@Override
 	public int getEnergy() {
-		return 4;
+		return energy;
 	}
 	
 	@Override
 	public void spendEnergy(int reduction) {
-		//do nothing
+        energy = Math.max(0, energy - reduction);
 	}
 	
 	@Override

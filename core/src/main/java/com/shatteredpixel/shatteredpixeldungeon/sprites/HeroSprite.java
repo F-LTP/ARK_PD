@@ -45,6 +45,8 @@ public class HeroSprite extends CharSprite {
 	private Animation fly;
 	private Animation read;
 
+    public boolean spearForm = false;
+
 	public HeroSprite() {
 		super();
 
@@ -60,8 +62,14 @@ public class HeroSprite extends CharSprite {
 	}
 	
 	public void updateArmor() {
-		texture(Dungeon.hero.heroClass.spritesheet());
-		TextureFilm film = new TextureFilm(tiers(), Dungeon.hero.tier(), 36, 34);
+        TextureFilm film;
+        if (spearForm) {
+            texture(Assets.Sprites.NEARL_SPEAR);
+            film = new TextureFilm(texture, 36, 34);
+        } else {
+            texture(Dungeon.hero.heroClass.spritesheet());
+            film = new TextureFilm(tiers(), Dungeon.hero.tier(), 36, 34);
+        }
 
 		idle = new Animation( 7, true );
 		idle.frames( film, 41, 42, 43, 44, 45, 46, 41, 42, 43, 44, 45, 46, 41, 42, 43, 44, 45, 46, 41, 42, 43, 44, 45, 46, 41, 42, 43, 47, 48, 46 );

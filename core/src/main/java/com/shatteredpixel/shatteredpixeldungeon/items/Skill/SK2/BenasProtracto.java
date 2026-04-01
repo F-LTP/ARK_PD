@@ -26,7 +26,12 @@ public class BenasProtracto extends Skill {
             int p = Dungeon.hero.pos + PathFinder.NEIGHBOURS8[i];
             if (Actor.findChar(p) == null && Dungeon.level.passable[p]) {
                 respawnPoints.add(p); } }
-        if (respawnPoints.size()>0){//change from budding
+
+        if (respawnPoints.isEmpty()) {
+            curUser.spendAndNext(1);
+            return;
+        }
+
         int index = Random.index(respawnPoints);
 
         MirrorImage mob = new MirrorImage();
@@ -41,5 +46,5 @@ public class BenasProtracto extends Skill {
         CellEmitter.get(curUser.pos).burst(Speck.factory(Speck.WOOL), 10);
         Sample.INSTANCE.play(Assets.Sounds.SKILL_BASIC);
         curUser.spendAndNext(1);
-    }}
+    }
 }

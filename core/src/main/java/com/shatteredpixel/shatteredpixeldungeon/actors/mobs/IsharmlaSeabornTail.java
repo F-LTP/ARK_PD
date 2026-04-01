@@ -63,7 +63,7 @@ public class IsharmlaSeabornTail extends Mob {
             return INFINITE_EVASION;
         }
 
-        else return defenseSkill;
+        else return super.defenseSkill(enemy);
     }
 
     // 캐릭터가 물 위라면 어디든지 공격 가능

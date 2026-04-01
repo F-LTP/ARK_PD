@@ -10,6 +10,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Random;
 import com.watabou.utils.Callback;
 
 public class DP27 extends GunWeapon {
@@ -19,8 +20,9 @@ public class DP27 extends GunWeapon {
         hitSoundPitch = 0.9f;
 
         FIRE_DELAY_MULT = 0.5f;
-
+        RELOAD_DELAY = 3f;
         bulletMax = 47;
+        bullet = Random.Int(bulletMax / 2, bulletMax + 1);
         MIN_RANGE = 1;
         MAX_RANGE = 4;
 

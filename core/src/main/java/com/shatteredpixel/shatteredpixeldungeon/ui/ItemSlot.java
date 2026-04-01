@@ -117,11 +117,15 @@ public class ItemSlot extends Button {
         sprite.x = x + margin.left + (width - sprite.width * 0.65f - (margin.left + margin.right)) / 2f;
         sprite.y = y + margin.top + (height - sprite.height * 0.625f - (margin.top + margin.bottom)) / 2f;
 		PixelScene.align(sprite);
-		
+
 		if (status != null) {
 			status.measure();
-            if (status.width > width - (margin.left + margin.right)){
-				status.scale.set(PixelScene.align(0.8f));
+            float availW = width - (margin.left + margin.right);
+            float extraW = (extra != null && extra.parent != null && extra.width() > 0) ? extra.width() : 0;
+            float targetW = availW - extraW;
+            if (status.width > targetW * 0.75f){
+                status.scale.set(PixelScene.align(
+                        Math.max(0.6f, targetW * 0.75f / status.width)));
 			} else {
 				status.scale.set(1f);
 			}

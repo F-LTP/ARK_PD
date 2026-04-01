@@ -339,7 +339,7 @@ public class Dungeon {
 		Wandmaker.Quest.reset();
 		Blacksmith.Quest.reset();
 		Imp.Quest.reset();
-		Ceylon.Quest.reset();//change from budding
+		Ceylon.Quest.reset();
         Dario.Quest.reset();
         TheEndspeaker.Status.reset();
 
@@ -1019,6 +1019,7 @@ public class Dungeon {
         updateLevelExplored();
         Statistics.gameWon = true;
         Badges.validateChenUnlock();
+        Badges.saveGlobal();
 		hero.belongings.identify();
 
 		Rankings.INSTANCE.submit( true, cause );
@@ -1077,7 +1078,7 @@ public class Dungeon {
 		if (hero.buff(MindVision.class) != null){
 			for (Mob m : level.mobs.toArray(new Mob[0])){
 				BArray.or( level.visited, level.heroFOV, m.pos - 1 - level.width(), 3, level.visited );
-				BArray.or( level.visited, level.heroFOV, m.pos, 3, level.visited );
+				BArray.or( level.visited, level.heroFOV, m.pos - 1, 3, level.visited );
 				BArray.or( level.visited, level.heroFOV, m.pos - 1 + level.width(), 3, level.visited );
 				//updates adjacent cells too
 				GameScene.updateFog(m.pos, 2);

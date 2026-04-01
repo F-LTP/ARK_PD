@@ -296,7 +296,7 @@ public class Ring extends KindofMisc {
 	@Override
 	public int buffedLvl() {
 		int lvl = super.buffedLvl();
-		if (Dungeon.hero.buff(EnhancedRings.class) != null){
+        if (Dungeon.hero != null && Dungeon.hero.buff(EnhancedRings.class) != null){
 			lvl++;
 		}
 		return lvl;

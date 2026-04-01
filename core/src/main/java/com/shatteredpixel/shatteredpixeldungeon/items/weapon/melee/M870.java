@@ -17,6 +17,7 @@ public class M870 extends ShotgunWeapon {
 
         FIRE_DELAY_MULT = 1.0f;
         bulletMax = 8;
+        bullet = bulletMax;
         MAX_RANGE = 5;
 
         PELLET_COUNT = 7;

@@ -116,7 +116,7 @@ public class AntiMagic extends Armor.Glyph {
 		RESISTS.add(StaffOfGreyy.class);
 		RESISTS.add(StaffOfLeaf.class);
 		RESISTS.add(StaffOfMayer.class);
-		RESISTS.add(StaffOfMayer.Ward.class);//change from budding
+		RESISTS.add(StaffOfMayer.Ward.class);
 		RESISTS.add(StaffOfMudrock.class);
 		RESISTS.add(StaffOfShining.class);
 		RESISTS.add(StaffOfSkyfire.class);

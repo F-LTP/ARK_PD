@@ -69,10 +69,8 @@ public class SeaBoss1 extends Mob{
     @Override
     public int attackProc(Char enemy, int damage) {
 
-        if (enemy instanceof Hero || enemy instanceof DriedRose.GhostHero) {
-            if (enemy.buff(NervousImpairment.class) == null) {
-                Buff.affect(enemy, NervousImpairment.class);
-            } else enemy.buff(NervousImpairment.class).sum(10);
+        if (enemy.alignment == Alignment.ALLY) {
+            Buff.affect(enemy, NervousImpairment.class).sum(10);
         }
 
         return super.attackProc(enemy, damage);
@@ -114,7 +112,7 @@ public class SeaBoss1 extends Mob{
         return super.act();
     }
 
-    public static class SeaBoss_SkillAttack{};
+    public static class SeaBoss_SkillAttack{}
 
     boolean Skill() {
         switch (skillProcVaule) {
@@ -167,10 +165,8 @@ public class SeaBoss1 extends Mob{
                     if (ch instanceof SeaObject) damage = Random.IntRange(95,110);
                     ch.damage(damage, SeaBoss_SkillAttack.class);
 
-                    if (ch instanceof Hero || ch instanceof DriedRose.GhostHero) {
-                        if (ch.buff(NervousImpairment.class) == null) {
-                            Buff.affect(ch, NervousImpairment.class);
-                        } else ch.buff(NervousImpairment.class).sum(20);
+                    if (ch.alignment == Alignment.ALLY) {
+                        Buff.affect(ch, NervousImpairment.class).sum(20);
                     }
 
                     if (!ch.isAlive() && ch == Dungeon.hero) {
@@ -205,18 +201,29 @@ public class SeaBoss1 extends Mob{
     }
 
     private static final String PHASE   = "phase";
-
+    private static final String SKILL_ACTIVE = "skillActive";
+    private static final String SKILL_CD = "skillCD";
+    private static final String SKILL_POINT = "skillAttackPoint1";
+    private static final String SKILL_PROC = "skillProcVaule";
 
     @Override
     public void storeInBundle( Bundle bundle ) {
         super.storeInBundle( bundle );
         bundle.put( PHASE, phase );
+        bundle.put(SKILL_ACTIVE, SkillActive);
+        bundle.put(SKILL_CD, skillCD);
+        bundle.put(SKILL_POINT, skillAttackPoint1);
+        bundle.put(SKILL_PROC, skillProcVaule);
     }
 
     @Override
     public void restoreFromBundle( Bundle bundle ) {
         super.restoreFromBundle( bundle );
         phase = bundle.getInt(PHASE);
+        SkillActive = bundle.getBoolean(SKILL_ACTIVE);
+        if (bundle.contains(SKILL_CD)) skillCD = bundle.getInt(SKILL_CD);
+        skillAttackPoint1 = bundle.getInt(SKILL_POINT);
+        skillProcVaule = bundle.getInt(SKILL_PROC);
         BossHealthBar.assignBoss(this);
 
     }

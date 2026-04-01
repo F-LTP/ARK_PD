@@ -19,14 +19,12 @@ public class FloatingSeaDrifter extends Mob {
         spriteClass = Sea_DrifterSprite.class;
 
         HP = HT = 65;
-        defenseSkill=50;//change from budding
+        defenseSkill=50;
         EXP = 14;
         maxLvl = 29;
 
         flying = true;
 
-        loot = Gold.class;
-        lootChance = 0.34f;
         loot = new SanityPotion();
         lootChance = 0.1f;
 
@@ -53,24 +51,21 @@ public class FloatingSeaDrifter extends Mob {
     @Override
     public int defenseSkill(Char enemy) {
         if (enemy instanceof Hero) {
-            if (Dungeon.hero.belongings.weapon instanceof MissileWeapon
-                    || Dungeon.hero.belongings.weapon instanceof GunWeapon) {
+            if (Dungeon.hero.belongings.weapon != null &&
+                    (Dungeon.hero.belongings.weapon instanceof MissileWeapon
+                            || Dungeon.hero.belongings.weapon instanceof GunWeapon)) {
                 return 0;
             }
         }
 
-        return super.defenseSkill(enemy);//change from budding
+        return super.defenseSkill(enemy);
     }
 
     @Override
     public int attackProc(Char enemy, int damage) {
-        if (enemy.buff(NervousImpairment.class) == null) {
-            Buff.affect(enemy, NervousImpairment.class);
+        if (enemy.alignment == Alignment.ALLY) {
+            Buff.affect(enemy, NervousImpairment.class).sum(10);
         }
-
-        else enemy.buff(NervousImpairment.class).sum(10);
-
-
         return super.attackProc(enemy, damage);
     }
     @Override
