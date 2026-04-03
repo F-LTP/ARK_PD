@@ -70,7 +70,7 @@ public class Crownslayer_shadow extends Mob {
             } while (Dungeon.level.heroFOV[i]
                     || Dungeon.level.solid[i]
                     || Actor.findChar(i) != null
-                    || PathFinder.getStep(i, Dungeon.level.exit, Dungeon.level.passable) == -1);
+                    || PathFinder.getStep(i, Dungeon.level.exit(), Dungeon.level.passable) == -1);
             CellEmitter.get(pos).burst(Speck.factory(Speck.WOOL), 10);
             ScrollOfTeleportation.appear(this, i);
 

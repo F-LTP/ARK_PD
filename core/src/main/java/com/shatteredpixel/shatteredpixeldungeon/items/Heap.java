@@ -372,22 +372,21 @@ public class Heap implements Bundlable {
 		items.clear();
 	}
 
-	@Override
-	public String toString(){
+	public String title(){
 		switch(type){
 			case FOR_SALE_28F:
 				Item k = peek();
 				if (size() == 1) {
-					return Messages.get(this, "for_sale_sp", k.value(), k.toString());
+					return Messages.get(this, "for_sale_sp", k.value(), k.title());
 				} else {
-					return k.toString();
+					return k.title();
 				}
 			case FOR_SALE:
 				Item i = peek();
 				if (size() == 1) {
-					return Messages.get(this, "for_sale", Shopkeeper.sellPrice(i), i.toString());
+					return Messages.get(this, "for_sale", Shopkeeper.sellPrice(i), i.title());
 				} else {
-					return i.toString();
+					return i.title();
 				}
 			case CHEST:
 			case MIMIC:
@@ -407,7 +406,7 @@ public class Heap implements Bundlable {
 			case DOOLTA:
 				return Messages.get(this,"doolta");
 			default:
-				return peek().toString();
+				return peek().title();
 		}
 	}
 

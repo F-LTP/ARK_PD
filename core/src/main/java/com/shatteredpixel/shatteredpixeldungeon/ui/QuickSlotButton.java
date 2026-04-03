@@ -78,7 +78,7 @@ public class QuickSlotButton extends Button implements WndBag.Listener {
 		slot = new ItemSlot() {
 			@Override
 			protected void onClick() {
-				if (!Dungeon.hero.isAlive()){
+                if (!Dungeon.hero.isAlive() || !Dungeon.hero.ready){
 					return;
 				}
 				if (targeting) {
@@ -98,10 +98,12 @@ public class QuickSlotButton extends Button implements WndBag.Listener {
 					if(Dungeon.quickslot.change == false) item = select(slotNum);
 					else item = select(slotNum +4);
 
-					if (item.usesTargeting) {
-						useTargeting();
+                    if (!GameScene.cancel()) {
+                        item.execute( Dungeon.hero );
+                        if (item.usesTargeting) {
+                            useTargeting();
+                        }
 					}
-					item.execute( Dungeon.hero );
 				}
 			}
 			

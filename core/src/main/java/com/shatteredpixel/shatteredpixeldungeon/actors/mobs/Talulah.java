@@ -353,16 +353,16 @@ public class Talulah extends Mob {
 			sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "invulnerable"));
 
 			YogFist fist = (YogFist) Reflection.newInstance(fistSummons.remove(0));
-			fist.pos = Dungeon.level.exit;
+			fist.pos = Dungeon.level.exit();
 
-			CellEmitter.get(Dungeon.level.exit-1).burst(ShadowParticle.UP, 25);
-			CellEmitter.get(Dungeon.level.exit).burst(ShadowParticle.UP, 100);
-			CellEmitter.get(Dungeon.level.exit+1).burst(ShadowParticle.UP, 25);
+			CellEmitter.get(Dungeon.level.exit()-1).burst(ShadowParticle.UP, 25);
+			CellEmitter.get(Dungeon.level.exit()).burst(ShadowParticle.UP, 100);
+			CellEmitter.get(Dungeon.level.exit()+1).burst(ShadowParticle.UP, 25);
 
 			if (abilityCooldown < 5) abilityCooldown = 5;
 			if (summonCooldown < 5) summonCooldown = 5;
 
-			int targetPos = Dungeon.level.exit + Dungeon.level.width();
+			int targetPos = Dungeon.level.exit() + Dungeon.level.width();
 			if (Actor.findChar(targetPos) == null){
 				fist.pos = targetPos;
 			} else if (Actor.findChar(targetPos-1) == null){
@@ -373,7 +373,7 @@ public class Talulah extends Mob {
 
 			GameScene.add(fist, 4);
 			if (Dungeon.isChallenged(Challenges.SPECIAL_BOSS)) Buff.affect(fist, Bless.class, 300f);
-			Actor.addDelayed( new Pushing( fist, Dungeon.level.exit, fist.pos ), -1 );
+			Actor.addDelayed( new Pushing( fist, Dungeon.level.exit(), fist.pos ), -1 );
 
 			if (phase == 4) {
 				Buff.affect(fist, Barrier.class).incShield(50);

@@ -94,7 +94,7 @@ public class ArmorKit extends Item {
 		GLog.w( Messages.get(this, "upgraded", armor.name()) );
 		
 		ClassArmor classArmor = ClassArmor.upgrade( curUser, armor );
-		if (curUser.belongings.armor == armor) {
+		if (curUser.belongings.armor() == armor) {
 			
 			curUser.belongings.armor = classArmor;
 			((HeroSprite)curUser.sprite).updateArmor();

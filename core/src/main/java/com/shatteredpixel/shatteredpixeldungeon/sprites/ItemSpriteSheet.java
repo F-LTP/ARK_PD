@@ -904,6 +904,7 @@ public class ItemSpriteSheet {
 	public static final int SIESTA   = QUEST+24;
 	public static final int GAVIAL   = QUEST+25;
 	public static final int IBERIA   = QUEST+26;
+    public static final int QUEST_SCROLL = QUEST + 27;
 	static{
 		assignItemRect(SKULL,   16, 16);
 		assignItemRect(DUST,    16, 16);
@@ -932,6 +933,7 @@ public class ItemSpriteSheet {
 		assignItemRect(SIESTA,    16, 16);
 		assignItemRect(GAVIAL,    16, 16);
 		assignItemRect(IBERIA,    16, 16);
+        assignItemRect(QUEST_SCROLL, 16, 16);
 
 	}
 

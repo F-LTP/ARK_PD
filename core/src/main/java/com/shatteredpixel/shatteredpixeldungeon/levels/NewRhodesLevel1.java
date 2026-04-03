@@ -7,8 +7,10 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blackperro;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Closure;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.GreenCat;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.QuestGiver;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.SkinModel;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.RitualSiteRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -113,6 +115,39 @@ public class NewRhodesLevel1 extends Level {
         return true;
     }
 
+    @Override
+    protected void syncTransitionsFromFields() {
+        transitions.clear();
+        //entrance terrain (7,21)-(10,24) leads back to main dungeon floor 1
+        //center cell first so arrivals land at the middle
+        int entrCenter = 23 * width() + 9; // (9,23)
+        transitions.add(new LevelTransition(this, entrCenter,
+                LevelTransition.Type.BRANCH_ENTRANCE, 1, 0, LevelTransition.Type.BRANCH_EXIT));
+        for (int y = 21; y <= 24; y++) {
+            for (int x = 7; x <= 10; x++) {
+                int cell = y * width() + x;
+                if (cell != entrCenter) {
+                    transitions.add(new LevelTransition(this, cell,
+                            LevelTransition.Type.BRANCH_ENTRANCE, 1, 0, LevelTransition.Type.BRANCH_EXIT));
+                }
+            }
+        }
+        //exit terrain (6,9)-(11,10) leads deeper into Rhodes (floor 2, branch 2)
+        //center cell first
+        int exitCenter = 10 * width() + 9; // (9,10)
+        transitions.add(new LevelTransition(this, exitCenter,
+                LevelTransition.Type.BRANCH_EXIT, 0, 2, LevelTransition.Type.BRANCH_ENTRANCE));
+        for (int y = 9; y <= 10; y++) {
+            for (int x = 6; x <= 11; x++) {
+                int cell = y * width() + x;
+                if (cell != exitCenter) {
+                    transitions.add(new LevelTransition(this, cell,
+                            LevelTransition.Type.BRANCH_EXIT, 0, 2, LevelTransition.Type.BRANCH_ENTRANCE));
+                }
+            }
+        }
+    }
+
         @Override
         protected void createMobs () {
     }
@@ -126,6 +161,7 @@ public class NewRhodesLevel1 extends Level {
      //   if (Dungeon.hero.belongings.getItem(Amulet.class) == null) GreenCat.spawn(this, exit);
      //   SkinModel.spawn(this, 255);
         Blackperro.spawn(this, 245);
+        QuestGiver.spawn(this, 300);
     }
 
         @Override

@@ -43,6 +43,10 @@ public class PinCushion extends Buff {
         return false;
     }
 
+    public ArrayList<MissileWeapon> getStuckItems(){
+        return new ArrayList<>(items);
+    }
+
     public void stick(MissileWeapon projectile){
 		for (Item item : items){
 			if (item.isSimilar(projectile)){
@@ -91,7 +95,7 @@ public class PinCushion extends Buff {
 	public String desc() {
 		String desc = Messages.get(this, "desc");
 		for (Item i : items){
-			desc += "\n" + i.toString();
+			desc += "\n" + i.title();
 		}
 		return desc;
 	}

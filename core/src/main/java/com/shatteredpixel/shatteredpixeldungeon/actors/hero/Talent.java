@@ -59,6 +59,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.SealOfLight;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
@@ -413,8 +414,8 @@ public enum Talent {
             if (hero.pointsInTalent(PROTECTIONOFLIGHT) == 1) {
                 Armor heroArmor = hero.belongings.armor;
                 if (heroArmor != null) {
-                    heroArmor.cursed = false;
                     heroArmor.curseInfusionBonus = false;
+                    ScrollOfRemoveCurse.uncurse(hero, heroArmor);
                 }
             } else if (hero.pointsInTalent(PROTECTIONOFLIGHT) == 2) {
                 Buff.affect(hero, ProtectionInsurance.class);
@@ -643,8 +644,8 @@ public enum Talent {
 		}
 // Protection of Light insurance: auto-uncurse the next cursed equipment equipped
         if (hero.buff(ProtectionInsurance.class) != null && item instanceof EquipableItem && item.cursed) {
-            item.cursed = false;
             if (item instanceof Armor) ((Armor) item).curseInfusionBonus = false;
+            ScrollOfRemoveCurse.uncurse(hero, item);
             Buff.detach(hero, ProtectionInsurance.class);
             GLog.p(Messages.get(PROTECTIONOFLIGHT, "proc"));
         }

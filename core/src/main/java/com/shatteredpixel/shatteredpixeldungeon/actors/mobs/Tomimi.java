@@ -92,7 +92,7 @@ public class Tomimi extends Mob {
         if (phase == 2) {
             sprite.showStatus( CharSprite.NEUTRAL, Messages.get(Talu_BlackSnake.class, "invincibility") );
             if (src == Dungeon.hero) {
-                ScrollOfTeleportation.appear(Dungeon.hero, Dungeon.level.entrance);
+                ScrollOfTeleportation.appear(Dungeon.hero, Dungeon.level.entrance());
             }
             return;
         }
@@ -105,7 +105,7 @@ public class Tomimi extends Mob {
             GameScene.flash(0x80FF0000);
             yell(Messages.get(this, "phase2"));
             boss_tel(52);
-            ScrollOfTeleportation.appear(Dungeon.hero, Dungeon.level.entrance);
+            ScrollOfTeleportation.appear(Dungeon.hero, Dungeon.level.entrance());
 
             summonSubject(47, new TomimiTower());
             summonSubject(57, new TomimiTower());

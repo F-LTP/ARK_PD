@@ -52,18 +52,18 @@ public class ExitRoom extends StandardRoom {
 		for (Room.Door door : connected.values()) {
 			door.set( Room.Door.Type.REGULAR );
 		}
-		
-		level.exit = level.pointToCell(random( 2 ));
-		Painter.set( level, level.exit, Terrain.EXIT );
+
+        level.setExit(level.pointToCell(random(2)));
+		Painter.set( level, level.exit(), Terrain.EXIT );
 
 		if (Dungeon.isChallenged(Challenges.SHADOW) && (
 				Dungeon.depth == 4 || Dungeon.depth == 9 || Dungeon.depth == 14 || Dungeon.depth == 19 || Dungeon.depth == 24 || Dungeon.depth == 34 || Dungeon.depth == 39)) {
-			Shadow.Spawn(level, level.exit);
+			Shadow.Spawn(level, level.exit());
 		}
 	}
 	
 	@Override
 	public boolean canPlaceCharacter(Point p, Level l) {
-		return super.canPlaceCharacter(p, l) && l.pointToCell(p) != l.exit;
+		return super.canPlaceCharacter(p, l) && l.pointToCell(p) != l.exit();
 	}
 }

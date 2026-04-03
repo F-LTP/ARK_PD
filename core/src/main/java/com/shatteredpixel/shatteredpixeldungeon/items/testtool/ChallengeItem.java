@@ -12,6 +12,10 @@ abstract public class ChallengeItem extends Item {
         unique = true;
     }
     protected boolean changeDefAct = false;
+    @Override
+    public boolean keptThroughLostInventory() {
+        return true;  // 失忆状态下仍然可见
+    }
 
     protected void changeDefaultAction(String action){
         if(!allowChange(action)) return;

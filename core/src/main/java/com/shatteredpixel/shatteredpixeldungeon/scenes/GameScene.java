@@ -241,11 +241,11 @@ public class GameScene extends PixelScene {
 		{
 			Music.INSTANCE.play(Assets.Music.GAME5, true);
 		}
-		else if (Dungeon.depth >= 27 && Dungeon.depth < 28) {
+		else if (Dungeon.isInRhodes() && Dungeon.branch <= 2) {
 			Music.INSTANCE.play(Assets.Music.RHODOS, true);
 
 		}
-		else if (Dungeon.depth >= 29 && Dungeon.depth < 30) {
+		else if (Dungeon.isInRhodes() && Dungeon.branch >= 3) {
 			Music.INSTANCE.play(Assets.Music.BOSS_KAL, true);
 		}
 		else if (Dungeon.depth >= 31 && Dungeon.depth < 35) {
@@ -346,7 +346,7 @@ public class GameScene extends PixelScene {
 		for (Mob mob : Dungeon.level.mobs) {
 			addMobSprite( mob );
 			if (Statistics.amuletObtained) {
-				if (Dungeon.depth < 29) mob.beckon( Dungeon.hero.pos );
+				if (!Dungeon.isInRhodes()) mob.beckon( Dungeon.hero.pos );
 			}
 		}
 
@@ -440,7 +440,7 @@ public class GameScene extends PixelScene {
 		
 		switch (InterlevelScene.mode) {
 		case RESURRECT:
-			ScrollOfTeleportation.appear( Dungeon.hero, Dungeon.level.entrance );
+			ScrollOfTeleportation.appear( Dungeon.hero, Dungeon.level.entrance() );
 			new Flare( 8, 32 ).color( 0xFFFF66, true ).show( hero, 2f ) ;
 			break;
 		case RETURN:
@@ -464,7 +464,7 @@ public class GameScene extends PixelScene {
 				WndStory.showChapter( WndStory.ID_HALLS );
 				break;
 			}
-			if (Dungeon.hero.isAlive()) {
+            if (Dungeon.depth != 0 && Dungeon.hero.isAlive()) {
 				Badges.validateNoKilling();
 			}
 			break;
@@ -1182,6 +1182,15 @@ public class GameScene extends PixelScene {
 			return false;
 		}
 	}
+
+    public static WndBag selectItem(WndBag.ItemSelector listener) {
+        cancelCellSelector();
+
+        WndBag wnd = WndBag.getBag(listener);
+        if (scene != null) scene.addToFront(wnd);
+
+        return wnd;
+    }
 	
 	public static WndBag selectItem( WndBag.Listener listener, WndBag.Mode mode, String title ) {
 		cancelCellSelector();
@@ -1257,7 +1266,7 @@ public class GameScene extends PixelScene {
 		Heap heap = Dungeon.level.heaps.get(cell);
 		if (heap != null && heap.seen) {
 			objects.add(heap);
-			names.add(Messages.titleCase( heap.toString() ));
+			names.add(Messages.titleCase( heap.title() ));
 		}
 
 		Plant plant = Dungeon.level.plants.get( cell );

@@ -204,7 +204,7 @@ public class Armor extends EquipableItem {
 		
 		detach(hero.belongings.backpack);
 
-		if (hero.belongings.armor == null || hero.belongings.armor.doUnequip( hero, true, false )) {
+		if (hero.belongings.armor() == null || hero.belongings.armor().doUnequip( hero, true, false )) {
 			
 			hero.belongings.armor = this;
 			
@@ -281,7 +281,7 @@ public class Armor extends EquipableItem {
 	
 	@Override
 	public boolean isEquipped( Hero hero ) {
-		return hero.belongings.armor == this;
+        return hero != null && hero.belongings.armor() == this;
 	}
 
 	public final int DRMax(){

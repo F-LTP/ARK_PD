@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_Irene;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_PhantomShadow;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_Pilot;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.QuestCat;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.watabou.noosa.Group;
@@ -102,6 +103,29 @@ public class NewRhodesLevel4 extends Level {
         customTiles.add(vis);
 
         return true;
+    }
+
+    @Override
+    protected void syncTransitionsFromFields() {
+        transitions.clear();
+        //entrance terrain leads back toward Rhodes 3 (branch 3)
+        //center cell first so arrivals land at the middle of the area
+        int centerCell = 9 * width() + 45; // (46,9) = center of (41,8)-(51,10)
+        transitions.add(new LevelTransition(this, centerCell,
+                LevelTransition.Type.BRANCH_ENTRANCE, 0, 3, LevelTransition.Type.BRANCH_EXIT));
+        //remaining entrance terrain cells (41,8) to (51,10)
+        for (int y = 8; y <= 10; y++) {
+            for (int x = 41; x <= 51; x++) {
+                int cell = y * width() + x;
+                if (cell != centerCell) {
+                    transitions.add(new LevelTransition(this, cell,
+                            LevelTransition.Type.BRANCH_ENTRANCE, 0, 3, LevelTransition.Type.BRANCH_EXIT));
+                }
+            }
+        }
+        //exit leads to extra stages (depth 31, branch 0)
+        transitions.add(new LevelTransition(this, exit,
+                LevelTransition.Type.BRANCH_EXIT, 31, 0, LevelTransition.Type.REGULAR_ENTRANCE));
     }
 
     @Override

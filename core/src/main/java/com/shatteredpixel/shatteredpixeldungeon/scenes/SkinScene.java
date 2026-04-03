@@ -20,6 +20,8 @@ import com.watabou.noosa.audio.Music;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.RectF;
 
+import java.io.IOException;
+
 public class SkinScene extends PixelScene {
 
     @Override
@@ -69,7 +71,12 @@ public void create() {
     @Override
     public void destroy() {
 
-        Badges.saveGlobal();
+        try {
+            Dungeon.saveAll();
+            Badges.saveGlobal();
+        } catch (IOException e) {
+            TomorrowRogueNight.reportException(e);
+        }
 
         super.destroy();
     }

@@ -41,6 +41,6 @@ public class GavialStanardRoom extends StandardRoom {
 
     @Override
     public boolean canPlaceCharacter(Point p, Level l) {
-        return super.canPlaceCharacter(p, l) && l.pointToCell(p) != l.exit;
+        return super.canPlaceCharacter(p, l) && l.pointToCell(p) != l.exit();
     }
 }

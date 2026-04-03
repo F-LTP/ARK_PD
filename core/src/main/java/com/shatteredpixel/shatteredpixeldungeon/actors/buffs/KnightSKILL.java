@@ -130,8 +130,8 @@ public class KnightSKILL extends Buff implements ActionIndicator.Action {
     @Override
     public Image getIcon() {
         Image icon;
-        if (((Hero)target).belongings.weapon != null){
-            icon = new ItemSprite(((Hero)target).belongings.weapon.image, null);
+        if (((Hero)target).belongings.weapon() != null){
+            icon = new ItemSprite(((Hero)target).belongings.weapon().image, null);
         } else {
             icon = new ItemSprite(new Item(){ {image = ItemSpriteSheet.WEAPON_HOLDER; }});
         }

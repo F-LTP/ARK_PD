@@ -251,7 +251,7 @@ abstract public class MissileWeapon extends Weapon {
 	}
 
 	private boolean canSpreadGrass(int cell){
-		int yogPos = Dungeon.level.exit + Dungeon.level.width()*3;
+		int yogPos = Dungeon.level.exit() + Dungeon.level.width()*3;
 		return Dungeon.level.distance(cell, yogPos) > 4 && !Dungeon.level.solid[cell]
 				&& !(Dungeon.level.map[cell] == Terrain.FURROWED_GRASS || Dungeon.level.map[cell] == Terrain.HIGH_GRASS
 				|| Dungeon.level.map[cell] == Terrain.CHASM);

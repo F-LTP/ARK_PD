@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.miniboss.Sentinel;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Ripple;
 import com.shatteredpixel.shatteredpixeldungeon.items.DewVial;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.SewerPainter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.AlarmTrap;
@@ -81,7 +82,24 @@ public class SewerLevel extends RegularLevel {
 				.setGrass(feeling == Feeling.GRASS ? 0.80f : 0.20f, 4)
 				.setTraps(nTraps(), trapClasses(), trapChances());
 	}
-	
+
+    @Override
+    protected void syncTransitionsFromFields() {
+        transitions.clear();
+        if (Dungeon.depth == 1 && entrance != 0) {
+            //floor 1 entrance goes to Rhodes Island (branch 1) instead of surface
+            transitions.add(new LevelTransition(this, entrance,
+                    LevelTransition.Type.BRANCH_EXIT, 0, 1, LevelTransition.Type.BRANCH_ENTRANCE));
+        } else if (entrance != 0) {
+            transitions.add(new LevelTransition(this, entrance,
+                    LevelTransition.Type.REGULAR_ENTRANCE));
+        }
+        if (exit != 0) {
+            transitions.add(new LevelTransition(this, exit,
+                    LevelTransition.Type.REGULAR_EXIT));
+        }
+    }
+
 	@Override
 	public String tilesTex() {
 		return Assets.Environment.TILES_SEWERS;

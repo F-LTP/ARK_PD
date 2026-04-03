@@ -55,12 +55,18 @@ public class SkillBook extends Item {
 
         if (action.equals(AC_ACT)) {
 
+            float spBonus = RingOfSunLight.SPBonus(Dungeon.hero);
+            DecimalFormat fmt = new DecimalFormat("#");
+            float cost1 = Math.max(5,  30f  / spBonus);
+            float cost2 = Math.max(10, 60f  / spBonus);
+            float cost3 = Math.max(15, 100f / spBonus);
+
             GameScene.show(
                     new WndOptions(Messages.get(this, "name"),
                             Messages.get(this, "wnddesc") + infoWnd(),
-                            Messages.get(this, "ac_skl1", new DecimalFormat("#").format(30f)),
-                            Messages.get(this, "ac_skl2", new DecimalFormat("#").format(60f)),
-                            Messages.get(this, "ac_skl3", new DecimalFormat("#").format(100f))) {
+                            Messages.get(this, "ac_skl1", fmt.format(cost1)),
+                            Messages.get(this, "ac_skl2", fmt.format(cost2)),
+                            Messages.get(this, "ac_skl3", fmt.format(cost3))) {
 
                         @Override
                         protected void onSelect(int index) {
@@ -84,12 +90,14 @@ public class SkillBook extends Item {
                                 GLog.w(Messages.get(SkillBook.class, "no_skill"));
                                 return;
                             }
-                            if (charge < cost && !Dungeon.isChallenged(TEST)) {
+
+                            float chargeDown = cost / (RingOfSunLight.SPBonus(Dungeon.hero));
+                            if (chargeDown < minCost) chargeDown = minCost;
+
+                            if (charge < chargeDown && !Dungeon.isChallenged(TEST)) {
                                 GLog.w(Messages.get(SkillBook.class, "low_charge"));
                                 return;
                             }
-                            float chargeDown = cost / (RingOfSunLight.SPBonus(Dungeon.hero));
-                            if (chargeDown < minCost) chargeDown = minCost;
                             charge -= chargeDown;
                             updateQuickslot();
 

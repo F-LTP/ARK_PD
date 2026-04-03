@@ -59,9 +59,9 @@ public class EntranceRoom extends StandardRoom {
 		}
 
 		do {
-			level.entrance = level.pointToCell(random(2));
-		} while (level.findMob(level.entrance) != null);
-		if (Dungeon.depth != 31) Painter.set( level, level.entrance, Terrain.ENTRANCE );
+            level.setEntrance(level.pointToCell(random(2)));
+		} while (level.findMob(level.entrance()) != null);
+		if (Dungeon.depth != 31) Painter.set( level, level.entrance(), Terrain.ENTRANCE );
 
 		//use a separate generator here so meta progression doesn't affect levelgen
 		Random.pushGenerator();
@@ -73,7 +73,7 @@ public class EntranceRoom extends StandardRoom {
 				//can't be on bottom row of tiles
 				pos = level.pointToCell(new Point( Random.IntRange( left + 1, right - 1 ),
 						Random.IntRange( top + 1, bottom - 2 )));
-			} while (pos == level.entrance || level.findMob(level.entrance) != null);
+			} while (pos == level.entrance() || level.findMob(level.entrance()) != null);
 			GuidePage p = new GuidePage();
 			p.page(Document.GUIDE_INTRO_PAGE);
 			level.drop( p, pos );
@@ -86,7 +86,7 @@ public class EntranceRoom extends StandardRoom {
 				//can't be on bottom row of tiles
 				pos = level.pointToCell(new Point( Random.IntRange( left + 1, right - 1 ),
 						Random.IntRange( top + 1, bottom - 2 )));
-			} while (pos == level.entrance || level.findMob(level.entrance) != null);
+			} while (pos == level.entrance() || level.findMob(level.entrance()) != null);
 			GuidePage p = new GuidePage();
 			p.page(Document.GUIDE_SEARCH_PAGE);
 			level.drop( p, pos );
@@ -99,7 +99,7 @@ public class EntranceRoom extends StandardRoom {
 			do {
 				validPos = true;
 				pos = level.pointToCell(random());
-				if (pos == level.entrance){
+				if (pos == level.entrance()){
 					validPos = false;
 				}
 				for (Point door : connected.values()){

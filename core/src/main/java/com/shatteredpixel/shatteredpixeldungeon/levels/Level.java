@@ -40,6 +40,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Oblivion;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.PinCushion;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RadiantKnight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RevealedArea;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Shadows;
@@ -64,6 +65,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
 import com.shatteredpixel.shatteredpixeldungeon.items.Torch;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAmplified;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAssassin;
@@ -73,9 +75,11 @@ import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfMayer;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.HeavyBoomerang;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.HighGrass;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Platform;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.SeaTerror;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
@@ -108,6 +112,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import lombok.Setter;
 
 public abstract class Level implements Bundlable {
 	
@@ -151,9 +157,21 @@ public abstract class Level implements Bundlable {
 	public boolean[] openSpace;
 	
 	public Feeling feeling = Feeling.NONE;
-	
-	public int entrance;
-	public int exit;
+
+    @Setter
+    int entrance;
+    @Setter
+    int exit;
+
+    public ArrayList<LevelTransition> transitions = new ArrayList<>();
+
+    public int entrance() {
+        return entrance;
+    }
+
+    public int exit() {
+        return exit;
+    }
 
 	//when a boss level has become locked.
 	public boolean locked = false;
@@ -183,6 +201,7 @@ public abstract class Level implements Bundlable {
 	private static final String MAPPED		= "mapped";
 	private static final String ENTRANCE	= "entrance";
 	private static final String EXIT		= "exit";
+    private static final String TRANSITIONS = "transitions";
 	private static final String LOCKED      = "locked";
 	private static final String HEAPS		= "heaps";
 	private static final String PLANTS		= "plants";
@@ -199,7 +218,7 @@ public abstract class Level implements Bundlable {
 
 		Random.pushGenerator( Dungeon.seedCurDepth() );
 
-		if (Dungeon.depth != 27 && Dungeon.depth != 28 && Dungeon.depth != 29 ) {
+		if (!Dungeon.isInRhodes()) {
 			if (!(Dungeon.bossLevel())) {
 
 				addItemToSpawn(Generator.random(Generator.Category.FOOD));
@@ -285,6 +304,8 @@ public abstract class Level implements Bundlable {
 		createMobs();
 		createItems();
 
+        syncTransitionsFromFields();
+
 		Random.popGenerator();
 	}
 	
@@ -325,6 +346,29 @@ public abstract class Level implements Bundlable {
 		}
 		createMobs();
 	}
+
+    public ArrayList<Item> getItemsToPreserveFromSealedResurrect(){
+        ArrayList<Item> items = new ArrayList<>();
+        for (Heap h : heaps.valueList()){
+            if (h.type == Heap.Type.HEAP) {
+                for (Item i : h.items){
+                    if (i instanceof Bomb){
+                        ((Bomb) i).fuse = null;
+                    }
+                    items.add(i);
+                }
+            }
+        }
+        for (Mob m : mobs){
+            for (PinCushion b : m.buffs(PinCushion.class)){
+                items.addAll(b.getStuckItems());
+            }
+        }
+        for (HeavyBoomerang.CircleBack b : Dungeon.hero.buffs(HeavyBoomerang.CircleBack.class)){
+            if (b.activeDepth() == Dungeon.depth) items.add(b.cancel());
+        }
+        return items;
+    }
 	
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
@@ -350,6 +394,16 @@ public abstract class Level implements Bundlable {
 		
 		entrance	= bundle.getInt( ENTRANCE );
 		exit		= bundle.getInt( EXIT );
+
+        transitions = new ArrayList<>();
+        if (bundle.contains(TRANSITIONS)) {
+            for (Bundlable b : bundle.getCollection(TRANSITIONS)) {
+                transitions.add((LevelTransition) b);
+            }
+        } else {
+            //old saves won't have transitions, build from entrance/exit
+            syncTransitionsFromFields();
+        }
 
 		locked      = bundle.getBoolean( LOCKED );
 		
@@ -443,6 +497,7 @@ public abstract class Level implements Bundlable {
 		bundle.put( MAPPED, mapped );
 		bundle.put( ENTRANCE, entrance );
 		bundle.put( EXIT, exit );
+        bundle.put(TRANSITIONS, transitions);
 		bundle.put( LOCKED, locked );
 		bundle.put( HEAPS, heaps.valueList() );
 		bundle.put( PLANTS, plants.valueList() );
@@ -461,6 +516,43 @@ public abstract class Level implements Bundlable {
 	public int tunnelTile() {
 		return feeling == Feeling.CHASM ? Terrain.EMPTY_SP : Terrain.EMPTY;
 	}
+
+    public LevelTransition getTransition(LevelTransition.Type type) {
+        if (transitions.isEmpty()) {
+            return null;
+        }
+        for (LevelTransition transition : transitions) {
+            //if we don't specify a type, prefer to return any entrance
+            if (type == null &&
+                    (transition.type == LevelTransition.Type.REGULAR_ENTRANCE
+                            || transition.type == LevelTransition.Type.BRANCH_ENTRANCE)) {
+                return transition;
+            } else if (transition.type == type) {
+                return transition;
+            }
+        }
+        return type != null ? getTransition(null) : transitions.get(0);
+    }
+
+    public LevelTransition getTransition(int cell) {
+        for (LevelTransition transition : transitions) {
+            if (transition.inside(cell)) {
+                return transition;
+            }
+        }
+        return null;
+    }
+
+    //builds LevelTransition objects from the legacy entrance/exit int fields
+    protected void syncTransitionsFromFields() {
+        transitions.clear();
+        if (entrance != 0) {
+            transitions.add(new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE));
+        }
+        if (exit != 0) {
+            transitions.add(new LevelTransition(this, exit, LevelTransition.Type.REGULAR_EXIT));
+        }
+    }
 
 	public int width() {
 		return width;
@@ -492,7 +584,7 @@ public abstract class Level implements Bundlable {
 		}
 
 		Mob m = Reflection.newInstance(mobsToSpawn.remove(0));
-		if (!(m instanceof Originiutant) && !(m instanceof GiantMushroom)){
+        if (Dungeon.isChallenged(Challenges.CHAMPION_ENEMIES) && !(m instanceof Originiutant) && !(m instanceof GiantMushroom)) {
 			ChampionEnemy.rollForChampion(m);
 		}
 		return m;
@@ -602,7 +694,7 @@ public abstract class Level implements Bundlable {
 				mob.pos = Dungeon.level.randomRespawnCell( mob );
 				if (Dungeon.hero.isAlive() && mob.pos != -1 && PathFinder.distance[mob.pos] >= 12) {
 					GameScene.add( mob );
-					if (Statistics.amuletObtained && Dungeon.depth < 27) {
+					if (Statistics.amuletObtained && !Dungeon.isInRhodes()) {
 						mob.beckon( Dungeon.hero.pos );
 					}
 					if (!mob.buffs(ChampionEnemy.class).isEmpty()){
@@ -989,6 +1081,10 @@ public abstract class Level implements Bundlable {
 
 		return false;
 	}
+
+    public float levelExplorePercent( int depth ){
+        return 0;
+    }
 	
 	public int fallCell( boolean fallIntoPit ) {
 		int result;

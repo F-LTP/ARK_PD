@@ -92,7 +92,7 @@ public class StaffOfPurgatory extends Wand {
                 Dungeon.hero.sprite.place(newpos);
                 Dungeon.hero.pos = newpos;
 
-                if (!Dungeon.bossLevel() && !(Dungeon.depth>=27&&Dungeon.depth<=30))  wandattack(ch, beamdis);//change from budding
+                if (!Dungeon.bossLevel() && !Dungeon.isInRhodes())  wandattack(ch, beamdis);//change from budding
                 //area damage around both the hero and the swapped target
                 aoeBlast(Dungeon.hero.pos, aoeDamageRoll());
                 aoeBlast(ch.pos, aoeDamageRoll());

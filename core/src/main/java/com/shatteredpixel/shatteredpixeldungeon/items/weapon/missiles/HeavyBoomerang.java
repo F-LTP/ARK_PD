@@ -89,6 +89,10 @@ public class HeavyBoomerang extends MissileWeapon {
 		public int returnPos(){
 			return returnPos;
 		}
+
+        public int activeDepth(){
+            return returnDepth;
+        }
 		
 		public MissileWeapon cancel(){
 			detach();

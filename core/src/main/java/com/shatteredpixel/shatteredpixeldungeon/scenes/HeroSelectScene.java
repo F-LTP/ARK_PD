@@ -147,7 +147,7 @@ public class HeroSelectScene extends PixelScene {
 				Dungeon.daily = Dungeon.dailyReplay = false;
                 Dungeon.initSeed();
                 ActionIndicator.clearAction();
-				InterlevelScene.mode = InterlevelScene.Mode.DESCEND;
+				InterlevelScene.mode = InterlevelScene.Mode.DESCEND_27;
 				if (SPDSettings.intro()) {
 					SPDSettings.intro( false );
 					Game.switchScene( IntroScene.class );

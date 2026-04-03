@@ -79,7 +79,9 @@ public class Notes {
 		TROLL,
 		IMP,
 		GREENCAT,
-		CEYLON;
+		CEYLON,
+
+        LOST_PACK;
 		
 		public String desc() {
 			return Messages.get(this, name());

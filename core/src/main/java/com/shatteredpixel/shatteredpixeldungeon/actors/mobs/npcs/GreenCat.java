@@ -38,7 +38,7 @@ public class GreenCat extends NPC {
     }
 
     public void flee() {
-        if (Dungeon.depth == 29) { this.yell(Messages.get(this, "fury"));
+        if (Dungeon.isInRhodes() && Dungeon.branch == 3) { this.yell(Messages.get(this, "fury"));
         sprite.killAndErase();
         CellEmitter.get( pos ).burst( ElmoParticle.FACTORY, 6 );
 

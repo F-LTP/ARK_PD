@@ -106,7 +106,7 @@ public class BeaconOfReturning extends Spell {
 	}
 	
 	private void returnBeacon( Hero hero ){
-		if (Dungeon.bossLevel() || Dungeon.depth >= 30) {
+        if (Dungeon.bossLevel() || Dungeon.isInRhodes() || Dungeon.depth >= 31) {
 			GLog.w( Messages.get(this, "preventing") );
 			return;
 		}
@@ -121,7 +121,7 @@ public class BeaconOfReturning extends Spell {
 		
 		if (returnDepth == Dungeon.depth) {
 			if (!Dungeon.level.passable[returnPos] && !Dungeon.level.avoid[returnPos]){
-				returnPos = Dungeon.level.entrance;
+				returnPos = Dungeon.level.entrance();
 			}
 			ScrollOfTeleportation.appear( hero, returnPos );
 			for(Mob m : Dungeon.level.mobs){

@@ -177,7 +177,7 @@ public class Statistics {
         bundle.put( PROG_SCORE,  progressScore );
         bundle.put( ITEM_VAL,    heldItemValue );
         bundle.put( TRES_SCORE,  treasureScore );
-        for (int i = 1; i < 26; i++){
+        for (int i = 1; i <= 40 ; i++){
             if (floorsExplored.containsKey(i)){
                 bundle.put( FLR_EXPL+i, floorsExplored.get(i) );
             }
@@ -230,7 +230,7 @@ public class Statistics {
         heldItemValue   = bundle.getInt( ITEM_VAL );
         treasureScore   = bundle.getInt( TRES_SCORE );
         floorsExplored.clear();
-        for (int i = 1; i < 26; i++){
+        for (int i = 1; i <= 40; i++){
             if (bundle.contains( FLR_EXPL+i )){
                 //we have this check to reduce an error with bad conversion specifically in v3.1-BETA-1.0
                 if (!Dungeon.bossLevel(i) && i <= deepestFloor){

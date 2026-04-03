@@ -17,6 +17,10 @@ public class Generators extends Item {
         unique = true;
     }
     @Override
+    public boolean keptThroughLostInventory() {
+        return true;  // 失忆状态下仍然可见
+    }
+    @Override
     public boolean isUpgradable() {
         return false;
     }

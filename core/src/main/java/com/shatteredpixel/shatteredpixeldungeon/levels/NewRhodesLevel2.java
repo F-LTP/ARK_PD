@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_TransB
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_WandBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.QuestCat;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.watabou.noosa.Group;
@@ -164,6 +165,23 @@ public class NewRhodesLevel2 extends Level {
        customTiles.add(vis);
 
         return true;
+    }
+
+    @Override
+    protected void syncTransitionsFromFields() {
+        transitions.clear();
+        //entrance terrain leads back toward Rhodes 1 (branch 1) (middle cell first)
+        transitions.add(new LevelTransition(this, 4014,
+                LevelTransition.Type.BRANCH_ENTRANCE, 0, 1, LevelTransition.Type.BRANCH_EXIT));
+        transitions.add(new LevelTransition(this, 3946,
+                LevelTransition.Type.BRANCH_ENTRANCE, 0, 1, LevelTransition.Type.BRANCH_EXIT));
+        transitions.add(new LevelTransition(this, 4082,
+                LevelTransition.Type.BRANCH_ENTRANCE, 0, 1, LevelTransition.Type.BRANCH_EXIT));
+        //exit terrain leads deeper into Rhodes (floor 3, branch 3) (middle cell first)
+        transitions.add(new LevelTransition(this, 3607,
+                LevelTransition.Type.BRANCH_EXIT, 0, 3, LevelTransition.Type.BRANCH_ENTRANCE));
+        transitions.add(new LevelTransition(this, 3606,
+                LevelTransition.Type.BRANCH_EXIT, 0, 3, LevelTransition.Type.BRANCH_ENTRANCE));
     }
 
     @Override

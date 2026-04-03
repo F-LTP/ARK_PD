@@ -67,11 +67,7 @@ public class LevelTeleporter extends ChallengeItem{
             if (buff != null) buff.detach();
             buff = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
             if (buff != null) buff.detach();
-            if(Dungeon.depth==1)
-                InterlevelScene.mode = InterlevelScene.Mode.DESCEND_27;
-            else if (Dungeon.depth==27)
-                InterlevelScene.mode = InterlevelScene.Mode.ASCEND_27;
-            else InterlevelScene.mode = InterlevelScene.Mode.ASCEND;
+            InterlevelScene.mode = InterlevelScene.Mode.ASCEND;
             InterlevelScene.returnPos = -1;
             Game.switchScene( InterlevelScene.class );
         } else if(action.equals(AC_VIEW)){

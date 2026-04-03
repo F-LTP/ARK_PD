@@ -276,7 +276,7 @@ public class GunWeapon extends MeleeWeapon {
                     int cell = shot.collisionPos;
 
                     if (target == curUser.pos || cell == curUser.pos) {
-                        GLog.i(Messages.get(this, "self_target"));
+                        GLog.i(Messages.get(GunWeapon.class, "self_target"));
                         return;
                     }
 
@@ -289,6 +289,7 @@ public class GunWeapon extends MeleeWeapon {
                         QuickSlotButton.target(Actor.findChar(cell));
 
                     if (ss.tryToZap(curUser, target)) {
+                        curUser.busy();
                         ss.fx(shot, new Callback() {
                             public void call() {
                                 ss.onZap(shot);

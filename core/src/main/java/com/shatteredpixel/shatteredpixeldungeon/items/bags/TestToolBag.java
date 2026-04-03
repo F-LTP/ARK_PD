@@ -31,7 +31,10 @@ public class TestToolBag extends Bag {
     {
         image = ItemSpriteSheet.HEAMYO;
     }
-
+    @Override
+    public boolean keptThroughLostInventory() {
+        return true;  // 失忆状态下仍然可见
+    }
     @Override
     public boolean canHold( Item item ) {
         if (item instanceof Generators || item instanceof ChallengeItem){

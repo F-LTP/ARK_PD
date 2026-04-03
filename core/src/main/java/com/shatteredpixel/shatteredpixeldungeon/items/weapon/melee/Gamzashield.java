@@ -182,6 +182,7 @@ public class Gamzashield extends MeleeWeapon {
                         QuickSlotButton.target(Actor.findChar(cell));
 
                     if (gamza.tryToZap(curUser, target)) {
+                        curUser.busy();
                         gamza.fx(shot, new Callback() {
                             public void call() {
                                 gamza.onZap(shot);

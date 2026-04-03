@@ -112,7 +112,9 @@ public class PointerArea extends Visual implements Signal.Listener<PointerEvent>
             } else if (curEvent != null &&
                     (event.type == PointerEvent.Type.UP || event.type == PointerEvent.Type.CANCEL)) {
                 onPointerUp( event );
-                curEvent = null;
+                if (curEvent == event) {
+                    curEvent = null;
+                }
 
             } else if (event != null && event.type == PointerEvent.Type.HOVER && hovered){
                 hovered = false;

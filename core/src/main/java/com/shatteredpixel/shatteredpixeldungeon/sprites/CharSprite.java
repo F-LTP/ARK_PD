@@ -144,6 +144,14 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 			super.play(anim);
 		}
 	}
+
+    //forces the sprite out of the death animation (e.g. after ankh resurrection)
+    public void resetAfterDeath() {
+        if (curAnim == die) {
+            curAnim = null;
+            idle();
+        }
+    }
 	
 	//intended to be used for placing a character in the game world
 	public void link( Char ch ) {

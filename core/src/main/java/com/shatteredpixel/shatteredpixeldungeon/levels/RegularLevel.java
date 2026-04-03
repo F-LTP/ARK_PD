@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SmallRation;
 import com.shatteredpixel.shatteredpixeldungeon.items.journal.GuidePage;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.Builder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.FigureEightBuilder;
@@ -79,10 +80,12 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.FrostTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WornDartTrap;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 
 public abstract class RegularLevel extends Level {
@@ -562,6 +565,15 @@ public abstract class RegularLevel extends Level {
 		return null;
 	}
 
+    public Room room(Class<? extends Room> type) {
+        for (Room r : rooms) {
+            if (type.isInstance(r)) {
+                return r;
+            }
+        }
+        return null;
+    }
+
 	protected int randomDropCell(){
 		return randomDropCell(StandardRoom.class);
 	}
@@ -595,7 +607,64 @@ public abstract class RegularLevel extends Level {
 		}
 		return -1;
 	}
-	
+
+    @Override
+    public float levelExplorePercent(int depth) {
+        //A room is considered not explored if:
+        HashSet<Room> missedRooms = new HashSet<>();
+
+        //There are levelgen heaps which are undiscovered, in an openable container, or which contain keys
+        for (Heap h : heaps.valueList()) {
+            if (!h.seen || (h.type != Heap.Type.HEAP && h.type != Heap.Type.FOR_SALE)) {
+                missedRooms.add(room(h.pos));
+            } else {
+                for (Item i : h.items) {
+                    if (i instanceof Key) {
+                        missedRooms.add(room(h.pos));
+                        break;
+                    }
+                }
+            }
+        }
+
+        //There are undefeated mimics in it
+        for (Mob m : mobs.toArray(new Mob[0])) {
+            if (m instanceof Mimic) {
+                missedRooms.add(room(m.pos));
+            }
+        }
+
+        //it contains a barricade, locked door, or hidden door
+        for (int i = 0; i < length; i++) {
+            if (map[i] == Terrain.BARRICADE || map[i] == Terrain.LOCKED_DOOR || map[i] == Terrain.SECRET_DOOR) {
+                Room candidate = null;
+                for (int j : PathFinder.NEIGHBOURS4) {
+                    if (room(i + j) != null) {
+                        if (candidate == null || !missedRooms.contains(candidate)) {
+                            candidate = room(i + j);
+                        }
+                    }
+                }
+                if (candidate != null) {
+                    missedRooms.add(candidate);
+                }
+            }
+        }
+
+        missedRooms.remove(null);
+
+        switch (missedRooms.size()) {
+            case 0:
+                return 1f;
+            case 1:
+                return 0.5f;
+            case 2:
+                return 0.2f;
+            default:
+                return 0f;
+        }
+    }
+
 	@Override
 	public int fallCell( boolean fallIntoPit ) {
 		if (fallIntoPit) {

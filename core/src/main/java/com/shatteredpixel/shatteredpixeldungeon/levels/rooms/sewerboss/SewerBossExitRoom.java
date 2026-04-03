@@ -58,8 +58,8 @@ public class SewerBossExitRoom extends ExitRoom {
 		Painter.fill( level, c.x-1, c.y-1, 3, 2, Terrain.WALL );
 		Painter.fill( level, c.x-1, c.y+1, 3, 1, Terrain.EMPTY_SP );
 		
-		level.exit = level.pointToCell(c);
-		Painter.set( level, level.exit, Terrain.LOCKED_EXIT );
+		level.setExit(level.pointToCell(c));
+		Painter.set( level, level.exit(), Terrain.LOCKED_EXIT );
 		
 		CustomTilemap vis = new SewerExit();
 		vis.pos(c.x-1, c.y);

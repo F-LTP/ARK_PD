@@ -86,7 +86,7 @@ public class ScrollOfTeleportation extends Scroll {
 	
 	public static void teleportChar( Char ch ) {
 
-		if (Dungeon.bossLevel() || !Dungeon.isInRhodes()){
+		if (Dungeon.bossLevel() || Dungeon.isInRhodes()){
 			GLog.w( Messages.get(ScrollOfTeleportation.class, "no_tele") );
 			return;
 		}

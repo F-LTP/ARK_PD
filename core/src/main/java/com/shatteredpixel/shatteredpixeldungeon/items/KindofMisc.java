@@ -86,9 +86,9 @@ public abstract class KindofMisc extends EquipableItem {
 			GameScene.show(
 					new WndOptions(Messages.get(KindofMisc.class, "unequip_title"),
 							Messages.get(KindofMisc.class, "unequip_message"),
-							miscs[0] == null ? "---" : Messages.titleCase(miscs[0].toString()),
-							miscs[1] == null ? "---" : Messages.titleCase(miscs[1].toString()),
-							miscs[2] == null ? "---" : Messages.titleCase(miscs[2].toString())) {
+							miscs[0] == null ? "---" : Messages.titleCase(miscs[0].title()),
+							miscs[1] == null ? "---" : Messages.titleCase(miscs[1].title()),
+							miscs[2] == null ? "---" : Messages.titleCase(miscs[2].title())) {
 
 						@Override
 						protected void onSelect(int index) {
@@ -172,9 +172,9 @@ public abstract class KindofMisc extends EquipableItem {
 
 	@Override
 	public boolean isEquipped( Hero hero ) {
-		return hero.belongings.artifact == this
-				|| hero.belongings.misc == this
-				|| hero.belongings.ring == this;
+        return hero != null && (hero.belongings.artifact() == this
+                || hero.belongings.misc() == this
+                || hero.belongings.ring() == this);
 	}
 
 }

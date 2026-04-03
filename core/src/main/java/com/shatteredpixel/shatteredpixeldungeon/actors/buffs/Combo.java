@@ -201,8 +201,8 @@ public class Combo extends Buff implements ActionIndicator.Action {
 	@Override
 	public Image getIcon() {
 		Image icon;
-		if (((Hero)target).belongings.weapon != null){
-			icon = new ItemSprite(((Hero)target).belongings.weapon.image, null);
+		if (((Hero)target).belongings.weapon() != null){
+			icon = new ItemSprite(((Hero)target).belongings.weapon().image, null);
 		} else {
 			icon = new ItemSprite(new Item(){ {image = ItemSpriteSheet.WEAPON_HOLDER; }});
 		}
@@ -231,7 +231,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		}
 
 		public String desc(){
-			if (Dungeon.hero.belongings.weapon instanceof GunWeapon) {
+			if (Dungeon.hero.belongings.weapon() instanceof GunWeapon) {
 				if (name() == "FURY" || name() == "CRUSH" || name() == "SLAM") return Messages.get(this, name()+"_desc2");
 			}
 			return Messages.get(this, name()+"_desc");
