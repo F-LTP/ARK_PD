@@ -42,6 +42,10 @@ public class QuestGiver extends NPC {
     public boolean interact( Char c ) {
         sprite.turnTo(pos, c.pos);
 
+        if (c != Dungeon.hero) {
+            return super.interact(c);
+        }
+
         if (questGiven || Dungeon.hero.belongings.getItem(QuestScroll.class) != null) {
             Game.runOnRenderThread(new Callback() {
                 @Override

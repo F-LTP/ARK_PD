@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -69,6 +70,8 @@ public class LostBackpack extends Item {
         hero.updateHT(false);
 
         Item.updateQuickslot();
+        Notes.remove(Notes.Landmark.LOST_PACK);
+
         Sample.INSTANCE.play( Assets.Sounds.DEWDROP );
         hero.spendAndNext(pickupDelay());
         GameScene.pickUp( this, pos );

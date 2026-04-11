@@ -554,11 +554,11 @@ public class Hero extends Char {
         this.enemy = enemy;
 
         //temporarily set the hero's weapon to the missile weapon being used
-        belongings.thrownWeapon = belongings.weapon;
-        belongings.weapon = wep;
+        //TODO improve this!
+        belongings.thrownWeapon = wep;
         boolean hit = attack(enemy);
         Invisibility.dispel();
-        belongings.weapon = belongings.thrownWeapon;
+
         belongings.thrownWeapon = null;
 
         if (hit && subClass == HeroSubClass.GLADIATOR) {
@@ -693,8 +693,8 @@ public class Hero extends Char {
 
         if (buff(IronSkin.class) != null) dr += Random.NormalIntRange(0,2);
 
-        if (hasTalent(Talent.TACTICAL_SHIELD) && belongings.armor!=null) {
-            int drplus = belongings.armor.buffedLvl() * 2;
+        if (hasTalent(Talent.TACTICAL_SHIELD) && belongings.armor()!=null) {
+            int drplus = belongings.armor().buffedLvl() * 2;
             drplus = Math.min(drplus, 1 + pointsInTalent(Talent.TACTICAL_SHIELD) * 3);
             dr += Random.NormalIntRange(0,drplus);
         }
@@ -911,19 +911,19 @@ public class Hero extends Char {
                         this.sprite.emitter().burst( ShadowParticle.UP, 2);
                     }}}}
 
-        if (belongings.weapon instanceof Gluttony) {
-            if (Random.Int(6) == 0) ((Gluttony) belongings.weapon).SPCharge(1); }
+        if (belongings.weapon() instanceof Gluttony) {
+            if (Random.Int(6) == 0) ((Gluttony) belongings.weapon()).SPCharge(1); }
 
-        if (belongings.weapon instanceof Echeveria && STR() >= ((Echeveria) belongings.weapon).STRReq())
+        if (belongings.weapon() instanceof Echeveria && STR() >= ((Echeveria) belongings.weapon()).STRReq())
             Echeveria.partialcharge_ech+=time;//change from budding
         if (Echeveria.partialcharge_ech >=1){//change from budding
-            ((Echeveria) belongings.weapon).SPCharge( (int)(Echeveria.partialcharge_ech));//change from budding
+            ((Echeveria) belongings.weapon()).SPCharge( (int)(Echeveria.partialcharge_ech));//change from budding
             Echeveria.partialcharge_ech-=(int)(Echeveria.partialcharge_ech);//change from budding
         }//change from budding
-        if (belongings.weapon instanceof Suffering && STR() >= ((Suffering) belongings.weapon).STRReq())
+        if (belongings.weapon() instanceof Suffering && STR() >= ((Suffering) belongings.weapon()).STRReq())
             Suffering.partialcharge_suf+=(2*time);//change from budding
         if (Suffering.partialcharge_suf >=1){//change from budding
-            ((Suffering) belongings.weapon).SPCharge( (int)(Suffering.partialcharge_suf));//change from budding
+            ((Suffering) belongings.weapon()).SPCharge( (int)(Suffering.partialcharge_suf));//change from budding
             Suffering.partialcharge_suf-=(int)(Suffering.partialcharge_suf);//change from budding
         }//change from budding
         if (subClass == HeroSubClass.HEAT) {
@@ -1382,8 +1382,12 @@ public class Hero extends Char {
             LevelTransition transition = Dungeon.level.getTransition(pos);
             InterlevelScene.curTransition = transition;
 
-            //use transition type to determine direction
-            if (transition != null && (transition.type == LevelTransition.Type.BRANCH_EXIT
+            //use transition destination to pick the right mode
+            if (transition != null && transition.destDepth == 0 && transition.destBranch >= 1 && transition.destBranch <= 4) {
+                InterlevelScene.mode = InterlevelScene.Mode.ENTER_RHODES;
+            } else if (transition != null && Dungeon.branch >= 1 && Dungeon.branch <= 4 && transition.destBranch == 0) {
+                InterlevelScene.mode = InterlevelScene.Mode.EXIT_RHODES;
+            } else if (transition != null && (transition.type == LevelTransition.Type.BRANCH_EXIT
                     || transition.type == LevelTransition.Type.REGULAR_EXIT)) {
                 InterlevelScene.mode = InterlevelScene.Mode.DESCEND;
             } else {
@@ -2291,25 +2295,25 @@ public class Hero extends Char {
             }
         }
 
-        if (ankh != null && ankh.isBlessed()) {
-            int AnkhHP = HT/10;
-            int barrior = this.HT/2;
+        if (ankh != null) {
 
-            //restore HP before any buff that triggers sprite updates (e.g. RadiantKnight),
-            //so that updateArmor() sees the hero as alive and plays idle() instead of die()
-            this.HP = HT / 4;
+            if (ankh.isBlessed()){
 
-            if (hasTalent(Talent.RESURGENCE)) {
-                AnkhHP *= 1 + pointsInTalent(Talent.RESURGENCE) * 3;
-                barrior *= 1f + (pointsInTalent(Talent.RESURGENCE) * 0.5f);
-                Buff.affect(this, RadiantKnight.class, RadiantKnight.DURATION);
-                GameScene.flash( 0x80FFFFFF );
-            }
+                //restore HP before any buff that triggers sprite updates (e.g. RadiantKnight),
+                //so that updateArmor() sees the hero as alive and plays idle() instead of die()
+                this.HP = HT / 4;
+                float invulnDuration = Invulnerability.DURATION;
 
-            if (ankh.isBlessed()) {
+                if (hasTalent(Talent.RESURGENCE)) {
+                    int pts = pointsInTalent(Talent.RESURGENCE);
+                    this.HP = Math.round(this.HP * (1f + pts * 0.3f));
+                    invulnDuration += pts;
+                    Buff.affect(this, RadiantKnight.class, RadiantKnight.DURATION);
+                    GameScene.flash(0x80FFFFFF);
+                }
 
                 PotionOfHealing.cure(this);
-                Buff.prolong(this, Invulnerability.class, Invulnerability.DURATION);
+                Buff.prolong(this, Invulnerability.class, invulnDuration);
 
                 //safety: ensure sprite isn't stuck in death animation after resurrection
 
@@ -2321,7 +2325,9 @@ public class Hero extends Char {
                 GLog.w(Messages.get(this, "revive"));
                 Statistics.ankhsUsed++;
                 //Catalog.countUse(Ankh.class);
-            ankh.detach(belongings.backpack);
+
+                ankh.detach(belongings.backpack);
+
                 for (Char ch : Actor.chars()) {
                     if (ch instanceof DriedRose.GhostHero) {
                         ((DriedRose.GhostHero) ch).sayAnhk();

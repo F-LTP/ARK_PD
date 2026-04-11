@@ -17,6 +17,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Honeypot;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
@@ -98,10 +99,14 @@ public class Ergate extends Mob {
             if (alignment == Alignment.ENEMY && item == null
                     && enemy instanceof Hero) {
                 if (Random.Int(4) < 1) {
-                    if (((Hero) enemy).belongings.weapon != null)
-                        if (!((Hero) enemy).belongings.weapon.cursed){//change from budding
-                    ((Hero) enemy).belongings.weapon.doDrop((Hero) enemy);}
-                    Buff.affect(this, Terror.class, 20f);
+                    Hero hero = (Hero) enemy;
+                    KindOfWeapon weapon = hero.belongings.weapon;
+                    if (weapon != null && !weapon.cursed) {
+                        hero.belongings.weapon = null;
+                        Dungeon.level.drop(weapon, hero.pos).sprite.drop();
+                        GLog.w(Messages.get(this, "disarm", weapon.name()));
+                        Buff.affect(this, Terror.class, 20f);
+                    }
                 }
             }
         }

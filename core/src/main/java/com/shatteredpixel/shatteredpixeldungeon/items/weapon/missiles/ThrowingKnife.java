@@ -27,23 +27,21 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.PinCushion;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SnipersMark;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WolfMark;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class ThrowingKnife extends MissileWeapon {
 
@@ -70,7 +68,10 @@ public class ThrowingKnife extends MissileWeapon {
 
     @Override
     public boolean doPickUp(Hero hero) {
-        if (isDuplicate(hero)) {
+        //only reject if the hero already holds a knife — everything else (stray
+        //ground copies, PinCushion leftovers, cross-floor junk) is cleaned up by
+        //clearFromLevel on level entry, so pickup should always succeed otherwise.
+        if (hero.belongings.getItem(ThrowingKnife.class) != null) {
             duplicateDestroyed = true;
             hero.spendAndNext(TIME_TO_PICK_UP);
             return true;
@@ -78,49 +79,7 @@ public class ThrowingKnife extends MissileWeapon {
         return super.doPickUp(hero);
     }
 
-    private boolean isDuplicate(Hero hero) {
-        if (hero.belongings.getItem(ThrowingKnife.class) != null) {
-            return true;
-        }
-
-        //WolfMark buff
-        if (hero.buff(WolfMark.class) != null) {
-            return true;
-        }
-
-        // current floor
-        for (Heap heap : Dungeon.level.heaps.valueList()) {
-            for (Item item : heap.items) {
-                if (item instanceof ThrowingKnife && item != this) {
-                    return true;
-                }
-            }
-        }
-
-        //PinCushion
-        for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
-            PinCushion pc = mob.buff(PinCushion.class);
-            if (pc != null && pc.containsType(ThrowingKnife.class)) {
-                return true;
-            }
-        }
-
-        //items falling through chasms to other floors
-        for (int key : Dungeon.droppedItems.keyArray()) {
-            ArrayList<Item> items = Dungeon.droppedItems.get(key);
-            if (items != null) {
-                for (Item item : items) {
-                    if (item instanceof ThrowingKnife) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-	@Override
+    @Override
 	public int proc(Char attacker, Char defender, int damage) {
 		if (defender instanceof Piranha) damage = 0;
 
@@ -150,43 +109,51 @@ public class ThrowingKnife extends MissileWeapon {
 		}
 	}
 
-    public static class KnifeSafeguard extends Buff {
+    //wipes stray knives from the current level and gives the rogue one if they lack it
+    public static void onLevelEnter() {
+        Hero hero = Dungeon.hero;
 
-        private int turnsLost = 0;
+        //detach WolfMark first: its detach() collects any in-flight knife back
+        //into inventory, so cross-floor references never linger past a transition
+        if (hero != null) {
+            WolfMark wm = hero.buff(WolfMark.class);
+            if (wm != null) wm.detach();
+        }
 
-        private static final int SAFEGUARD_TURNS = 100;
-        private static final String TURNS_LOST = "turnsLost";
+        clearFromLevel(Dungeon.level);
 
-        @Override
-        public boolean act() {
-            if (Dungeon.hero.belongings.getItem(ThrowingKnife.class) != null) {
-                turnsLost = 0;
-            } else {
-                turnsLost++;
-                if (turnsLost >= SAFEGUARD_TURNS) {
-                    ThrowingKnife newKnife = new ThrowingKnife();
-                    if (!newKnife.collect()) {
-                        Dungeon.level.drop(newKnife, target.pos).sprite.drop();
-                    }
-                    GLog.p(Messages.get(ThrowingKnife.class, "safeguard"));
-                    turnsLost = 0;
+        if (hero == null) return;
+        if (hero.heroClass != HeroClass.ROGUE) return;
+        if (hero.belongings.getItem(ThrowingKnife.class) != null) return;
+
+        new ThrowingKnife().collect();
+    }
+
+    private static void clearFromLevel(Level level) {
+        if (level == null) return;
+
+        //destroy emptied heaps after the walk to avoid mutating level.heaps mid-iteration
+        ArrayList<Heap> emptied = new ArrayList<>();
+        for (Heap heap : level.heaps.valueList()) {
+            Iterator<Item> it = heap.items.iterator();
+            while (it.hasNext()) {
+                if (it.next() instanceof ThrowingKnife) {
+                    it.remove();
                 }
             }
-
-            spend(TICK);
-            return true;
+            if (heap.items.isEmpty()) {
+                emptied.add(heap);
+            }
+        }
+        for (Heap heap : emptied) {
+            heap.destroy();
         }
 
-        @Override
-        public void storeInBundle(Bundle bundle) {
-            super.storeInBundle(bundle);
-            bundle.put(TURNS_LOST, turnsLost);
-        }
-
-        @Override
-        public void restoreFromBundle(Bundle bundle) {
-            super.restoreFromBundle(bundle);
-            turnsLost = bundle.getInt(TURNS_LOST);
+        for (Mob mob : level.mobs.toArray(new Mob[0])) {
+            PinCushion pc = mob.buff(PinCushion.class);
+            if (pc != null) {
+                pc.removeType(ThrowingKnife.class);
+            }
         }
     }
 }

@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.wands;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.TomorrowRogueNight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
@@ -225,7 +224,7 @@ public class CursedWand {
 
 			//Bomb explosion
 			case 2:
-				new Bomb().explode(targetPos,false);//change from budding
+				new Bomb().explode(targetPos,false);
 				return true;
 
 			//shock and recharge

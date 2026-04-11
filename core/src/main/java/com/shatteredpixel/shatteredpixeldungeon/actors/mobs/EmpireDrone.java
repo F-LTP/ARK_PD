@@ -1,6 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
@@ -9,17 +8,11 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.TargetedCell;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.BlastParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.A_master1Sprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.DroneSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.HandclapSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.Imperial_artillerySprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ThiefSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Camera;
-import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.Random;
@@ -44,17 +37,18 @@ public class EmpireDrone extends Mob {
         immunities.add(Corruption.class);
     }
 
-    private int CoolDown = 0;
-    private int LastPos = -1;
+    private int cooldown = 0;
+    private int lastTargetPos = -1;
+    private Char target;
 
     @Override
     public int damageRoll() {
-        return Random.NormalIntRange( 55, 65 );
+        return Random.NormalIntRange(55, 65);
     }
 
     @Override
     public int drRoll() {
-        return Random.NormalIntRange( 0, 20 );
+        return Random.NormalIntRange(0, 20);
     }
 
     @Override
@@ -64,74 +58,98 @@ public class EmpireDrone extends Mob {
 
     @Override
     protected boolean act() {
-        if (CoolDown == 0) {
-            if (LastPos == -1) {
-                if (state != HUNTING || enemy==null) return super.act();//change from budding
+        getTarget();
+        if (target == null) return super.act();
+        if (cooldown <= 0) {
+            if (lastTargetPos == -1) {
+                if (state != HUNTING) return super.act();
 
-                LastPos = enemy.pos;
-                sprite.parent.addToBack(new TargetedCell(LastPos, 0xFF0000));
-                sprite.zap( LastPos );//change from budding
+                lastTargetPos = target.pos;
+                sprite.parent.addToBack(new TargetedCell(lastTargetPos, 0xFF0000));
+                sprite.zap(target.pos);
 
                 // 몬스터 어그로
                 for (Mob mob : Dungeon.level.mobs) {
                     if (mob.paralysed <= 0
                             && Dungeon.level.distance(pos, mob.pos) <= 7
                             && mob.state != mob.HUNTING) {
-                        mob.beckon( enemy.pos );
+                        mob.beckon(target.pos);
                     }
                 }
 
                 // 패턴 딜레이 추가
-                spend(GameMath.gate(TICK, Dungeon.hero.cooldown(), 2*TICK));
+                spend(GameMath.gate(TICK, Dungeon.hero.cooldown(), 2 * TICK));
                 Dungeon.hero.interrupt();
                 return true;
-            }
-            else  {
-                if (enemy !=null && LastPos == enemy.pos) {//change from budding
-                    int dmg = damageRoll() - Dungeon.hero.drRoll();
-                    enemy.damage(dmg, this);
-                    enemy.sprite.burst(CharSprite.NEGATIVE, 10);
-                    CellEmitter.center(LastPos).burst(BlastParticle.FACTORY, 10);
+            } else {
+                if (lastTargetPos == target.pos) {
+                    int dmg = damageRoll() - target.drRoll();
+                    target.damage(dmg, this);
+                    target.sprite.burst(CharSprite.NEGATIVE, 10);
+                    CellEmitter.center(lastTargetPos).burst(BlastParticle.FACTORY, 10);
                     Camera.main.shake(5, 0.5f);
-                    CoolDown = 1;
-                    LastPos = -1;
-                    spend( TICK );
+                    cooldown = 1;
+                    lastTargetPos = -1;
+                    spend(TICK);
 
-                    if (!Dungeon.hero.isAlive()) {
-                        Dungeon.fail( getClass() );
-                        GLog.n( Messages.get(this, "bomb_kill") );
+                    if (target == Dungeon.hero && !Dungeon.hero.isAlive()) {
+                        Dungeon.fail(getClass());
+                        GLog.n(Messages.get(this, "bomb_kill"));
                     }
                     return true;
-                }
-                else {
-                    CellEmitter.center(LastPos).burst(BlastParticle.FACTORY, 10);
+                } else {
+                    CellEmitter.center(lastTargetPos).burst(BlastParticle.FACTORY, 10);
                     Camera.main.shake(5, 0.5f);
-                    CoolDown = 1;
-                    LastPos = -1;
+                    cooldown = 1;
+                    lastTargetPos = -1;
                 }
             }
 
-        }
-        else CoolDown--;
+        } else cooldown--;
 
         return super.act();
     }
 
-    private static final String CD   = "CoolDown";
-    private static final String SKILLPOS   = "LastPos";
+    // find new target IF target is null, target is dead, or target is no longer in vision
+    // target is always the closest mob, prioritizing hero if multiple in same distance
+    private void getTarget() {
+        if (target != null && target.isAlive() && this.fieldOfView != null && this.fieldOfView[target.pos]) {
+            return;
+        }
+
+        target = null;
+        int distance = Integer.MAX_VALUE;
+        for (Mob mob : Dungeon.level.mobs) {
+            if (!mob.isAlive() || mob.alignment != Alignment.ALLY || this.fieldOfView == null || !this.fieldOfView[mob.pos])
+                continue;
+
+            int curDistance = mob.distance(this);
+            if (curDistance < distance) {
+                distance = curDistance;
+                target = mob;
+            }
+        }
+        if (Dungeon.hero.isAlive() && this.fieldOfView != null && this.fieldOfView[Dungeon.hero.pos]
+                && Dungeon.hero.distance(this) <= distance) {
+            target = Dungeon.hero;
+        }
+    }
+
+    private static final String CD = "CoolDown";
+    private static final String SKILLPOS = "LastPos";
 
     @Override
-    public void storeInBundle( Bundle bundle ) {
-        super.storeInBundle( bundle );
-        bundle.put( CD, CoolDown );
-        bundle.put( SKILLPOS, LastPos );
+    public void storeInBundle(Bundle bundle) {
+        super.storeInBundle(bundle);
+        bundle.put(CD, cooldown);
+        bundle.put(SKILLPOS, lastTargetPos);
     }
 
     @Override
-    public void restoreFromBundle( Bundle bundle ) {
-        super.restoreFromBundle( bundle );
-        CoolDown = bundle.getInt(CD);
-        LastPos = bundle.getInt(SKILLPOS);
+    public void restoreFromBundle(Bundle bundle) {
+        super.restoreFromBundle(bundle);
+        cooldown = bundle.getInt(CD);
+        lastTargetPos = bundle.getInt(SKILLPOS);
 
     }
 }

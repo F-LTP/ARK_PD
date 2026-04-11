@@ -31,6 +31,7 @@ import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 public class PinCushion extends Buff {
 
@@ -45,6 +46,18 @@ public class PinCushion extends Buff {
 
     public ArrayList<MissileWeapon> getStuckItems(){
         return new ArrayList<>(items);
+    }
+
+    public void removeType(Class<? extends Item> type) {
+        Iterator<MissileWeapon> it = items.iterator();
+        while (it.hasNext()) {
+            if (type.isInstance(it.next())) {
+                it.remove();
+            }
+        }
+        if (items.isEmpty()) {
+            detach();
+        }
     }
 
     public void stick(MissileWeapon projectile){

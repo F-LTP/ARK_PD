@@ -62,7 +62,7 @@ public class GoldDogSword extends MeleeWeapon {
     @Override
     public int proc(Char attacker, Char defender, int damage) {
         if (charge > 0) {
-            damage *= 1 + (charge/12f);
+            damage *= 1f + (charge/12f);
             charge--;
             updateQuickslot(); }
         return super.proc(attacker, defender, damage);

@@ -167,7 +167,11 @@ public class NewRhodesLevel1 extends Level {
         @Override
         public int randomRespawnCell (Char ch ){
         int cell;
-        do {
+            int count = 0;
+            do {
+                if (++count > 30) {
+                    return -1;
+                }
             cell = entrance + PathFinder.NEIGHBOURS8[Random.Int(8)];
         } while (!passable[cell]
                 || (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])

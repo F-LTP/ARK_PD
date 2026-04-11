@@ -24,6 +24,7 @@ public class QuestScroll extends Item {
         unique = true;
         stackable = false;
         defaultAction = AC_READ;
+        keptThoughLostInvent = true;
     }
 
     public enum QuestObjective {
@@ -67,9 +68,11 @@ public class QuestScroll extends Item {
                 case SLAY_ENEMIES:
                     return Random.IntRange(10, 20);
                 case REACH_DEPTH:
-                    return Random.IntRange(3, 8);
+                    int depthCap = Math.max(1, 40 - Statistics.deepestFloor);
+                    return Math.min(Random.IntRange(3, 8), depthCap);
                 case EXPLORE_FLOORS:
-                    return Random.IntRange(3, 8);
+                    int exploreCap = Math.max(1, 40 - countExplored());
+                    return Math.min(Random.IntRange(3, 8), exploreCap);
                 default:
                     return 10;
             }
@@ -125,7 +128,10 @@ public class QuestScroll extends Item {
         super.execute(hero, action);
 
         if (action.equals(AC_READ)) {
-            if (objective == null) return;
+            if (objective == null) {
+                GLog.w(Messages.get(this, "invalid"));
+                return;
+            }
 
             if (objective.checkComplete(this)) {
                 completed = true;

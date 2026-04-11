@@ -56,6 +56,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfMayer;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CavesLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CityLevel;
@@ -296,9 +297,13 @@ public class Dungeon {
 
 		quickslot.reset();
 		QuickSlotButton.reset();
-		
-		depth = 1;
+
+        depth = 0;
+        branch = 2;
 		gold = 300;
+        energy = 0;
+
+        generatedLevels.clear();
 		cautusquset = -1;
 		guardquest = -1;
 		acequest = -1;
@@ -592,6 +597,9 @@ public class Dungeon {
 	}
 
 	public static void dropToChasm( Item item ) {
+        //knives don't survive a chasm fall; rogue gets a fresh one on next level entry
+        if (item instanceof ThrowingKnife) return;
+
 		int depth = Dungeon.depth + 1;
 		ArrayList<Item> dropped = Dungeon.droppedItems.get( depth );
 		if (dropped == null) {

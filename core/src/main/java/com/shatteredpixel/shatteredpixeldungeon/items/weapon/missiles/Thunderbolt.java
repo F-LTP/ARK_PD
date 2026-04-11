@@ -30,7 +30,7 @@ public class Thunderbolt extends MissileWeapon {
     @Override
     public int proc(Char attacker, Char defender, int damage) {
         // 적의 체력이 100%라면 2배의 피해를 주지만, 체력이 감소할수록 피해 배율이 감소합니다.
-        damage *= 2f * defender.HP / defender.HT;//change from budding
+        damage *= 2f * (defender.HP / defender.HT);
 
         return super.proc(attacker, defender, damage);
     }

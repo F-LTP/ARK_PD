@@ -400,8 +400,6 @@ import com.watabou.utils.DeviceCompat;
 		 skillB.quantity(1).collect();
 		 Dungeon.quickslot.setSlot(0,skillB);
 		 new DewVial().collect();
-
-		 //new Generators().collect();//test
 	 }
 
 	 private static void testToolSpawn(Hero hero) {

@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 
 public class LostInventory extends Buff {
@@ -53,7 +54,12 @@ public class LostInventory extends Buff {
 
     @Override
     public int icon() {
-        return BuffIndicator.DEFERRED; // Placeholder for NOINV icon which doesn't exist in this project
+        return BuffIndicator.NOINV;
+    }
+
+    @Override
+    public String desc() {
+        return Messages.get(this, "desc");
     }
 
 }

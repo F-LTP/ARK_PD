@@ -170,7 +170,7 @@ public abstract class RegularLevel extends Level {
                 initRooms.add(new EndspeakerRoom());
             }
 		} else if (Dungeon.depth > 30) {
-			if (Dungeon.depth != 35 & Dungeon.depth != 40) {
+			if (Dungeon.depth != 35 && Dungeon.depth != 40) {
 				if (Dungeon.depth < 35) {
 					initRooms.add(new FloodingRoom());
 					initRooms.add(new FloodingRoom2());

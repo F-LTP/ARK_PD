@@ -330,22 +330,22 @@ public abstract class Char extends Actor {
 			
 			if (this instanceof Hero){
 				Hero h = (Hero)this;
-				if (h.belongings.weapon instanceof MissileWeapon
+				if (h.belongings.attackingWeapon() instanceof MissileWeapon
 						&& h.subClass == HeroSubClass.SNIPER
 						&& !Dungeon.level.adjacent(h.pos, enemy.pos)){
 					dr = 0; }
 
 				SpiritBow weapon = h.belongings.getItem(SpiritBow.class);
-					if (weapon != null && h.belongings.weapon instanceof SpiritBow.SpiritArrow
+					if (weapon != null && h.belongings.attackingWeapon() instanceof SpiritBow.SpiritArrow
 							&& h.subClass == HeroSubClass.WARDEN) {
 						if (weapon.EatSeed >= 15) dr/=2;
 					}
-				if (h.belongings.weapon instanceof ThermiteBlade) dr = 0;
-				if (h.belongings.weapon instanceof RhodesSword) dr = 0;
-				if (h.belongings.weapon instanceof KollamSword) dr = 0;
+				if (h.belongings.attackingWeapon() instanceof ThermiteBlade) dr = 0;
+				if (h.belongings.attackingWeapon() instanceof RhodesSword) dr = 0;
+				if (h.belongings.attackingWeapon() instanceof KollamSword) dr = 0;
 
 				if (h.belongings.getItem(RingOfTenacity.class) != null) {
-					if (h.belongings.getItem(RingOfTenacity.class).isEquipped(Dungeon.hero) && h.belongings.weapon instanceof FolkSong) {
+					if (h.belongings.getItem(RingOfTenacity.class).isEquipped(Dungeon.hero) && h.belongings.attackingWeapon() instanceof FolkSong) {
 						dr /= 2;
 					}
 				}
@@ -429,7 +429,7 @@ public abstract class Char extends Actor {
 			if (!enemy.isAlive()) {
 				if (this instanceof Hero) {
 					Hero h = (Hero) this;
-					if ((h.belongings.weapon instanceof RhodesSword)) {
+					if ((h.belongings.attackingWeapon() instanceof RhodesSword)) {
 						new FlavourBuff(){
 							{actPriority = VFX_PRIO;}
 							public boolean act() {
@@ -456,7 +456,7 @@ public abstract class Char extends Actor {
 			}
 
 			if (enemy.isAlive() && enemy.HP < enemy.HT * 0.15f &&
-			enemy != Dungeon.hero && Dungeon.hero.belongings.weapon instanceof Naginata && this instanceof Hero &&
+			enemy != Dungeon.hero && Dungeon.hero.belongings.attackingWeapon() instanceof Naginata && this instanceof Hero &&
 				!enemy.properties().contains(Char.Property.BOSS) && !enemy.properties().contains(Char.Property.MINIBOSS)) {
 					sprite.showStatus(CharSprite.NEUTRAL, Messages.get(Naginata.class, "skill"));
                     enemy.die(this);
@@ -508,7 +508,8 @@ public abstract class Char extends Actor {
 		if (attacker.buff(  Hex.class) != null) acuRoll *= 0.8f;
 		if (Dungeon.hero.hasTalent(Talent.RESTRICTION))  {
 			float phan = 1f - (Dungeon.hero.pointsInTalent(Talent.RESTRICTION) * 0.05f);
-			acuRoll *= phan; }
+			acuRoll *= phan;
+        }
 		if (attacker.buff(Hallucination.class) != null) acuRoll *= 0.65f;
         if (attacker.buff(Blindness.class) != null) acuRoll *= 0.75f;
 		for (ChampionEnemy buff : attacker.buffs(ChampionEnemy.class)){
@@ -519,7 +520,7 @@ public abstract class Char extends Actor {
 		float defRoll = Random.Float( defStat );
 		if (defender.buff(Bless.class) != null) defRoll *= 1.25f;
 		if (defender.buff(ExecutMode.class) != null) defRoll *= 1.3f;
-		if (defender instanceof Hero && Dungeon.hero.belongings.weapon instanceof AssassinsBlade && Dungeon.hero.belongings.armor instanceof LeatherArmor) defRoll *= 1.1f;
+		if (defender instanceof Hero && Dungeon.hero.belongings.weapon() instanceof AssassinsBlade && Dungeon.hero.belongings.armor instanceof LeatherArmor) defRoll *= 1.1f;
 		if (defender.buff(  Hex.class) != null) defRoll *= 0.8f;
 		for (ChampionEnemy buff : defender.buffs(ChampionEnemy.class)){
 			defRoll *= buff.evasionAndAccuracyFactor();

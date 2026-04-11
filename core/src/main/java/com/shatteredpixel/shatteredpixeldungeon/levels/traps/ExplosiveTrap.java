@@ -33,6 +33,6 @@ public class ExplosiveTrap extends Trap {
 	@Override
 	public void activate() {
 		new Bomb().explode(pos,false);
-	}//change from budding
+	}
 
 }

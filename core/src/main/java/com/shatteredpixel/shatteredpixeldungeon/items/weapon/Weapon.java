@@ -323,10 +323,6 @@ abstract public class Weapon extends KindOfWeapon {
 		if (Dungeon.hero.pointsInTalent(Talent.STRONGMAN) + 1 >= 2) req--;
 		if (Dungeon.hero.pointsInTalent(Talent.STRONGMAN) + 1 >= 4) req--;
 
-		/*if (Dungeon.hero.hasTalent(Talent.CHAINSAW_EXTEND)) {
-			req += 5 - Dungeon.hero.pointsInTalent(Talent.CHAINSAW_EXTEND);
-		}*/  //change from budding
-
 		return req;
 	}
 

@@ -712,7 +712,7 @@ public enum Talent {
 		}
 
 		if (hero.hasTalent(Talent.FOLLOWUP_STRIKE)) {
-            if (hero.belongings.weapon instanceof MissileWeapon
+            if (hero.belongings.attackingWeapon() instanceof MissileWeapon
                     || hero.buff(GunWeapon.RangedAttackTracker.class) != null) {
 				Buff.affect(enemy, FollowupStrikeTracker.class);
 			} else if (enemy.buff(FollowupStrikeTracker.class) != null){

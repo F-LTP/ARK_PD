@@ -55,7 +55,7 @@ public class ScrollOfDominate extends ExoticScroll {
                     }
                 }
             }
-        }//change from budding ,which originally in the loop ,so awful
+        }
         identify();
 
         curUser.sprite.centerEmitter().start(Speck.factory(Speck.BONE), 0.3f, 3);

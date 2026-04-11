@@ -147,7 +147,7 @@ public class HeroSelectScene extends PixelScene {
 				Dungeon.daily = Dungeon.dailyReplay = false;
                 Dungeon.initSeed();
                 ActionIndicator.clearAction();
-				InterlevelScene.mode = InterlevelScene.Mode.DESCEND_27;
+				InterlevelScene.mode = InterlevelScene.Mode.ENTER_RHODES;
 				if (SPDSettings.intro()) {
 					SPDSettings.intro( false );
 					Game.switchScene( IntroScene.class );
@@ -200,11 +200,6 @@ public class HeroSelectScene extends PixelScene {
 			heroBtns.add(button);
 			i++;
 		}
-        /*for (HeroClass cl : HeroClass.values()){
-            HeroBtn button = new HeroBtn(cl);
-            add(button);
-            heroBtns.add(button);
-        }*/
 		optionsPane = new GameOptions();
 		optionsPane.visible = optionsPane.active = false;
 		optionsPane.layout();
@@ -331,6 +326,7 @@ public class HeroSelectScene extends PixelScene {
 		for (int j = 0; j<heroBtns.size(); j++) {
 			heroBtns.get(j).destroy();
 		}
+        heroBtns.clear();
 
 		HeroClass[] classes = HeroClass.values();
 

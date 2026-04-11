@@ -218,7 +218,7 @@ public class WelcomeScene extends PixelScene {
                         Rankings.INSTANCE.loadGameData(rec);
                         Rankings.INSTANCE.saveGameData(rec);
                     } catch (Exception e) {
-                        //if we encounter a fatal per-record error, then clear that record
+                        //if we encounter a fatal per-record error, then clear that record's data
                         rec.gameData = null;
                         Game.reportException( new RuntimeException("Rankings Updating Failed!",e));
                     }

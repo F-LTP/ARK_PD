@@ -35,7 +35,6 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SmokeParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.ChaliceOfBlood;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.IsekaiItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
@@ -43,7 +42,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibili
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlame;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.GooBlob;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.MetalShard;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMirrorImage;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRage;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
@@ -69,398 +67,411 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class Bomb extends Item {
-	
-	{
-		image = ItemSpriteSheet.BOMB;
 
-		defaultAction = AC_LIGHTTHROW;
-		usesTargeting = true;
+    {
+        image = ItemSpriteSheet.BOMB;
 
-		stackable = true;
-	}
+        defaultAction = AC_LIGHTTHROW;
+        usesTargeting = true;
 
-	public Fuse fuse;
+        stackable = true;
+    }
 
-	//FIXME using a static variable for this is kinda gross, should be a better way
-	private static boolean lightingFuse = false;
+    public Fuse fuse;
 
-	private static final String AC_LIGHTTHROW = "LIGHTTHROW";
+    //FIXME using a static variable for this is kinda gross, should be a better way
+    private static boolean lightingFuse = false;
 
-	@Override
-	public boolean isSimilar(Item item) {
-		return super.isSimilar(item) && this.fuse == ((Bomb) item).fuse;
-	}
-	
-	public boolean explodesDestructively(){
-		return true;
-	}
+    private static final String AC_LIGHTTHROW = "LIGHTTHROW";
 
-	@Override
-	public ArrayList<String> actions(Hero hero) {
-		ArrayList<String> actions = super.actions( hero );
-		actions.add ( AC_LIGHTTHROW );
-		return actions;
-	}
+    @Override
+    public boolean isSimilar(Item item) {
+        return super.isSimilar(item) && this.fuse == ((Bomb) item).fuse;
+    }
 
-	@Override
-	public void execute(Hero hero, String action) {
+    public boolean explodesDestructively() {
+        return true;
+    }
 
-		if (action.equals(AC_LIGHTTHROW)) {
-			lightingFuse = true;
-			action = AC_THROW;
-		} else
-			lightingFuse = false;
+    @Override
+    public ArrayList<String> actions(Hero hero) {
+        ArrayList<String> actions = super.actions(hero);
+        actions.add(AC_LIGHTTHROW);
+        return actions;
+    }
 
-		super.execute(hero, action);
-	}
+    @Override
+    public void execute(Hero hero, String action) {
 
-	@Override
-	protected void onThrow( int cell ) {
-		int delay_time=2;//change from budding
-		if (!Dungeon.level.pit[ cell ] && lightingFuse) {
-			if (Dungeon.hero.belongings.getItem(IsekaiItem.class) != null) {
-				if (Dungeon.hero.belongings.getItem(IsekaiItem.class).isEquipped(Dungeon.hero)) {
-					if (Dungeon.hero.belongings.getItem(IsekaiItem.class).cursed) delay_time=8;
-					else delay_time=0;
-				}
-			}
-			Actor.addDelayed(fuse = new Fuse().ignite(this), delay_time);
-		}
-		if (delay_time>0 && Actor.findChar( cell ) != null && !(Actor.findChar( cell ) instanceof Hero) ){
-			ArrayList<Integer> candidates = new ArrayList<>();
-			for (int i : PathFinder.NEIGHBOURS8)
-				if (Dungeon.level.passable[cell + i])
-					candidates.add(cell + i);
-			int newCell = candidates.isEmpty() ? cell : Random.element(candidates);
-			Dungeon.level.drop( this, newCell ).sprite.drop( cell );
-		} else
-			super.onThrow( cell );
-	}
+        if (action.equals(AC_LIGHTTHROW)) {
+            lightingFuse = true;
+            action = AC_THROW;
+        } else
+            lightingFuse = false;
 
-	@Override
-	public boolean doPickUp(Hero hero) {
-		if (fuse != null) {
-			GLog.w( Messages.get(this, "snuff_fuse") );
-			fuse = null;
-		}
-		return super.doPickUp(hero);
-	}
-//change from budding
-	public void explode(int cell){
-		explode(cell,true);
-	}
-	public void explode(int cell,boolean powered){
-		//We're blowing up, so no need for a fuse anymore.
-		this.fuse = null;
+        super.execute(hero, action);
+    }
 
-		Sample.INSTANCE.play( Assets.Sounds.BLAST );
+    @Override
+    protected void onThrow(int cell) {
+        boolean isekaiInstant = false;
+        if (!Dungeon.level.pit[cell] && lightingFuse) {
+            IsekaiItem isekai = Dungeon.hero.belongings.getItem(IsekaiItem.class);
+            if (isekai != null && isekai.isEquipped(Dungeon.hero)) {
+                if (isekai.cursed) {
+                    Actor.addDelayed(fuse = new Fuse().ignite(this), 8);
+                } else {
+                    Actor.addDelayed(fuse = new Fuse().ignite(this), 0);
+                    isekaiInstant = true;
+                }
+            } else {
+                Actor.addDelayed(fuse = new Fuse().ignite(this), 2);
+            }
+        }
+        if (!isekaiInstant && Actor.findChar(cell) != null && !(Actor.findChar(cell) instanceof Hero)) {
+            ArrayList<Integer> candidates = new ArrayList<>();
+            for (int i : PathFinder.NEIGHBOURS8)
+                if (Dungeon.level.passable[cell + i])
+                    candidates.add(cell + i);
+            int newCell = candidates.isEmpty() ? cell : Random.element(candidates);
+            Dungeon.level.drop(this, newCell).sprite.drop(cell);
+        } else
+            super.onThrow(cell);
+    }
 
-		if (explodesDestructively()) {
-			
-			ArrayList<Char> affected = new ArrayList<>();
-			
-			if (Dungeon.level.heroFOV[cell]) {
-				CellEmitter.center(cell).burst(BlastParticle.FACTORY, 30);
-			}
-			
-			boolean terrainAffected = false;
-			for (int n : PathFinder.NEIGHBOURS9) {
-				int c = cell + n;
-				if (c >= 0 && c < Dungeon.level.length()) {
-					if (Dungeon.level.heroFOV[c]) {
-						CellEmitter.get(c).burst(SmokeParticle.FACTORY, 4);
-					}
-					
-					if (Dungeon.level.flamable[c]) {
-						Dungeon.level.destroy(c);
-						GameScene.updateMap(c);
-						terrainAffected = true;
-					}
+    @Override
+    public boolean doPickUp(Hero hero) {
+        if (fuse != null) {
+            GLog.w(Messages.get(this, "snuff_fuse"));
+            fuse = null;
+        }
+        return super.doPickUp(hero);
+    }
+
+    protected boolean isProcByHero = true;
+
+    public void explode(int cell, boolean isProcByHero) {
+        this.isProcByHero = isProcByHero;
+        explode(cell);
+    }
+
+    public void explode(int cell) {
+        //We're blowing up, so no need for a fuse anymore.
+        this.fuse = null;
+
+        Sample.INSTANCE.play(Assets.Sounds.BLAST);
+
+        if (explodesDestructively()) {
+
+            ArrayList<Char> affected = new ArrayList<>();
+
+            if (Dungeon.level.heroFOV[cell]) {
+                CellEmitter.center(cell).burst(BlastParticle.FACTORY, 30);
+            }
+
+            boolean terrainAffected = false;
+            for (int n : PathFinder.NEIGHBOURS9) {
+                int c = cell + n;
+                if (c >= 0 && c < Dungeon.level.length()) {
+                    if (Dungeon.level.heroFOV[c]) {
+                        CellEmitter.get(c).burst(SmokeParticle.FACTORY, 4);
+                    }
+
+                    if (Dungeon.level.flamable[c]) {
+                        Dungeon.level.destroy(c);
+                        GameScene.updateMap(c);
+                        terrainAffected = true;
+                    }
+
                     SeaTerror seaTerror = Dungeon.level.seaTerrors.get(c);
                     if (seaTerror != null) {
                         seaTerror.destroy();
-                        GameScene.updateMap( c );
+                        GameScene.updateMap(c);
                         terrainAffected = true;
                     }
 
                     Platform platform = Dungeon.level.platforms.get(c);
                     if (platform != null) {
                         platform.destroy();
-                        GameScene.updateMap( c );
+                        GameScene.updateMap(c);
                         terrainAffected = true;
                     }
-					//destroys items / triggers bombs caught in the blast.
-					Heap heap = Dungeon.level.heaps.get(c);
-					if (heap != null)
-						heap.explode();
-					
-					Char ch = Actor.findChar(c);
-					if (ch != null) {
-						affected.add(ch);
-					}
-				}
-			}
-			
-			for (Char ch : affected){
 
-				//if they have already been killed by another bomb
-				if(!ch.isAlive()){
-					continue;
-				}
+                    //destroys items / triggers bombs caught in the blast.
+                    Heap heap = Dungeon.level.heaps.get(c);
+                    if (heap != null)
+                        heap.explode();
 
-				int dmg = Random.NormalIntRange(8 + Dungeon.depth, 16 + Dungeon.depth*2);
+                    Char ch = Actor.findChar(c);
+                    if (ch != null) {
+                        affected.add(ch);
+                    }
+                }
+            }
 
-				IsekaiItem.IsekaiBuff BombBuff = Dungeon.hero.buff( IsekaiItem.IsekaiBuff.class);
-				if (powered && BombBuff != null) {
-					dmg += BombBuff.itemLevel() * 4;
-				}
+            for (Char ch : affected) {
 
-				//those not at the center of the blast take less damage
-				if (ch.pos != cell){
-					dmg = Math.round(dmg*0.67f);
-				}
+                //if they have already been killed by another bomb
+                if (!ch.isAlive()) {
+                    continue;
+                }
 
-				dmg -= ch.drRoll();
+                int dmg = Random.NormalIntRange(8 + Dungeon.depth, 16 + Dungeon.depth * 2);
 
-				if (dmg > 0) {
-					ch.damage(dmg, this);
-				}
-				
-				if (ch == Dungeon.hero && !ch.isAlive()) {
-					Dungeon.fail(Bomb.class);
-				}
+                IsekaiItem.IsekaiBuff BombBuff = !isProcByHero ? null : Dungeon.hero.buff(IsekaiItem.IsekaiBuff.class);
+                if (BombBuff != null) {
+                    dmg += BombBuff.itemLevel() * 4;
+                }
 
-				if (powered && BombBuff != null && ch.isAlive() && ch != Dungeon.hero) {
-					Buff.affect(ch, Paralysis.class, 3f);
-				}
-			}
-			
-			if (terrainAffected) {
-				Dungeon.observe();
-			}
-		}
-	}
-	
-	@Override
-	public boolean isUpgradable() {
-		return false;
-	}
-	
-	@Override
-	public boolean isIdentified() {
-		return true;
-	}
-	
-	@Override
-	public Item random() {
-		switch(Random.Int( 4 )){
-			case 0:
-				return new DoubleBomb();
-			default:
-				return this;
-		}
-	}
+                //those not at the center of the blast take less damage
+                if (ch.pos != cell) {
+                    dmg = Math.round(dmg * 0.67f);
+                }
 
-	@Override
-	public ItemSprite.Glowing glowing() {
-		return fuse != null ? new ItemSprite.Glowing( 0xFF0000, 0.6f) : null;
-	}
+                dmg -= ch.drRoll();
 
-	@Override
-	public int value() {
-		return 20 * quantity;
-	}
-	
-	@Override
-	public String desc() {
-		if (fuse == null)
-			return super.desc()+ "\n\n" + Messages.get(this, "desc_fuse");
-		else
-			return super.desc() + "\n\n" + Messages.get(this, "desc_burning");
-	}
+                if (dmg > 0) {
+                    ch.damage(dmg, this);
+                }
 
-	private static final String FUSE = "fuse";
+                if (ch == Dungeon.hero && !ch.isAlive()) {
+                    Dungeon.fail(Bomb.class);
+                }
 
-	@Override
-	public void storeInBundle(Bundle bundle) {
-		super.storeInBundle(bundle);
-		bundle.put( FUSE, fuse );
-	}
+                if (BombBuff != null && ch.isAlive() && ch != Dungeon.hero) {
+                    Buff.affect(ch, Paralysis.class, 3f);
+                }
+            }
 
-	@Override
-	public void restoreFromBundle(Bundle bundle) {
-		super.restoreFromBundle(bundle);
-		if (bundle.contains( FUSE ))
-			Actor.add( fuse = ((Fuse)bundle.get(FUSE)).ignite(this) );
-	}
+            if (terrainAffected) {
+                Dungeon.observe();
+            }
+        }
 
+    }
 
-	public static class Fuse extends Actor{
+    @Override
+    public boolean isUpgradable() {
+        return false;
+    }
 
-		{
-			actPriority = BLOB_PRIO+1; //after hero, before other actors
-		}
+    @Override
+    public boolean isIdentified() {
+        return true;
+    }
 
-		private Bomb bomb;
+    @Override
+    public Item random() {
+        switch (Random.Int(4)) {
+            case 0:
+                return new DoubleBomb();
+            default:
+                return this;
+        }
+    }
 
-		public Fuse ignite(Bomb bomb){
-			this.bomb = bomb;
-			return this;
-		}
+    @Override
+    public ItemSprite.Glowing glowing() {
+        return fuse != null ? new ItemSprite.Glowing(0xFF0000, 0.6f) : null;
+    }
 
-		@Override
-		protected boolean act() {
+    @Override
+    public int value() {
+        return 20 * quantity;
+    }
 
-			//something caused our bomb to explode early, or be defused. Do nothing.
-			if (bomb.fuse != this){
-				Actor.remove( this );
-				return true;
-			}
+    @Override
+    public String desc() {
+        if (fuse == null)
+            return super.desc() + "\n\n" + Messages.get(this, "desc_fuse");
+        else
+            return super.desc() + "\n\n" + Messages.get(this, "desc_burning");
+    }
 
-			//look for our bomb, remove it from its heap, and blow it up.
-			for (Heap heap : Dungeon.level.heaps.valueList()) {
-				if (heap.items.contains(bomb)) {
+    private static final String FUSE = "fuse";
 
-					//FIXME this is a bit hacky, might want to generalize the functionality
-					//of bombs that don't explode instantly when their fuse ends
-					if (bomb instanceof Noisemaker){
+    @Override
+    public void storeInBundle(Bundle bundle) {
+        super.storeInBundle(bundle);
+        bundle.put(FUSE, fuse);
+    }
 
-						((Noisemaker) bomb).setTrigger(heap.pos);
-
-					} else {
-
-						heap.remove(bomb);
-
-						bomb.explode(heap.pos);
-					}
-
-					diactivate();
-					Actor.remove(this);
-					return true;
-				}
-			}
-
-			//can't find our bomb, something must have removed it, do nothing.
-			bomb.fuse = null;
-			Actor.remove( this );
-			return true;
-		}
-	}
+    @Override
+    public void restoreFromBundle(Bundle bundle) {
+        super.restoreFromBundle(bundle);
+        if (bundle.contains(FUSE))
+            Actor.add(fuse = ((Fuse) bundle.get(FUSE)).ignite(this));
+    }
 
 
-	public static class DoubleBomb extends Bomb{
+    public static class Fuse extends Actor {
 
-		{
-			image = ItemSpriteSheet.DBL_BOMB;
-			stackable = false;
-		}
+        {
+            actPriority = BLOB_PRIO + 1; //after hero, before other actors
+        }
 
-		@Override
-		public boolean doPickUp(Hero hero) {
-			Bomb bomb = new Bomb();
-			bomb.quantity(2);
-			if (bomb.doPickUp(hero)) {
-				//isaaaaac.... (don't bother doing this when not in english)
-				if (SPDSettings.language() == Languages.KOREAN)
-					hero.sprite.showStatus(CharSprite.NEUTRAL, "1+1 free!");
-				return true;
-			}
-			return false;
-		}
-	}
-	
-	public static class EnhanceBomb extends Recipe {
-		
-		public static final LinkedHashMap<Class<?extends Item>, Class<?extends Bomb>> validIngredients = new LinkedHashMap<>();
-		static {
-			validIngredients.put(PotionOfFrost.class,           FrostBomb.class);
-			validIngredients.put(ScrollOfTransmutation.class,     WoollyBomb.class);
-			
-			validIngredients.put(PotionOfLiquidFlame.class,     Firebomb.class);
-			validIngredients.put(ScrollOfRage.class,            Noisemaker.class);
-			
-			validIngredients.put(PotionOfInvisibility.class,    Flashbang.class);
-			validIngredients.put(ScrollOfRecharging.class,      ShockBomb.class);
-			
-			validIngredients.put(PotionOfHealing.class,         RegrowthBomb.class);
-			validIngredients.put(ScrollOfRemoveCurse.class,     HolyBomb.class);
-			
-			validIngredients.put(GooBlob.class,                 ArcaneBomb.class);
-			validIngredients.put(MetalShard.class,              ShrapnelBomb.class);
+        private Bomb bomb;
 
-			validIngredients.put(ForceCatalyst.class,              LensBomb.class);
-		}
-		
-		private static final HashMap<Class<?extends Bomb>, Integer> bombCosts = new HashMap<>();
-		static {
-			bombCosts.put(FrostBomb.class,      2);
-			
-			bombCosts.put(Firebomb.class,       4);
-			bombCosts.put(Noisemaker.class,     4);
-			
-			bombCosts.put(Flashbang.class,      6);
-			bombCosts.put(ShockBomb.class,      6);
+        public Fuse ignite(Bomb bomb) {
+            this.bomb = bomb;
+            return this;
+        }
 
-			bombCosts.put(RegrowthBomb.class,   8);
-			bombCosts.put(HolyBomb.class,       8);
-			
-			bombCosts.put(ArcaneBomb.class,     10);
-			bombCosts.put(ShrapnelBomb.class,   10);
+        @Override
+        protected boolean act() {
 
-			bombCosts.put(LensBomb.class,       16);
+            //something caused our bomb to explode early, or be defused. Do nothing.
+            if (bomb.fuse != this) {
+                Actor.remove(this);
+                return true;
+            }
 
-			bombCosts.put(WoollyBomb.class,     20);
-		}
-		
-		@Override
-		public boolean testIngredients(ArrayList<Item> ingredients) {
-			boolean bomb = false;
-			boolean ingredient = false;
-			
-			for (Item i : ingredients){
-				if (!i.isIdentified()) return false;
-				if (i.getClass().equals(Bomb.class)){
-					bomb = true;
-				} else if (validIngredients.containsKey(i.getClass())){
-					ingredient = true;
-				}
-			}
-			
-			return bomb && ingredient;
-		}
-		
-		@Override
-		public int cost(ArrayList<Item> ingredients) {
-			for (Item i : ingredients){
-				if (validIngredients.containsKey(i.getClass())){
-					return (bombCosts.get(validIngredients.get(i.getClass())));
-				}
-			}
-			return 0;
-		}
-		
-		@Override
-		public Item brew(ArrayList<Item> ingredients) {
-			Item result = null;
-			
-			for (Item i : ingredients){
-				i.quantity(i.quantity()-1);
-				if (validIngredients.containsKey(i.getClass())){
-					result = Reflection.newInstance(validIngredients.get(i.getClass()));
-				}
-			}
-			
-			return result;
-		}
-		
-		@Override
-		public Item sampleOutput(ArrayList<Item> ingredients) {
-			for (Item i : ingredients){
-				if (validIngredients.containsKey(i.getClass())){
-					return Reflection.newInstance(validIngredients.get(i.getClass()));
-				}
-			}
-			return null;
-		}
-	}
+            //look for our bomb, remove it from its heap, and blow it up.
+            for (Heap heap : Dungeon.level.heaps.valueList()) {
+                if (heap.items.contains(bomb)) {
+
+                    //FIXME this is a bit hacky, might want to generalize the functionality
+                    //of bombs that don't explode instantly when their fuse ends
+                    if (bomb instanceof Noisemaker) {
+
+                        ((Noisemaker) bomb).setTrigger(heap.pos);
+
+                    } else {
+
+                        heap.remove(bomb);
+
+                        bomb.explode(heap.pos);
+                    }
+
+                    diactivate();
+                    Actor.remove(this);
+                    return true;
+                }
+            }
+
+            //can't find our bomb, something must have removed it, do nothing.
+            bomb.fuse = null;
+            Actor.remove(this);
+            return true;
+        }
+    }
+
+
+    public static class DoubleBomb extends Bomb {
+
+        {
+            image = ItemSpriteSheet.DBL_BOMB;
+            stackable = false;
+        }
+
+        @Override
+        public boolean doPickUp(Hero hero) {
+            Bomb bomb = new Bomb();
+            bomb.quantity(2);
+            if (bomb.doPickUp(hero)) {
+                //isaaaaac.... (don't bother doing this when not in english)
+                if (SPDSettings.language() == Languages.KOREAN)
+                    hero.sprite.showStatus(CharSprite.NEUTRAL, "1+1 free!");
+                return true;
+            }
+            return false;
+        }
+    }
+
+    public static class EnhanceBomb extends Recipe {
+
+        public static final LinkedHashMap<Class<? extends Item>, Class<? extends Bomb>> validIngredients = new LinkedHashMap<>();
+
+        static {
+            validIngredients.put(PotionOfFrost.class, FrostBomb.class);
+            validIngredients.put(ScrollOfTransmutation.class, WoollyBomb.class);
+
+            validIngredients.put(PotionOfLiquidFlame.class, Firebomb.class);
+            validIngredients.put(ScrollOfRage.class, Noisemaker.class);
+
+            validIngredients.put(PotionOfInvisibility.class, Flashbang.class);
+            validIngredients.put(ScrollOfRecharging.class, ShockBomb.class);
+
+            validIngredients.put(PotionOfHealing.class, RegrowthBomb.class);
+            validIngredients.put(ScrollOfRemoveCurse.class, HolyBomb.class);
+
+            validIngredients.put(GooBlob.class, ArcaneBomb.class);
+            validIngredients.put(MetalShard.class, ShrapnelBomb.class);
+
+            validIngredients.put(ForceCatalyst.class, LensBomb.class);
+        }
+
+        private static final HashMap<Class<? extends Bomb>, Integer> bombCosts = new HashMap<>();
+
+        static {
+            bombCosts.put(FrostBomb.class, 2);
+
+            bombCosts.put(Firebomb.class, 4);
+            bombCosts.put(Noisemaker.class, 4);
+
+            bombCosts.put(Flashbang.class, 6);
+            bombCosts.put(ShockBomb.class, 6);
+
+            bombCosts.put(RegrowthBomb.class, 8);
+            bombCosts.put(HolyBomb.class, 8);
+
+            bombCosts.put(ArcaneBomb.class, 10);
+            bombCosts.put(ShrapnelBomb.class, 10);
+
+            bombCosts.put(LensBomb.class, 16);
+
+            bombCosts.put(WoollyBomb.class, 20);
+        }
+
+        @Override
+        public boolean testIngredients(ArrayList<Item> ingredients) {
+            boolean bomb = false;
+            boolean ingredient = false;
+
+            for (Item i : ingredients) {
+                if (!i.isIdentified()) return false;
+                if (i.getClass().equals(Bomb.class)) {
+                    bomb = true;
+                } else if (validIngredients.containsKey(i.getClass())) {
+                    ingredient = true;
+                }
+            }
+
+            return bomb && ingredient;
+        }
+
+        @Override
+        public int cost(ArrayList<Item> ingredients) {
+            for (Item i : ingredients) {
+                if (validIngredients.containsKey(i.getClass())) {
+                    return (bombCosts.get(validIngredients.get(i.getClass())));
+                }
+            }
+            return 0;
+        }
+
+        @Override
+        public Item brew(ArrayList<Item> ingredients) {
+            Item result = null;
+
+            for (Item i : ingredients) {
+                i.quantity(i.quantity() - 1);
+                if (validIngredients.containsKey(i.getClass())) {
+                    result = Reflection.newInstance(validIngredients.get(i.getClass()));
+                }
+            }
+
+            return result;
+        }
+
+        @Override
+        public Item sampleOutput(ArrayList<Item> ingredients) {
+            for (Item i : ingredients) {
+                if (validIngredients.containsKey(i.getClass())) {
+                    return Reflection.newInstance(validIngredients.get(i.getClass()));
+                }
+            }
+            return null;
+        }
+    }
 }

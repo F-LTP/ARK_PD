@@ -232,7 +232,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 
 		public String desc(){
 			if (Dungeon.hero.belongings.weapon() instanceof GunWeapon) {
-				if (name() == "FURY" || name() == "CRUSH" || name() == "SLAM") return Messages.get(this, name()+"_desc2");
+                if (name().equals("FURY") || name().equals("CRUSH") || name().equals("SLAM")) return Messages.get(this, name()+"_desc2");
 			}
 			return Messages.get(this, name()+"_desc");
 		}

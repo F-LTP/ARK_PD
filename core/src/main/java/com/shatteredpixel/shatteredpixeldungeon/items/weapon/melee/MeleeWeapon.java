@@ -53,11 +53,11 @@ public class MeleeWeapon extends Weapon {
 	}
 
 	public int STRReq(int lvl){
-		int strreq=STRReq(tier, lvl);//change from budding
-		if (Dungeon.hero.hasTalent(Talent.CHAINSAW_EXTEND) && isEquipped( Dungeon.hero )) {
-			strreq += 5 - Dungeon.hero.pointsInTalent(Talent.CHAINSAW_EXTEND);
-		}//change from budding
-		return strreq;//change from budding
+        int req = STRReq(tier, lvl);
+        if (Dungeon.hero != null && Dungeon.hero.hasTalent(Talent.CHAINSAW_EXTEND)) {
+            req += 5 - Dungeon.hero.pointsInTalent(Talent.CHAINSAW_EXTEND);
+        }
+        return req;
 	}
 
 	public void SPCharge(int value) {
