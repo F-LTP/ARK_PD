@@ -245,12 +245,11 @@ public class Necromancer extends Mob {
 				GameScene.add( mySkeleton );
 				Dungeon.level.occupyCell( mySkeleton );
 				((ScoutSprite)sprite).finishSummoning();
-				
-				if (buff(Corruption.class) != null){
-					Buff.affect(mySkeleton, Corruption.class);
-				}
-				for (Buff b : buffs(ChampionEnemy.class)){
-					Buff.affect( mySkeleton, b.getClass());
+
+                for (Buff b : buffs()){
+                    if (b.revivePersists) {
+                        Buff.affect(mySkeleton, b.getClass());
+                    }
 				}
 				
 				spend(TICK);

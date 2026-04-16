@@ -3,7 +3,9 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Camouflage;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Charm;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Sleep;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
@@ -18,7 +20,6 @@ public class Dummy extends Mob {
     {
         spriteClass = CivilianSprite.class;
         HP=HT=1000;
-        //properties.add(Property.IMMOVABLE);
 
         state = PASSIVE;
     }
@@ -37,18 +38,23 @@ public class Dummy extends Mob {
 
     @Override
     protected boolean act() {
+        //fix corrupted saves: reset alignment and state if changed by external effects
+        alignment = Alignment.ENEMY;
+        state = PASSIVE;
+
         if (Camouflage.CamoFlageEnemy(this)) Buff.affect(this, Camouflage.class, 10f);
+        if (buff(Corruption.class) != null) {
+            buff(Corruption.class).detach();
+        }
         int theheal = 50;
         HP = Math.min(HP+theheal, HT);
         return super.act();
     }
 
     public static void spawn(Level level, int poss) {
-        Dummy WhatYourName = new Dummy();
-        do {
-            WhatYourName.pos = poss;
-        } while (WhatYourName.pos == -1);
-        level.mobs.add(WhatYourName);
+        Dummy dummy = new Dummy();
+        dummy.pos = poss;
+        level.mobs.add(dummy);
     }
 
     {
@@ -56,6 +62,8 @@ public class Dummy extends Mob {
         immunities.add( Sleep.class );
         immunities.add( Terror.class );
         immunities.add( Vertigo.class );
-        immunities.add(Corruption.class);//change from budding
+        immunities.add(Corruption.class);
+        immunities.add(Doom.class);
+        immunities.add(Charm.class);
     }
 }

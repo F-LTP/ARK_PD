@@ -133,11 +133,10 @@ public class Swarm extends Mob {
 		if (buff( Poison.class ) != null) {
 			Buff.affect( clone, Poison.class ).set(2);
 		}
-		if (buff(Corruption.class ) != null) {
-			Buff.affect( clone, Corruption.class);
-		}
-		for (Buff b : buffs(ChampionEnemy.class)){
-			Buff.affect( clone, b.getClass());
+        for (Buff b : buffs()){
+            if (b.revivePersists) {
+                Buff.affect(clone, b.getClass());
+            }
 		}
 		return clone;
 	}

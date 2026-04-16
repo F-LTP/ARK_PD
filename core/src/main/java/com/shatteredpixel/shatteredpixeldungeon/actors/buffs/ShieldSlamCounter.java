@@ -26,7 +26,9 @@ import com.watabou.utils.Random;
 
 public class ShieldSlamCounter extends CounterBuff implements ActionIndicator.Action {
 
-    { type = buffType.POSITIVE; }
+    {
+        type = buffType.POSITIVE;
+    }
 
     private int getSealLevel() {
         if (!(target instanceof Hero)) return 0;
@@ -40,14 +42,14 @@ public class ShieldSlamCounter extends CounterBuff implements ActionIndicator.Ac
     }
 
     public float getMaxMultiplier() {
-        return 2.0f + getSealLevel() * 0.1f;
+        return 1.5f + getSealLevel() * 0.1f;
     }
 
     public float getMultiplier() {
         float cap = getCap();
         float maxMult = getMaxMultiplier();
         float accumulated = Math.min(count(), cap);
-        return Math.min(0.25f + (accumulated / cap) * (maxMult - 0.25f), maxMult);
+        return Math.min(0.5f + (accumulated / cap) * (maxMult - 0.5f), maxMult);
     }
 
     @Override

@@ -40,6 +40,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -175,17 +176,22 @@ public class NewTengu extends Mob {
 
         int hpBracket = HT / 8;
 
+        int curbracket = HP / hpBracket;
+
         int beforeHitHP = HP;
         super.damage(dmg, src);
         dmg = beforeHitHP - HP;
 
-        //tengu cannot be hit through multiple brackets at a time
-        if ((beforeHitHP / hpBracket - HP / hpBracket) >= 2) {
-            HP = hpBracket * ((beforeHitHP / hpBracket) - 1) + 1;
+        //cannot be hit through multiple brackets at a time
+        if (HP <= (curbracket-1)*hpBracket) {
+            HP = (curbracket-1)*hpBracket + 1;
         }
 
+        int newBracket = HP / hpBracket;
+        dmg = beforeHitHP - HP;
+
         LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
-        if (lock != null) {
+        if (lock != null && !isImmune(src.getClass()) && !isInvulnerable(src.getClass())) {
             int multiple = state == NewPrisonBossLevel.State.FIGHT_START ? 1 : 4;
             lock.addTime(dmg * multiple);
         }
@@ -217,8 +223,22 @@ public class NewTengu extends Mob {
             BossHealthBar.bleed(true);
 
             //if tengu has lost a certain amount of hp, jump
-        } else if (beforeHitHP / hpBracket != HP / hpBracket) {
-            jump();
+        } else if (newBracket != curbracket) {
+            //let full attack action complete first
+            Actor.add(new Actor() {
+
+                {
+                    actPriority = VFX_PRIO;
+                }
+
+                @Override
+                protected boolean act() {
+                    Actor.remove(this);
+                    jump();
+                    return true;
+                }
+            });
+            return;
         }
     }
 
@@ -379,6 +399,7 @@ public class NewTengu extends Mob {
     }
 
     {
+        immunities.add(Roots.class);
         immunities.add(Blindness.class);
         immunities.add(Terror.class);
     }

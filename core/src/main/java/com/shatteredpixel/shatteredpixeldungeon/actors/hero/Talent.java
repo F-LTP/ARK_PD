@@ -231,7 +231,7 @@ public enum Talent {
 
 	public static class ImprovisedProjectileCooldown extends FlavourBuff{};
 	public static class LethalMomentumTracker extends FlavourBuff{};
-	public static class WandPreservationCounter extends CounterBuff{};
+	public static class WandPreservationCounter extends CounterBuff{ {revivePersists = true;}};
 	public static class EmpoweredStrikeTracker extends FlavourBuff{};
 	public static class BountyHunterTracker extends FlavourBuff{};
 	public static class SWEEPTraker extends FlavourBuff{};
@@ -427,8 +427,8 @@ public enum Talent {
 		}
 	}
 
-	public static class CachedRationsDropped extends CounterBuff{};
-	public static class NatureBerriesAvailable extends CounterBuff{};
+	public static class CachedRationsDropped extends CounterBuff{ {revivePersists = true;}};
+	public static class NatureBerriesAvailable extends CounterBuff{ {revivePersists = true;}};
     public static class ProtectionInsurance extends Buff{};
 
 	public static void onFoodEaten( Hero hero, float foodVal, Item foodSource ){
@@ -460,7 +460,7 @@ public enum Talent {
 		}
 		if (hero.hasTalent(MYSTICAL_MEAL)){
 			//3/5 turns of recharging
-			Buff.affect( hero, ArtifactRecharge.class).set(1.5f*(hero.pointsInTalent(MYSTICAL_MEAL))).ignoreHornOfPlenty = foodSource instanceof HornOfPlenty;
+			Buff.affect( hero, ArtifactRecharge.class).set(1.5f*(hero.pointsInTalent(MYSTICAL_MEAL))).ignoreHornOfPlenty = true;
 			ScrollOfRecharging.charge( hero );
 		}
 		if (hero.hasTalent(INVIGORATING_MEAL)){

@@ -103,12 +103,12 @@ public class KazemaruWeapon extends MeleeWeapon {
 
         return procDamage;
     }
-    private void summonSubstitute(int pos, int target, Char.Alignment ali) {
+    private void summonSubstitute(int pos, int target, Char.Alignment alignment) {
         KazemaruSummon summon = new KazemaruSummon();
         summon.setLevel(buffedLvl());
         summon.setTarget(target);
         summon.pos = pos;
-        summon.alignment=ali;
+        summon.alignment = alignment == Char.Alignment.ENEMY ? Char.Alignment.ENEMY : Char.Alignment.ALLY;
         GameScene.add(summon);
     }
     public static class KazemaruSummon extends Mob {

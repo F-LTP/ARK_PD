@@ -539,6 +539,9 @@ public class Hero extends Char {
     }
 
     public void live() {
+        for (Buff b : buffs()){
+            if (!b.revivePersists) b.detach();
+        }
         Buff.affect(this, Regeneration.class);
         Buff.affect(this, Hunger.class);
     }
@@ -844,16 +847,24 @@ public class Hero extends Char {
             }
         }
 
+        float delay;
         if (belongings.attackingWeapon() != null) {
 
-            return belongings.attackingWeapon().speedFactor(this);
+            delay = belongings.attackingWeapon().speedFactor(this);
 
         } else {
             //Normally putting furor speed on unarmed attacks would be unnecessary
             //But there's going to be that one guy who gets a furor+force ring combo
             //This is for that one guy, you shall get your fists of fury!
-            return RingOfFuror.attackDelayMultiplier(this);
+            delay = RingOfFuror.attackDelayMultiplier(this);
         }
+
+        //KNIGHT subclass: Haste grants +20% attack speed
+        if (subClass == HeroSubClass.KNIGHT && buff(Haste.class) != null) {
+            delay /= 1.2f;
+        }
+
+        return delay;
     }
 
     @Override
@@ -1480,9 +1491,9 @@ public class Hero extends Char {
         }
 
         if (buff(RadiantKnight.class) != null) {
-            if (subClass == HeroSubClass.SAVIOR) damage *= 1.45f;
-            else if (subClass == HeroSubClass.FLASH) damage *= 1.2f;
-            else damage *= 1.3f;
+            if (subClass == HeroSubClass.SAVIOR) damage *= 1.35f;
+            else if (subClass == HeroSubClass.FLASH) damage *= 1.15f;
+            else damage *= 1.25f;
 
             // 난입 특성
             if (hasTalent(Talent.PHASERUSH)) {
@@ -1856,12 +1867,12 @@ public class Hero extends Char {
         if (buff(RadiantKnight.class) != null && subClass != HeroSubClass.FLASH) {
 
             if (subClass == HeroSubClass.SAVIOR) {
-                float saviorRedu = 0.4f;
+                float saviorRedu = 0.3f;
                 if (hasTalent(Talent.HOPELIGHT)) {
                     saviorRedu += pointsInTalent(Talent.HOPELIGHT) * 0.05f;
 
                 }
-                int mitigation = Math.max(2, Math.round(dmg * saviorRedu));
+                int mitigation = Math.max(3, Math.round(dmg * saviorRedu));
                 dmg = Math.max(0, dmg - mitigation);
             } else {
                 dmg = Math.max(0, dmg - Math.max(2, Math.round(dmg * 0.2f)));
@@ -1927,6 +1938,7 @@ public class Hero extends Char {
         Char lastTarget = QuickSlotButton.lastTarget;
         if (target != null && (lastTarget == null ||
                 !lastTarget.isAlive() ||
+                !lastTarget.isActive() ||
                 lastTarget.alignment == Alignment.ALLY ||
                 !fieldOfView[lastTarget.pos])) {
             QuickSlotButton.target(target);

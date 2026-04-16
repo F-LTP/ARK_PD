@@ -23,7 +23,9 @@ package com.shatteredpixel.shatteredpixeldungeon.items.quest;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -39,105 +41,155 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 
 public class CorpseDust extends Item {
-	
-	{
-		image = ItemSpriteSheet.DUST;
-		
-		cursed = true;
-		cursedKnown = true;
-		
-		unique = true;
-	}
 
-	@Override
-	public ArrayList<String> actions(Hero hero) {
-		return new ArrayList<>(); //yup, no dropping this one
-	}
+    {
+        image = ItemSpriteSheet.DUST;
 
-	@Override
-	public boolean isUpgradable() {
-		return false;
-	}
-	
-	@Override
-	public boolean isIdentified() {
-		return true;
-	}
+        cursed = true;
+        cursedKnown = true;
 
-	@Override
-	public boolean doPickUp(Hero hero) {
-		if (super.doPickUp(hero)){
-			GLog.n( Messages.get( this, "chill") );
-			Buff.affect(hero, DustGhostSpawner.class);
-			return true;
-		}
-		return false;
-	}
+        unique = true;
+    }
 
-	@Override
-	protected void onDetach() {
-		DustGhostSpawner spawner = Dungeon.hero.buff(DustGhostSpawner.class);
-		if (spawner != null){
-			spawner.dispel();
-		}
-	}
+    @Override
+    public ArrayList<String> actions(Hero hero) {
+        return new ArrayList<>(); //yup, no dropping this one
+    }
 
-	public static class DustGhostSpawner extends Buff {
+    @Override
+    public boolean isUpgradable() {
+        return false;
+    }
 
-		int spawnPower = 0;
+    @Override
+    public boolean isIdentified() {
+        return true;
+    }
 
-		@Override
-		public boolean act() {
-			spawnPower++;
-			int wraiths = 1; //we include the wraith we're trying to spawn
-			for (Mob mob : Dungeon.level.mobs){
-				if (mob instanceof Wraith){
-					wraiths++;
-				}
-			}
+    @Override
+    public boolean doPickUp(Hero hero) {
+        if (super.doPickUp(hero)){
+            GLog.n( Messages.get( this, "chill") );
+            Buff.affect(hero, DustGhostSpawner.class);
+            return true;
+        }
+        return false;
+    }
 
-			int powerNeeded = Math.min(25, wraiths*wraiths);
+    @Override
+    protected void onDetach() {
+        DustGhostSpawner spawner = Dungeon.hero.buff(DustGhostSpawner.class);
+        if (spawner != null){
+            spawner.dispel();
+        }
+    }
 
-			if (powerNeeded <= spawnPower){
-				spawnPower -= powerNeeded;
-				int pos = 0;
-				int tries = 20;
-				do{
-					pos = Random.Int(Dungeon.level.length());
-					tries --;
-				} while (tries > 0 && (!Dungeon.level.heroFOV[pos] || Dungeon.level.solid[pos] || Actor.findChar( pos ) != null));
-				if (tries > 0) {
-					Wraith.spawnAt(pos);
-					Sample.INSTANCE.play(Assets.Sounds.CURSED);
-				}
-			}
+    public static class DustGhostSpawner extends Buff {
 
-			spend(TICK);
-			return true;
-		}
+        {
+            revivePersists = true;
+        }
 
-		public void dispel(){
-			detach();
-			for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])){
-				if (mob instanceof Wraith){
-					mob.die(null);
-				}
-			}
-		}
+        int spawnPower = 0;
 
-		private static String SPAWNPOWER = "spawnpower";
+        @Override
+        public boolean act() {
+            if (target instanceof Hero && ((Hero) target).belongings.getItem(CorpseDust.class) == null){
+                spawnPower = 0;
+                spend(TICK);
+                return true;
+            }
 
-		@Override
-		public void storeInBundle(Bundle bundle) {
-			super.storeInBundle(bundle);
-			bundle.put( SPAWNPOWER, spawnPower );
-		}
+            spawnPower++;
+            int wraiths = 1; //we include the wraith we're trying to spawn
+            for (Mob mob : Dungeon.level.mobs){
+                if (mob instanceof DustWraith){
+                    wraiths++;
+                }
+            }
 
-		@Override
-		public void restoreFromBundle(Bundle bundle) {
-			super.restoreFromBundle(bundle);
-			spawnPower = bundle.getInt( SPAWNPOWER );
-		}
-	}
+            //summoning a new wraith requires 1/4/9/16/25/36/49/49/... turns of energy
+            int powerNeeded = Math.min(49, wraiths*wraiths);
+            if (powerNeeded <= spawnPower){
+                ArrayList<Integer> candidates = new ArrayList<>();
+                //min distance scales based on hero's view distance
+                // wraiths must spawn at least 4/3/2/1 tiles away at view distance of 8(default)/7/4/1
+                int minDist = Math.round(Dungeon.hero.viewDistance/3f);
+                for (int i = 0; i < Dungeon.level.length(); i++){
+                    if (Dungeon.level.heroFOV[i]
+                            && !Dungeon.level.solid[i]
+                            && Actor.findChar( i ) == null
+                            && Dungeon.level.distance(i, Dungeon.hero.pos) > minDist){
+                        candidates.add(i);
+                    }
+                }
+                if (!candidates.isEmpty()){
+                    Wraith.spawnAt(Random.element(candidates), DustWraith.class);
+                    Sample.INSTANCE.play(Assets.Sounds.CURSED);
+                    spawnPower -= powerNeeded;
+                } else {
+                    //prevents excessive spawn power buildup
+                    spawnPower = Math.min(spawnPower, 2*wraiths);
+                }
+            }
+
+            spend(TICK);
+            return true;
+        }
+
+        public void dispel(){
+            detach();
+            for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])){
+                if (mob instanceof DustWraith){
+                    mob.die(null);
+                }
+            }
+        }
+
+        private static String SPAWNPOWER = "spawnpower";
+
+        @Override
+        public void storeInBundle(Bundle bundle) {
+            super.storeInBundle(bundle);
+            bundle.put( SPAWNPOWER, spawnPower );
+        }
+
+        @Override
+        public void restoreFromBundle(Bundle bundle) {
+            super.restoreFromBundle(bundle);
+            spawnPower = bundle.getInt( SPAWNPOWER );
+        }
+    }
+
+    public static class DustWraith extends Wraith {
+
+        private int atkCount = 0;
+
+        @Override
+        public boolean attack( Char enemy ) {
+            if (enemy == Dungeon.hero){
+                atkCount++;
+                //first attack from each wraith is free, max of -200 point penalty per wraith
+                if (atkCount == 2 || atkCount == 3){
+                    Statistics.questScores[1] -= 100;
+                }
+            }
+            return super.attack(enemy);
+        }
+
+        private static final String ATK_COUNT = "atk_count";
+
+        @Override
+        public void storeInBundle(Bundle bundle) {
+            super.storeInBundle(bundle);
+            bundle.put(ATK_COUNT, atkCount);
+        }
+
+        @Override
+        public void restoreFromBundle(Bundle bundle) {
+            super.restoreFromBundle(bundle);
+            atkCount = bundle.getInt(ATK_COUNT);
+        }
+    }
 
 }

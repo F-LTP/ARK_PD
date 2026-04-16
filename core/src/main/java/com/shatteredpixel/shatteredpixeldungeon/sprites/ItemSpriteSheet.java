@@ -954,6 +954,7 @@ public class ItemSpriteSheet {
 	public static final int ICON_9     = BAGS+13;
 	public static final int ICON_10     = BAGS+14;
 	public static final int ICE_BOX     = BAGS+15;
+    public static final int LOST_BACKPACK = BAGS + 16;
 
 
 	static{
@@ -973,6 +974,7 @@ public class ItemSpriteSheet {
 		assignItemRect(ICON_9,   	  16, 16);
 		assignItemRect(ICON_10,   	  16, 16);
 		assignItemRect(ICE_BOX,   	  16, 16);
+        assignItemRect(LOST_BACKPACK, 16, 16);
 	}
 
 	                                                                                    //16 free slots

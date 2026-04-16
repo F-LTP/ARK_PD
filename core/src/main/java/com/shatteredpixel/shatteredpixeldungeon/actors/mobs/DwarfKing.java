@@ -723,6 +723,10 @@ public class DwarfKing extends Mob {
 
 	public static class KingDamager extends Buff {
 
+        {
+            revivePersists = true;
+        }
+
 		@Override
 		public boolean act() {
 			if (target.alignment != Alignment.ENEMY){

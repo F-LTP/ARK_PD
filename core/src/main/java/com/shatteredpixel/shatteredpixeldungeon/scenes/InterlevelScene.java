@@ -437,7 +437,7 @@ public class InterlevelScene extends PixelScene {
 
             //depth and branch are already set by init() (depth=0, branch=2)
             Level level = Dungeon.newLevel();
-            Dungeon.switchLevel(level, level.entrance());
+            Dungeon.switchLevel(level, 2929);
         } else {
             //returning to Rhodes from the dungeon
             Mob.holdAllies(Dungeon.level);

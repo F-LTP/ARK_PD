@@ -133,8 +133,11 @@ public class Ghoul extends Mob {
 					Actor.addDelayed( new Pushing( child, pos, child.pos ), -1 );
 				}
 
-				for (Buff b : buffs(ChampionEnemy.class)){
-					Buff.affect( child, b.getClass());
+                //champion buff, mainly
+                for (Buff b : buffs()){
+                    if (b.revivePersists) {
+                        Buff.affect(child, b.getClass());
+                    }
 				}
 
 			}
@@ -151,12 +154,11 @@ public class Ghoul extends Mob {
 			Ghoul nearby = GhoulLifeLink.searchForHost(this);
 			if (nearby != null){
 				beingLifeLinked = true;
+                timesDowned++;
 				Actor.remove(this);
 				Dungeon.level.mobs.remove( this );
-				timesDowned++;
 				Buff.append(nearby, GhoulLifeLink.class).set(timesDowned*5, this);
 				((PossessedSprite)sprite).crumple();
-				beingLifeLinked = false;
 				return;
 			}
 		}
@@ -177,10 +179,9 @@ public class Ghoul extends Mob {
 	protected synchronized void onRemove() {
 		if (beingLifeLinked) {
 			for (Buff buff : buffs()) {
-				//corruption, champion, and king damager are preserved when removed via life link
-				if (!(buff instanceof Corruption)
-						&& (!(buff instanceof ChampionEnemy))
-						&& !(buff instanceof DwarfKing.KingDamager)) {
+                if (buff.revivePersists) {
+                    //don't remove
+                } else {
 					buff.detach();
 				}
 			}

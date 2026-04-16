@@ -31,6 +31,7 @@ public class Corruption extends Buff {
 	{
 		type = buffType.NEGATIVE;
 		announced = true;
+        revivePersists = true;
 	}
 
 	private float buildToDamage = 0f;

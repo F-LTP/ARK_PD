@@ -135,14 +135,19 @@ public class ThrowingKnife extends MissileWeapon {
         //destroy emptied heaps after the walk to avoid mutating level.heaps mid-iteration
         ArrayList<Heap> emptied = new ArrayList<>();
         for (Heap heap : level.heaps.valueList()) {
+            boolean removed = false;
             Iterator<Item> it = heap.items.iterator();
             while (it.hasNext()) {
                 if (it.next() instanceof ThrowingKnife) {
                     it.remove();
+                    removed = true;
                 }
             }
             if (heap.items.isEmpty()) {
                 emptied.add(heap);
+            } else if (removed && heap.sprite != null) {
+                //refresh sprite: removed knife may have been the visible top item
+                heap.sprite.view(heap).place(heap.pos);
             }
         }
         for (Heap heap : emptied) {

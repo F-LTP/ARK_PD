@@ -44,8 +44,8 @@ public class IsekaiItem extends Artifact {
             if (charge == chargeCap) {
                 Dungeon.level.drop(new Bomb(), Dungeon.hero.pos).sprite.drop(Dungeon.hero.pos);
                 charge = 0;
-                if (level() < levelCap) upgrade();
                 Talent.onArtifactUsed(Dungeon.hero);
+                if (level() < levelCap) upgrade();
                 updateQuickslot();
             }
         }

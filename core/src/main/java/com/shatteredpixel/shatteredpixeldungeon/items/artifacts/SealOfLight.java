@@ -99,9 +99,10 @@ public class SealOfLight extends Artifact {
                         Buff.affect(hero, Barrier.class).setShield(Barrior);
                     }
 
+                    Talent.onArtifactUsed(Dungeon.hero);
+
                     if (hero.subClass == HeroSubClass.KNIGHT) hero.spendAndNext(0f);
                     else hero.spendAndNext(1f);
-                    Talent.onArtifactUsed(Dungeon.hero);
                     GameScene.flash( 0x80FFFFFF );
                     Sample.INSTANCE.play(Assets.Sounds.SKILL_BABYNIGHT);
                     charge = 0;
@@ -118,7 +119,7 @@ public class SealOfLight extends Artifact {
     }
     private int damageRoll(Hero hero) {
         int min = 1 + level();
-        int max = 6 + level() * 2;
+        int max = 4 + level() * 2;
         float damage = Random.NormalIntRange(min, max);
         if (hero.hasTalent(Talent.ETERNAL_GLORY)) {
             damage *= 1f + hero.pointsInTalent(Talent.ETERNAL_GLORY) * 0.15f;

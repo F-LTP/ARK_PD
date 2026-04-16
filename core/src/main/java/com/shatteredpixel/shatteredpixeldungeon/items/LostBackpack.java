@@ -37,28 +37,28 @@ import com.watabou.noosa.audio.Sample;
 public class LostBackpack extends Item {
 
     {
-        image = ItemSpriteSheet.POTATO;
+        image = ItemSpriteSheet.LOST_BACKPACK;
 
         unique = true;
     }
 
     @Override
     public boolean doPickUp(Hero hero, int pos) {
-        if (hero.buff(LostInventory.class) != null){
+        if (hero.buff(LostInventory.class) != null) {
             hero.buff(LostInventory.class).detach();
         }
 
         MagicalHolster holster = hero.belongings.getItem(MagicalHolster.class);
-        for (Item i : hero.belongings){
-            if (i.keptThroughLostInventory()){
+        for (Item i : hero.belongings) {
+            if (i.keptThroughLostInventory()) {
                 i.keptThoughLostInvent = false; //don't reactivate, was previously activated
             } else {
-                if (i instanceof EquipableItem && i.isEquipped(hero)){
+                if (i instanceof EquipableItem && i.isEquipped(hero)) {
                     ((EquipableItem) i).activate(hero);
-                } else if ( i instanceof CloakOfShadows && hero.hasTalent(Talent.LIGHT_CLOAK)){
+                } else if (i instanceof CloakOfShadows && hero.hasTalent(Talent.LIGHT_CLOAK)) {
                     ((CloakOfShadows) i).activate(hero);
-                } else if (i instanceof Wand){
-                    if (holster != null && holster.contains(i)){
+                } else if (i instanceof Wand) {
+                    if (holster != null && holster.contains(i)) {
                         ((Wand) i).charge(hero, MagicalHolster.HOLSTER_SCALE_FACTOR);
                     } else {
                         ((Wand) i).charge(hero);
@@ -72,10 +72,10 @@ public class LostBackpack extends Item {
         Item.updateQuickslot();
         Notes.remove(Notes.Landmark.LOST_PACK);
 
-        Sample.INSTANCE.play( Assets.Sounds.DEWDROP );
+        Sample.INSTANCE.play(Assets.Sounds.DEWDROP);
         hero.spendAndNext(pickupDelay());
-        GameScene.pickUp( this, pos );
-        ((HeroSprite)hero.sprite).updateArmor();
+        GameScene.pickUp(this, pos);
+        ((HeroSprite) hero.sprite).updateArmor();
 
         return true;
     }

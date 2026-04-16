@@ -10,6 +10,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 
@@ -63,7 +64,7 @@ public class ArmorUpKit extends Item {
                         armor.degrade(-level);
                     }
 
-                    armor.glyph = HeroArmor.glyph;
+                    armor.inscribe(HeroArmor.glyph != null ? Reflection.newInstance(HeroArmor.glyph.getClass()) : null);
                     armor.curseInfusionBonus = HeroArmor.curseInfusionBonus;
                     armor.levelKnown = HeroArmor.levelKnown;
                     armor.cursedKnown = HeroArmor.cursedKnown;
@@ -81,7 +82,7 @@ public class ArmorUpKit extends Item {
                         armor.degrade(-level);
                     }
 
-                    armor.glyph = HeroArmor.glyph;
+                    armor.inscribe(HeroArmor.glyph != null ? Reflection.newInstance(HeroArmor.glyph.getClass()) : null);
                     armor.curseInfusionBonus = HeroArmor.curseInfusionBonus;
                     armor.levelKnown = HeroArmor.levelKnown;
                     armor.cursedKnown = HeroArmor.cursedKnown;
@@ -93,8 +94,7 @@ public class ArmorUpKit extends Item {
                 curUser.sprite.operate(curUser.pos);
                 Sample.INSTANCE.play(Assets.Sounds.EVOKE);
             }
-        }
-        else{
+        } else {
             if (!new ArmorUpKit().collect()){
                 Dungeon.level.drop(new ArmorUpKit(), curUser.pos).sprite.drop();
             }

@@ -1,26 +1,16 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blackperro;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Closure;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.GreenCat;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.QuestGiver;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.SkinModel;
-import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.RitualSiteRoom;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Tilemap;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
-import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
 import java.util.Arrays;
@@ -83,7 +73,7 @@ public class NewRhodesLevel1 extends Level {
         Painter.fill(this, 6, 9, 6, 6, Terrain.EMPTY);
 
         // 계단 관련
-        Painter.fill(this, 7, 21, 4, 4, Terrain.ENTRANCE); // 1층 가는거
+        Painter.fill(this, 7, 23, 4, 4, Terrain.ENTRANCE); // 1층 가는거
         Painter.fill(this, 6, 9, 6, 2, Terrain.EXIT); // 28층 가는거.
 
         // 벽 관련
@@ -103,7 +93,7 @@ public class NewRhodesLevel1 extends Level {
         Painter.fill(this, 1, 17, 3, 1, Terrain.CHASM);
         Painter.fill(this, 14, 17, 3, 1, Terrain.CHASM);
 
-        entrance = 369;
+        entrance = 405;
         exit = 189;
 
         feeling = Feeling.NONE;
@@ -123,7 +113,7 @@ public class NewRhodesLevel1 extends Level {
         int entrCenter = 23 * width() + 9; // (9,23)
         transitions.add(new LevelTransition(this, entrCenter,
                 LevelTransition.Type.BRANCH_ENTRANCE, 1, 0, LevelTransition.Type.BRANCH_EXIT));
-        for (int y = 21; y <= 24; y++) {
+        for (int y = 23; y <= 24; y++) {
             for (int x = 7; x <= 10; x++) {
                 int cell = y * width() + x;
                 if (cell != entrCenter) {
@@ -161,7 +151,6 @@ public class NewRhodesLevel1 extends Level {
      //   if (Dungeon.hero.belongings.getItem(Amulet.class) == null) GreenCat.spawn(this, exit);
      //   SkinModel.spawn(this, 255);
         Blackperro.spawn(this, 245);
-        QuestGiver.spawn(this, 300);
     }
 
         @Override

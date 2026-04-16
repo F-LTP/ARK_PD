@@ -678,8 +678,7 @@ public abstract class Char extends Actor {
 			Buff.detach(this, MagicalSleep.class);
 			if (this.isAlive()){
 				if (this.buff(Dream.class) != null) {
-					dmg+=Random.NormalIntRange(8 + Dungeon.hero.lvl, 12 + Dungeon.hero.lvl * 2);//change from budding
-					//this.damage(Random.NormalIntRange(8 + Dungeon.hero.lvl, 12 + Dungeon.hero.lvl * 2), this);
+					dmg+=Random.NormalIntRange(8 + Dungeon.hero.lvl, 12 + Dungeon.hero.lvl * 2);
 					Buff.detach(this, Dream.class);
 				}
             }
@@ -764,7 +763,7 @@ public abstract class Char extends Actor {
 	public boolean isAlive() {
 		return HP > 0;
 	}
-// change from budding, shattered
+
 	public boolean isActive() {
 		return isAlive();
 	}

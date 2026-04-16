@@ -61,5 +61,5 @@ public class Berry extends Food {
 		return 5 * quantity;
 	}
 
-	public static class SeedCounter extends CounterBuff{};
+	public static class SeedCounter extends CounterBuff{{revivePersists = true;}};
 }

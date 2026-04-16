@@ -32,7 +32,7 @@ public class QuestScroll extends Item {
         REACH_DEPTH,
         EXPLORE_FLOORS;
 
-        public boolean checkComplete( QuestScroll scroll ) {
+        public boolean checkComplete(QuestScroll scroll) {
             switch (this) {
                 case SLAY_ENEMIES:
                     return (Statistics.enemiesSlain - scroll.snapshotValue) >= scroll.targetValue;
@@ -45,7 +45,7 @@ public class QuestScroll extends Item {
             }
         }
 
-        public String progressText( QuestScroll scroll ) {
+        public String progressText(QuestScroll scroll) {
             int current;
             switch (this) {
                 case SLAY_ENEMIES:
@@ -117,14 +117,14 @@ public class QuestScroll extends Item {
     }
 
     @Override
-    public ArrayList<String> actions( Hero hero ) {
+    public ArrayList<String> actions(Hero hero) {
         ArrayList<String> actions = super.actions(hero);
         actions.add(AC_READ);
         return actions;
     }
 
     @Override
-    public void execute( Hero hero, String action ) {
+    public void execute(Hero hero, String action) {
         super.execute(hero, action);
 
         if (action.equals(AC_READ)) {
@@ -147,7 +147,7 @@ public class QuestScroll extends Item {
         }
     }
 
-    private void grantRewards( Hero hero ) {
+    private void grantRewards(Hero hero) {
         int goldAmount = targetValue * 50;
         Gold gold = new Gold(goldAmount);
         if (!gold.doPickUp(hero)) {
@@ -157,21 +157,23 @@ public class QuestScroll extends Item {
 
     @Override
     public String desc() {
-        if (objective == null) return Messages.get(this, "desc");
+        String desc = Messages.get(this, "desc");
+
+        if (objective == null) return desc;
 
         String objDesc = Messages.get(this, "obj_" + objective.name().toLowerCase());
         String progress = objective.progressText(this);
-        return objDesc + "\n\n" + Messages.get(this, "progress_label", progress);
+        return desc + "\n\n" + objDesc + "\n\n" + Messages.get(this, "progress_label", progress);
     }
 
-    private static final String OBJECTIVE  = "objective";
-    private static final String TARGET     = "target";
-    private static final String SNAPSHOT   = "snapshot";
-    private static final String REWARD     = "reward";
-    private static final String COMPLETED  = "completed";
+    private static final String OBJECTIVE = "objective";
+    private static final String TARGET = "target";
+    private static final String SNAPSHOT = "snapshot";
+    private static final String REWARD = "reward";
+    private static final String COMPLETED = "completed";
 
     @Override
-    public void storeInBundle( Bundle bundle ) {
+    public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
         if (objective != null) {
             bundle.put(OBJECTIVE, objective.name());
@@ -183,7 +185,7 @@ public class QuestScroll extends Item {
     }
 
     @Override
-    public void restoreFromBundle( Bundle bundle ) {
+    public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
         String objName = bundle.getString(OBJECTIVE);
         if (objName != null && !objName.isEmpty()) {

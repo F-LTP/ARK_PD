@@ -70,11 +70,12 @@ public class WoundsofWar extends Artifact {
                     Sample.INSTANCE.play( Assets.Sounds.LIGHTNING, 1f, 1.32f );
                     updateQuickslot();
 
+                    Talent.onArtifactUsed(Dungeon.hero);
+
                     exp+=50;
                     if (exp >= 50 + level() * 50 && level() < levelCap) upgrade();
 
                     curUser.spendAndNext(1f);
-                    Talent.onArtifactUsed(Dungeon.hero);
                 }
             }
         }
