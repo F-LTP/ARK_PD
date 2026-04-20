@@ -25,14 +25,14 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 
 public class ExplosiveTrap extends Trap {
 
-	{
-		color = ORANGE;
-		shape = DIAMOND;
-	}
+    {
+        color = ORANGE;
+        shape = DIAMOND;
+    }
 
-	@Override
-	public void activate() {
-		new Bomb().explode(pos);
-	}
+    @Override
+    public void activate() {
+        new Bomb().explode(pos, false);
+    }
 
 }

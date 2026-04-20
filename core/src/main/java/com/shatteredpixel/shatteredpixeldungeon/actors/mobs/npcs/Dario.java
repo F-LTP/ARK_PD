@@ -342,7 +342,7 @@ public class Dario extends NPC {
 
             for (Item item : rewards) {
                 if (item.doPickUp( Dungeon.hero )) {
-                    GLog.i( Messages.get(Dungeon.hero, "you_now_have", item) );
+                    GLog.i( Messages.get(Dungeon.hero, "you_now_have", item.name()) );
                 } else {
                     Dungeon.level.drop( item, dario.pos ).sprite.drop();
                 }

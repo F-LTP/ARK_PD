@@ -33,89 +33,90 @@ import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
 public class EntranceRoom extends StandardRoom {
-	
-	@Override
-	public int minWidth() {
-		return Math.max(super.minWidth(), 5);
-	}
-	
-	@Override
-	public int minHeight() {
-		return Math.max(super.minHeight(), 5);
-	}
 
-	@Override
-	public boolean canMerge(Level l, Point p, int mergeTerrain) {
-		return false;
-	}
+    @Override
+    public int minWidth() {
+        return Math.max(super.minWidth(), 5);
+    }
 
-	public void paint( Level level ) {
-		
-		Painter.fill( level, this, Terrain.WALL );
-		Painter.fill( level, this, 1, Terrain.EMPTY );
-		
-		for (Room.Door door : connected.values()) {
-			door.set( Room.Door.Type.REGULAR );
-		}
+    @Override
+    public int minHeight() {
+        return Math.max(super.minHeight(), 5);
+    }
 
-		do {
-			level.entrance = level.pointToCell(random(2));
-		} while (level.findMob(level.entrance) != null);
-		if (Dungeon.depth != 31) Painter.set( level, level.entrance, Terrain.ENTRANCE );
+    @Override
+    public boolean canMerge(Level l, Point p, int mergeTerrain) {
+        return false;
+    }
 
-		//use a separate generator here so meta progression doesn't affect levelgen
-		Random.pushGenerator();
+    public void paint(Level level) {
 
-		//places the first guidebook page on floor 1
-		if (Dungeon.depth == 1 && !Document.ADVENTURERS_GUIDE.hasPage(Document.GUIDE_INTRO_PAGE)){
-			int pos;
-			do {
-				//can't be on bottom row of tiles
-				pos = level.pointToCell(new Point( Random.IntRange( left + 1, right - 1 ),
-						Random.IntRange( top + 1, bottom - 2 )));
-			} while (pos == level.entrance || level.findMob(level.entrance) != null);
-			GuidePage p = new GuidePage();
-			p.page(Document.GUIDE_INTRO_PAGE);
-			level.drop( p, pos );
-		}
+        Painter.fill(level, this, Terrain.WALL);
+        Painter.fill(level, this, 1, Terrain.EMPTY);
 
-		//places the third guidebook page on floor 2
-		if (Dungeon.depth == 2 && !Document.ADVENTURERS_GUIDE.hasPage(Document.GUIDE_SEARCH_PAGE)){
-			int pos;
-			do {
-				//can't be on bottom row of tiles
-				pos = level.pointToCell(new Point( Random.IntRange( left + 1, right - 1 ),
-						Random.IntRange( top + 1, bottom - 2 )));
-			} while (pos == level.entrance || level.findMob(level.entrance) != null);
-			GuidePage p = new GuidePage();
-			p.page(Document.GUIDE_SEARCH_PAGE);
-			level.drop( p, pos );
-		}
+        for (Room.Door door : connected.values()) {
+            door.set(Room.Door.Type.REGULAR);
+        }
 
-		if (Dungeon.depth == 31 && Dungeon.extrastage_Gavial) {
-			int pos;
-			boolean validPos;
-			//Do not spawn wandmaker on the entrance, a trap, or in front of a door.
-			do {
-				validPos = true;
-				pos = level.pointToCell(random());
-				if (pos == level.entrance){
-					validPos = false;
-				}
-				for (Point door : connected.values()){
-					if (level.trueDistance( pos, level.pointToCell( door ) ) <= 1){
-						validPos = false;
-					}
-				}
-				if (level.traps.get(pos) != null){
-					validPos = false;
-				}
-			} while (!validPos);
+        do {
+            level.setEntrance(level.pointToCell(random(2)));
+        } while (level.findMob(level.entrance()) != null);
+        if (Dungeon.depth != 31) Painter.set(level, level.entrance(), Terrain.ENTRANCE);
 
-		Gavial.spawn(level,pos);}
+        //use a separate generator here so meta progression doesn't affect levelgen
+        Random.pushGenerator();
 
-		Random.popGenerator();
+        //places the first guidebook page on floor 1
+        if (Dungeon.depth == 1 && !Document.ADVENTURERS_GUIDE.hasPage(Document.GUIDE_INTRO_PAGE)) {
+            int pos;
+            do {
+                //can't be on bottom row of tiles
+                pos = level.pointToCell(new Point(Random.IntRange(left + 1, right - 1),
+                        Random.IntRange(top + 1, bottom - 2)));
+            } while (pos == level.entrance() || level.findMob(level.entrance()) != null);
+            GuidePage p = new GuidePage();
+            p.page(Document.GUIDE_INTRO_PAGE);
+            level.drop(p, pos);
+        }
 
-	}
-	
+        //places the third guidebook page on floor 2
+        if (Dungeon.depth == 2 && !Document.ADVENTURERS_GUIDE.hasPage(Document.GUIDE_SEARCH_PAGE)) {
+            int pos;
+            do {
+                //can't be on bottom row of tiles
+                pos = level.pointToCell(new Point(Random.IntRange(left + 1, right - 1),
+                        Random.IntRange(top + 1, bottom - 2)));
+            } while (pos == level.entrance() || level.findMob(level.entrance()) != null);
+            GuidePage p = new GuidePage();
+            p.page(Document.GUIDE_SEARCH_PAGE);
+            level.drop(p, pos);
+        }
+
+        if (Dungeon.depth == 31 && Dungeon.extrastage_Gavial) {
+            int pos;
+            boolean validPos;
+            //Do not spawn wandmaker on the entrance, a trap, or in front of a door.
+            do {
+                validPos = true;
+                pos = level.pointToCell(random());
+                if (pos == level.entrance()) {
+                    validPos = false;
+                }
+                for (Point door : connected.values()) {
+                    if (level.trueDistance(pos, level.pointToCell(door)) <= 1) {
+                        validPos = false;
+                    }
+                }
+                if (level.traps.get(pos) != null) {
+                    validPos = false;
+                }
+            } while (!validPos);
+
+            Gavial.spawn(level, pos);
+        }
+
+        Random.popGenerator();
+
+    }
+
 }

@@ -6,7 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.GreenCat;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_PhantomShadow;
-import com.shatteredpixel.shatteredpixeldungeon.items.quest.QuestCat;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.watabou.noosa.Group;
@@ -27,17 +27,17 @@ public class NewRhodesLevel3 extends Level {
     }
 
     @Override
-    public String tilesTex () {
+    public String tilesTex() {
         return Assets.Environment.TILSE_RHODES;
     }
 
     @Override
-    public String waterTex () {
+    public String waterTex() {
         return Assets.Environment.WATER_PRISON;
     }
 
     @Override
-    public void create () {
+    public void create() {
         super.create();
         for (int i = 0; i < length(); i++) {
             int flags = Terrain.flags[map[i]];
@@ -49,7 +49,7 @@ public class NewRhodesLevel3 extends Level {
     }
 
     @Override
-    protected boolean build () {
+    protected boolean build() {
 
         setSize(25, 27);
         Arrays.fill(map, Terrain.CHASM);
@@ -104,15 +104,32 @@ public class NewRhodesLevel3 extends Level {
     }
 
     @Override
-    protected void createMobs () {
+    protected void syncTransitionsFromFields() {
+        transitions.clear();
+        //entrance terrain leads back toward Rhodes 2 (branch 2) (middle cell first)
+        transitions.add(new LevelTransition(this, 428,
+                LevelTransition.Type.BRANCH_ENTRANCE, 0, 2, LevelTransition.Type.BRANCH_EXIT));
+        transitions.add(new LevelTransition(this, 427,
+                LevelTransition.Type.BRANCH_ENTRANCE, 0, 2, LevelTransition.Type.BRANCH_EXIT));
+        //exit terrain leads deeper into Rhodes (floor 4, branch 4) (middle cell first)
+        transitions.add(new LevelTransition(this, 597,
+                LevelTransition.Type.BRANCH_EXIT, 0, 4, LevelTransition.Type.BRANCH_ENTRANCE));
+        transitions.add(new LevelTransition(this, 572,
+                LevelTransition.Type.BRANCH_EXIT, 0, 4, LevelTransition.Type.BRANCH_ENTRANCE));
+        transitions.add(new LevelTransition(this, 622,
+                LevelTransition.Type.BRANCH_EXIT, 0, 4, LevelTransition.Type.BRANCH_ENTRANCE));
     }
 
-    public Actor addRespawner () {
+    @Override
+    protected void createMobs() {
+    }
+
+    public Actor addRespawner() {
         return null;
     }
 
     @Override
-    protected void createItems () {
+    protected void createItems() {
         //   if (Dungeon.hero.belongings.getItem(Amulet.class) == null) GreenCat.spawn(this, exit);
         //   SkinModel.spawn(this, 255);
         GreenCat.spawn(this, 162);
@@ -123,9 +140,13 @@ public class NewRhodesLevel3 extends Level {
     }
 
     @Override
-    public int randomRespawnCell (Char ch ){
+    public int randomRespawnCell(Char ch) {
         int cell;
+        int count = 0;
         do {
+            if (++count > 30) {
+                return -1;
+            }
             cell = entrance + PathFinder.NEIGHBOURS8[Random.Int(8)];
         } while (!passable[cell]
                 || (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
@@ -135,14 +156,14 @@ public class NewRhodesLevel3 extends Level {
 
 
     @Override
-    public Group addVisuals () {
+    public Group addVisuals() {
         super.addVisuals();
         HallsLevel.addHallsVisuals(this, visuals);
         return visuals;
     }
 
     @Override
-    public void restoreFromBundle (Bundle bundle){
+    public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
     }
 
@@ -155,12 +176,12 @@ public class NewRhodesLevel3 extends Level {
         @Override
         public Tilemap create() {
             Tilemap v = super.create();
-            int[] data = new int[tileW*tileH];
-            for (int i = 0; i < data.length; i++){
+            int[] data = new int[tileW * tileH];
+            for (int i = 0; i < data.length; i++) {
                 data[i] = i;
             }
 
-            v.map( data, tileW );
+            v.map(data, tileW);
             return v;
         }
     }

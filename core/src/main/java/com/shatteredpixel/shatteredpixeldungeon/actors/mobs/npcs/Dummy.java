@@ -3,23 +3,29 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Camouflage;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Charm;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Sleep;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CivilianSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ClosureSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.NPC_dummySprite;
 
 public class Dummy extends Mob {
     {
         spriteClass = CivilianSprite.class;
-        HP=HT=1000;
-        //properties.add(Property.IMMOVABLE);
+        HP = HT = 1000;
 
         state = PASSIVE;
+        immunities.add(Corruption.class);
+        immunities.add(Doom.class);
+        immunities.add(Charm.class);
+        immunities.add(Amok.class);
+        immunities.add(Sleep.class);
+        immunities.add(Terror.class);
+        immunities.add(Vertigo.class);
     }
 
     @Override
@@ -29,24 +35,24 @@ public class Dummy extends Mob {
 
     @Override
     protected boolean act() {
-        if (Camouflage.CamoFlageEnemy(this)) Buff.affect(this, Camouflage.class, 10f);
+        // reset alignment and state if changed by external effects
+        alignment = Alignment.ENEMY;
+        state = PASSIVE;
 
-        HP = Math.min(HP+50, HT);
+        if (Camouflage.CamoFlageEnemy(this)) Buff.affect(this, Camouflage.class, 10f);
+        //retroactively strip Corruption from saves made before the immunity was added
+        Corruption corruption = buff(Corruption.class);
+        if (corruption != null) {
+            corruption.detach();
+        }
+
+        HP = Math.min(HP + 50, HT);
         return super.act();
     }
 
-    public static void spawn(Level level, int poss) {
-        Dummy WhatYourName = new Dummy();
-        do {
-            WhatYourName.pos = poss;
-        } while (WhatYourName.pos == -1);
-        level.mobs.add(WhatYourName);
-    }
-
-    {
-        immunities.add( Amok.class );
-        immunities.add( Sleep.class );
-        immunities.add( Terror.class );
-        immunities.add( Vertigo.class );
+    public static void spawn(Level level, int spawnPos) {
+        Dummy dummy = new Dummy();
+        dummy.pos = spawnPos;
+        level.mobs.add(dummy);
     }
 }

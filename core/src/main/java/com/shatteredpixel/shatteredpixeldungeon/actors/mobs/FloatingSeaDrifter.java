@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.NervousImpairment;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Dario;
+import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SanityPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.GunWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
@@ -50,9 +51,10 @@ public class FloatingSeaDrifter extends Mob {
     @Override
     public int defenseSkill(Char enemy) {
         if (enemy instanceof Hero) {
-            if (Dungeon.hero.belongings.weapon != null &&
-                    (Dungeon.hero.belongings.weapon instanceof MissileWeapon
-                            || Dungeon.hero.belongings.weapon instanceof GunWeapon)) {
+            KindOfWeapon weapon = Dungeon.hero.belongings.attackingWeapon();
+            if (weapon != null &&
+                    (weapon instanceof MissileWeapon
+                            || weapon instanceof GunWeapon)) {
                 return 0;
             }
         }

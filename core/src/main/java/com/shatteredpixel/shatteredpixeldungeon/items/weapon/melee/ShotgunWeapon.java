@@ -25,8 +25,8 @@ public class ShotgunWeapon extends GunWeapon {
 
     @Override
     public int max(int lvl) {
-        return  3 + 4*tier +         //base: between gun (3*tier) and melee (5*(tier+1))
-                lvl*(tier-1);        //scaling: between gun (tier-2) and melee (tier+1)
+        return 3 + 4 * tier +         //base: between gun (3*tier) and melee (5*(tier+1))
+                lvl * (tier - 1);        //scaling: between gun (tier-2) and melee (tier+1)
     }
 
     protected float effectiveCone() {
@@ -44,7 +44,8 @@ public class ShotgunWeapon extends GunWeapon {
 
     @Override
     public String statsInfo() {
-        if (specialBullet > 0) return Messages.get(this, "stats_desc_sp", fireMin(), fireMax(), specialBullet, getMinRange(), getMaxRange(), PELLET_COUNT, coneDesc());
+        if (specialBullet > 0)
+            return Messages.get(this, "stats_desc_sp", fireMin(), fireMax(), specialBullet, getMinRange(), getMaxRange(), PELLET_COUNT, coneDesc());
         return Messages.get(this, "stats_desc", fireMin(), fireMax(), getMinRange(), getMaxRange(), PELLET_COUNT, coneDesc());
     }
 
@@ -134,7 +135,10 @@ public class ShotgunWeapon extends GunWeapon {
     @Override
     protected void fx(Ballistica bolt, Callback callback) {
         cachedRays = computePelletRays(bolt);
-        if (cachedRays.isEmpty()) { callback.call(); return; }
+        if (cachedRays.isEmpty()) {
+            callback.call();
+            return;
+        }
 
         // Fire visual missiles for each pellet ray, capped to max range
         int callbackIdx = cachedRays.size() / 2;
@@ -180,17 +184,24 @@ public class ShotgunWeapon extends GunWeapon {
                 Buff.affect(Dungeon.hero, RangedAttackTracker.class);
             }
 
-            // Process each target with diminishing damage per additional pellet
+            // Process each target with diminishing damage per additional pellet.
+            // DR is rolled once per target; extras see scaled DR
             for (Map.Entry<Char, Integer> entry : targetPellets.entrySet()) {
                 Char ch = entry.getKey();
                 int pelletCount = entry.getValue();
+
+                int targetDr = ch.drRoll();
+                int extraDr = (targetDr > 0)
+                        ? Math.max(1, Math.round(targetDr * EXTRA_PELLET_MULT))
+                        : 0;
 
                 for (int i = 0; i < pelletCount; i++) {
                     if (!ch.isAlive()) break;
 
                     float dmgMult = (i == 0) ? 1f : EXTRA_PELLET_MULT;
                     boolean triggerProcs = (i == 0);
-                    processGunHit(ch, dmgMult, triggerProcs);
+                    int pelletDr = (i == 0) ? targetDr : extraDr;
+                    processGunHit(ch, dmgMult, triggerProcs, pelletDr);
                 }
 
                 if (!ch.isAlive()) anyKill = true;

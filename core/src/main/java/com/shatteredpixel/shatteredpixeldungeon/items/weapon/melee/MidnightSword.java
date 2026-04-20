@@ -143,6 +143,7 @@ public class MidnightSword extends MeleeWeapon {
                         QuickSlotButton.target(Actor.findChar(cell));
 
                     if (ss.tryToZap(curUser, target)) {
+                        curUser.busy();
                         ss.fx(shot, new Callback() {
                             public void call() {
                                 ss.onZap(shot);

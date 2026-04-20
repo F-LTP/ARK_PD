@@ -1,13 +1,11 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GiantMushroom;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.SeaObject;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
 import com.watabou.utils.Point;
 
 public class SeaObjRoom extends SpecialRoom {
@@ -23,11 +21,11 @@ public class SeaObjRoom extends SpecialRoom {
 
     public void paint(Level level) {
 
-        Painter.fill( level, this, Terrain.WALL );
-        Painter.fill( level, this, 1, Terrain.EMPTY );
+        Painter.fill(level, this, Terrain.WALL);
+        Painter.fill(level, this, 1, Terrain.EMPTY);
 
         for (Room.Door door : connected.values()) {
-            door.set( Room.Door.Type.REGULAR );
+            door.set(Room.Door.Type.REGULAR);
         }
 
         Point c = center();
@@ -44,6 +42,6 @@ public class SeaObjRoom extends SpecialRoom {
 
     @Override
     public boolean canPlaceCharacter(Point p, Level l) {
-        return super.canPlaceCharacter(p, l) && l.pointToCell(p) != l.exit;
+        return super.canPlaceCharacter(p, l) && l.pointToCell(p) != l.exit();
     }
 }

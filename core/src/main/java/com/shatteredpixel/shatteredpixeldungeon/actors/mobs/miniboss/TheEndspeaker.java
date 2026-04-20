@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EndspeakerAspect;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.NervousImpairment;
@@ -72,8 +73,9 @@ public class TheEndspeaker extends Mob {
     }
 
     private int spellAbsorptionCooldown = 0;
-    private int chargeCooldown = 5;
+    private int chargeCooldown = 6;
     private int chargePos = -1;
+    private int chargesRemaining = 0;
 
     @Override
     public int damageRoll() {
@@ -120,15 +122,15 @@ public class TheEndspeaker extends Mob {
     }
 
     @Override
-    protected boolean canAttack( Char enemy ) {
+    protected boolean canAttack(Char enemy) {
         if (Status.abilityIncreasedRange) {
             return this.fieldOfView[enemy.pos] && Dungeon.level.distance(this.pos, enemy.pos) <= 3;
         }
-        return Dungeon.level.adjacent( this.pos, enemy.pos );
+        return Dungeon.level.adjacent(this.pos, enemy.pos);
     }
 
     @Override
-    protected boolean doAttack( Char enemy ) {
+    protected boolean doAttack(Char enemy) {
         SpellAbsorptionActive spellBuff = buff(SpellAbsorptionActive.class);
         if (Status.abilitySpellAbsorption && !isSilenced() && spellBuff != null) {
             spellBuff.detach();
@@ -159,11 +161,11 @@ public class TheEndspeaker extends Mob {
     protected boolean zap() {
         if (enemy == null) return false;
 
-        spend( 1f );
+        spend(1f);
 
         if (hit(this, enemy, true)) {
             int dmg = this.damageRoll();
-            enemy.damage( dmg, this );
+            enemy.damage(dmg, this);
 
             // Ramp Up: grant stack on successful zap hit
             if (dmg > 0 && Status.abilityRampUp) {
@@ -172,11 +174,11 @@ public class TheEndspeaker extends Mob {
 
             if (enemy == Dungeon.hero) {
 
-                Camera.main.shake( 2, 0.3f );
+                Camera.main.shake(2, 0.3f);
 
                 if (!enemy.isAlive()) {
-                    Dungeon.fail( getClass() );
-                    GLog.n( Messages.get(this, "kill") );
+                    Dungeon.fail(getClass());
+                    GLog.n(Messages.get(this, "kill"));
                 }
             }
 
@@ -185,7 +187,7 @@ public class TheEndspeaker extends Mob {
         }
 
         if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
-            sprite.attack( enemy.pos );
+            sprite.attack(enemy.pos);
             return false;
         } else {
             return true;
@@ -196,21 +198,37 @@ public class TheEndspeaker extends Mob {
     protected boolean act() {
         if (state == PASSIVE) return super.act();
 
-        // Execute charge if position is set, cancel if silenced
+        // Spell absorption cooldown ticks independently so it's not frozen during a charge sequence
+        spellAbsorptionCooldown--;
+
+        // Maintain Ramp Up stacks while a charge sequence is in progress so they don't decay between charges
+        if (Status.abilityCharge && Status.abilityRampUp && (chargesRemaining > 0 || chargePos != -1)) {
+            RampUpStacks rampBuff = buff(RampUpStacks.class);
+            if (rampBuff != null) rampBuff.turnsWithoutDamage = 0;
+        }
+
+        // Execute charge if position is set, cancel sequence if silenced
         if (Status.abilityCharge && chargePos != -1) {
             if (isSilenced()) {
-                chargePos = -1;
+                endChargeSequence();
             } else {
                 executeCharge();
                 return false;
             }
         }
 
-        // Setup charge if conditions are met
-        if (Status.abilityCharge && !isSilenced() && chargeCooldown <= 0 && enemy != null && !rooted) {
+        // Start a new charge sequence when cooldown is ready; retry next turn on setup failure
+        if (Status.abilityCharge && !isSilenced() && chargeCooldown <= 0 && chargesRemaining == 0
+                && enemy != null && enemy.isAlive() && !rooted) {
             if (setupCharge()) {
+                chargesRemaining = Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? 5 : 4;
+                if (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[chargePos]) {
+                    GLog.w(Messages.get(this, "charge"));
+                }
+                spend(TICK);
                 return true;
             }
+            // Setup failed (no line of sight, no landing tile, etc) — fall through and retry next act
         }
 
         // Re-apply hardening if silence wore off and HP is still low
@@ -222,8 +240,14 @@ public class TheEndspeaker extends Mob {
         return super.act();
     }
 
+    private void endChargeSequence() {
+        chargesRemaining = 0;
+        chargePos = -1;
+        chargeCooldown = Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? Random.NormalIntRange(5, 7) : Random.NormalIntRange(6, 8);
+    }
+
     private boolean setupCharge() {
-        if (enemy == null) return false;
+        if (enemy == null || !enemy.isAlive()) return false;
 
         // Verify path to enemy is not blocked by terrain
         Ballistica b = new Ballistica(pos, enemy.pos, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID);
@@ -262,25 +286,22 @@ public class TheEndspeaker extends Mob {
 
         // Setup charge
         chargePos = targetPos;
-        chargeCooldown = Dungeon.isChallenged(Challenges.DECISIVE_BATTLE) ? Random.NormalIntRange(3, 6) : Random.NormalIntRange(5, 7);
 
-        // Visual warning
+        // Visual warning — GLog is handled by the caller so chained charges don't spam it
         if (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[chargePos]) {
-            GLog.w(Messages.get(this, "charge"));
             sprite.parent.addToBack(new TargetedCell(chargePos, 0xFF0000));
             Dungeon.hero.interrupt();
         }
 
-        spend(TICK);
         return true;
     }
 
     private void executeCharge() {
         Ballistica b = new Ballistica(pos, chargePos, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID);
 
-        // If path is now blocked, cancel charge
+        // If path is now blocked, cancel the whole sequence
         if (rooted || b.collisionPos != chargePos) {
-            chargePos = -1;
+            endChargeSequence();
             spend(TICK);
             next();
             return;
@@ -299,7 +320,7 @@ public class TheEndspeaker extends Mob {
                 }
             }
             if (bouncepos == -1) {
-                chargePos = -1;
+                endChargeSequence();
                 spend(TICK);
                 next();
                 return;
@@ -320,9 +341,14 @@ public class TheEndspeaker extends Mob {
                     if (ch != null && ch != TheEndspeaker.this) {
                         int base = damageRoll();
                         int damage = Random.NormalIntRange(base / 2, base);
+                        int hpBefore = ch.HP;
                         ch.damage(damage, TheEndspeaker.this);
+                        // Ramp Up: grant stack on successful charge hit
+                        if (Status.abilityRampUp && ch.HP < hpBefore) {
+                            Buff.affect(TheEndspeaker.this, RampUpStacks.class).addStack();
+                        }
                         if (ch instanceof Hero && !ch.isAlive()) {
-                            Dungeon.fail( getClass() );
+                            Dungeon.fail(getClass());
                             GLog.n(Messages.get(Char.class, "kill", name()));
                         } else if (ch.isAlive()) {
                             Buff.prolong(ch, Cripple.class, 3f);
@@ -339,8 +365,19 @@ public class TheEndspeaker extends Mob {
 
                 pos = endPos;
                 chargePos = -1;
+                chargesRemaining--;
                 sprite.idle();
                 Dungeon.level.occupyCell(TheEndspeaker.this);
+
+                // Chain the next charge in the sequence, or end it
+                boolean chained = false;
+                if (chargesRemaining > 0 && !isSilenced() && enemy != null && enemy.isAlive() && !rooted) {
+                    chained = setupCharge();
+                }
+                if (!chained) {
+                    endChargeSequence();
+                }
+
                 spend(TICK);
                 next();
             }
@@ -349,7 +386,6 @@ public class TheEndspeaker extends Mob {
 
     private void reduceCooldown() {
         chargeCooldown--;
-        spellAbsorptionCooldown--;
     }
 
     @Override
@@ -379,7 +415,7 @@ public class TheEndspeaker extends Mob {
         Ankh lootAnkh;
         dropLoot(new PotionOfExperience());
         dropLoot(new SanityPotion().quantity(5));
-        switch(lootTier) {
+        switch (lootTier) {
             case 1:
                 // 1단계 폼 (2 형태)
                 Dungeon.level.drop(new Certificate(25), pos).sprite.drop(pos);
@@ -446,7 +482,8 @@ public class TheEndspeaker extends Mob {
         desc += Messages.get(this, "desc_" + Status.abilityCount / 2);
         if (Status.abilityCount > 0) {
             desc += Messages.get(this, "desc_sp");
-            if (Status.abilitySpellAbsorption) desc += Messages.get(this, "desc_sp_spellabsorption");
+            if (Status.abilitySpellAbsorption)
+                desc += Messages.get(this, "desc_sp_spellabsorption");
             if (Status.abilityIncreasedRange) desc += Messages.get(this, "desc_sp_increasedrange");
             if (Status.abilityRampUp) desc += Messages.get(this, "desc_sp_rampup");
             if (Status.abilityCharge) desc += Messages.get(this, "desc_sp_charge");
@@ -459,6 +496,7 @@ public class TheEndspeaker extends Mob {
     private static final String SPELL_ABSORPTION_CD = "spell_absorption_cooldown";
     private static final String CHARGE_CD = "charge_cooldown";
     private static final String CHARGE_POS = "charge_pos";
+    private static final String CHARGES_REMAINING = "charges_remaining";
 
     @Override
     public void storeInBundle(Bundle bundle) {
@@ -466,6 +504,7 @@ public class TheEndspeaker extends Mob {
         bundle.put(SPELL_ABSORPTION_CD, spellAbsorptionCooldown);
         bundle.put(CHARGE_CD, chargeCooldown);
         bundle.put(CHARGE_POS, chargePos);
+        bundle.put(CHARGES_REMAINING, chargesRemaining);
     }
 
     @Override
@@ -474,6 +513,7 @@ public class TheEndspeaker extends Mob {
         spellAbsorptionCooldown = bundle.getInt(SPELL_ABSORPTION_CD);
         chargeCooldown = bundle.contains(CHARGE_CD) ? bundle.getInt(CHARGE_CD) : 3;
         chargePos = bundle.contains(CHARGE_POS) ? bundle.getInt(CHARGE_POS) : -1;
+        chargesRemaining = bundle.contains(CHARGES_REMAINING) ? bundle.getInt(CHARGES_REMAINING) : 0;
     }
 
     /**
@@ -508,7 +548,7 @@ public class TheEndspeaker extends Mob {
 
         @Override
         public String desc() {
-            return Messages.get(this, "desc", stacks, (int)(stacks * 5));
+            return Messages.get(this, "desc", stacks, (int) (stacks * 5));
         }
 
         public void addStack() {
@@ -646,6 +686,7 @@ public class TheEndspeaker extends Mob {
             state = PASSIVE;
             loot = new PotionOfStrength();
             lootChance = 1f;
+            immunities.add(Corruption.class);
         }
 
         private boolean isEmpowered = false;
@@ -688,12 +729,18 @@ public class TheEndspeaker extends Mob {
 
         @Override
         public void damage(int dmg, Object src) {
+            // Only the hero can initially activate/attack this aspect — ally/clone attacks are blocked while PASSIVE
+            if (state == PASSIVE && src instanceof Char && !(src instanceof Hero)) {
+                if (sprite != null)
+                    sprite.showStatus(CharSprite.POSITIVE, Messages.get(Char.class, "invulnerable"));
+                return;
+            }
             if (state == PASSIVE) state = HUNTING;
             super.damage(dmg, src);
         }
 
         @Override
-        public void die( Object cause ) {
+        public void die(Object cause) {
             removeAbility(this);
             empowerRemainingAspect();
             super.die(cause);
@@ -735,6 +782,7 @@ public class TheEndspeaker extends Mob {
             state = PASSIVE;
             loot = new PotionOfStrength();
             lootChance = 1f;
+            immunities.add(Corruption.class);
         }
 
         private boolean isEmpowered = false;
@@ -780,12 +828,18 @@ public class TheEndspeaker extends Mob {
 
         @Override
         public void damage(int dmg, Object src) {
+            // Only the hero can initially activate/attack this aspect — ally/clone attacks are blocked while PASSIVE
+            if (state == PASSIVE && src instanceof Char && !(src instanceof Hero)) {
+                if (sprite != null)
+                    sprite.showStatus(CharSprite.POSITIVE, Messages.get(Char.class, "invulnerable"));
+                return;
+            }
             if (state == PASSIVE) state = HUNTING;
             super.damage(dmg, src);
         }
 
         @Override
-        public void die( Object cause ) {
+        public void die(Object cause) {
             removeAbility(this);
             empowerRemainingAspect();
             super.die(cause);
@@ -827,6 +881,7 @@ public class TheEndspeaker extends Mob {
             state = PASSIVE;
             loot = new PotionOfStrength();
             lootChance = 1f;
+            immunities.add(Corruption.class);
         }
 
         private boolean isEmpowered = false;
@@ -859,7 +914,8 @@ public class TheEndspeaker extends Mob {
         @Override
         public int drRoll() {
             if (isEmpowered) {
-                if (buff(NetherseaBrandguider.Reinforced.class) != null) return Random.NormalIntRange(20, 60);
+                if (buff(NetherseaBrandguider.Reinforced.class) != null)
+                    return Random.NormalIntRange(20, 60);
                 return Random.NormalIntRange(10, 30);
             }
             return super.drRoll();
@@ -867,12 +923,18 @@ public class TheEndspeaker extends Mob {
 
         @Override
         public void damage(int dmg, Object src) {
+            // Only the hero can initially activate/attack this aspect — ally/clone attacks are blocked while PASSIVE
+            if (state == PASSIVE && src instanceof Char && !(src instanceof Hero)) {
+                if (sprite != null)
+                    sprite.showStatus(CharSprite.POSITIVE, Messages.get(Char.class, "invulnerable"));
+                return;
+            }
             if (state == PASSIVE) state = HUNTING;
             super.damage(dmg, src);
         }
 
         @Override
-        public void die( Object cause ) {
+        public void die(Object cause) {
             removeAbility(this);
             empowerRemainingAspect();
             super.die(cause);
@@ -917,7 +979,7 @@ public class TheEndspeaker extends Mob {
 
     protected static void grantAbility(Mob mob) {
         boolean granted = false;
-        for (EndspeakerAspect buff : mob.buffs(EndspeakerAspect.class)){
+        for (EndspeakerAspect buff : mob.buffs(EndspeakerAspect.class)) {
             if (buff.giveAbility()) {
                 TheEndspeaker.Status.abilityCount++;
                 granted = true;
@@ -973,7 +1035,7 @@ public class TheEndspeaker extends Mob {
         }
 
         public static int getMaxHp() {
-            switch(abilityCount / 2) {
+            switch (abilityCount / 2) {
                 case 1:
                     return 1000;
                 case 2:
@@ -987,7 +1049,7 @@ public class TheEndspeaker extends Mob {
         }
 
         public static int getDefense() {
-            switch(abilityCount / 2) {
+            switch (abilityCount / 2) {
                 case 1:
                     return 20;
                 case 2:
@@ -1001,7 +1063,7 @@ public class TheEndspeaker extends Mob {
         }
 
         public static int getExp() {
-            switch(abilityCount / 2) {
+            switch (abilityCount / 2) {
                 case 1:
                     return 100;
                 case 2:
@@ -1015,7 +1077,7 @@ public class TheEndspeaker extends Mob {
         }
 
         public static int getNerveDamage() {
-            switch(abilityCount / 2) {
+            switch (abilityCount / 2) {
                 case 1:
                     return 15;
                 case 2:
@@ -1083,12 +1145,12 @@ public class TheEndspeaker extends Mob {
                 return;
             }
             do {
-                mob.pos = level.randomRespawnCell( mob );
+                mob.pos = level.randomRespawnCell(mob);
             } while (
                     mob.pos == -1 ||
-                            level.heaps.get( mob.pos) != null ||
-                            level.traps.get( mob.pos) != null ||
-                            level.findMob( mob.pos ) != null ||
+                            level.heaps.get(mob.pos) != null ||
+                            level.traps.get(mob.pos) != null ||
+                            level.findMob(mob.pos) != null ||
                             !(level.passable[mob.pos + PathFinder.CIRCLE4[0]] && level.passable[mob.pos + PathFinder.CIRCLE4[2]]) ||
                             !(level.passable[mob.pos + PathFinder.CIRCLE4[1]] && level.passable[mob.pos + PathFinder.CIRCLE4[3]])
             );
@@ -1132,15 +1194,15 @@ public class TheEndspeaker extends Mob {
             abilityHardening = false;
             abilityCcImmune = false;
             abilityIncreasedRange = false;
-            abilityRampUp =false;
+            abilityRampUp = false;
             abilityCharge = false;
             abilityCount = 0;
             spawnMsgShown = false;
         }
 
-        private static final String NODE		= "theEndspeakerStatus";
+        private static final String NODE = "theEndspeakerStatus";
 
-        private static final String SPAWNED		= "spawned";
+        private static final String SPAWNED = "spawned";
         private static final String PENDING_DESTROY = "pendingDestroyMessage";
         private static final String ABILITY_SPELL = "abilitySpell";
         private static final String ABILITY_HARDENING = "abilityHardening";
@@ -1151,26 +1213,26 @@ public class TheEndspeaker extends Mob {
         private static final String ABILITY_COUNT = "abilityCount";
         private static final String SPAWN_MSG = "spawnMsgShown";
 
-        public static void storeInBundle( Bundle bundle ) {
+        public static void storeInBundle(Bundle bundle) {
             Bundle node = new Bundle();
 
-            node.put( SPAWNED, spawned );
-            node.put( PENDING_DESTROY, pendingDestroyMessage );
+            node.put(SPAWNED, spawned);
+            node.put(PENDING_DESTROY, pendingDestroyMessage);
 
-            node.put( ABILITY_SPELL, abilitySpellAbsorption );
-            node.put( ABILITY_HARDENING, abilityHardening );
-            node.put( ABILITY_CC, abilityCcImmune );
-            node.put( ABILITY_RANGE, abilityIncreasedRange );
-            node.put( ABILITY_RAMP, abilityRampUp );
-            node.put( ABILITY_CHARGE, abilityCharge );
-            node.put( ABILITY_COUNT, abilityCount );
-            node.put( SPAWN_MSG, spawnMsgShown );
+            node.put(ABILITY_SPELL, abilitySpellAbsorption);
+            node.put(ABILITY_HARDENING, abilityHardening);
+            node.put(ABILITY_CC, abilityCcImmune);
+            node.put(ABILITY_RANGE, abilityIncreasedRange);
+            node.put(ABILITY_RAMP, abilityRampUp);
+            node.put(ABILITY_CHARGE, abilityCharge);
+            node.put(ABILITY_COUNT, abilityCount);
+            node.put(SPAWN_MSG, spawnMsgShown);
 
-            bundle.put( NODE, node );
+            bundle.put(NODE, node);
         }
 
-        public static void restoreFromBundle( Bundle bundle ) {
-            Bundle node = bundle.getBundle( NODE );
+        public static void restoreFromBundle(Bundle bundle) {
+            Bundle node = bundle.getBundle(NODE);
 
             if (!node.isNull()) {
                 spawned = node.getBoolean(SPAWNED);

@@ -281,7 +281,7 @@ public class GunWeapon extends MeleeWeapon {
                     int cell = shot.collisionPos;
 
                     if (target == curUser.pos || cell == curUser.pos) {
-                        GLog.i(Messages.get(this, "self_target"));
+                        GLog.i(Messages.get(GunWeapon.class, "self_target"));
                         return;
                     }
 
@@ -294,6 +294,7 @@ public class GunWeapon extends MeleeWeapon {
                         QuickSlotButton.target(Actor.findChar(cell));
 
                     if (ss.tryToZap(curUser, target)) {
+                        curUser.busy();
                         ss.fx(shot, new Callback() {
                             public void call() {
                                 ss.onZap(shot);
@@ -354,6 +355,11 @@ public class GunWeapon extends MeleeWeapon {
     }
 
     protected boolean processGunHit(Char ch, float dmgMult, boolean triggerTalentProcs) {
+        return processGunHit(ch, dmgMult, triggerTalentProcs, -1);
+    }
+
+    // use a caller-supplied DR value instead of rolling. Pass -1 to roll normally.
+    protected boolean processGunHit(Char ch, float dmgMult, boolean triggerTalentProcs, int preRolledDr) {
         float dmg = fireDamageFactor(fireDamageRoll()) * dmgMult;
         int trueDmg = 0;
         if (ch.buff(Blindness.class) != null && Dungeon.hero.hasTalent(Talent.FLASH_SPEAR)) {
@@ -375,7 +381,7 @@ public class GunWeapon extends MeleeWeapon {
                 }
             }
 
-            int dr = ch.drRoll();
+            int dr = (preRolledDr >= 0) ? preRolledDr : ch.drRoll();
 
             int effectiveDamage = ch.defenseProc(Dungeon.hero, (int) dmg);
 

@@ -10,8 +10,78 @@ import java.util.ArrayList;
 
 public class v0_5_X_Changes {
     public static void addAllChanges(ArrayList<ChangeInfo> changeInfos) {
+        add_v0_5_2_Changes(changeInfos);
         add_v0_5_1_Changes(changeInfos);
         add_v0_5_0_Changes(changeInfos);
+    }
+
+    public static void add_v0_5_2_Changes(ArrayList<ChangeInfo> changeInfos) {
+        ChangeInfo changes = new ChangeInfo("v0.5.2", true, "");
+        changes.hardlight(Window.TITLE_COLOR);
+        changeInfos.add(changes);
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+        changes.hardlight(Window.TITLE_COLOR);
+        changes.addButton(new ChangeButton(Icons.get(Icons.SCROLL), "의뢰",
+                "로도스 2층에 있는 _도베르만_에게 말을 걸면 _의뢰_를 얻을 수 있습니다." + "\n\n" +
+                        "의뢰 목표를 달성 후 _읽기_를 통해 보상을 받을 수 있습니다." + "\n\n" +
+                        "향후 더 많은 의뢰가 추가될 예정입니다."));
+        changeInfos.add(changes);
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+        changes.hardlight(CharSprite.WARNING);
+        changes.addButton(new ChangeButton(Icons.get(Icons.ARKPD), "로도스 이동",
+                "_로도스_가 _27층_에서 _0층_으로 이사하였습니다."));
+        changes.addButton(new ChangeButton(Icons.get(Icons.ENTER), "게임 시작 위치",
+                "게임 시작 위치가 _1층_에서 _로도스_로 옮겨졌습니다."));
+        changes.addButton(new ChangeButton(Icons.get(Icons.ARTI), "앙크 리워크",
+                "_축복받지 않은 앙크_가 리워크 되었습니다." + "\n\n" +
+                        "사망 시 _아이템 2개_를 선택하여 부활할 수 있으며, 죽은 위치에 있는 _가방_을 주울 경우 모든 아이템을 돌려받습니다."));
+        changes.addButton(new ChangeButton(Icons.get(Icons.RED), "레드 발리스틱 나이프",
+                "기존 _자동 회수_ 기능이 삭제되었습니다." + "\n\n" +
+                        "이제 _다른 층으로 이동_할 경우 자동으로 인벤토리에 나이프가 생성되며, 이동 후 전 층에 있는 나이프는 삭제됩니다."));
+        changes.addButton(new ChangeButton(Icons.get(Icons.HERO_CHANGES), "기타 변경",
+                "_훈련 인형_이 더 이상 정신지배의 영향을 받지 않습니다." + "\n\n" +
+                        "_위매니의 의지_ 특수몹들이 오퍼레이터의 공격을 받지 않는 이상 활성화되지 않습니다." + "\n\n" +
+                        "_위매니의 의지_ 돌진 능력이 리워크 되었습니다. 이제 돌진을 여러 번 연속으로 발동하며, 적중 시 _분노 스택_이 증가합니다."));
+        changes.addButton(new ChangeButton(Icons.get(Icons.BUG_KILL), "버그 수정",
+                "_빛의 축복 +1_이 저주를 약화만 시키던 버그를 수정했습니다." + "\n\n" +
+                        "여러 _텍스트 누락_을 수정했습니다." + "\n\n" +
+                        "_특공대원_의 공격이 주술과 약화를 걸지 않던 버그를 수정했습니다." + "\n\n" +
+                        "_일개미_가 저주받은 무기를 떨어뜨릴 수 있던 버그를 수정했습니다." + "\n\n" +
+                        "_살라스의 칼날_ 데미지 증가가 100% 아래에선 적용되지 않던 버그를 수정했습니다." + "\n\n" +
+                        "_갑옷 강화 키트_가 아츠를 제대로 옮기지 않던 버그를 수정했습니다." + "\n\n" +
+                        "여러 식사 특성과 _굼 인형_이 정상적으로 작동하지 않던 버그를 수정했습니다." + "\n\n" +
+                        "공격속도가 느린 행동으로 _폭탄새_ 공격 시 바로 터지던 버그를 수정했습니다."));
+        changeInfos.add(changes);
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
+        changes.hardlight(CharSprite.POSITIVE);
+        changes.addButton(new ChangeButton(Icons.get(Icons.RING), "장비 상향",
+                "_햇빛의 반지_가 스킬 사용에 필요한 _SP_를 감소시킵니다." + "\n\n" +
+                        "_이세계 전술 장비 - 폭발물_이 이제 투척한 칸에서 튕겨나가지 않습니다."));
+        changes.addButton(new ChangeButton(Icons.get(Icons.ENEMY_BUFFS), "제국 포화 선조자 상향",
+                "_제국 포화 선조자_가 이제 모든 아군을 타겟으로 지정할 수 있습니다." + "\n\n" +
+                        "가장 가까운 아군 유닛을 우선적으로 공격하며, _시야 밖_으로 나갈 경우 타겟이 되지 않습니다."));
+        changes.addButton(new ChangeButton(Icons.get(Icons.NEARL), "니어 상향",
+                "_기사_ 직군이 _신속_ 보유 시 공격속도가 _20%_ 증가합니다." + "\n\n" +
+                        "_재림_ 특성이 이제 축복된 앙크의 무적시간을 1/2턴 증가시킵니다."));
+        changes.addButton(new ChangeButton(Icons.get(Icons.WEP), "샷건 상향",
+                "_샷건_이 적중한 대상 방어도의 영향을 덜 받도록 수정되었습니다."));
+        changeInfos.add(changes);
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
+        changes.hardlight(CharSprite.NEGATIVE);
+        changes.addButton(new ChangeButton(Icons.get(Icons.NEARL), "니어 하향",
+                "_빛의 기사_의 데미지 증가율이 너프되었습니다. (기본 +30% -> +25%, 구제자 +45% -> +40%, 섬광 +20% -> +15%)" + "\n\n" +
+                        "_빛의 기사_의 받는 피해 감소량이 너프되었습니다. (기본 2 ~ 피해량의 20% -> 1 ~ 피해량의 20%, 구제자 2 ~ 피해량의 40% -> 3 ~ 피해량의 30%)" + "\n\n" +
+                        "_섬광_의 빛의 인장 광역딜 데미지가 1(+1) ~ 6(+2)에서 1(+1) ~ 4(+2)로 너프되었습니다." + "\n\n" +
+                        "_구제자_의 방패 밀기 스택 데미지 배율이 x0.25 ~ x2(+0.1)에서 x0.5 ~ x1.5(+0.05)로 너프되었습니다." + "\n\n" +
+                        "_구제자_의 방패 밀기의 밀치기와 마비가 피해 축적량 최대치의 절반 이상일 경우에만 발동됩니다."));
+        changes.addButton(new ChangeButton(Icons.get(Icons.ENEMY_NERFS), "적 하향",
+                "_폭탄새_의 폭발 데미지가 21~29에서 _18~25_로 너프되었습니다." + "\n\n" +
+                        "_위매니의 의지_의 돌진 능력 쿨다운이 증가되었습니다."));
+        changeInfos.add(changes);
     }
 
     public static void add_v0_5_1_Changes(ArrayList<ChangeInfo> changeInfos) {
@@ -168,7 +238,7 @@ public class v0_5_X_Changes {
         changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
         changes.hardlight(CharSprite.NEGATIVE);
         changes.addButton(new ChangeButton(Icons.get(Icons.NEARL), "니어 하향",
-                "_빛의 기사_ 공격 배율이 감소되었습니다. (1.4x -> 1.3x, 구원자 1.55x -> 1.45x, 섬광 1.25x -> 1.2x)"));
+                "_빛의 기사_ 공격 배율이 감소되었습니다. (1.4x -> 1.3x, 구제자 1.55x -> 1.45x, 섬광 1.25x -> 1.2x)"));
         changes.addButton(new ChangeButton(Icons.get(Icons.ENEMY_NERFS), "적 하향",
                 "_가비알_ 몹들의 체력과 회피도가 하향되었습니다."));
         changeInfos.add(changes);

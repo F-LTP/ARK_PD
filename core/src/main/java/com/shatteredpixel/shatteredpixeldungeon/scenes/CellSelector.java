@@ -43,305 +43,322 @@ import com.watabou.utils.Signal;
 
 public class CellSelector extends ScrollArea {
 
-	public Listener listener = null;
+    public Listener listener = null;
 
-	public boolean enabled;
+    public boolean enabled;
 
-	private float dragThreshold;
+    private float dragThreshold;
 
-	public CellSelector( DungeonTilemap map ) {
-		super( map );
-		camera = map.camera();
+    public CellSelector(DungeonTilemap map) {
+        super(map);
+        camera = map.camera();
 
-		dragThreshold = PixelScene.defaultZoom * DungeonTilemap.SIZE / 2;
+        dragThreshold = PixelScene.defaultZoom * DungeonTilemap.SIZE / 2;
 
-		mouseZoom = camera.zoom;
-		KeyEvent.addKeyListener( keyListener );
-	}
+        mouseZoom = camera.zoom;
+        KeyEvent.addKeyListener(keyListener);
+    }
 
-	private float mouseZoom;
+    private float mouseZoom;
 
-	@Override
-	protected void onScroll( ScrollEvent event ) {
-		float diff = event.amount/10f;
+    @Override
+    protected void onScroll(ScrollEvent event) {
+        float diff = event.amount / 10f;
 
-		//scale zoom difference so zooming is consistent
-		diff /= ((camera.zoom+1)/camera.zoom)-1;
-		diff = Math.min(1, diff);
-		mouseZoom = GameMath.gate( PixelScene.minZoom, mouseZoom - diff, PixelScene.maxZoom );
+        //scale zoom difference so zooming is consistent
+        diff /= ((camera.zoom + 1) / camera.zoom) - 1;
+        diff = Math.min(1, diff);
+        mouseZoom = GameMath.gate(PixelScene.minZoom, mouseZoom - diff, PixelScene.maxZoom);
 
-		zoom( Math.round(mouseZoom) );
-	}
+        zoom(Math.round(mouseZoom));
+    }
 
-	@Override
-	protected void onClick( PointerEvent event ) {
-		if (dragging) {
+    @Override
+    protected void onClick(PointerEvent event) {
+        if (dragging) {
 
-			dragging = false;
+            dragging = false;
 
-		} else {
+        } else {
 
-			PointF p = Camera.main.screenToCamera( (int) event.current.x, (int) event.current.y );
+            PointF p = Camera.main.screenToCamera((int) event.current.x, (int) event.current.y);
 
-			//Prioritizes a sprite if it and a tile overlap, so long as that sprite isn't more than 4 pixels into another tile.
-			//The extra check prevents large sprites from blocking the player from clicking adjacent tiles
+            //Prioritizes a sprite if it and a tile overlap, so long as that sprite isn't more than 4 pixels into another tile.
+            //The extra check prevents large sprites from blocking the player from clicking adjacent tiles
 
-			//hero first
-			if (Dungeon.hero.sprite != null && Dungeon.hero.sprite.overlapsPoint( p.x, p.y )){
-				PointF c = DungeonTilemap.tileCenterToWorld(Dungeon.hero.pos);
-				if (Math.abs(p.x - c.x) <= 12 && Math.abs(p.y - c.y) <= 12) {
-					select(Dungeon.hero.pos);
-					return;
-				}
-			}
+            //hero first
+            if (Dungeon.hero.sprite != null && Dungeon.hero.sprite.overlapsPoint(p.x, p.y)) {
+                PointF c = DungeonTilemap.tileCenterToWorld(Dungeon.hero.pos);
+                if (Math.abs(p.x - c.x) <= 12 && Math.abs(p.y - c.y) <= 12) {
+                    select(Dungeon.hero.pos);
+                    return;
+                }
+            }
 
-			//then mobs
-			for (Char mob : Dungeon.level.mobs.toArray(new Mob[0])){
-				if (mob.sprite != null && mob.sprite.overlapsPoint( p.x, p.y )){
-					PointF c = DungeonTilemap.tileCenterToWorld(mob.pos);
-					if (Math.abs(p.x - c.x) <= 12 && Math.abs(p.y - c.y) <= 12) {
-						select(mob.pos);
-						return;
-					}
-				}
-			}
+            //then mobs
+            for (Char mob : Dungeon.level.mobs.toArray(new Mob[0])) {
+                if (mob.sprite != null && mob.sprite.overlapsPoint(p.x, p.y)) {
+                    PointF c = DungeonTilemap.tileCenterToWorld(mob.pos);
+                    if (Math.abs(p.x - c.x) <= 12 && Math.abs(p.y - c.y) <= 12) {
+                        select(mob.pos);
+                        return;
+                    }
+                }
+            }
 
-			//then heaps
-			for (Heap heap : Dungeon.level.heaps.valueList()){
-				if (heap.sprite != null && heap.sprite.overlapsPoint( p.x, p.y)){
-					PointF c = DungeonTilemap.tileCenterToWorld(heap.pos);
-					if (Math.abs(p.x - c.x) <= 12 && Math.abs(p.y - c.y) <= 12) {
-						select(heap.pos);
-						return;
-					}
-				}
-			}
+            //then heaps
+            for (Heap heap : Dungeon.level.heaps.valueList()) {
+                if (heap.sprite != null && heap.sprite.overlapsPoint(p.x, p.y)) {
+                    PointF c = DungeonTilemap.tileCenterToWorld(heap.pos);
+                    if (Math.abs(p.x - c.x) <= 12 && Math.abs(p.y - c.y) <= 12) {
+                        select(heap.pos);
+                        return;
+                    }
+                }
+            }
 
-			select( ((DungeonTilemap)target).screenToTile(
-				(int) event.current.x,
-				(int) event.current.y,
-					true ) );
-		}
-	}
+            select(((DungeonTilemap) target).screenToTile(
+                    (int) event.current.x,
+                    (int) event.current.y,
+                    true));
+        }
+    }
 
-	private float zoom( float value ) {
+    private float zoom(float value) {
 
-		value = GameMath.gate( PixelScene.minZoom, value, PixelScene.maxZoom );
-		SPDSettings.zoom((int) (value - PixelScene.defaultZoom));
-		camera.zoom( value );
+        value = GameMath.gate(PixelScene.minZoom, value, PixelScene.maxZoom);
+        SPDSettings.zoom((int) (value - PixelScene.defaultZoom));
+        camera.zoom(value);
 
-		//Resets character sprite positions with the new camera zoom
-		//This is important as characters are centered on a 16x16 tile, but may have any sprite size
-		//This can lead to none-whole coordinate, which need to be aligned with the zoom
-		for (Char c : Actor.chars()){
-			if (c.sprite != null && !c.sprite.isMoving){
-				c.sprite.point(c.sprite.worldToCamera(c.pos));
-			}
-		}
-        for (Heap heap : Dungeon.level.heaps.valueList()){
-            if (heap.sprite != null){
+        //Resets character sprite positions with the new camera zoom
+        //This is important as characters are centered on a 16x16 tile, but may have any sprite size
+        //This can lead to none-whole coordinate, which need to be aligned with the zoom
+        for (Char c : Actor.chars()) {
+            if (c.sprite != null && !c.sprite.isMoving) {
+                c.sprite.point(c.sprite.worldToCamera(c.pos));
+            }
+        }
+        for (Heap heap : Dungeon.level.heaps.valueList()) {
+            if (heap.sprite != null) {
                 heap.sprite.point(heap.sprite.worldToCamera(heap.pos));
             }
         }
 
-		return value;
-	}
+        return value;
+    }
 
-	public void select( int cell ) {
+    public void select(int cell) {
         if (enabled && Dungeon.hero.ready && !GameScene.interfaceBlockingHero()
                 && listener != null && cell != -1) {
 
-			listener.onSelect( cell );
-			GameScene.ready();
+            listener.onSelect(cell);
+            GameScene.ready();
 
-		} else {
+        } else {
 
-			GameScene.cancel();
+            GameScene.cancel();
 
-		}
-	}
+        }
+    }
 
-	private boolean pinching = false;
-	private PointerEvent another;
-	private float startZoom;
-	private float startSpan;
+    private boolean pinching = false;
+    private PointerEvent another;
+    private float startZoom;
+    private float startSpan;
 
-	@Override
-	protected void onPointerDown( PointerEvent event ) {
+    @Override
+    protected void onPointerDown(PointerEvent event) {
         camera.edgeScroll.set(-1);
         if (event != curEvent && another == null) {
 
             if (curEvent.type == PointerEvent.Type.UP) {
                 curEvent = event;
-                onPointerDown( event );
+                onPointerDown(event);
                 return;
             }
 
             pinching = true;
 
             another = event;
-            startSpan = PointF.distance( curEvent.current, another.current );
+            startSpan = PointF.distance(curEvent.current, another.current);
             startZoom = camera.zoom;
 
             dragging = false;
         } else if (event != curEvent) {
             reset();
         }
-	}
+    }
 
-	@Override
-	protected void onPointerUp( PointerEvent event ) {
+    @Override
+    protected void onPointerUp(PointerEvent event) {
         camera.edgeScroll.set(1);
         if (pinching && (event == curEvent || event == another)) {
 
             pinching = false;
 
-            zoom(Math.round( camera.zoom ));
+            zoom(Math.round(camera.zoom));
 
             dragging = true;
             if (event == curEvent) {
                 curEvent = another;
             }
             another = null;
-            lastPos.set( curEvent.current );
+            lastPos.set(curEvent.current);
         }
-	}
+    }
 
-	private boolean dragging = false;
-	private PointF lastPos = new PointF();
+    private boolean dragging = false;
+    private PointF lastPos = new PointF();
 
-	@Override
-	protected void onDrag( PointerEvent event ) {
+    @Override
+    protected void onDrag(PointerEvent event) {
+
+        //self-heal orphaned pinch state
+        if (pinching && (curEvent == null || another == null
+                || !PointerEvent.isActive(curEvent.id)
+                || !PointerEvent.isActive(another.id))) {
+            pinching = false;
+            if (another != null && PointerEvent.isActive(another.id)) {
+                curEvent = another;
+            }
+            another = null;
+            dragging = true;
+            if (curEvent != null) {
+                lastPos.set(curEvent.current);
+            }
+            zoom(Math.round(camera.zoom));
+        }
 
         if (pinching) {
 
-            float curSpan = PointF.distance( curEvent.current, another.current );
+            float curSpan = PointF.distance(curEvent.current, another.current);
             float zoom = (startZoom * curSpan / startSpan);
-            camera.zoom( GameMath.gate(
+            camera.zoom(GameMath.gate(
                     PixelScene.minZoom,
                     zoom - (zoom % 0.1f),
-                    PixelScene.maxZoom ) );
+                    PixelScene.maxZoom));
 
         } else {
 
-            if (!dragging && PointF.distance( event.current, event.start ) > dragThreshold) {
+            if (!dragging && PointF.distance(event.current, event.start) > dragThreshold) {
 
                 dragging = true;
-                lastPos.set( event.current );
+                lastPos.set(event.current);
 
             } else if (dragging) {
-                camera.shift( PointF.diff( lastPos, event.current ).invScale( camera.zoom ) );
-                lastPos.set( event.current );
+                camera.shift(PointF.diff(lastPos, event.current).invScale(camera.zoom));
+                lastPos.set(event.current);
             }
         }
 
-	}
+    }
 
-	private GameAction heldAction = SPDAction.NONE;
-	private int heldTurns = 0;
+    private GameAction heldAction = SPDAction.NONE;
+    private int heldTurns = 0;
 
-	private Signal.Listener<KeyEvent> keyListener = new Signal.Listener<KeyEvent>() {
-		@Override
-		public boolean onSignal(KeyEvent event) {
-			GameAction action = KeyBindings.getActionForKey( event );
-			if (!event.pressed){
+    private Signal.Listener<KeyEvent> keyListener = new Signal.Listener<KeyEvent>() {
+        @Override
+        public boolean onSignal(KeyEvent event) {
+            GameAction action = KeyBindings.getActionForKey(event);
+            if (!event.pressed) {
 
-				if (heldAction != SPDAction.NONE && heldAction == action) {
-					resetKeyHold();
-					return true;
-				} else {
-					if (action == SPDAction.ZOOM_IN){
-						zoom( camera.zoom+1 );
-						return true;
+                if (heldAction != SPDAction.NONE && heldAction == action) {
+                    resetKeyHold();
+                    return true;
+                } else {
+                    if (action == SPDAction.ZOOM_IN) {
+                        zoom(camera.zoom + 1);
+                        return true;
 
-					} else if (action == SPDAction.ZOOM_OUT){
-						zoom( camera.zoom-1 );
-						return true;
-					}
-				}
-			} else if (moveFromAction(action)) {
-				heldAction = action;
-				return true;
-			}
+                    } else if (action == SPDAction.ZOOM_OUT) {
+                        zoom(camera.zoom - 1);
+                        return true;
+                    }
+                }
+            } else if (moveFromAction(action)) {
+                heldAction = action;
+                return true;
+            }
 
-			return false;
-		}
-	};
+            return false;
+        }
+    };
 
-	private boolean moveFromAction(GameAction action){
-		int cell = Dungeon.hero.pos;
+    private boolean moveFromAction(GameAction action) {
+        int cell = Dungeon.hero.pos;
 
-		if (action == SPDAction.N)  cell += -Dungeon.level.width();
-		if (action == SPDAction.NE) cell += +1-Dungeon.level.width();
-		if (action == SPDAction.E)  cell += +1;
-		if (action == SPDAction.SE) cell += +1+Dungeon.level.width();
-		if (action == SPDAction.S)  cell += +Dungeon.level.width();
-		if (action == SPDAction.SW) cell += -1+Dungeon.level.width();
-		if (action == SPDAction.W)  cell += -1;
-		if (action == SPDAction.NW) cell += -1-Dungeon.level.width();
+        if (action == SPDAction.N) cell += -Dungeon.level.width();
+        if (action == SPDAction.NE) cell += +1 - Dungeon.level.width();
+        if (action == SPDAction.E) cell += +1;
+        if (action == SPDAction.SE) cell += +1 + Dungeon.level.width();
+        if (action == SPDAction.S) cell += +Dungeon.level.width();
+        if (action == SPDAction.SW) cell += -1 + Dungeon.level.width();
+        if (action == SPDAction.W) cell += -1;
+        if (action == SPDAction.NW) cell += -1 - Dungeon.level.width();
 
-		if (cell != Dungeon.hero.pos){
-			//each step when keyboard moving takes 0.15s, 0.125s, 0.1s, 0.1s, ...
-			// this is to make it easier to move 1 or 2 steps without overshooting
-			CharSprite.setMoveInterval( CharSprite.DEFAULT_MOVE_INTERVAL +
-			                            Math.max(0, 0.05f - heldTurns *0.025f));
-			select(cell);
-			return true;
+        if (cell != Dungeon.hero.pos) {
+            //each step when keyboard moving takes 0.15s, 0.125s, 0.1s, 0.1s, ...
+            // this is to make it easier to move 1 or 2 steps without overshooting
+            CharSprite.setMoveInterval(CharSprite.DEFAULT_MOVE_INTERVAL +
+                    Math.max(0, 0.05f - heldTurns * 0.025f));
+            select(cell);
+            return true;
 
-		} else {
-			return false;
-		}
+        } else {
+            return false;
+        }
 
-	}
+    }
 
-	public void processKeyHold(){
-		if (heldAction != SPDAction.NONE){
-			enabled = true;
-			heldTurns++;
-			moveFromAction(heldAction);
-		}
-	}
+    public void processKeyHold() {
+        if (heldAction != SPDAction.NONE) {
+            enabled = true;
+            heldTurns++;
+            moveFromAction(heldAction);
+        }
+    }
 
-	public void resetKeyHold(){
-		heldAction = SPDAction.NONE;
-		heldTurns = 0;
-		CharSprite.setMoveInterval( CharSprite.DEFAULT_MOVE_INTERVAL );
-	}
+    public void resetKeyHold() {
+        heldAction = SPDAction.NONE;
+        heldTurns = 0;
+        CharSprite.setMoveInterval(CharSprite.DEFAULT_MOVE_INTERVAL);
+    }
 
-	public void cancel() {
+    public void cancel() {
 
-		if (listener != null) {
-			listener.onSelect( null );
-		}
+        if (listener != null) {
+            listener.onSelect(null);
+        }
 
-		GameScene.ready();
-	}
+        GameScene.ready();
+    }
 
-	@Override
-	public void reset() {
-		super.reset();
-		another = null;
-		if (pinching){
-			pinching = false;
+    @Override
+    public void reset() {
+        super.reset();
+        another = null;
+        if (pinching) {
+            pinching = false;
 
-			zoom( Math.round( camera.zoom ) );
-		}
-	}
+            zoom(Math.round(camera.zoom));
+        }
+    }
 
-	public void enable(boolean value){
-		if (enabled != value){
-			enabled = value;
-		}
-	}
+    public void enable(boolean value) {
+        if (enabled != value) {
+            enabled = value;
+        }
+    }
 
-	@Override
-	public void destroy() {
-		super.destroy();
-		KeyEvent.removeKeyListener( keyListener );
-	}
+    @Override
+    public void destroy() {
+        super.destroy();
+        KeyEvent.removeKeyListener(keyListener);
+    }
 
-	public interface Listener {
-		void onSelect( Integer cell );
-		String prompt();
-	}
+    public interface Listener {
+        void onSelect(Integer cell);
+
+        String prompt();
+    }
 }

@@ -27,7 +27,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 
@@ -49,6 +51,8 @@ public abstract class EquipableItem extends Item {
 		return actions;
 	}
 
+    protected static int slotOfUnequipped = -1;
+
 	@Override
 	public void execute( Hero hero, String action ) {
 
@@ -58,11 +62,17 @@ public abstract class EquipableItem extends Item {
 			//In addition to equipping itself, item reassigns itself to the quickslot
 			//This is a special case as the item is being removed from inventory, but is staying with the hero.
 			int slot = Dungeon.quickslot.getSlot( this );
+            slotOfUnequipped = -1;
 			doEquip(hero);
 			if (slot != -1) {
 				Dungeon.quickslot.setSlot( slot, this );
 				updateQuickslot();
-			}
+                //if this item wasn't quickslotted, but the item it is replacing as equipped was
+                //then also have the item occupy the unequipped item's quickslot
+            } else if (slotOfUnequipped != -1 && defaultAction() != null) {
+                Dungeon.quickslot.setSlot( slotOfUnequipped, this );
+                updateQuickslot();
+            }
 		} else if (action.equals( AC_UNEQUIP )) {
 			doUnequip( hero, true );
 		}
@@ -100,10 +110,12 @@ public abstract class EquipableItem extends Item {
 
 	public boolean doUnequip( Hero hero, boolean collect, boolean single ) {
 
-		if (cursed && hero.buff(MagicImmune.class) == null) {
-			GLog.w(Messages.get(EquipableItem.class, "unequip_cursed"));
-			return false;
-		}
+        if (cursed
+                && hero.buff(MagicImmune.class) == null
+                && (!hero.belongings.lostInventory() || keptThroughLostInventory())) {
+            GLog.w(Messages.get(EquipableItem.class, "unequip_cursed"));
+            return false;
+        }
 
 		if (single) {
 			hero.spendAndNext( time2equip( hero ) );
@@ -111,14 +123,20 @@ public abstract class EquipableItem extends Item {
 			hero.spend( time2equip( hero ) );
 		}
 
-		if (!collect || !collect( hero.belongings.backpack )) {
-			onDetach();
-			Dungeon.quickslot.clearItem(this);
-			updateQuickslot();
-			if (collect) Dungeon.level.drop( this, hero.pos );
-		}
+        slotOfUnequipped = Dungeon.quickslot.getSlot(this);
 
-		return true;
+        //temporarily keep this item so it can be collected
+        boolean wasKept = keptThoughLostInvent;
+        keptThoughLostInvent = true;
+        if (!collect || !collect( hero.belongings.backpack )) {
+            onDetach();
+            Dungeon.quickslot.clearItem(this);
+            updateQuickslot();
+            if (collect) Dungeon.level.drop( this, hero.pos ).sprite.drop();
+        }
+        keptThoughLostInvent = wasKept;
+
+        return true;
 	}
 
 	final public boolean doUnequip( Hero hero, boolean collect ) {

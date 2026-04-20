@@ -329,7 +329,7 @@ public class NewHallsBossLevel extends Level {
 		private void updateState(){
 			if (vis != null){
 				int[] data = map.clone();
-				if (Dungeon.level.map[Dungeon.level.exit] == Terrain.EXIT) {
+				if (Dungeon.level.map[Dungeon.level.exit()] == Terrain.EXIT) {
 					data[4] = 19;
 					data[12] = data[14] = 31;
 				}
@@ -368,7 +368,7 @@ public class NewHallsBossLevel extends Level {
 		private void updateState(){
 			if (vis != null){
 				int[] data = map.clone();
-				if (Dungeon.level.map[Dungeon.level.exit] == Terrain.EXIT) {
+				if (Dungeon.level.map[Dungeon.level.exit()] == Terrain.EXIT) {
 					data[3] = 1;
 					data[4] = 0;
 					data[5] = 2;

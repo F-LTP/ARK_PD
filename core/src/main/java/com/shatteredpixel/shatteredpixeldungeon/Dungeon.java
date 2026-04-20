@@ -48,8 +48,10 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.QuestScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CavesLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CityLevel;
@@ -219,7 +221,6 @@ public class Dungeon {
     public static boolean killcat; // 엔딩 씬에서 켈시 하극상 출현용.
 
     public static int QuestCatPoint;
-    public static int highestRhodesGenerated;
 
     public static HashSet<Integer> chapters;
 
@@ -273,8 +274,13 @@ public class Dungeon {
         quickslot.reset();
         QuickSlotButton.reset();
 
-        depth = 0; //@
+        //game always starts in Rhodes (depth 0, branch 2)
+        depth = 0;
+        branch = 2;
         gold = 300;
+        energy = 0;
+
+        generatedLevels.clear();
         cautusquset = -1;
         guardquest = -1;
         acequest = -1;
@@ -302,8 +308,6 @@ public class Dungeon {
         FrostLeaf.QuestClear = false;
 
         QuestCatPoint = Random.Int(2);
-        highestRhodesGenerated = -1;
-
         droppedItems = new SparseArray<>();
 
         LimitedDrops.reset();
@@ -331,19 +335,19 @@ public class Dungeon {
         return (challenges & mask) != 0;
     }
 
+    public static boolean levelHasBeenGenerated(int depth, int branch) {
+        return generatedLevels.contains(depth + 1000 * branch);
+    }
+
     public static Level newLevel() {
 
         Dungeon.level = null;
         Actor.clear();
 
-        depth++;
-        if (depth > Statistics.deepestFloor) {
-            if (depth >= 27 && depth <= 30) {
-                Dungeon.highestRhodesGenerated = depth;
-            } else {
-                Statistics.deepestFloor = depth;
-            }
-            if (Statistics.deepestFloor <= 1) Statistics.deepestFloor = 1;
+        //depth is now set by callers before calling newLevel()
+        if (depth > Statistics.deepestFloor && branch == 0) {
+            Statistics.deepestFloor = depth;
+            QuestScroll.onNewFloorReached();
 
             if (Statistics.qualifiedForNoKilling) {
                 Statistics.completedWithNoKilling = true;
@@ -353,101 +357,118 @@ public class Dungeon {
         }
 
         Level level;
-        switch (depth) {
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-                level = new SewerLevel();
-                break;
-            case 5:
-                level = new SewerBossLevel();
-                break;
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-                level = new PrisonLevel();
-                break;
-            case 10:
-                level = new NewPrisonBossLevel();
-                break;
-            case 11:
-            case 12:
-            case 13:
-            case 14:
-                level = new CavesLevel();
-                break;
-            case 15:
-                level = new NewCavesBossLevel();
-                break;
-            case 16:
-            case 17:
-            case 18:
-            case 19:
-                level = new CityLevel();
-                break;
-            case 20:
-                level = new NewCityBossLevel();
-                break;
-            case 21:
-            case 22:
-            case 23:
-            case 24:
-                level = new HallsLevel();
-                break;
-            case 25:
-                level = new NewHallsBossLevel();
-                break;
-            case 26:
-                level = new LastLevel();
-                break;
-            case 27:
-                level = new NewRhodesLevel1();
-                break;
-            case 28:
-                level = new NewRhodesLevel2();
-                break;
-            case 29:
-                level = new NewRhodesLevel3();
-                break;
-            case 30:
-                level = new NewRhodesLevel4();
-                break;
-            case 31:
-            case 32:
-            case 33:
-            case 34:
-                if (extrastage_Gavial) level = new GavialLevel();
-                else if (extrastage_Sea) level = new SeaLevel_part1();
-                else level = new SiestaLevel_part1();
-                break;
-            case 35:
-                if (extrastage_Gavial) level = new GavialBossLevel1();
-                else if (extrastage_Sea) level = new SeaBossLevel1();
-                else level = new SiestaBossLevel_part1();
-                break;
-            case 36:
-            case 37:
-            case 38:
-            case 39:
-                if (extrastage_Gavial) level = new GavialLevel2();
-                else if (extrastage_Sea) level = new SeaLevel_part2();
-                else level = new SiestaLevel_part2();
-                break;
-            case 40:
-                if (extrastage_Gavial) level = new GavialBossLevel2();
-                else if (extrastage_Sea) level = new SeaBossLevel2();
-                else level = new SiestaBossLevel_part2();
-                break;
-            default:
-                level = new DeadEndLevel();
-                Statistics.deepestFloor--;
+        if (branch == 0) {
+            switch (depth) {
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    level = new SewerLevel();
+                    break;
+                case 5:
+                    level = new SewerBossLevel();
+                    break;
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                    level = new PrisonLevel();
+                    break;
+                case 10:
+                    level = new NewPrisonBossLevel();
+                    break;
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                    level = new CavesLevel();
+                    break;
+                case 15:
+                    level = new NewCavesBossLevel();
+                    break;
+                case 16:
+                case 17:
+                case 18:
+                case 19:
+                    level = new CityLevel();
+                    break;
+                case 20:
+                    level = new NewCityBossLevel();
+                    break;
+                case 21:
+                case 22:
+                case 23:
+                case 24:
+                    level = new HallsLevel();
+                    break;
+                case 25:
+                    level = new NewHallsBossLevel();
+                    break;
+                case 26:
+                    level = new LastLevel();
+                    break;
+                case 31:
+                case 32:
+                case 33:
+                case 34:
+                    if (extrastage_Gavial) level = new GavialLevel();
+                    else if (extrastage_Sea) level = new SeaLevel_part1();
+                    else level = new SiestaLevel_part1();
+                    break;
+                case 35:
+                    if (extrastage_Gavial) level = new GavialBossLevel1();
+                    else if (extrastage_Sea) level = new SeaBossLevel1();
+                    else level = new SiestaBossLevel_part1();
+                    break;
+                case 36:
+                case 37:
+                case 38:
+                case 39:
+                    if (extrastage_Gavial) level = new GavialLevel2();
+                    else if (extrastage_Sea) level = new SeaLevel_part2();
+                    else level = new SiestaLevel_part2();
+                    break;
+                case 40:
+                    if (extrastage_Gavial) level = new GavialBossLevel2();
+                    else if (extrastage_Sea) level = new SeaBossLevel2();
+                    else level = new SiestaBossLevel_part2();
+                    break;
+                default:
+                    level = new DeadEndLevel();
+                    Statistics.deepestFloor--;
+            }
+        } else if (isInRhodes()) {
+            //Rhodes Island floors — depth 0, branches 1-4
+            switch (branch) {
+                case 1:
+                    level = new NewRhodesLevel1();
+                    break;
+                case 2:
+                    level = new NewRhodesLevel2();
+                    break;
+                case 3:
+                    level = new NewRhodesLevel3();
+                    break;
+                case 4:
+                    level = new NewRhodesLevel4();
+                    break;
+                default:
+                    level = new DeadEndLevel();
+            }
+        } else {
+            level = new DeadEndLevel();
         }
 
         level.create();
 
-        Statistics.qualifiedForNoKilling = !bossLevel() && !(depth >= 27 && depth <= 30);
+        if (!(level instanceof DeadEndLevel)) {
+            //this assumes that we will never have a depth value outside the range 0 to 999
+            if (!generatedLevels.contains(depth + 1000 * branch)) {
+                generatedLevels.add(depth + 1000 * branch);
+            }
+        }
+
+        Statistics.qualifiedForNoKilling = !bossLevel() && !isInRhodes();
 
         return level;
     }
@@ -457,7 +478,7 @@ public class Dungeon {
         Actor.clear();
 
         level.reset();
-        switchLevel(level, level.entrance);
+        switchLevel(level, level.entrance());
     }
 
     public static long seedCurDepth() {
@@ -514,9 +535,9 @@ public class Dungeon {
     public static void switchLevel(final Level level, int pos) {
 
         if (pos == -2) {
-            pos = level.exit;
+            pos = level.exit();
         } else if (pos < 0 || pos >= level.length() || (!level.passable[pos] && !level.avoid[pos])) {
-            pos = level.entrance;
+            pos = level.entrance();
         }
 
         PathFinder.setMapSize(level.width(), level.height());
@@ -557,6 +578,9 @@ public class Dungeon {
     }
 
     public static void dropToChasm(Item item) {
+        //knives don't survive a chasm fall; rogue gets a fresh one on next level entry
+        if (item instanceof ThrowingKnife) return;
+
         int depth = Dungeon.depth + 1;
         ArrayList<Item> dropped = Dungeon.droppedItems.get(depth);
         if (dropped == null) {
@@ -653,8 +677,6 @@ public class Dungeon {
     private static final String JESI_QUESTCLEAR = "Jessica.QuestClear";
     private static final String LEAF_QUESTCLEAR = "FrostLeaf.QuestClear";
 
-    private static final String HIGHEST_RHODES_GENERATED = "highestRhodesGenerated";
-
     private static final String MULA_COUNT = "mulaCount";
 
     public static void saveGame(int save) {
@@ -699,8 +721,6 @@ public class Dungeon {
             bundle.put(LEAF_QUESTCLEAR, FrostLeaf.QuestClear);
 
             bundle.put(CATQUEST, QuestCatPoint);
-
-            bundle.put(HIGHEST_RHODES_GENERATED, highestRhodesGenerated);
 
             for (int d : droppedItems.keyArray()) {
                 bundle.put(Messages.format(DROPPED, d), droppedItems.get(d));
@@ -844,23 +864,12 @@ public class Dungeon {
             SecretRoom.restoreRoomsFromBundle(bundle);
 
             generatedLevels.clear();
-            if (bundle.contains(GENERATED_LEVELS)) {
-                for (int i : bundle.getIntArray(GENERATED_LEVELS)) {
-                    generatedLevels.add(i);
-                }
-            } else {
-                for (int i = 1; i <= Statistics.deepestFloor; i++) {
-                    generatedLevels.add(i);
-                }
-            }
-
-            int maxDropFloor = 26;
-            for (int floor : generatedLevels) {
-                if (floor > maxDropFloor) maxDropFloor = floor;
+            for (int i : bundle.getIntArray(GENERATED_LEVELS)) {
+                generatedLevels.add(i);
             }
 
             droppedItems = new SparseArray<>();
-            for (int i = 1; i <= maxDropFloor; i++) {
+            for (int i = 1; i <= 40; i++) {
 
                 //dropped items
                 ArrayList<Item> items = new ArrayList<>();
@@ -920,8 +929,6 @@ public class Dungeon {
         NPC_Phantom.QuestClear = bundle.getBoolean(PHANTOM_QUESTCLEAR);
         Jessica.QuestClear = bundle.getBoolean(JESI_QUESTCLEAR);
         FrostLeaf.QuestClear = bundle.getBoolean(LEAF_QUESTCLEAR);
-
-        highestRhodesGenerated = bundle.contains(HIGHEST_RHODES_GENERATED) ? bundle.getInt(HIGHEST_RHODES_GENERATED) : -1;
 
         Statistics.restoreFromBundle(bundle);
         Generator.restoreFromBundle(bundle);
@@ -993,9 +1000,7 @@ public class Dungeon {
 
     public static void updateLevelExplored() {
         if (branch == 0 && level instanceof RegularLevel && !Dungeon.bossLevel()) {
-            return;
-            // Implementation TBD
-            //Statistics.floorsExplored.put( depth, level.levelExplorePercent(depth));
+            Statistics.floorsExplored.put( depth, level.levelExplorePercent(depth));
         }
     }
 
@@ -1183,7 +1188,7 @@ public class Dungeon {
     }
 
     public static boolean isInRhodes() {
-        return depth >= 27 && depth <= 30;
+        return depth == 0 && branch >= 1 && branch <= 4;
     }
 
 }

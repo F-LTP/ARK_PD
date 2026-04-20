@@ -23,7 +23,9 @@ package com.shatteredpixel.shatteredpixeldungeon.items.quest;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -84,31 +86,50 @@ public class CorpseDust extends Item {
 
 	public static class DustGhostSpawner extends Buff {
 
+		{
+			revivePersists = true;
+		}
+
 		int spawnPower = 0;
 
 		@Override
 		public boolean act() {
+			if (target instanceof Hero && ((Hero) target).belongings.getItem(CorpseDust.class) == null){
+				spawnPower = 0;
+				spend(TICK);
+				return true;
+			}
+
 			spawnPower++;
 			int wraiths = 1; //we include the wraith we're trying to spawn
 			for (Mob mob : Dungeon.level.mobs){
-				if (mob instanceof Wraith){
+				if (mob instanceof DustWraith){
 					wraiths++;
 				}
 			}
 
-			int powerNeeded = Math.min(25, wraiths*wraiths);
-
+			//summoning a new wraith requires 1/4/9/16/25/36/49/49/... turns of energy
+			int powerNeeded = Math.min(49, wraiths*wraiths);
 			if (powerNeeded <= spawnPower){
-				spawnPower -= powerNeeded;
-				int pos = 0;
-				int tries = 20;
-				do{
-					pos = Random.Int(Dungeon.level.length());
-					tries --;
-				} while (tries > 0 && (!Dungeon.level.heroFOV[pos] || Dungeon.level.solid[pos] || Actor.findChar( pos ) != null));
-				if (tries > 0) {
-					Wraith.spawnAt(pos);
+				ArrayList<Integer> candidates = new ArrayList<>();
+				//min distance scales based on hero's view distance
+				// wraiths must spawn at least 4/3/2/1 tiles away at view distance of 8(default)/7/4/1
+				int minDist = Math.round(Dungeon.hero.viewDistance/3f);
+				for (int i = 0; i < Dungeon.level.length(); i++){
+					if (Dungeon.level.heroFOV[i]
+							&& !Dungeon.level.solid[i]
+							&& Actor.findChar( i ) == null
+							&& Dungeon.level.distance(i, Dungeon.hero.pos) > minDist){
+						candidates.add(i);
+					}
+				}
+				if (!candidates.isEmpty()){
+					Wraith.spawnAt(Random.element(candidates), DustWraith.class);
 					Sample.INSTANCE.play(Assets.Sounds.CURSED);
+					spawnPower -= powerNeeded;
+				} else {
+					//prevents excessive spawn power buildup
+					spawnPower = Math.min(spawnPower, 2*wraiths);
 				}
 			}
 
@@ -119,7 +140,7 @@ public class CorpseDust extends Item {
 		public void dispel(){
 			detach();
 			for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])){
-				if (mob instanceof Wraith){
+				if (mob instanceof DustWraith){
 					mob.die(null);
 				}
 			}
@@ -137,6 +158,37 @@ public class CorpseDust extends Item {
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
 			spawnPower = bundle.getInt( SPAWNPOWER );
+		}
+	}
+
+	public static class DustWraith extends Wraith {
+
+		private int atkCount = 0;
+
+		@Override
+		public boolean attack( Char enemy ) {
+			if (enemy == Dungeon.hero){
+				atkCount++;
+				//first attack from each wraith is free, max of -200 point penalty per wraith
+				if (atkCount == 2 || atkCount == 3){
+					Statistics.questScores[1] -= 100;
+				}
+			}
+			return super.attack(enemy);
+		}
+
+		private static final String ATK_COUNT = "atk_count";
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(ATK_COUNT, atkCount);
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			atkCount = bundle.getInt(ATK_COUNT);
 		}
 	}
 
