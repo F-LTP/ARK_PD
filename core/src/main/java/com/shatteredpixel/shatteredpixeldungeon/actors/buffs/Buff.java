@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
@@ -44,7 +45,10 @@ public class Buff extends Actor {
 	
 	//whether or not the buff announces its name
 	public boolean announced = false;
-	
+
+	//whether a buff should persist through revive effects or similar (e.g. transmogrify)
+	public boolean revivePersists = false;
+
 	protected HashSet<Class> resistances = new HashSet<>();
 	
 	public HashSet<Class> resistances() {
@@ -103,6 +107,11 @@ public class Buff extends Actor {
 	//visual effect usually attached to the sprite of the character the buff is attacked to
 	public void fx(boolean on) {
 		//do nothing by default
+	}
+
+	@Override
+	public String toString() {
+		return Messages.get(this, "name");
 	}
 
 	public String heroMessage(){

@@ -8,9 +8,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bless;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ShieldSlamCounter;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RadiantKnight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ShieldSlamCounter;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
@@ -68,21 +68,21 @@ public class SealOfLight extends Artifact {
                     Buff.affect(hero, RadiantKnight.class, RadiantKnight.DURATION + level() * 0.5f);
 
                     if (hero.subClass == HeroSubClass.KNIGHT) {
-                        Buff.affect(hero, Haste.class, 5f +  hero.pointsInTalent(Talent.QUICK_TACTICS));
-                    }
-                    else if (hero.subClass == HeroSubClass.FLASH) {
+                        Buff.affect(hero, Haste.class, 5f + hero.pointsInTalent(Talent.QUICK_TACTICS));
+                    } else if (hero.subClass == HeroSubClass.FLASH) {
                         boolean knightglory = (hero.hasTalent(Talent.KNIGHT_GLORY));
-                        for (Mob mob : Dungeon.level.mobs.toArray( new Mob[0] )) {
+                        for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
                             if (mob.alignment != Char.Alignment.ALLY && Dungeon.level.heroFOV[mob.pos]) {
                                 mob.damage(damageRoll(hero), this);
                                 Buff.affect(mob, Blindness.class, 5f);
-                                if (knightglory) Buff.affect(mob, Weakness.class, hero.pointsInTalent(Talent.KNIGHT_GLORY) * 3);
+                                if (knightglory)
+                                    Buff.affect(mob, Weakness.class, hero.pointsInTalent(Talent.KNIGHT_GLORY) * 3);
                             }
                         }
                     }
 
                     if (hero.hasTalent(Talent.BLESSED_CHAMPION)) {
-                        Buff.affect(hero, Bless.class, 15f *  hero.pointsInTalent(Talent.BLESSED_CHAMPION));
+                        Buff.affect(hero, Bless.class, 15f * hero.pointsInTalent(Talent.BLESSED_CHAMPION));
                         // Instant shield slam stack charge
                         if (hero.subClass == HeroSubClass.SAVIOR) {
                             ShieldSlamCounter slamCounter = Buff.affect(hero, ShieldSlamCounter.class);
@@ -92,20 +92,23 @@ public class SealOfLight extends Artifact {
                     }
 
                     if (hero.hasTalent(Talent.PEGASUS_AURA)) {
-                        int Barrior = hero.HT/20;
+                        int Barrior = hero.HT / 20;
                         Barrior *= hero.pointsInTalent(Talent.PEGASUS_AURA);
                         Buff.affect(hero, Barrier.class).setShield(Barrior);
                     }
 
+                    Talent.onArtifactUsed(hero);
+
                     if (hero.subClass == HeroSubClass.KNIGHT) hero.spendAndNext(0f);
                     else hero.spendAndNext(1f);
-                    GameScene.flash( 0x80FFFFFF );
+                    GameScene.flash(0x80FFFFFF);
                     Sample.INSTANCE.play(Assets.Sounds.SKILL_BABYNIGHT);
                     charge = 0;
                     exp++;
-                    if (exp >= 2 && level() < levelCap) {
+                    int required = level() / 2 + 1;
+                    if (exp >= required && level() < levelCap) {
                         upgrade();
-                        exp -= 2;
+                        exp -= required;
                         GLog.p(Messages.get(this, "levelup"));
                     }
                     updateQuickslot();
@@ -116,7 +119,7 @@ public class SealOfLight extends Artifact {
 
     private int damageRoll(Hero hero) {
         int min = 1 + level();
-        int max = 6 + level() * 2;
+        int max = 4 + level() * 2;
         float damage = Random.NormalIntRange(min, max);
         if (hero.hasTalent(Talent.ETERNAL_GLORY)) {
             damage *= 1f + hero.pointsInTalent(Talent.ETERNAL_GLORY) * 0.15f;
@@ -142,7 +145,8 @@ public class SealOfLight extends Artifact {
         if (isEquipped(Dungeon.hero)) {
             if (cursed) {
                 desc += "\n\n";
-            desc += Messages.get(this, "desc_cursed");}
+                desc += Messages.get(this, "desc_cursed");
+            }
         }
         return desc;
     }
@@ -164,7 +168,8 @@ public class SealOfLight extends Artifact {
                     if (Dungeon.hero.subClass == HeroSubClass.SAVIOR) chargeGain += 0.10f;
                     if (Dungeon.hero.subClass == HeroSubClass.FLASH) chargeGain += 0.50f;
                     chargeGain += level() * 0.02f;
-                    if (Dungeon.hero.hasTalent(Talent.LIGHT_OF_GLORY)) chargeGain += Dungeon.hero.pointsInTalent(Talent.LIGHT_OF_GLORY) * 0.05f;
+                    if (Dungeon.hero.hasTalent(Talent.LIGHT_OF_GLORY))
+                        chargeGain += Dungeon.hero.pointsInTalent(Talent.LIGHT_OF_GLORY) * 0.05f;
 
                     chargeGain *= RingOfEnergy.artifactChargeMultiplier(target);
                     partialCharge += chargeGain;
@@ -175,8 +180,7 @@ public class SealOfLight extends Artifact {
                         updateQuickslot();
                     }
                 }
-            }
-            else partialCharge = 0;
+            } else partialCharge = 0;
 
             spend(TICK);
             return true;
@@ -184,7 +188,7 @@ public class SealOfLight extends Artifact {
 
         @Override
         public void charge(Hero target, float amount) {
-            charge += Math.round(1*amount);
+            charge += Math.round(1 * amount);
             charge = Math.min(charge, chargeCap);
             updateQuickslot();
         }

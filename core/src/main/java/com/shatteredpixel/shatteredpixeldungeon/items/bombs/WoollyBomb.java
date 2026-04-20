@@ -33,67 +33,65 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hex;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
 
 public class WoollyBomb extends Bomb {
-	
-	{
-		image = ItemSpriteSheet.WOOLY_BOMB;
-	}
-	
-	@Override
-	public void explode(int cell) {
 
-		PathFinder.buildDistanceMap(cell, BArray.not(Dungeon.level.solid, null), 2);
-		for (int cell2 = 0; cell2 < PathFinder.distance.length; cell2++) {
-			if (PathFinder.distance[cell2] < Integer.MAX_VALUE) {
-				Char mob = Actor.findChar(cell2);
-				CellEmitter.get(cell2).burst(ShadowParticle.CURSE, 5);
+    {
+        image = ItemSpriteSheet.WOOLY_BOMB;
+    }
 
-				if (mob instanceof Hero) {
-					Buff.affect(mob, Hex.class, 40f);
-					Buff.affect(mob, Weakness.class, 40f);
-				} else if (mob instanceof Mob) { if (mob.alignment != Char.Alignment.ALLY) {
-						if (!mob.isImmune(Corruption.class)) {
-							Buff.affect(mob, Corruption.class);
+    @Override
+    public void explode(int cell) {
 
-							if (mob.buff(Corruption.class) != null) {
-								if (mob.isAlive() && !mob.isImmune(Corruption.class)) { ((Mob)mob).rollToDropLoot(); }
-								Statistics.enemiesSlain++;
-								Badges.validateMonstersSlain();
-								Statistics.qualifiedForNoKilling = false;
-								if (((Mob) mob).EXP > 0 && curUser.lvl <= ((Mob) mob).maxLvl) {
-									curUser.sprite.showStatus(CharSprite.POSITIVE, Messages.get(mob, "exp", ((Mob) mob).EXP));
-									curUser.earnExp(((Mob) mob).EXP, mob.getClass());
-								} else {
-									curUser.earnExp(0, mob.getClass());
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+        PathFinder.buildDistanceMap(cell, BArray.not(Dungeon.level.solid, null), 2);
+        for (int cell2 = 0; cell2 < PathFinder.distance.length; cell2++) {
+            if (PathFinder.distance[cell2] < Integer.MAX_VALUE) {
+                Char mob = Actor.findChar(cell2);
+                CellEmitter.get(cell2).burst(ShadowParticle.CURSE, 5);
 
-		Sample.INSTANCE.play(Assets.Sounds.PUFF);
-		Sample.INSTANCE.play(Assets.Sounds.CURSED);
-	}
-	
-	@Override
-	public int value() {
-		//prices of ingredients
-		return quantity * (20 + 30);
-	}
+                if (mob instanceof Hero) {
+                    Buff.affect(mob, Hex.class, 40f);
+                    Buff.affect(mob, Weakness.class, 40f);
+                } else if (mob instanceof Mob) {
+                    if (mob.alignment != Char.Alignment.ALLY) {
+                        if (!mob.isImmune(Corruption.class)) {
+                            Buff.affect(mob, Corruption.class);
+
+                            if (mob.buff(Corruption.class) != null) {
+                                if (mob.isAlive() && !mob.isImmune(Corruption.class)) {
+                                    ((Mob) mob).rollToDropLoot();
+                                }
+                                Statistics.enemiesSlain++;
+                                Badges.validateMonstersSlain();
+                                Statistics.qualifiedForNoKilling = false;
+                                if (((Mob) mob).EXP > 0 && curUser.lvl <= ((Mob) mob).maxLvl) {
+                                    curUser.sprite.showStatus(CharSprite.POSITIVE, Messages.get(mob, "exp", ((Mob) mob).EXP));
+                                    curUser.earnExp(((Mob) mob).EXP, mob.getClass());
+                                } else {
+                                    curUser.earnExp(0, mob.getClass());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Sample.INSTANCE.play(Assets.Sounds.PUFF);
+        Sample.INSTANCE.play(Assets.Sounds.CURSED);
+    }
+
+    @Override
+    public int value() {
+        //prices of ingredients
+        return quantity * (20 + 30);
+    }
 }

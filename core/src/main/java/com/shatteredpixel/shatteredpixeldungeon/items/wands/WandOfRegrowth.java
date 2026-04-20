@@ -56,403 +56,404 @@ import java.util.Iterator;
 
 public class WandOfRegrowth extends Wand {
 
-	{
-		image = ItemSpriteSheet.WAND_REGROWTH;
+    {
+        image = ItemSpriteSheet.WAND_REGROWTH;
 
-		collisionProperties = Ballistica.STOP_SOLID;
-	}
-	
-	private int totChrgUsed = 0;
-	private int chargesOverLimit = 0;
+        collisionProperties = Ballistica.STOP_SOLID;
+    }
 
-	ConeAOE cone;
-	int target;
+    private int totChrgUsed = 0;
+    private int chargesOverLimit = 0;
 
-	@Override
-	public boolean tryToZap(Hero owner, int target) {
-		if (super.tryToZap(owner, target)){
-			this.target = target;
-			return true;
-		} else {
-			return false;
-		}
-	}
+    ConeAOE cone;
+    int target;
 
-	@Override
-	protected void onZap( Ballistica bolt ) {
+    @Override
+    public boolean tryToZap(Hero owner, int target) {
+        if (super.tryToZap(owner, target)) {
+            this.target = target;
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-		ArrayList<Integer> cells = new ArrayList<>(cone.cells);
+    @Override
+    protected void onZap(Ballistica bolt) {
 
-		float furrowedChance = 0;
-		if (totChrgUsed >= chargeLimit(Dungeon.hero.lvl)){
-			furrowedChance = (chargesOverLimit+1)/5f;
-		}
+        ArrayList<Integer> cells = new ArrayList<>(cone.cells);
 
-		int chrgUsed = chargesPerCast();
-		int grassToPlace = Math.round((3.67f+buffedLvl()/3f)*chrgUsed);
+        float furrowedChance = 0;
+        if (totChrgUsed >= chargeLimit(Dungeon.hero.lvl)) {
+            furrowedChance = (chargesOverLimit + 1) / 5f;
+        }
 
-		//ignore cells which can't have anything grow in them.
-		for (Iterator<Integer> i = cells.iterator(); i.hasNext();) {
-			int cell = i.next();
-			int terr = Dungeon.level.map[cell];
-			if (!(terr == Terrain.EMPTY || terr == Terrain.EMBERS || terr == Terrain.EMPTY_DECO ||
-					terr == Terrain.GRASS || terr == Terrain.HIGH_GRASS || terr == Terrain.FURROWED_GRASS)) {
-				i.remove();
-			} else if (Char.hasProp(Actor.findChar(cell), Char.Property.IMMOVABLE)) {
-				i.remove();
-			} else if (Dungeon.level.plants.get(cell) != null){
+        int chrgUsed = chargesPerCast();
+        int grassToPlace = Math.round((3.67f + buffedLvl() / 3f) * chrgUsed);
+
+        //ignore cells which can't have anything grow in them.
+        for (Iterator<Integer> i = cells.iterator(); i.hasNext(); ) {
+            int cell = i.next();
+            int terr = Dungeon.level.map[cell];
+            if (!(terr == Terrain.EMPTY || terr == Terrain.EMBERS || terr == Terrain.EMPTY_DECO ||
+                    terr == Terrain.GRASS || terr == Terrain.HIGH_GRASS || terr == Terrain.FURROWED_GRASS)) {
+                i.remove();
+            } else if (Char.hasProp(Actor.findChar(cell), Char.Property.IMMOVABLE)) {
+                i.remove();
+            } else if (Dungeon.level.plants.get(cell) != null) {
                 i.remove();
             } else if (Dungeon.level.platforms.get(cell) != null
-                    || Dungeon.level.seaTerrors.get(cell) != null){
-				i.remove();
-			} else {
-				if (terr != Terrain.HIGH_GRASS && terr != Terrain.FURROWED_GRASS) {
-					Level.set(cell, Terrain.GRASS);
+                    || Dungeon.level.seaTerrors.get(cell) != null) {
+                i.remove();
+            } else {
+                if (terr != Terrain.HIGH_GRASS && terr != Terrain.FURROWED_GRASS) {
+                    Level.set(cell, Terrain.GRASS);
 
-				}
-				Char ch = Actor.findChar(cell);
-				if (ch != null){
-					processSoulMark(ch, chargesPerCast());
-					Buff.prolong( ch, Roots.class, 4f * chrgUsed );
-				}
-			}
-		}
+                }
+                Char ch = Actor.findChar(cell);
+                if (ch != null) {
+                    processSoulMark(ch, chargesPerCast());
+                    Buff.prolong(ch, Roots.class, 4f * chrgUsed);
+                }
+            }
+        }
 
-		Random.shuffle(cells);
+        Random.shuffle(cells);
 
-		if (chargesPerCast() >= 3){
-			Lotus l = new Lotus();
-			l.setLevel(buffedLvl());
-			if (cells.contains(target) && Actor.findChar(target) == null){
-				cells.remove((Integer)target);
-				l.pos = target;
-				GameScene.add(l);
-			} else {
-				for (int i = bolt.path.size()-1; i >= 0; i--){
-					int c = bolt.path.get(i);
-					if (cells.contains(c) && Actor.findChar(c) == null){
-						cells.remove((Integer)c);
-						l.pos = c;
-						GameScene.add(l);
-						break;
-					}
-				}
-			}
-		}
+        if (chargesPerCast() >= 3) {
+            Lotus l = new Lotus();
+            l.setLevel(buffedLvl());
+            if (cells.contains(target) && Actor.findChar(target) == null) {
+                cells.remove((Integer) target);
+                l.pos = target;
+                GameScene.add(l);
+            } else {
+                for (int i = bolt.path.size() - 1; i >= 0; i--) {
+                    int c = bolt.path.get(i);
+                    if (cells.contains(c) && Actor.findChar(c) == null) {
+                        cells.remove((Integer) c);
+                        l.pos = c;
+                        GameScene.add(l);
+                        break;
+                    }
+                }
+            }
+        }
 
-		//places grass along center of cone
-		for (int cell : bolt.path){
-			if (grassToPlace > 0 && cells.contains(cell)){
-				if (Random.Float() > furrowedChance) {
-					Level.set(cell, Terrain.HIGH_GRASS);
-				} else {
-					Level.set(cell, Terrain.FURROWED_GRASS);
-				}
-				GameScene.updateMap( cell );
-				grassToPlace--;
-				//moves cell to the back
-				cells.remove((Integer)cell);
-				cells.add(cell);
-			}
-		}
+        //places grass along center of cone
+        for (int cell : bolt.path) {
+            if (grassToPlace > 0 && cells.contains(cell)) {
+                if (Random.Float() > furrowedChance) {
+                    Level.set(cell, Terrain.HIGH_GRASS);
+                } else {
+                    Level.set(cell, Terrain.FURROWED_GRASS);
+                }
+                GameScene.updateMap(cell);
+                grassToPlace--;
+                //moves cell to the back
+                cells.remove((Integer) cell);
+                cells.add(cell);
+            }
+        }
 
-		if (!cells.isEmpty() && Random.Float() > furrowedChance &&
-				(Random.Int(6) < chrgUsed)){ // 16%/33%/50% chance to spawn a seed pod or dewcatcher
-			int cell = cells.remove(0);
-			Dungeon.level.plant( Random.Int(2) == 0 ? new Seedpod.Seed() : new Dewcatcher.Seed(), cell);
-		}
+        if (!cells.isEmpty() && Random.Float() > furrowedChance &&
+                (Random.Int(6) < chrgUsed)) { // 16%/33%/50% chance to spawn a seed pod or dewcatcher
+            int cell = cells.remove(0);
+            Dungeon.level.plant(Random.Int(2) == 0 ? new Seedpod.Seed() : new Dewcatcher.Seed(), cell);
+        }
 
-		if (!cells.isEmpty() && Random.Float() > furrowedChance &&
-				(Random.Int(3) < chrgUsed)){ // 33%/66%/100% chance to spawn a plant
-			int cell = cells.remove(0);
-			Dungeon.level.plant((Plant.Seed) Generator.randomUsingDefaults(Generator.Category.SEED), cell);
-		}
+        if (!cells.isEmpty() && Random.Float() > furrowedChance &&
+                (Random.Int(3) < chrgUsed)) { // 33%/66%/100% chance to spawn a plant
+            int cell = cells.remove(0);
+            Dungeon.level.plant((Plant.Seed) Generator.randomUsingDefaults(Generator.Category.SEED), cell);
+        }
 
-		for (int cell : cells){
-			if (grassToPlace <= 0 || bolt.path.contains(cell)) break;
+        for (int cell : cells) {
+            if (grassToPlace <= 0 || bolt.path.contains(cell)) break;
 
-			if (Dungeon.level.map[cell] == Terrain.HIGH_GRASS) continue;
+            if (Dungeon.level.map[cell] == Terrain.HIGH_GRASS) continue;
 
-			if (Random.Float() > furrowedChance) {
-				Level.set(cell, Terrain.HIGH_GRASS);
-			} else {
-				Level.set(cell, Terrain.FURROWED_GRASS);
-			}
-			GameScene.updateMap( cell );
-			grassToPlace--;
-		}
+            if (Random.Float() > furrowedChance) {
+                Level.set(cell, Terrain.HIGH_GRASS);
+            } else {
+                Level.set(cell, Terrain.FURROWED_GRASS);
+            }
+            GameScene.updateMap(cell);
+            grassToPlace--;
+        }
 
-		if (totChrgUsed < chargeLimit(Dungeon.hero.lvl)) {
-			chargesOverLimit = 0;
-			totChrgUsed += chrgUsed;
-			if (totChrgUsed > chargeLimit(Dungeon.hero.lvl)){
-				chargesOverLimit = totChrgUsed - chargeLimit(Dungeon.hero.lvl);
-				totChrgUsed = chargeLimit(Dungeon.hero.lvl);
-			}
-		} else {
-			chargesOverLimit += chrgUsed;
-		}
+        if (totChrgUsed < chargeLimit(Dungeon.hero.lvl)) {
+            chargesOverLimit = 0;
+            totChrgUsed += chrgUsed;
+            if (totChrgUsed > chargeLimit(Dungeon.hero.lvl)) {
+                chargesOverLimit = totChrgUsed - chargeLimit(Dungeon.hero.lvl);
+                totChrgUsed = chargeLimit(Dungeon.hero.lvl);
+            }
+        } else {
+            chargesOverLimit += chrgUsed;
+        }
 
-	}
-	
-	private int chargeLimit( int heroLvl ){
-		if (level() >= 10){
-			return Integer.MAX_VALUE;
-		} else {
-			//8 charges at base, plus:
-			//2/3.33/5/7/10/14/20/30/50/110/infinite charges per hero level, based on wand level
-			float lvl = buffedLvl();
-			return Math.round(8 + heroLvl * (2+lvl) * (1f + (lvl/(10 - lvl))));
-		}
-	}
+    }
 
-	@Override
-	public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
-		//like pre-nerf vampiric enchantment, except with herbal healing buff, only in grass
-		boolean grass = false;
-		int terr = Dungeon.level.map[attacker.pos];
-		if (terr == Terrain.GRASS || terr == Terrain.HIGH_GRASS || terr == Terrain.FURROWED_GRASS){
-			grass = true;
-		}
-		terr = Dungeon.level.map[defender.pos];
-		if (terr == Terrain.GRASS || terr == Terrain.HIGH_GRASS || terr == Terrain.FURROWED_GRASS){
-			grass = true;
-		}
+    private int chargeLimit(int heroLvl) {
+        if (level() >= 10) {
+            return Integer.MAX_VALUE;
+        } else {
+            //8 charges at base, plus:
+            //2/3.33/5/7/10/14/20/30/50/110/infinite charges per hero level, based on wand level
+            float lvl = buffedLvl();
+            return Math.round(8 + heroLvl * (2 + lvl) * (1f + (lvl / (10 - lvl))));
+        }
+    }
 
-		if (grass) {
-			int level = Math.max(0, staff.buffedLvl());
+    @Override
+    public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
+        //like pre-nerf vampiric enchantment, except with herbal healing buff, only in grass
+        boolean grass = false;
+        int terr = Dungeon.level.map[attacker.pos];
+        if (terr == Terrain.GRASS || terr == Terrain.HIGH_GRASS || terr == Terrain.FURROWED_GRASS) {
+            grass = true;
+        }
+        terr = Dungeon.level.map[defender.pos];
+        if (terr == Terrain.GRASS || terr == Terrain.HIGH_GRASS || terr == Terrain.FURROWED_GRASS) {
+            grass = true;
+        }
 
-			// lvl 0 - 16%
-			// lvl 1 - 21%
-			// lvl 2 - 25%
-			int healing = Math.round(damage * (level + 2f) / (level + 6f) / 2f);
-			Buff.affect(attacker, Sungrass.Health.class).boost(healing);
-		}
+        if (grass) {
+            int level = Math.max(0, staff.buffedLvl());
 
-	}
+            // lvl 0 - 16%
+            // lvl 1 - 21%
+            // lvl 2 - 25%
+            int healing = Math.round(damage * (level + 2f) / (level + 6f) / 2f);
+            Buff.affect(attacker, Sungrass.Health.class).boost(healing);
+        }
 
-	protected void fx( Ballistica bolt, Callback callback ) {
+    }
 
-		// 4/6/8 distance
-		int maxDist = 2 + 2*chargesPerCast();
-		int dist = Math.min(bolt.dist, maxDist);
+    protected void fx(Ballistica bolt, Callback callback) {
 
-		cone = new ConeAOE( bolt,
-				maxDist,
-				20 + 10*chargesPerCast(),
-				collisionProperties | Ballistica.STOP_TARGET);
+        // 4/6/8 distance
+        int maxDist = 2 + 2 * chargesPerCast();
+        int dist = Math.min(bolt.dist, maxDist);
 
-		//cast to cells at the tip, rather than all cells, better performance.
-		for (Ballistica ray : cone.rays){
-			((MagicMissile)curUser.sprite.parent.recycle( MagicMissile.class )).reset(
-					MagicMissile.FOLIAGE_CONE,
-					curUser.sprite,
-					ray.path.get(ray.dist),
-					null
-			);
-		}
+        cone = new ConeAOE(bolt,
+                maxDist,
+                20 + 10 * chargesPerCast(),
+                collisionProperties | Ballistica.STOP_TARGET);
 
-		//final zap at half distance, for timing of the actual wand effect
-		MagicMissile.boltFromChar( curUser.sprite.parent,
-				MagicMissile.FOLIAGE_CONE,
-				curUser.sprite,
-				bolt.path.get(dist/2),
-				callback );
-		Sample.INSTANCE.play( Assets.Sounds.ZAP );
-	}
+        //cast to cells at the tip, rather than all cells, better performance.
+        for (Ballistica ray : cone.rays) {
+            ((MagicMissile) curUser.sprite.parent.recycle(MagicMissile.class)).reset(
+                    MagicMissile.FOLIAGE_CONE,
+                    curUser.sprite,
+                    ray.path.get(ray.dist),
+                    null
+            );
+        }
 
-	@Override
-	protected int chargesPerCast() {
-		//consumes 30% of current charges, rounded up, with a minimum of one.
-		return Math.max(1, (int)Math.ceil(curCharges*0.3f));
-	}
+        //final zap at half distance, for timing of the actual wand effect
+        MagicMissile.boltFromChar(curUser.sprite.parent,
+                MagicMissile.FOLIAGE_CONE,
+                curUser.sprite,
+                bolt.path.get(dist / 2),
+                callback);
+        Sample.INSTANCE.play(Assets.Sounds.ZAP);
+    }
 
-	@Override
-	public String statsDesc() {
-		String desc = Messages.get(this, "stats_desc", chargesPerCast());
-		if (isIdentified()){
-			int chargeLeft = chargeLimit(Dungeon.hero.lvl) - totChrgUsed;
-			if (chargeLeft < 10000) desc += " " + Messages.get(this, "degradation", Math.max(chargeLeft, 0));
-		}
-		return desc;
-	}
+    @Override
+    protected int chargesPerCast() {
+        //consumes 30% of current charges, rounded up, with a minimum of one.
+        return Math.max(1, (int) Math.ceil(curCharges * 0.3f));
+    }
 
-	private static final String TOTAL = "totChrgUsed";
-	private static final String OVER = "chargesOverLimit";
-	
-	@Override
-	public void storeInBundle(Bundle bundle) {
-		super.storeInBundle(bundle);
-		bundle.put( TOTAL, totChrgUsed );
-		bundle.put( OVER, chargesOverLimit);
-	}
-	
-	@Override
-	public void restoreFromBundle(Bundle bundle) {
-		super.restoreFromBundle(bundle);
-		totChrgUsed = bundle.getInt(TOTAL);
-		chargesOverLimit = bundle.getInt(OVER);
-	}
-	
-	public static class Dewcatcher extends Plant{
+    @Override
+    public String statsDesc() {
+        String desc = Messages.get(this, "stats_desc", chargesPerCast());
+        if (isIdentified()) {
+            int chargeLeft = chargeLimit(Dungeon.hero.lvl) - totChrgUsed;
+            if (chargeLeft < 10000)
+                desc += " " + Messages.get(this, "degradation", Math.max(chargeLeft, 0));
+        }
+        return desc;
+    }
 
-		{
-			image = 13;
-		}
+    private static final String TOTAL = "totChrgUsed";
+    private static final String OVER = "chargesOverLimit";
 
-		@Override
-		public void activate( Char ch ) {
+    @Override
+    public void storeInBundle(Bundle bundle) {
+        super.storeInBundle(bundle);
+        bundle.put(TOTAL, totChrgUsed);
+        bundle.put(OVER, chargesOverLimit);
+    }
 
-			int nDrops = Random.NormalIntRange(3, 6);
+    @Override
+    public void restoreFromBundle(Bundle bundle) {
+        super.restoreFromBundle(bundle);
+        totChrgUsed = bundle.getInt(TOTAL);
+        chargesOverLimit = bundle.getInt(OVER);
+    }
 
-			ArrayList<Integer> candidates = new ArrayList<>();
-			for (int i : PathFinder.NEIGHBOURS8){
-				if (Dungeon.level.passable[pos+i]
-						&& pos+i != Dungeon.level.entrance
-						&& pos+i != Dungeon.level.exit){
-					candidates.add(pos+i);
-				}
-			}
+    public static class Dewcatcher extends Plant {
 
-			for (int i = 0; i < nDrops && !candidates.isEmpty(); i++){
-				Integer c = Random.element(candidates);
-				Dungeon.level.drop(new Dewdrop(), c).sprite.drop(pos);
-				candidates.remove(c);
-			}
+        {
+            image = 13;
+        }
 
-		}
+        @Override
+        public void activate(Char ch) {
 
-		//seed is never dropped, only care about plant class
-		public static class Seed extends Plant.Seed {
-			{
-				plantClass = Dewcatcher.class;
-			}
-		}
-	}
+            int nDrops = Random.NormalIntRange(3, 6);
 
-	public static class Seedpod extends Plant{
+            ArrayList<Integer> candidates = new ArrayList<>();
+            for (int i : PathFinder.NEIGHBOURS8) {
+                if (Dungeon.level.passable[pos + i]
+                        && pos + i != Dungeon.level.entrance()
+                        && pos + i != Dungeon.level.exit()) {
+                    candidates.add(pos + i);
+                }
+            }
 
-		{
-			image = 14;
-		}
+            for (int i = 0; i < nDrops && !candidates.isEmpty(); i++) {
+                Integer c = Random.element(candidates);
+                Dungeon.level.drop(new Dewdrop(), c).sprite.drop(pos);
+                candidates.remove(c);
+            }
 
-		@Override
-		public void activate( Char ch ) {
+        }
 
-			int nSeeds = Random.NormalIntRange(2, 4);
+        //seed is never dropped, only care about plant class
+        public static class Seed extends Plant.Seed {
+            {
+                plantClass = Dewcatcher.class;
+            }
+        }
+    }
 
-			ArrayList<Integer> candidates = new ArrayList<>();
-			for (int i : PathFinder.NEIGHBOURS8){
-				if (Dungeon.level.passable[pos+i]
-						&& pos+i != Dungeon.level.entrance
-						&& pos+i != Dungeon.level.exit){
-					candidates.add(pos+i);
-				}
-			}
+    public static class Seedpod extends Plant {
 
-			for (int i = 0; i < nSeeds && !candidates.isEmpty(); i++){
-				Integer c = Random.element(candidates);
-				Dungeon.level.drop(Generator.random(Generator.Category.SEED), c).sprite.drop(pos);
-				candidates.remove(c);
-			}
+        {
+            image = 14;
+        }
 
-		}
+        @Override
+        public void activate(Char ch) {
 
-		//seed is never dropped, only care about plant class
-		public static class Seed extends Plant.Seed {
-			{
-				plantClass = Seedpod.class;
-			}
-		}
+            int nSeeds = Random.NormalIntRange(2, 4);
 
-	}
+            ArrayList<Integer> candidates = new ArrayList<>();
+            for (int i : PathFinder.NEIGHBOURS8) {
+                if (Dungeon.level.passable[pos + i]
+                        && pos + i != Dungeon.level.entrance()
+                        && pos + i != Dungeon.level.exit()) {
+                    candidates.add(pos + i);
+                }
+            }
 
-	public static class Lotus extends NPC {
+            for (int i = 0; i < nSeeds && !candidates.isEmpty(); i++) {
+                Integer c = Random.element(candidates);
+                Dungeon.level.drop(Generator.random(Generator.Category.SEED), c).sprite.drop(pos);
+                candidates.remove(c);
+            }
 
-		{
-			alignment = Alignment.ALLY;
-			properties.add(Property.IMMOVABLE);
+        }
 
-			spriteClass = LotusSprite.class;
+        //seed is never dropped, only care about plant class
+        public static class Seed extends Plant.Seed {
+            {
+                plantClass = Seedpod.class;
+            }
+        }
 
-			viewDistance = 1;
-		}
+    }
 
-		private int wandLvl = 0;
+    public static class Lotus extends NPC {
 
-		private void setLevel( int lvl ){
-			wandLvl = lvl;
-			HP = HT = 25 + 3*lvl;
-		}
+        {
+            alignment = Alignment.ALLY;
+            properties.add(Property.IMMOVABLE);
 
-		public boolean inRange(int pos){
-			return Dungeon.level.trueDistance(this.pos, pos) <= wandLvl;
-		}
+            spriteClass = LotusSprite.class;
 
-		public float seedPreservation(){
-			return 0.40f + 0.04f*wandLvl;
-		}
+            viewDistance = 1;
+        }
 
-		@Override
-		public boolean canInteract(Char c) {
-			return false;
-		}
+        private int wandLvl = 0;
 
-		@Override
-		protected boolean act() {
-			super.act();
+        private void setLevel(int lvl) {
+            wandLvl = lvl;
+            HP = HT = 25 + 3 * lvl;
+        }
 
-			if (--HP <= 0){
-				destroy();
-				sprite.die();
-			}
+        public boolean inRange(int pos) {
+            return Dungeon.level.trueDistance(this.pos, pos) <= wandLvl;
+        }
 
-			return true;
-		}
+        public float seedPreservation() {
+            return 0.40f + 0.04f * wandLvl;
+        }
 
-		@Override
-		public void damage( int dmg, Object src ) {
-		}
+        @Override
+        public boolean canInteract(Char c) {
+            return false;
+        }
 
-		@Override
-		public void add( Buff buff ) {
-		}
+        @Override
+        protected boolean act() {
+            super.act();
 
-		@Override
-		public void destroy() {
-			super.destroy();
-			Dungeon.observe();
-			GameScene.updateFog(pos, viewDistance+1);
-		}
+            if (--HP <= 0) {
+                destroy();
+                sprite.die();
+            }
 
-		@Override
-		public boolean isInvulnerable(Class effect) {
-			return true;
-		}
+            return true;
+        }
 
-		{
-			immunities.add(Corruption.class);
-			immunities.add(Doom.class);
-		}
+        @Override
+        public void damage(int dmg, Object src) {
+        }
 
-		@Override
-		public String description() {
-			return Messages.get(this, "desc", wandLvl, (int)(seedPreservation()*100), (int)(seedPreservation()*100) );
-		}
+        @Override
+        public void add(Buff buff) {
+        }
 
-		private static final String WAND_LVL = "wand_lvl";
+        @Override
+        public void destroy() {
+            super.destroy();
+            Dungeon.observe();
+            GameScene.updateFog(pos, viewDistance + 1);
+        }
 
-		@Override
-		public void storeInBundle(Bundle bundle) {
-			super.storeInBundle(bundle);
-			bundle.put(WAND_LVL, wandLvl);
-		}
+        @Override
+        public boolean isInvulnerable(Class effect) {
+            return true;
+        }
 
-		@Override
-		public void restoreFromBundle(Bundle bundle) {
-			super.restoreFromBundle(bundle);
-			wandLvl = bundle.getInt(WAND_LVL);
-		}
-	}
+        {
+            immunities.add(Corruption.class);
+            immunities.add(Doom.class);
+        }
+
+        @Override
+        public String description() {
+            return Messages.get(this, "desc", wandLvl, (int) (seedPreservation() * 100), (int) (seedPreservation() * 100));
+        }
+
+        private static final String WAND_LVL = "wand_lvl";
+
+        @Override
+        public void storeInBundle(Bundle bundle) {
+            super.storeInBundle(bundle);
+            bundle.put(WAND_LVL, wandLvl);
+        }
+
+        @Override
+        public void restoreFromBundle(Bundle bundle) {
+            super.restoreFromBundle(bundle);
+            wandLvl = bundle.getInt(WAND_LVL);
+        }
+    }
 
 }

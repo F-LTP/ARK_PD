@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.artifacts;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -43,6 +44,7 @@ public class IsekaiItem extends Artifact {
             if (charge == chargeCap) {
                 Dungeon.level.drop(new Bomb(), Dungeon.hero.pos).sprite.drop(Dungeon.hero.pos);
                 charge = 0;
+                Talent.onArtifactUsed(Dungeon.hero);
                 if (level() < levelCap) upgrade();
                 updateQuickslot();
             }

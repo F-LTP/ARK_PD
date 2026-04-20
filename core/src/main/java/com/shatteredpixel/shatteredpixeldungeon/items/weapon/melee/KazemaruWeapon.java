@@ -85,17 +85,18 @@ public class KazemaruWeapon extends MeleeWeapon {
             Integer[] spawnPoints = respawnPoints.toArray(new Integer[0]);
             if (spawnPoints.length > 0) {
                 int pos = Random.element(spawnPoints);
-                summonSubstitute(pos, defender.pos);
+                summonSubstitute(pos, defender.pos, attacker.alignment);
             }
         }
 
         return procDamage;
     }
 
-    private void summonSubstitute(int pos, int target) {
+    private void summonSubstitute(int pos, int target, Char.Alignment alignment) {
         KazemaruSummon summon = new KazemaruSummon();
         summon.setLevel(buffedLvl());
         summon.setTarget(target);
+        summon.alignment = alignment;
         summon.pos = pos;
         GameScene.add(summon);
     }

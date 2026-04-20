@@ -46,197 +46,197 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
-import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 
 public class WandOfBlastWave extends DamageWand {
 
-	{
-		image = ItemSpriteSheet.WAND_BLAST_WAVE;
+    {
+        image = ItemSpriteSheet.WAND_BLAST_WAVE;
 
-		collisionProperties = Ballistica.PROJECTILE;
-	}
+        collisionProperties = Ballistica.PROJECTILE;
+    }
 
-	public int min(int lvl){
-		return 1+lvl;
-	}
+    public int min(int lvl) {
+        return 1 + lvl;
+    }
 
-	public int max(int lvl){
-		return 3+3*lvl + RingOfAmplified.DamageBonus(Dungeon.hero) * 3;
-	}
+    public int max(int lvl) {
+        return 3 + 3 * lvl + RingOfAmplified.DamageBonus(Dungeon.hero) * 3;
+    }
 
-	@Override
-	protected void onZap(Ballistica bolt) {
-		Sample.INSTANCE.play( Assets.Sounds.BLAST );
-		BlastWave.blast(bolt.collisionPos);
+    @Override
+    protected void onZap(Ballistica bolt) {
+        Sample.INSTANCE.play(Assets.Sounds.BLAST);
+        BlastWave.blast(bolt.collisionPos);
 
-		//presses all tiles in the AOE first, with the exception of tengu dart traps
-		for (int i : PathFinder.NEIGHBOURS9){
-			if (!(Dungeon.level.traps.get(bolt.collisionPos+i) instanceof TenguDartTrap)) {
-				Dungeon.level.pressCell(bolt.collisionPos + i);
-			}
-		}
+        //presses all tiles in the AOE first, with the exception of tengu dart traps
+        for (int i : PathFinder.NEIGHBOURS9) {
+            if (!(Dungeon.level.traps.get(bolt.collisionPos + i) instanceof TenguDartTrap)) {
+                Dungeon.level.pressCell(bolt.collisionPos + i);
+            }
+        }
 
-		//throws other chars around the center.
-		for (int i  : PathFinder.NEIGHBOURS8){
-			Char ch = Actor.findChar(bolt.collisionPos + i);
+        //throws other chars around the center.
+        for (int i : PathFinder.NEIGHBOURS8) {
+            Char ch = Actor.findChar(bolt.collisionPos + i);
 
-			if (ch != null){
-				processSoulMark(ch, chargesPerCast());
-				if (ch.alignment != Char.Alignment.ALLY) ch.damage(damageRoll(), this);
+            if (ch != null) {
+                processSoulMark(ch, chargesPerCast());
+                if (ch.alignment != Char.Alignment.ALLY) ch.damage(damageRoll(), this);
 
-				if (ch.isAlive() && ch.pos == bolt.collisionPos + i) {
-					Ballistica trajectory = new Ballistica(ch.pos, ch.pos + i, Ballistica.MAGIC_BOLT);
-					int strength = 1 + Math.round(buffedLvl() / 2f);
-					throwChar(ch, trajectory, strength, false);
-				} else if (ch == Dungeon.hero){
-					Dungeon.fail( getClass() );
-					GLog.n( Messages.get( this, "ondeath") );
-				}
-			}
-		}
+                if (ch.isAlive() && ch.pos == bolt.collisionPos + i) {
+                    Ballistica trajectory = new Ballistica(ch.pos, ch.pos + i, Ballistica.MAGIC_BOLT);
+                    int strength = 1 + Math.round(buffedLvl() / 2f);
+                    throwChar(ch, trajectory, strength, false);
+                } else if (ch == Dungeon.hero) {
+                    Dungeon.fail(getClass());
+                    GLog.n(Messages.get(this, "ondeath"));
+                }
+            }
+        }
 
-		//throws the char at the center of the blast
-		Char ch = Actor.findChar(bolt.collisionPos);
-		if (ch != null){
-			processSoulMark(ch, chargesPerCast());
-			ch.damage(damageRoll(), this);
+        //throws the char at the center of the blast
+        Char ch = Actor.findChar(bolt.collisionPos);
+        if (ch != null) {
+            processSoulMark(ch, chargesPerCast());
+            ch.damage(damageRoll(), this);
 
-			if (ch.isAlive() && bolt.path.size() > bolt.dist+1 && ch.pos == bolt.collisionPos) {
-				Ballistica trajectory = new Ballistica(ch.pos, bolt.path.get(bolt.dist + 1), Ballistica.MAGIC_BOLT);
-				int strength = buffedLvl() + 3;
-				throwChar(ch, trajectory, strength, false);
-			}
-		}
-		
-	}
+            if (ch.isAlive() && bolt.path.size() > bolt.dist + 1 && ch.pos == bolt.collisionPos) {
+                Ballistica trajectory = new Ballistica(ch.pos, bolt.path.get(bolt.dist + 1), Ballistica.MAGIC_BOLT);
+                int strength = buffedLvl() + 3;
+                throwChar(ch, trajectory, strength, false);
+            }
+        }
 
-	public static void throwChar(final Char ch, final Ballistica trajectory, int power){
-		throwChar(ch, trajectory, power, true);
-	}
+    }
 
-	public static void throwChar(final Char ch, final Ballistica trajectory, int power,
-	                             boolean closeDoors) {
-		throwChar(ch, trajectory, power, closeDoors, true);
-	}
+    public static void throwChar(final Char ch, final Ballistica trajectory, int power) {
+        throwChar(ch, trajectory, power, true);
+    }
 
-	public static void throwChar(final Char ch, final Ballistica trajectory, int power,
-	                             boolean closeDoors, boolean collideDmg){
-		if (ch.properties().contains(Char.Property.BOSS)) {
-			power /= 2;
-		}
+    public static void throwChar(final Char ch, final Ballistica trajectory, int power,
+                                 boolean closeDoors) {
+        throwChar(ch, trajectory, power, closeDoors, true);
+    }
 
-		int dist = Math.min(trajectory.dist, power);
+    public static void throwChar(final Char ch, final Ballistica trajectory, int power,
+                                 boolean closeDoors, boolean collideDmg) {
+        if (ch.properties().contains(Char.Property.BOSS)) {
+            power /= 2;
+        }
 
-		boolean collided = dist == trajectory.dist;
+        int dist = Math.min(trajectory.dist, power);
 
-		if (dist == 0 || ch.properties().contains(Char.Property.IMMOVABLE) || ch.properties().contains(Char.Property.NO_KNOCKBACK)) return;
+        boolean collided = dist == trajectory.dist;
 
-		//large characters cannot be moved into non-open space
-		if (Char.hasProp(ch, Char.Property.LARGE)) {
-			for (int i = 1; i <= dist; i++) {
-				if (!Dungeon.level.openSpace[trajectory.path.get(i)]){
-					dist = i-1;
-					collided = true;
-					break;
-				}
-			}
-		}
+        if (dist == 0 || ch.properties().contains(Char.Property.IMMOVABLE) || ch.properties().contains(Char.Property.NO_KNOCKBACK))
+            return;
 
-		if (Actor.findChar(trajectory.path.get(dist)) != null){
-			dist--;
-			collided = true;
-		}
+        //large characters cannot be moved into non-open space
+        if (Char.hasProp(ch, Char.Property.LARGE)) {
+            for (int i = 1; i <= dist; i++) {
+                if (!Dungeon.level.openSpace[trajectory.path.get(i)]) {
+                    dist = i - 1;
+                    collided = true;
+                    break;
+                }
+            }
+        }
 
-		if (dist < 0) return;
+        if (Actor.findChar(trajectory.path.get(dist)) != null) {
+            dist--;
+            collided = true;
+        }
 
-		final int newPos = trajectory.path.get(dist);
+        if (dist < 0) return;
 
-		if (newPos == ch.pos) return;
+        final int newPos = trajectory.path.get(dist);
 
-		final int finalDist = dist;
-		final boolean finalCollided = collided && collideDmg;
-		final int initialpos = ch.pos;
+        if (newPos == ch.pos) return;
 
-		Actor.addDelayed(new Pushing(ch, ch.pos, newPos, new Callback() {
-			public void call() {
-				if (initialpos != ch.pos) {
-					//something caused movement before pushing resolved, cancel to be safe.
-					ch.sprite.place(ch.pos);
-					return;
-				}
-				int oldPos = ch.pos;
-				ch.pos = newPos;
-				if (finalCollided && ch.isAlive()) {
-					ch.damage(Random.NormalIntRange(finalDist, 2*finalDist), this);
-					Paralysis.prolong(ch, Paralysis.class, 1 + finalDist/2f);
-				}
-				if (closeDoors && Dungeon.level.map[oldPos] == Terrain.OPEN_DOOR){
-					Door.leave(oldPos);
-				}
-				Dungeon.level.occupyCell(ch);
-				if (ch == Dungeon.hero){
-					//FIXME currently no logic here if the throw effect kills the hero
-					Dungeon.observe();
-				}
-			}
-		}), -1);
-	}
+        final int finalDist = dist;
+        final boolean finalCollided = collided && collideDmg;
+        final int initialpos = ch.pos;
 
-	@Override
-	public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
-		new Elastic().proc(staff, attacker, defender, damage);
-	}
+        Actor.addDelayed(new Pushing(ch, ch.pos, newPos, new Callback() {
+            public void call() {
+                if (initialpos != ch.pos) {
+                    //something caused movement before pushing resolved, cancel to be safe.
+                    ch.sprite.place(ch.pos);
+                    return;
+                }
+                int oldPos = ch.pos;
+                ch.pos = newPos;
+                if (finalCollided && ch.isActive()) {
+                    ch.damage(Random.NormalIntRange(finalDist, 2 * finalDist), this);
+                    Paralysis.prolong(ch, Paralysis.class, 1 + finalDist / 2f);
+                }
+                if (closeDoors && Dungeon.level.map[oldPos] == Terrain.OPEN_DOOR) {
+                    Door.leave(oldPos);
+                }
+                Dungeon.level.occupyCell(ch);
+                if (ch == Dungeon.hero) {
+                    //FIXME currently no logic here if the throw effect kills the hero
+                    Dungeon.observe();
+                }
+            }
+        }), -1);
+    }
 
-	@Override
-	protected void fx(Ballistica bolt, Callback callback) {
-		MagicMissile.boltFromChar( curUser.sprite.parent,
-				MagicMissile.FORCE,
-				curUser.sprite,
-				bolt.collisionPos,
-				callback);
-		Sample.INSTANCE.play(Assets.Sounds.ZAP);
-	}
+    @Override
+    public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
+        new Elastic().proc(staff, attacker, defender, damage);
+    }
 
-	public static class BlastWave extends Image {
+    @Override
+    protected void fx(Ballistica bolt, Callback callback) {
+        MagicMissile.boltFromChar(curUser.sprite.parent,
+                MagicMissile.FORCE,
+                curUser.sprite,
+                bolt.collisionPos,
+                callback);
+        Sample.INSTANCE.play(Assets.Sounds.ZAP);
+    }
 
-		private static final float TIME_TO_FADE = 0.2f;
+    public static class BlastWave extends Image {
 
-		private float time;
+        private static final float TIME_TO_FADE = 0.2f;
 
-		public BlastWave(){
-			super(Effects.get(Effects.Type.RIPPLE));
-			origin.set(width / 2, height / 2);
-		}
+        private float time;
 
-		public void reset(int pos) {
-			revive();
+        public BlastWave() {
+            super(Effects.get(Effects.Type.RIPPLE));
+            origin.set(width / 2, height / 2);
+        }
 
-			x = (pos % Dungeon.level.width()) * DungeonTilemap.SIZE + (DungeonTilemap.SIZE - width) / 2;
-			y = (pos / Dungeon.level.width()) * DungeonTilemap.SIZE + (DungeonTilemap.SIZE - height) / 2;
+        public void reset(int pos) {
+            revive();
 
-			time = TIME_TO_FADE;
-		}
+            x = (pos % Dungeon.level.width()) * DungeonTilemap.SIZE + (DungeonTilemap.SIZE - width) / 2;
+            y = (pos / Dungeon.level.width()) * DungeonTilemap.SIZE + (DungeonTilemap.SIZE - height) / 2;
 
-		@Override
-		public void update() {
-			super.update();
+            time = TIME_TO_FADE;
+        }
 
-			if ((time -= Game.elapsed) <= 0) {
-				kill();
-			} else {
-				float p = time / TIME_TO_FADE;
-				alpha(p);
-				scale.y = scale.x = (1-p)*3;
-			}
-		}
+        @Override
+        public void update() {
+            super.update();
 
-		public static void blast(int pos) {
-			Group parent = Dungeon.hero.sprite.parent;
-			BlastWave b = (BlastWave) parent.recycle(BlastWave.class);
-			parent.bringToFront(b);
-			b.reset(pos);
-		}
+            if ((time -= Game.elapsed) <= 0) {
+                kill();
+            } else {
+                float p = time / TIME_TO_FADE;
+                alpha(p);
+                scale.y = scale.x = (1 - p) * 3;
+            }
+        }
 
-	}
+        public static void blast(int pos) {
+            Group parent = Dungeon.hero.sprite.parent;
+            BlastWave b = (BlastWave) parent.recycle(BlastWave.class);
+            parent.bringToFront(b);
+            b.reset(pos);
+        }
+
+    }
 }

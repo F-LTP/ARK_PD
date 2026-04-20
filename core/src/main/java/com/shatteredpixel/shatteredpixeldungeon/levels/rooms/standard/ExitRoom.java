@@ -24,8 +24,6 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.miniboss.Shadow;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ceylon;
-import com.shatteredpixel.shatteredpixeldungeon.items.quest.CeremonialCandle;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
@@ -33,37 +31,37 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.watabou.utils.Point;
 
 public class ExitRoom extends StandardRoom {
-	
-	@Override
-	public int minWidth() {
-		return Math.max(super.minWidth(), 5);
-	}
-	
-	@Override
-	public int minHeight() {
-		return Math.max(super.minHeight(), 5);
-	}
-	
-	public void paint(Level level) {
 
-		Painter.fill( level, this, Terrain.WALL );
-		Painter.fill( level, this, 1, Terrain.EMPTY );
-		
-		for (Room.Door door : connected.values()) {
-			door.set( Room.Door.Type.REGULAR );
-		}
-		
-		level.exit = level.pointToCell(random( 2 ));
-		Painter.set( level, level.exit, Terrain.EXIT );
+    @Override
+    public int minWidth() {
+        return Math.max(super.minWidth(), 5);
+    }
 
-		if (Dungeon.isChallenged(Challenges.SHADOW) && (
-				Dungeon.depth == 4 || Dungeon.depth == 9 || Dungeon.depth == 14 || Dungeon.depth == 19 || Dungeon.depth == 24 || Dungeon.depth == 34 || Dungeon.depth == 39)) {
-			Shadow.Spawn(level, level.exit);
-		}
-	}
-	
-	@Override
-	public boolean canPlaceCharacter(Point p, Level l) {
-		return super.canPlaceCharacter(p, l) && l.pointToCell(p) != l.exit;
-	}
+    @Override
+    public int minHeight() {
+        return Math.max(super.minHeight(), 5);
+    }
+
+    public void paint(Level level) {
+
+        Painter.fill(level, this, Terrain.WALL);
+        Painter.fill(level, this, 1, Terrain.EMPTY);
+
+        for (Room.Door door : connected.values()) {
+            door.set(Room.Door.Type.REGULAR);
+        }
+
+        level.setExit(level.pointToCell(random(2)));
+        Painter.set(level, level.exit(), Terrain.EXIT);
+
+        if (Dungeon.isChallenged(Challenges.SHADOW) && (
+                Dungeon.depth == 4 || Dungeon.depth == 9 || Dungeon.depth == 14 || Dungeon.depth == 19 || Dungeon.depth == 24 || Dungeon.depth == 34 || Dungeon.depth == 39)) {
+            Shadow.Spawn(level, level.exit());
+        }
+    }
+
+    @Override
+    public boolean canPlaceCharacter(Point p, Level l) {
+        return super.canPlaceCharacter(p, l) && l.pointToCell(p) != l.exit();
+    }
 }

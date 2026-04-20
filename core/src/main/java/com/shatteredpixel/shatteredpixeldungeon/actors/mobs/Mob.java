@@ -64,6 +64,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MeatCutlet;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.QuestScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfCommand;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfWealth;
@@ -592,7 +593,7 @@ public abstract class Mob extends Char {
 	public int defenseProc( Char enemy, int damage ) {
 		
 		if (enemy instanceof Hero
-				&& ((Hero) enemy).belongings.weapon instanceof MissileWeapon
+				&& ((Hero) enemy).belongings.attackingWeapon() instanceof MissileWeapon
 				&& !hitWithRanged){
 			hitWithRanged = true;
 			Statistics.thrownAssists++;
@@ -604,8 +605,8 @@ public abstract class Mob extends Char {
 			Badges.validateRogueUnlock();
 			//TODO this is somewhat messy, it would be nicer to not have to manually handle delays here
 			// playing the strong hit sound might work best as another property of weapon?
-			if (Dungeon.hero.belongings.weapon instanceof SpiritBow.SpiritArrow
-				|| Dungeon.hero.belongings.weapon instanceof Dart){
+			if (Dungeon.hero.belongings.attackingWeapon() instanceof SpiritBow.SpiritArrow
+				|| Dungeon.hero.belongings.attackingWeapon() instanceof Dart){
 				Sample.INSTANCE.playDelayed(Assets.Sounds.HIT_STRONG, 0.125f);
 			} else {
 				Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
@@ -754,6 +755,7 @@ public abstract class Mob extends Char {
 
 		if (alignment == Alignment.ENEMY){
 			rollToDropLoot();
+			QuestScroll.onMobKilled(cause);
 
 			if (cause == Dungeon.hero
 					&& Dungeon.hero.hasTalent(Talent.LETHAL_MOMENTUM)
@@ -826,21 +828,21 @@ public abstract class Mob extends Char {
 				&& Random.Int(10) == 0
 		        && cause == Dungeon.hero
 				&& Dungeon.hero.lvl >= 25
-	         	&& Dungeon.hero.belongings.weapon instanceof ImageoverForm){
+	         	&& Dungeon.hero.belongings.attackingWeapon() instanceof ImageoverForm){
 				ImageoverForm.LittleInstinct a = new ImageoverForm.LittleInstinct();
-				a.setState(Dungeon.hero.belongings.weapon.level());
+				a.setState(Dungeon.hero.belongings.attackingWeapon().level());
 				a.pos = this.pos;
 				GameScene.add(a);
 
 		}
 
-		if (cause == Dungeon.hero && Dungeon.hero.belongings.weapon instanceof FlameKatana) {
-			((FlameKatana) Dungeon.hero.belongings.weapon).GetKillPoint();
+		if (cause == Dungeon.hero && Dungeon.hero.belongings.attackingWeapon() instanceof FlameKatana) {
+			((FlameKatana) Dungeon.hero.belongings.attackingWeapon()).GetKillPoint();
 		}
 
-		if (cause == Dungeon.hero && Dungeon.hero.belongings.weapon instanceof BladeDemon) {
-			if (((BladeDemon) Dungeon.hero.belongings.weapon).isSwiching()) {
-				int Heal = Random.IntRange(1,3+Dungeon.hero.belongings.weapon.buffedLvl());
+		if (cause == Dungeon.hero && Dungeon.hero.belongings.attackingWeapon() instanceof BladeDemon) {
+			if (((BladeDemon) Dungeon.hero.belongings.attackingWeapon()).isSwiching()) {
+				int Heal = Random.IntRange(1,3+Dungeon.hero.belongings.attackingWeapon().buffedLvl());
 				Dungeon.hero.HP = Math.min(Dungeon.hero.HP + Heal, Dungeon.hero.HT);
 				Dungeon.hero.sprite.emitter().burst(Speck.factory(Speck.HEALING),  2);
 				Dungeon.hero.sprite.showStatus(CharSprite.POSITIVE, "+%dHP", Heal);

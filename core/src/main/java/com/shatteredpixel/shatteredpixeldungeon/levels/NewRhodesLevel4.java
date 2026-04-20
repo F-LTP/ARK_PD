@@ -8,7 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Gavial;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_Irene;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_PhantomShadow;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_Pilot;
-import com.shatteredpixel.shatteredpixeldungeon.items.quest.QuestCat;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.watabou.noosa.Group;
@@ -28,17 +28,17 @@ public class NewRhodesLevel4 extends Level {
     }
 
     @Override
-    public String tilesTex () {
+    public String tilesTex() {
         return Assets.Environment.TILSE_RHODES;
     }
 
     @Override
-    public String waterTex () {
+    public String waterTex() {
         return Assets.Environment.WATER_PRISON;
     }
 
     @Override
-    public void create () {
+    public void create() {
         super.create();
         for (int i = 0; i < length(); i++) {
             int flags = Terrain.flags[map[i]];
@@ -52,7 +52,7 @@ public class NewRhodesLevel4 extends Level {
     private static final int ROOM_TOP = 6;
 
     @Override
-    protected boolean build () {
+    protected boolean build() {
 
         setSize(65, 24);
         Arrays.fill(map, Terrain.CHASM);
@@ -105,17 +105,40 @@ public class NewRhodesLevel4 extends Level {
     }
 
     @Override
-    protected void createMobs () {
+    protected void syncTransitionsFromFields() {
+        transitions.clear();
+        //entrance terrain leads back toward Rhodes 3 (branch 3)
+        //center cell first so arrivals land at the middle of the area
+        int centerCell = 9 * width() + 45; // (46,9) = center of (41,8)-(51,10)
+        transitions.add(new LevelTransition(this, centerCell,
+                LevelTransition.Type.BRANCH_ENTRANCE, 0, 3, LevelTransition.Type.BRANCH_EXIT));
+        //remaining entrance terrain cells (41,8) to (51,10)
+        for (int y = 8; y <= 10; y++) {
+            for (int x = 41; x <= 51; x++) {
+                int cell = y * width() + x;
+                if (cell != centerCell) {
+                    transitions.add(new LevelTransition(this, cell,
+                            LevelTransition.Type.BRANCH_ENTRANCE, 0, 3, LevelTransition.Type.BRANCH_EXIT));
+                }
+            }
+        }
+        //exit leads to extra stages (depth 31, branch 0)
+        transitions.add(new LevelTransition(this, exit,
+                LevelTransition.Type.BRANCH_EXIT, 31, 0, LevelTransition.Type.REGULAR_ENTRANCE));
     }
 
-    public Actor addRespawner () {
+    @Override
+    protected void createMobs() {
+    }
+
+    public Actor addRespawner() {
         return null;
     }
 
     @Override
-    protected void createItems () {
-        Gavial.spawn(this,748);
-        NPC_Irene.spawn(this,749);
+    protected void createItems() {
+        Gavial.spawn(this, 748);
+        NPC_Irene.spawn(this, 749);
         NPC_Pilot.spawn(this, 870);
 
         if (Dungeon.QuestCatPoint == 2 && !NPC_PhantomShadow.Clear) {
@@ -124,9 +147,13 @@ public class NewRhodesLevel4 extends Level {
     }
 
     @Override
-    public int randomRespawnCell (Char ch ){
+    public int randomRespawnCell(Char ch) {
         int cell;
+        int count = 0;
         do {
+            if (++count > 30) {
+                return -1;
+            }
             cell = entrance + PathFinder.NEIGHBOURS8[Random.Int(8)];
         } while (!passable[cell]
                 || (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
@@ -136,14 +163,14 @@ public class NewRhodesLevel4 extends Level {
 
 
     @Override
-    public Group addVisuals () {
+    public Group addVisuals() {
         super.addVisuals();
         HallsLevel.addHallsVisuals(this, visuals);
         return visuals;
     }
 
     @Override
-    public void restoreFromBundle (Bundle bundle){
+    public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
     }
 
@@ -156,12 +183,12 @@ public class NewRhodesLevel4 extends Level {
         @Override
         public Tilemap create() {
             Tilemap v = super.create();
-            int[] data = new int[tileW*tileH];
-            for (int i = 0; i < data.length; i++){
+            int[] data = new int[tileW * tileH];
+            for (int i = 0; i < data.length; i++) {
                 data[i] = i;
             }
 
-            v.map( data, tileW );
+            v.map(data, tileW);
             return v;
         }
     }

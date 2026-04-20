@@ -124,6 +124,7 @@ public class WndBag extends WndTabbed {
 	protected static final int TITLE_HEIGHT	= 14;
 	
 	private Listener listener;
+	private ItemSelector selector;
 	private WndBag.Mode mode;
 	private String title;
 
@@ -223,7 +224,35 @@ public class WndBag extends WndTabbed {
 				new WndBag( bag, listener, mode, title ) :
 				lastBag( listener, mode, title );
 	}
-	
+
+	public WndBag( Bag bag, ItemSelector selector ) {
+		this(bag, null, Mode.ALL, null);
+		this.selector = selector;
+	}
+
+	public static WndBag lastBag( ItemSelector selector ) {
+		if (lastBag != null && Dungeon.hero.belongings.backpack.contains( lastBag )) {
+			return new WndBag( lastBag, selector );
+		} else {
+			return new WndBag( Dungeon.hero.belongings.backpack, selector );
+		}
+	}
+
+	public static WndBag getBag( ItemSelector selector ) {
+		if (selector.preferredBag() == Belongings.Backpack.class){
+			return new WndBag( Dungeon.hero.belongings.backpack, selector );
+		} else if (selector.preferredBag() != null){
+			Bag bag = Dungeon.hero.belongings.getItem( selector.preferredBag() );
+			if (bag != null)    return new WndBag( bag, selector );
+			else                return new WndBag( Dungeon.hero.belongings.backpack, selector );
+		}
+		return lastBag( selector );
+	}
+
+	public ItemSelector getSelector() {
+		return selector;
+	}
+
 	protected void placeTitle( Bag bag, int width ){
 		
 		ItemSprite gold = new ItemSprite(ItemSpriteSheet.GOLD, null);
@@ -431,7 +460,13 @@ public class WndBag extends WndTabbed {
 			super.item( item );
 			if (item != null) {
 
-				bg.texture( TextureCache.createSolid( item.isEquipped( Dungeon.hero ) ? EQUIPPED : NORMAL ) );
+				boolean equipped = item.isEquipped(Dungeon.hero) ||
+						item == Dungeon.hero.belongings.weapon ||
+						item == Dungeon.hero.belongings.armor ||
+						item == Dungeon.hero.belongings.artifact ||
+						item == Dungeon.hero.belongings.misc ||
+						item == Dungeon.hero.belongings.ring;
+				bg.texture( TextureCache.createSolid( equipped ? EQUIPPED : NORMAL ) );
 				if (item.cursed && item.cursedKnown) {
 					bg.ra = +0.3f;
 					bg.ga = -0.15f;
@@ -446,6 +481,11 @@ public class WndBag extends WndTabbed {
 				
 				if (item.name() == null) {
 					enable( false );
+				} else if (Dungeon.hero.belongings.lostInventory()
+						&& !item.keptThroughLostInventory()){
+					enable( false );
+				} else if (selector != null) {
+					enable( selector.itemSelectable(item) );
 				} else {
 					enable(
 						mode == Mode.FOR_SALE && Shopkeeper.willBuyItem(item) ||
@@ -498,8 +538,15 @@ public class WndBag extends WndTabbed {
 
 				hide();
 
+			} else if (selector != null) {
+
+				if (selector.hideAfterSelecting()){
+					hide();
+				}
+				selector.onSelect( item );
+
 			} else if (listener != null) {
-				
+
 				hide();
 				listener.onSelect( item );
 				
@@ -528,5 +575,17 @@ public class WndBag extends WndTabbed {
 	
 	public interface Listener {
 		void onSelect( Item item );
+	}
+
+	public abstract static class ItemSelector {
+		public abstract String textPrompt();
+		public Class<?extends Bag> preferredBag(){
+			return null; //defaults to last bag opened
+		}
+		public boolean hideAfterSelecting(){
+			return true; //defaults to hiding the window when an item is picked
+		}
+		public abstract boolean itemSelectable( Item item );
+		public abstract void onSelect( Item item );
 	}
 }

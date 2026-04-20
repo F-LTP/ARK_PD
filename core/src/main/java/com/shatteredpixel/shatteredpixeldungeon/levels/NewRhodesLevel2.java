@@ -22,10 +22,11 @@ import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_Healin
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_IdentifyBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_PotionBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_RingBox;
-import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_TGBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_ScrollBox;
+import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_TGBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_TransBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_WandBox;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.watabou.noosa.Group;
@@ -44,17 +45,17 @@ public class NewRhodesLevel2 extends Level {
     }
 
     @Override
-    public String tilesTex () {
+    public String tilesTex() {
         return Assets.Environment.TILSE_RHODES;
     }
 
     @Override
-    public String waterTex () {
+    public String waterTex() {
         return Assets.Environment.WATER_PRISON;
     }
 
     @Override
-    public void create () {
+    public void create() {
         super.create();
         for (int i = 0; i < length(); i++) {
             int flags = Terrain.flags[map[i]];
@@ -68,7 +69,7 @@ public class NewRhodesLevel2 extends Level {
     private static final int ROOM_TOP = 6;
 
     @Override
-    protected boolean build () {
+    protected boolean build() {
 
         setSize(68, 85);
         Arrays.fill(map, Terrain.CHASM);
@@ -87,7 +88,7 @@ public class NewRhodesLevel2 extends Level {
         Painter.fill(this, 2, 53, 24, 1, Terrain.AVOID);
         Painter.fill(this, 8, 53, 1, 4, Terrain.AVOID);
         Painter.fill(this, 0, 57, 31, 1, Terrain.AVOID);
-        
+
         // + 상점 부분
         Painter.fill(this, 18, 53, 1, 4, Terrain.AVOID);
 
@@ -151,28 +152,45 @@ public class NewRhodesLevel2 extends Level {
         entrance = 4015;
         exit = 3607;
 
-        map[exit-1] = Terrain.EXIT;
+        map[exit - 1] = Terrain.EXIT;
         map[exit] = Terrain.EXIT;
 
         feeling = Level.Feeling.NONE;
 
         NewRhodesLevel2.CustomeMap vis = new NewRhodesLevel2.CustomeMap();
         vis.setRect(0, 0, width(), height());
-       customTiles.add(vis);
+        customTiles.add(vis);
 
         return true;
     }
 
     @Override
-    protected void createMobs () {
+    protected void syncTransitionsFromFields() {
+        transitions.clear();
+        //entrance terrain leads back toward Rhodes 1 (branch 1) (middle cell first)
+        transitions.add(new LevelTransition(this, 4014,
+                LevelTransition.Type.BRANCH_ENTRANCE, 0, 1, LevelTransition.Type.BRANCH_EXIT));
+        transitions.add(new LevelTransition(this, 3946,
+                LevelTransition.Type.BRANCH_ENTRANCE, 0, 1, LevelTransition.Type.BRANCH_EXIT));
+        transitions.add(new LevelTransition(this, 4082,
+                LevelTransition.Type.BRANCH_ENTRANCE, 0, 1, LevelTransition.Type.BRANCH_EXIT));
+        //exit terrain leads deeper into Rhodes (floor 3, branch 3) (middle cell first)
+        transitions.add(new LevelTransition(this, 3607,
+                LevelTransition.Type.BRANCH_EXIT, 0, 3, LevelTransition.Type.BRANCH_ENTRANCE));
+        transitions.add(new LevelTransition(this, 3606,
+                LevelTransition.Type.BRANCH_EXIT, 0, 3, LevelTransition.Type.BRANCH_ENTRANCE));
     }
 
-    public Actor addRespawner () {
+    @Override
+    protected void createMobs() {
+    }
+
+    public Actor addRespawner() {
         return null;
     }
 
     @Override
-    protected void createItems () {
+    protected void createItems() {
         Closure.spawn(this, 3682);
         SkinModel.spawn(this, 3751);
         Firewall.spawn(this, 3882);
@@ -195,21 +213,25 @@ public class NewRhodesLevel2 extends Level {
 
         // 특수 상점 관련
 
-        drop( new Closure_FoodBox(), 3692 ).type = Heap.Type.FOR_SALE_28F;
-        drop( new Closure_PotionBox(), 3693 ).type = Heap.Type.FOR_SALE_28F;
-        drop( new Closure_ScrollBox(), 3694 ).type = Heap.Type.FOR_SALE_28F;
-        drop( new Closure_IdentifyBox(), 3695 ).type = Heap.Type.FOR_SALE_28F;
-        drop( new Closure_HealingBox(), 3696 ).type = Heap.Type.FOR_SALE_28F;
-        drop( new Closure_WandBox(), 3828 ).type = Heap.Type.FOR_SALE_28F;
-        drop( new Closure_TransBox(), 3829 ).type = Heap.Type.FOR_SALE_28F;
-        drop( new Closure_RingBox(), 3830 ).type = Heap.Type.FOR_SALE_28F;
-        drop( new Closure_TGBox(), 3832 ).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_FoodBox(), 3692).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_PotionBox(), 3693).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_ScrollBox(), 3694).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_IdentifyBox(), 3695).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_HealingBox(), 3696).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_WandBox(), 3828).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_TransBox(), 3829).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_RingBox(), 3830).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_TGBox(), 3832).type = Heap.Type.FOR_SALE_28F;
     }
 
     @Override
-    public int randomRespawnCell (Char ch ){
+    public int randomRespawnCell(Char ch) {
         int cell;
+        int count = 0;
         do {
+            if (++count > 30) {
+                return -1;
+            }
             cell = entrance + PathFinder.NEIGHBOURS8[Random.Int(8)];
         } while (!passable[cell]
                 || (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
@@ -219,14 +241,14 @@ public class NewRhodesLevel2 extends Level {
 
 
     @Override
-    public Group addVisuals () {
+    public Group addVisuals() {
         super.addVisuals();
         HallsLevel.addHallsVisuals(this, visuals);
         return visuals;
     }
 
     @Override
-    public void restoreFromBundle (Bundle bundle){
+    public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
     }
 
@@ -239,12 +261,12 @@ public class NewRhodesLevel2 extends Level {
         @Override
         public Tilemap create() {
             Tilemap v = super.create();
-            int[] data = new int[tileW*tileH];
-            for (int i = 0; i < data.length; i++){
+            int[] data = new int[tileW * tileH];
+            for (int i = 0; i < data.length; i++) {
                 data[i] = i;
             }
 
-            v.map( data, tileW );
+            v.map(data, tileW);
             return v;
         }
     }

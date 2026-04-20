@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEvasion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfMistress;
@@ -52,7 +53,11 @@ public class MeleeWeapon extends Weapon {
 	}
 
 	public int STRReq(int lvl){
-		return STRReq(tier, lvl);
+		int req = STRReq(tier, lvl);
+		if (Dungeon.hero != null && Dungeon.hero.hasTalent(Talent.CHAINSAW_EXTEND)) {
+			req += 5 - Dungeon.hero.pointsInTalent(Talent.CHAINSAW_EXTEND);
+		}
+		return req;
 	}
 
 	public void SPCharge(float value) {

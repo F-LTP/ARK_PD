@@ -12,7 +12,6 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.utils.Bundle;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class SkillBook extends Item {
@@ -40,44 +39,42 @@ public class SkillBook extends Item {
         super.execute(hero, action);
         if (action.equals(AC_ACT)) {
 
+            final int cost1 = scaledChargeCost(30,  5,  Dungeon.hero);
+            final int cost2 = scaledChargeCost(60,  10, Dungeon.hero);
+            final int cost3 = scaledChargeCost(100, 15, Dungeon.hero);
+
             GameScene.show(
                     new WndOptions(Messages.get(this, "name"),
                             Messages.get(this, "wnddesc") + infoWnd(),
-                            Messages.get(this, "ac_skl1", new DecimalFormat("#").format(30f)),
-                            Messages.get(this, "ac_skl2", new DecimalFormat("#").format(60f)),
-                            Messages.get(this, "ac_skl3", new DecimalFormat("#").format(100f))) {
+                            Messages.get(this, "ac_skl1", cost1),
+                            Messages.get(this, "ac_skl2", cost2),
+                            Messages.get(this, "ac_skl3", cost3)) {
 
                         @Override
                         protected void onSelect(int index) {
                             Skill skill = null;
-                            int cost = 0;
-                            int minCost = 0;
+                            int chargeDown = 0;
 
                             if (index == 0) {
                                 skill = hero.SK1;
-                                cost = 30;
-                                minCost = 5;
+                                chargeDown = cost1;
                             } else if (index == 1) {
                                 skill = hero.SK2;
-                                cost = 60;
-                                minCost = 10;
+                                chargeDown = cost2;
                             } else if (index == 2) {
                                 skill = hero.SK3;
-                                cost = 100;
-                                minCost = 15;
+                                chargeDown = cost3;
                             }
 
                             if (skill == null) {
                                 GLog.w(Messages.get(SkillBook.class, "no_skill"));
                                 return;
                             }
-                            if (charge < cost) {
+
+                            if (charge < chargeDown) {
                                 GLog.w(Messages.get(SkillBook.class, "low_charge"));
                                 return;
                             }
-
-                            float chargeDown = cost / (RingOfSunLight.SPBonus(Dungeon.hero));
-                            if (chargeDown < minCost) chargeDown = minCost;
                             charge -= chargeDown;
                             updateQuickslot();
 
@@ -86,6 +83,10 @@ public class SkillBook extends Item {
                         }
                     });
         }
+    }
+
+    private int scaledChargeCost(int baseCost, int minCost, Hero hero) {
+        return Math.max(minCost, Math.round(baseCost / RingOfSunLight.SPBonus(hero)));
     }
 
     @Override

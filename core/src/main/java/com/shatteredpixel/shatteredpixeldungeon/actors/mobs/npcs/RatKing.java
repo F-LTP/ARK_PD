@@ -25,101 +25,100 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Gamza;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Firesteel;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.AjimuSprite;
 
 public class RatKing extends NPC {
 
-	{
-		spriteClass = AjimuSprite.class;
-		
-		state = SLEEPING;
-	}
-	
-	@Override
-	public int defenseSkill( Char enemy ) {
-		return INFINITE_EVASION;
-	}
-	
-	@Override
-	public float speed() {
-		return 2f;
-	}
-	
-	@Override
-	protected Char chooseEnemy() {
-		return null;
-	}
-	
-	@Override
-	public void damage( int dmg, Object src ) {
-	}
-	
-	@Override
-	public void add( Buff buff ) {
-	}
-	
-	@Override
-	public boolean reset() {
-		return true;
-	}
+    {
+        spriteClass = AjimuSprite.class;
 
-	//***This functionality is for when rat king may be summoned by a distortion trap
+        state = SLEEPING;
+    }
 
-	@Override
-	protected void onAdd() {
-		super.onAdd();
-		if (Dungeon.depth != 5){
-			yell(Messages.get(this, "confused"));
-		}
-	}
+    @Override
+    public int defenseSkill(Char enemy) {
+        return INFINITE_EVASION;
+    }
 
-	@Override
-	protected boolean act() {
-		if (Dungeon.depth < 5){
-			if (pos == Dungeon.level.exit){
-				destroy();
-				sprite.killAndErase();
-			} else {
-				target = Dungeon.level.exit;
-			}
-		} else if (Dungeon.depth > 5){
-			if (pos == Dungeon.level.entrance){
-				destroy();
-				sprite.killAndErase();
-			} else {
-				target = Dungeon.level.entrance;
-			}
-		}
-		return super.act();
-	}
+    @Override
+    public float speed() {
+        return 2f;
+    }
 
-	//***
+    @Override
+    protected Char chooseEnemy() {
+        return null;
+    }
 
-	@Override
-	public boolean interact(Char c) {
-		sprite.turnTo( pos, c.pos );
+    @Override
+    public void damage(int dmg, Object src) {
+    }
 
-		if (c != Dungeon.hero){
-			return super.interact(c);
-		}
+    @Override
+    public void add(Buff buff) {
+    }
 
-		if (state == SLEEPING) {
-			notice();
-			yell( Messages.get(this, "not_sleeping", Dungeon.hero.heroClass.title()) );
-			Dungeon.level.drop(new Gamza(), pos).sprite.drop(pos);
-			state = WANDERING;
-		} else {
-			yell( Messages.get(this, "what_is_it") );
-		}
-		return true;
-	}
-	
-	@Override
-	public String description() {
-		return ((AjimuSprite)sprite).festive ?
-				Messages.get(this, "desc_festive")
-				: super.description();
-	}
+    @Override
+    public boolean reset() {
+        return true;
+    }
+
+    //***This functionality is for when rat king may be summoned by a distortion trap
+
+    @Override
+    protected void onAdd() {
+        super.onAdd();
+        if (Dungeon.depth != 5) {
+            yell(Messages.get(this, "confused"));
+        }
+    }
+
+    @Override
+    protected boolean act() {
+        if (Dungeon.depth < 5) {
+            if (pos == Dungeon.level.exit()) {
+                destroy();
+                sprite.killAndErase();
+            } else {
+                target = Dungeon.level.exit();
+            }
+        } else if (Dungeon.depth > 5) {
+            if (pos == Dungeon.level.entrance()) {
+                destroy();
+                sprite.killAndErase();
+            } else {
+                target = Dungeon.level.entrance();
+            }
+        }
+        return super.act();
+    }
+
+    //***
+
+    @Override
+    public boolean interact(Char c) {
+        sprite.turnTo(pos, c.pos);
+
+        if (c != Dungeon.hero) {
+            return super.interact(c);
+        }
+
+        if (state == SLEEPING) {
+            notice();
+            yell(Messages.get(this, "not_sleeping", Dungeon.hero.heroClass.title()));
+            Dungeon.level.drop(new Gamza(), pos).sprite.drop(pos);
+            state = WANDERING;
+        } else {
+            yell(Messages.get(this, "what_is_it"));
+        }
+        return true;
+    }
+
+    @Override
+    public String description() {
+        return ((AjimuSprite) sprite).festive ?
+                Messages.get(this, "desc_festive")
+                : super.description();
+    }
 }

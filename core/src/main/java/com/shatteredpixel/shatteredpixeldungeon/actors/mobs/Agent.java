@@ -72,28 +72,50 @@ public class Agent extends Mob {
         else if (hit( this, enemy, true )) {
 
             int dmg = damageRoll();
-            enemy.damage( dmg, this );
-            enemy.sprite.bloodBurstA( sprite.center(), dmg );
-            enemy.sprite.flash();
 
-            if (Dungeon.level.heroFOV[pos]) Sample.INSTANCE.play(Assets.Sounds.HIT_SLASH, 1f, Random.Float(0.96f, 1.05f));
+            int effectiveDamage = enemy.defenseProc( this, dmg );
 
-            if (enemy == Dungeon.hero && !enemy.isAlive()) {
-                Dungeon.fail( getClass() );
+            if ( enemy.buff( Vulnerable.class ) != null){
+                effectiveDamage = Math.round(effectiveDamage * 1.33f);
             }
+
+            effectiveDamage = attackProc( enemy, effectiveDamage );
+
+            if (visibleFight) {
+                if (effectiveDamage > 0 || !enemy.blockSound(Random.Float(0.96f, 1.05f))) {
+                    hitSound(Random.Float(0.87f, 1.15f));
+                }
+            }
+
+            if (!enemy.isAlive()){
+                return true;
+            }
+
+            enemy.damage( effectiveDamage, this );
+
+            if (enemy.sprite != null) {
+                enemy.sprite.bloodBurstA( sprite.center(), effectiveDamage );
+                enemy.sprite.flash();
+            }
+
+            if (!enemy.isAlive() && visibleFight) {
+                if (enemy == Dungeon.hero) {
+                    Dungeon.fail( getClass() );
+                    GLog.n( Messages.capitalize(Messages.get(Char.class, "kill", name())) );
+                }
+            }
+
+            return true;
+
         } else {
-            enemy.sprite.showStatus( CharSprite.NEUTRAL,  enemy.defenseVerb() );
-        }
-
-        if (!enemy.isAlive() && visibleFight) {
-            if (enemy == Dungeon.hero) {
-
-                Dungeon.fail( getClass() );
-                GLog.n( Messages.capitalize(Messages.get(Char.class, "kill", name())) );
+            if (visibleFight) {
+                String defense = enemy.defenseVerb();
+                enemy.sprite.showStatus( CharSprite.NEUTRAL, defense );
+                Sample.INSTANCE.play(Assets.Sounds.MISS);
             }
-        }
 
-        return true;
+            return false;
+        }
 
     }
 
