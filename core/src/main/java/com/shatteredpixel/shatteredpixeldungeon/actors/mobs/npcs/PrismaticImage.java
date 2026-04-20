@@ -40,7 +40,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Brimstone;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CustomeSet;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.MirrorSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.PrismaticSprite;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -120,6 +119,11 @@ public class PrismaticImage extends NPC {
 			}
 		}
 	}
+
+    @Override
+    public boolean isActive() {
+        return isAlive() || deathTimer > 0;
+    }
 	
 	private static final String HEROID	= "hero_id";
 	private static final String TIMER	= "timer";

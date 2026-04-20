@@ -139,6 +139,10 @@ public class PointerEvent {
         }
     }
 
+    public static synchronized boolean isActive( int id ){
+        return activePointers.containsKey(id);
+    }
+
     public static boolean clearKeyboardThisPress = true;
 
     public static synchronized void processPointerEvents(){

@@ -76,13 +76,24 @@ abstract public class KindOfWeapon extends EquipableItem {
 
 	@Override
 	public boolean doUnequip( Hero hero, boolean collect, boolean single ) {
+        boolean thrown = hero.belongings.thrownWeapon == this;
+
+        if (thrown){
+            hero.belongings.thrownWeapon = null;
+        }
+
 		if (super.doUnequip( hero, collect, single )) {
 
-			hero.belongings.weapon = null;
+            if (!thrown){
+                hero.belongings.weapon = null;
+            }
 			return true;
 
 		} else {
 
+            if (thrown){
+                hero.belongings.thrownWeapon = this;
+            }
 			return false;
 
 		}

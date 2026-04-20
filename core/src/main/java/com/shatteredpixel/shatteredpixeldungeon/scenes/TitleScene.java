@@ -31,7 +31,6 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Fireball;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.services.news.News;
-import com.shatteredpixel.shatteredpixeldungeon.services.updates.AvailableUpdateData;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
@@ -49,8 +48,6 @@ import com.watabou.noosa.audio.Music;
 import com.watabou.utils.ColorMath;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.RectF;
-
-import java.util.Date;
 
 public class TitleScene extends PixelScene {
 	
@@ -263,7 +260,7 @@ public class TitleScene extends PixelScene {
 		@Override
 		protected void onClick() {
 			TomorrowRogueNight.scene().addToFront(new WndOptions(
-					Messages.get(this, "versioned_title") + "ver0.5.1",
+					Messages.get(this, "versioned_title") + "ver0.5.2",
 					Messages.get(this, "desc"),
 					Messages.get(this, "update"),
 					Messages.get(this, "changes")

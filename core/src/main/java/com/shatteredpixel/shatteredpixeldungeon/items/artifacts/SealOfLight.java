@@ -107,9 +107,10 @@ public class SealOfLight extends Artifact {
                     Sample.INSTANCE.play(Assets.Sounds.SKILL_BABYNIGHT);
                     charge = 0;
                     exp++;
-                    if (exp >= 2 && level() < levelCap) {
+                    int required = level() / 2 + 1;
+                    if (exp >= required && level() < levelCap) {
                         upgrade();
-                        exp -= 2;
+                        exp -= required;
                         GLog.p(Messages.get(this, "levelup"));
                     }
                     updateQuickslot();

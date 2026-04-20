@@ -26,6 +26,10 @@ import com.watabou.utils.Random;
 
 public class ShieldSlamCounter extends CounterBuff implements ActionIndicator.Action {
 
+    public static final float CC_THRESHOLD = 0.5f;
+
+    private boolean lastCharged = false;
+
     {
         type = buffType.POSITIVE;
     }
@@ -42,7 +46,7 @@ public class ShieldSlamCounter extends CounterBuff implements ActionIndicator.Ac
     }
 
     public float getMaxMultiplier() {
-        return 1.5f + getSealLevel() * 0.1f;
+        return 1.5f + getSealLevel() * 0.05f;
     }
 
     public float getMultiplier() {
@@ -52,10 +56,21 @@ public class ShieldSlamCounter extends CounterBuff implements ActionIndicator.Ac
         return Math.min(0.5f + (accumulated / cap) * (maxMult - 0.5f), maxMult);
     }
 
+    public boolean isCharged() {
+        return count() >= getCap() * CC_THRESHOLD;
+    }
+
     @Override
     public boolean act() {
         if (count() > 0 && ActionIndicator.action == null) {
             ActionIndicator.setAction(this);
+        }
+        boolean charged = isCharged();
+        if (charged != lastCharged) {
+            lastCharged = charged;
+            if (ActionIndicator.action == this) {
+                ActionIndicator.refresh();
+            }
         }
         spend(TICK);
         return true;
@@ -95,7 +110,11 @@ public class ShieldSlamCounter extends CounterBuff implements ActionIndicator.Ac
 
     @Override
     public Image getIcon() {
-        return new ItemSprite(ItemSpriteSheet.ARTIFACT_NEARL, null);
+        ItemSprite icon = new ItemSprite(ItemSpriteSheet.ARTIFACT_NEARL, null);
+        if (!isCharged()) {
+            icon.hardlight(0.5f, 0.5f, 0.5f);
+        }
+        return icon;
     }
 
     @Override
@@ -138,8 +157,10 @@ public class ShieldSlamCounter extends CounterBuff implements ActionIndicator.Ac
             dmg = target.attackProc(enemy, dmg);
             enemy.damage(dmg, target);
 
-            // Stun
-            if (enemy.isAlive()) {
+            boolean charged = isCharged();
+
+            // Stun (only when charge is at least 50%)
+            if (enemy.isAlive() && charged) {
                 Buff.affect(enemy, Paralysis.class, 2f);
                 // Blindness during Radiant Knight
                 if (hero.buff(RadiantKnight.class) != null) {
@@ -147,8 +168,8 @@ public class ShieldSlamCounter extends CounterBuff implements ActionIndicator.Ac
                 }
             }
 
-            // Knockback
-            if (enemy.isAlive()) {
+            // Knockback (only when charge is at least 50%)
+            if (enemy.isAlive() && charged) {
                 Ballistica trajectory = new Ballistica(target.pos, enemy.pos, Ballistica.STOP_TARGET);
                 trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
                 WandOfBlastWave.throwChar(enemy, trajectory, 1, true, true);

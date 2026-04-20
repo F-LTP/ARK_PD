@@ -28,7 +28,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Silence;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
@@ -96,49 +95,54 @@ public class Skeleton extends Mob {
     }
 
     @Override
-    public void damage(int dmg, Object src) {
-        primeCause = src;
-        super.damage(dmg, src);
-    }
-
-    @Override
     public int damageRoll() {
         return Random.NormalIntRange(1, 1);
     }
 
     @Override
+    public int attackSkill(Char target) {
+        return 12;
+    }
+
+    @Override
+    public int drRoll() {
+        return Random.NormalIntRange(0, 5);
+    }
+
+    @Override
+    public void damage(int dmg, Object src) {
+        //stash source so isAlive()'s prime trigger can attribute the kill
+        primeCause = src;
+        super.damage(dmg, src);
+    }
+
+    @Override
     public boolean isInvulnerable(Class effect) {
+        //primed skeleton ignores further damage; explosion is locked in
         return explodeNextTurn || super.isInvulnerable(effect);
     }
 
     @Override
     public boolean isAlive() {
-        return HP > 0 || explodeNextTurn;
+        if (HP > 0) {
+            return true;
+        }
+        if (!hasPrimed) {
+            triggerExplosionPrime();
+        }
+        return explodeNextTurn;
     }
 
-    private void triggerExplosionPrime() {
+    protected void triggerExplosionPrime() {
         hasPrimed = true;
         explodeNextTurn = true;
-        float delay = TICK;
-        // account for slow weapons properly
-        if (primeCause instanceof Hero) {
-            Hero hero = (Hero) primeCause;
-            float atkDelay = hero.belongings.attackingWeapon() != null
-                    ? hero.belongings.attackingWeapon().speedFactor(hero)
-                    : 1f;
-            int turnsCrossed = (int) (now() + atkDelay) - (int) (now());
-            if (turnsCrossed < 2) {
-                delay = Math.max(TICK, atkDelay);
-            }
-        }
-        forcePostpone(delay);
-        if (sprite != null) {
-            sprite.tint(0xFF0000, 0.5f);
-        }
+        if (sprite != null) sprite.tint(0xFF0000, 0.5f);
         if (Dungeon.level.heroFOV[pos]) {
             GLog.w(Messages.get(this, "about_to_explode"));
             Dungeon.hero.interrupt();
         }
+        //turn gap: skeleton waits one tick, giving the player a chance to move away
+        spend(TICK);
     }
 
     @Override
@@ -156,18 +160,18 @@ public class Skeleton extends Mob {
             super.die(cause);
             return;
         }
-
-        //if killed directly (e.g. Grim, Doom, Necromancer death),
-        //prime the explosion instead of dying — it will explode on its next act()
         if (!hasPrimed) {
-            HP = 0;
+            //direct die() (Grim, Doom, Necromancer death, etc.) — route through priming
             primeCause = cause;
+            HP = 0;
             triggerExplosionPrime();
-        } else if (!explodeNextTurn) {
-            //explodeNextTurn was cleared by explode(), actually die now
+            return;
+        }
+        if (!explodeNextTurn) {
+            //called by explode() after the blast — actually die now
             super.die(cause);
         }
-        //otherwise already primed, do nothing — let act() explode
+        //else: primed but not yet detonated, do nothing (let act() explode)
     }
 
     private void explode() {
@@ -213,16 +217,6 @@ public class Skeleton extends Mob {
     protected Item createLoot() {
         Dungeon.LimitedDrops.SKELE_WEP.count++;
         return super.createLoot();
-    }
-
-    @Override
-    public int attackSkill(Char target) {
-        return 12;
-    }
-
-    @Override
-    public int drRoll() {
-        return Random.NormalIntRange(0, 5);
     }
 
 }

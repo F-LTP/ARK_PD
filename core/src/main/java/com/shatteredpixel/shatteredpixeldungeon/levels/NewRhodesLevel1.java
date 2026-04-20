@@ -9,7 +9,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Tilemap;
-import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -18,25 +17,25 @@ import java.util.Arrays;
 // 앞으로 신규 레벨 베이스는 이거로 하고 "베이스,건드리지 말것" 부분만 수정한 다음 세부적으로 하는 식으로!
 public class NewRhodesLevel1 extends Level {
 
-        {
-            color1 = 0x801500;
-            color2 = 0xa68521;
+    {
+        color1 = 0x801500;
+        color2 = 0xa68521;
 
-            viewDistance = 99;
-        }
+        viewDistance = 99;
+    }
 
-        @Override
-        public String tilesTex () {
+    @Override
+    public String tilesTex() {
         return Assets.Environment.TILSE_RHODES;
     }
 
-        @Override
-        public String waterTex () {
+    @Override
+    public String waterTex() {
         return Assets.Environment.WATER_PRISON;
     }
 
-        @Override
-        public void create () {
+    @Override
+    public void create() {
         super.create();
         for (int i = 0; i < length(); i++) {
             int flags = Terrain.flags[map[i]];
@@ -47,10 +46,10 @@ public class NewRhodesLevel1 extends Level {
         }
     }
 
-        private static final int ROOM_TOP = 6;
+    private static final int ROOM_TOP = 6;
 
-        @Override
-        protected boolean build () {
+    @Override
+    protected boolean build() {
 
         setSize(18, 26);
         Arrays.fill(map, Terrain.CHASM);
@@ -73,7 +72,7 @@ public class NewRhodesLevel1 extends Level {
         Painter.fill(this, 6, 9, 6, 6, Terrain.EMPTY);
 
         // 계단 관련
-        Painter.fill(this, 7, 23, 4, 4, Terrain.ENTRANCE); // 1층 가는거
+        Painter.fill(this, 7, 23, 4, 2, Terrain.ENTRANCE); // 1층 가는거
         Painter.fill(this, 6, 9, 6, 2, Terrain.EXIT); // 28층 가는거.
 
         // 벽 관련
@@ -82,14 +81,10 @@ public class NewRhodesLevel1 extends Level {
         Painter.fill(this, 11, 19, 6, 6, Terrain.CHASM);
 
         // 2.
-       Painter.fill(this, 1, 18, 4, 1, Terrain.CHASM);
-       Painter.fill(this, 13, 18, 4, 1, Terrain.CHASM);
+        Painter.fill(this, 1, 18, 4, 1, Terrain.CHASM);
+        Painter.fill(this, 13, 18, 4, 1, Terrain.CHASM);
 
         // 3.
-       Painter.fill(this, 1, 18, 4, 1, Terrain.CHASM);
-       Painter.fill(this, 13, 18, 4, 1, Terrain.CHASM);
-
-        // 4.
         Painter.fill(this, 1, 17, 3, 1, Terrain.CHASM);
         Painter.fill(this, 14, 17, 3, 1, Terrain.CHASM);
 
@@ -98,9 +93,9 @@ public class NewRhodesLevel1 extends Level {
 
         feeling = Feeling.NONE;
 
-            CustomeMap vis = new CustomeMap();
-            vis.setRect(0, 0, width(), height());
-            customTiles.add(vis);
+        CustomeMap vis = new CustomeMap();
+        vis.setRect(0, 0, width(), height());
+        customTiles.add(vis);
 
         return true;
     }
@@ -108,7 +103,7 @@ public class NewRhodesLevel1 extends Level {
     @Override
     protected void syncTransitionsFromFields() {
         transitions.clear();
-        //entrance terrain (7,21)-(10,24) leads back to main dungeon floor 1
+        //entrance terrain (7,23)-(10,24) leads back to main dungeon floor 1
         //center cell first so arrivals land at the middle
         int entrCenter = 23 * width() + 9; // (9,23)
         transitions.add(new LevelTransition(this, entrCenter,
@@ -138,29 +133,29 @@ public class NewRhodesLevel1 extends Level {
         }
     }
 
-        @Override
-        protected void createMobs () {
+    @Override
+    protected void createMobs() {
     }
 
-        public Actor addRespawner () {
+    public Actor addRespawner() {
         return null;
     }
 
-        @Override
-        protected void createItems () {
-     //   if (Dungeon.hero.belongings.getItem(Amulet.class) == null) GreenCat.spawn(this, exit);
-     //   SkinModel.spawn(this, 255);
+    @Override
+    protected void createItems() {
+        //   if (Dungeon.hero.belongings.getItem(Amulet.class) == null) GreenCat.spawn(this, exit);
+        //   SkinModel.spawn(this, 255);
         Blackperro.spawn(this, 245);
     }
 
-        @Override
-        public int randomRespawnCell (Char ch ){
+    @Override
+    public int randomRespawnCell(Char ch) {
         int cell;
-            int count = 0;
-            do {
-                if (++count > 30) {
-                    return -1;
-                }
+        int count = 0;
+        do {
+            if (++count > 30) {
+                return -1;
+            }
             cell = entrance + PathFinder.NEIGHBOURS8[Random.Int(8)];
         } while (!passable[cell]
                 || (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
@@ -169,16 +164,11 @@ public class NewRhodesLevel1 extends Level {
     }
 
 
-        @Override
-        public Group addVisuals () {
+    @Override
+    public Group addVisuals() {
         super.addVisuals();
         HallsLevel.addHallsVisuals(this, visuals);
         return visuals;
-    }
-
-        @Override
-        public void restoreFromBundle (Bundle bundle){
-        super.restoreFromBundle(bundle);
     }
 
     public static class CustomeMap extends CustomTilemap {
@@ -190,12 +180,12 @@ public class NewRhodesLevel1 extends Level {
         @Override
         public Tilemap create() {
             Tilemap v = super.create();
-            int[] data = new int[tileW*tileH];
-            for (int i = 0; i < data.length; i++){
-                    data[i] = i;
+            int[] data = new int[tileW * tileH];
+            for (int i = 0; i < data.length; i++) {
+                data[i] = i;
             }
 
-            v.map( data, tileW );
+            v.map(data, tileW);
             return v;
         }
     }

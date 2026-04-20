@@ -55,44 +55,36 @@ public class SkillBook extends Item {
 
         if (action.equals(AC_ACT)) {
 
-            float spBonus = RingOfSunLight.SPBonus(Dungeon.hero);
-            DecimalFormat fmt = new DecimalFormat("#");
-            float cost1 = Math.max(5,  30f  / spBonus);
-            float cost2 = Math.max(10, 60f  / spBonus);
-            float cost3 = Math.max(15, 100f / spBonus);
+            final int cost1 = scaledChargeCost(30,  5,  Dungeon.hero);
+            final int cost2 = scaledChargeCost(60,  10, Dungeon.hero);
+            final int cost3 = scaledChargeCost(100, 15, Dungeon.hero);
 
             GameScene.show(
                     new WndOptions(Messages.get(this, "name"),
                             Messages.get(this, "wnddesc") + infoWnd(),
-                            Messages.get(this, "ac_skl1", fmt.format(cost1)),
-                            Messages.get(this, "ac_skl2", fmt.format(cost2)),
-                            Messages.get(this, "ac_skl3", fmt.format(cost3))) {
+                            Messages.get(this, "ac_skl1", cost1),
+                            Messages.get(this, "ac_skl2", cost2),
+                            Messages.get(this, "ac_skl3", cost3)) {
 
                         @Override
                         protected void onSelect(int index) {
                             Skill skill = null;
-                            int cost = 0;
-                            int minCost = 0;
+                            int chargeDown = 0;
+
                             if (index == 0) {
                                 skill = hero.SK1;
-                                cost = 30;
-                                minCost = 5;
+                                chargeDown = cost1;
                             } else if (index == 1) {
                                 skill = hero.SK2;
-                                cost = 60;
-                                minCost = 10;
+                                chargeDown = cost2;
                             } else if (index == 2) {
                                 skill = hero.SK3;
-                                cost = 100;
-                                minCost = 15;
+                                chargeDown = cost3;
                             }
                             if (skill == null) {
                                 GLog.w(Messages.get(SkillBook.class, "no_skill"));
                                 return;
                             }
-
-                            float chargeDown = cost / (RingOfSunLight.SPBonus(Dungeon.hero));
-                            if (chargeDown < minCost) chargeDown = minCost;
 
                             if (charge < chargeDown && !Dungeon.isChallenged(TEST)) {
                                 GLog.w(Messages.get(SkillBook.class, "low_charge"));
@@ -106,6 +98,10 @@ public class SkillBook extends Item {
                         }
                     });
         }
+    }
+
+    private int scaledChargeCost(int baseCost, int minCost, Hero hero) {
+        return Math.max(minCost, Math.round(baseCost / RingOfSunLight.SPBonus(hero)));
     }
 
     @Override

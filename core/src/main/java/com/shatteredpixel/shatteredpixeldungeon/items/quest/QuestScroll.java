@@ -5,6 +5,8 @@ import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -19,91 +21,67 @@ public class QuestScroll extends Item {
 
     private static final float TIME_TO_READ = 1f;
 
+    private static final int MAX_FLOOR_CAP = 40;
+
     {
         image = ItemSpriteSheet.QUEST_SCROLL;
         unique = true;
         stackable = false;
         defaultAction = AC_READ;
-        keptThoughLostInvent = true;
     }
 
     public enum QuestObjective {
         SLAY_ENEMIES,
-        REACH_DEPTH,
-        EXPLORE_FLOORS;
-
-        public boolean checkComplete(QuestScroll scroll) {
-            switch (this) {
-                case SLAY_ENEMIES:
-                    return (Statistics.enemiesSlain - scroll.snapshotValue) >= scroll.targetValue;
-                case REACH_DEPTH:
-                    return (Statistics.deepestFloor - scroll.snapshotValue) >= scroll.targetValue;
-                case EXPLORE_FLOORS:
-                    return (countExplored() - scroll.snapshotValue) >= scroll.targetValue;
-                default:
-                    return false;
-            }
-        }
-
-        public String progressText(QuestScroll scroll) {
-            int current;
-            switch (this) {
-                case SLAY_ENEMIES:
-                    current = Math.max(0, Statistics.enemiesSlain - scroll.snapshotValue);
-                    break;
-                case REACH_DEPTH:
-                    current = Math.max(0, Statistics.deepestFloor - scroll.snapshotValue);
-                    break;
-                case EXPLORE_FLOORS:
-                    current = Math.max(0, countExplored() - scroll.snapshotValue);
-                    break;
-                default:
-                    current = 0;
-            }
-            return Math.min(current, scroll.targetValue) + "/" + scroll.targetValue;
-        }
+        RANGED_KILLS,
+        DESCEND_RATIONLESS,
+        OPEN_CHESTS,
+        COLLECT_GOLD;
 
         public int rollTarget() {
             switch (this) {
                 case SLAY_ENEMIES:
-                    return Random.IntRange(10, 20);
-                case REACH_DEPTH:
-                    int depthCap = Math.max(1, 40 - Statistics.deepestFloor);
-                    return Math.min(Random.IntRange(3, 8), depthCap);
-                case EXPLORE_FLOORS:
-                    int exploreCap = Math.max(1, 40 - countExplored());
-                    return Math.min(Random.IntRange(3, 8), exploreCap);
+                    return Random.IntRange(5, 7) * 10;
+                case RANGED_KILLS:
+                    return Random.IntRange(8, 15);
+                case DESCEND_RATIONLESS: {
+                    int cap = Math.max(1, MAX_FLOOR_CAP - Statistics.deepestFloor);
+                    return Math.min(Random.IntRange(2, 3), cap);
+                }
+                case OPEN_CHESTS:
+                    return Random.IntRange(3, 6);
+                case COLLECT_GOLD:
+                    return Random.IntRange(30, 80) * 10;
                 default:
                     return 10;
             }
         }
 
-        public int snapshotCurrent() {
+        // Gold reward = base * targetValue, scaled by quest difficulty
+        public int rewardGold(int targetValue) {
             switch (this) {
                 case SLAY_ENEMIES:
-                    return Statistics.enemiesSlain;
-                case REACH_DEPTH:
-                    return Statistics.deepestFloor;
-                case EXPLORE_FLOORS:
-                    return countExplored();
+                    return targetValue * 7;
+                case RANGED_KILLS:
+                    return targetValue * 30;
+                case DESCEND_RATIONLESS:
+                    return targetValue * 150;
+                case OPEN_CHESTS:
+                    return targetValue * 50;
+                case COLLECT_GOLD:
+                    return Math.round(targetValue * 0.2f);
                 default:
-                    return 0;
+                    return targetValue * 10;
             }
-        }
-
-        private static int countExplored() {
-            int count = 0;
-            for (int i = 1; i <= 40; i++) {
-                if (Statistics.floorsExplored.get(i, 0f) > 0) count++;
-            }
-            return count;
         }
     }
 
     public QuestObjective objective;
     public int targetValue;
-    public int snapshotValue;
-    public int rewardType;
+    public int progress;
+
+    // Optional non-gold reward. Null means gold-only. Placeholder for future item rewards.
+    public Item bonusReward;
+
     public boolean completed = false;
 
     @Override
@@ -133,13 +111,13 @@ public class QuestScroll extends Item {
                 return;
             }
 
-            if (objective.checkComplete(this)) {
+            if (currentProgress() >= targetValue) {
                 completed = true;
                 GLog.p(Messages.get(this, "complete"));
                 grantRewards(hero);
                 detach(hero.belongings.backpack);
             } else {
-                GLog.i(Messages.get(this, "progress", objective.progressText(this)));
+                GLog.i(Messages.get(this, "progress", progressText()));
             }
 
             hero.sprite.operate(hero.pos);
@@ -147,12 +125,35 @@ public class QuestScroll extends Item {
         }
     }
 
-    private void grantRewards(Hero hero) {
-        int goldAmount = targetValue * 50;
-        Gold gold = new Gold(goldAmount);
-        if (!gold.doPickUp(hero)) {
-            Dungeon.level.drop(gold, hero.pos).sprite.drop();
+    public int currentProgress() {
+        if (objective == null) return 0;
+        // DESCEND_RATIONLESS displays progress off-by-one from the internal counter so that eating on the final descended floor still resets progress before it counts.
+        if (objective == QuestObjective.DESCEND_RATIONLESS) {
+            return Math.max(0, progress - 1);
         }
+        return progress;
+    }
+
+    public String progressText() {
+        return Math.min(currentProgress(), targetValue) + "/" + targetValue;
+    }
+
+    private void grantRewards(Hero hero) {
+        int goldAmount = objective.rewardGold(targetValue);
+        Dungeon.level.drop(new Gold(goldAmount), hero.pos).sprite.drop();
+        if (bonusReward != null) {
+            Dungeon.level.drop(bonusReward, hero.pos).sprite.drop();
+            bonusReward = null;
+        }
+    }
+
+    public String rewardText() {
+        if (objective == null) return "";
+        int goldAmount = objective.rewardGold(targetValue);
+        if (bonusReward != null) {
+            return Messages.get(this, "reward_with_bonus", goldAmount, bonusReward.title());
+        }
+        return Messages.get(this, "reward_label", goldAmount);
     }
 
     @Override
@@ -161,16 +162,89 @@ public class QuestScroll extends Item {
 
         if (objective == null) return desc;
 
-        String objDesc = Messages.get(this, "obj_" + objective.name().toLowerCase());
-        String progress = objective.progressText(this);
-        return desc + "\n\n" + objDesc + "\n\n" + Messages.get(this, "progress_label", progress);
+        String objDesc = Messages.get(this, "obj_" + objective.name().toLowerCase(), targetValue);
+        return desc + "\n\n" + objDesc
+                + "\n\n" + rewardText()
+                + "\n\n" + Messages.get(this, "progress_label", progressText());
+    }
+
+    // event hooks
+    public static QuestScroll active() {
+        if (Dungeon.hero == null || Dungeon.hero.belongings == null) return null;
+        //iterate belongings directly so progress keeps tracking even while LostInventory
+        //hides the scroll from getItem() after an unblessed ankh resurrect
+        for (Item item : Dungeon.hero.belongings) {
+            if (item instanceof QuestScroll) return (QuestScroll) item;
+        }
+        return null;
+    }
+
+    public static void onMobKilled(Object cause) {
+        QuestScroll q = active();
+        if (q == null || q.completed || q.objective == null) return;
+        switch (q.objective) {
+            case SLAY_ENEMIES:
+                if (isHeroKill(cause)) q.progress++;
+                break;
+            case RANGED_KILLS:
+                if (isRangedCause(cause)) q.progress++;
+                break;
+            default:
+        }
+    }
+
+    public static void onChestOpened() {
+        QuestScroll q = active();
+        if (q == null || q.completed || q.objective == null) return;
+        if (q.objective == QuestObjective.OPEN_CHESTS) {
+            q.progress++;
+        }
+    }
+
+    public static void onFoodEaten(Item food) {
+        QuestScroll q = active();
+        if (q == null || q.completed || q.objective == null) return;
+        if (q.objective == QuestObjective.DESCEND_RATIONLESS) {
+            q.progress = 0;
+        }
+    }
+
+    public static void onNewFloorReached() {
+        QuestScroll q = active();
+        if (q == null || q.completed || q.objective == null) return;
+        if (q.objective == QuestObjective.DESCEND_RATIONLESS) {
+            q.progress++;
+        }
+    }
+
+    public static void onGoldCollected(int amount) {
+        QuestScroll q = active();
+        if (q == null || q.completed || q.objective == null) return;
+        if (q.objective == QuestObjective.COLLECT_GOLD) {
+            q.progress += amount;
+        }
+    }
+
+    private static boolean isHeroKill(Object cause) {
+        return cause == Dungeon.hero
+                || cause instanceof Wand
+                || cause instanceof MissileWeapon;
+    }
+
+    private static boolean isRangedCause(Object cause) {
+        if (cause instanceof Wand) return true;
+        if (cause == Dungeon.hero
+                && Dungeon.hero.belongings.attackingWeapon() instanceof MissileWeapon) {
+            return true;
+        }
+        return false;
     }
 
     private static final String OBJECTIVE = "objective";
     private static final String TARGET = "target";
-    private static final String SNAPSHOT = "snapshot";
-    private static final String REWARD = "reward";
+    private static final String PROGRESS = "progress";
     private static final String COMPLETED = "completed";
+    private static final String BONUS_REWARD = "bonus_reward";
 
     @Override
     public void storeInBundle(Bundle bundle) {
@@ -179,9 +253,11 @@ public class QuestScroll extends Item {
             bundle.put(OBJECTIVE, objective.name());
         }
         bundle.put(TARGET, targetValue);
-        bundle.put(SNAPSHOT, snapshotValue);
-        bundle.put(REWARD, rewardType);
+        bundle.put(PROGRESS, progress);
         bundle.put(COMPLETED, completed);
+        if (bonusReward != null) {
+            bundle.put(BONUS_REWARD, bonusReward);
+        }
     }
 
     @Override
@@ -196,9 +272,11 @@ public class QuestScroll extends Item {
             }
         }
         targetValue = bundle.getInt(TARGET);
-        snapshotValue = bundle.getInt(SNAPSHOT);
-        rewardType = bundle.getInt(REWARD);
+        progress = bundle.getInt(PROGRESS);
         completed = bundle.getBoolean(COMPLETED);
+        if (bundle.contains(BONUS_REWARD)) {
+            bonusReward = (Item) bundle.get(BONUS_REWARD);
+        }
     }
 
     public static QuestScroll createRandom() {
@@ -206,8 +284,7 @@ public class QuestScroll extends Item {
         QuestObjective[] objectives = QuestObjective.values();
         scroll.objective = objectives[Random.Int(objectives.length)];
         scroll.targetValue = scroll.objective.rollTarget();
-        scroll.snapshotValue = scroll.objective.snapshotCurrent();
-        scroll.rewardType = 0;
+        scroll.progress = 0;
         return scroll;
     }
 }

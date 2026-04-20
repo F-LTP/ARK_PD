@@ -49,6 +49,7 @@ public class Dobermann extends NPC {
         if (questGiven || Dungeon.hero.belongings.getItem(QuestScroll.class) != null) {
             sprite.showStatus(CharSprite.NEGATIVE, Messages.get(this, "has_quest"));
         } else {
+            // quest should be set at spawn, but regenerate if missing (e.g. old save)
             if (pendingQuest == null) {
                 pendingQuest = QuestScroll.createRandom();
             }
@@ -109,6 +110,7 @@ public class Dobermann extends NPC {
     public static void spawn(Level level, int ppos) {
         Dobermann perro = new Dobermann();
         perro.pos = ppos;
+        perro.pendingQuest = QuestScroll.createRandom();
         level.mobs.add(perro);
     }
 }

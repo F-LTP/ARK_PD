@@ -322,7 +322,7 @@ import com.watabou.utils.DeviceCompat;
 		new DewVial().collect();
 	}
 
-	private void initRosecat(Hero hero)
+	private static void initRosecat(Hero hero)
 	{
 		(hero.belongings.weapon = new EX42()).identify();
 
@@ -351,7 +351,7 @@ import com.watabou.utils.DeviceCompat;
 		new MeatCutlet().quantity(2).collect();
 	}
 
-	private void initNearl(Hero hero)
+	private static void initNearl(Hero hero)
 	{
 		(hero.belongings.weapon = new NEARL_AXE()).identify();
 
@@ -381,7 +381,7 @@ import com.watabou.utils.DeviceCompat;
 		new DewVial().collect();
 	}
 
-	 private void initChen(Hero hero)
+	 private static void initChen(Hero hero)
 	 {
 		 (hero.belongings.weapon = new ChenSword()).identify();
 

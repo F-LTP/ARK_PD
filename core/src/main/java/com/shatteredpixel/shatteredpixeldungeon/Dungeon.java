@@ -51,6 +51,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_FoodBo
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.QuestCat;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.QuestScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfMayer;
@@ -370,6 +371,7 @@ public class Dungeon {
         //depth is now set by callers before calling newLevel()
         if (depth > Statistics.deepestFloor && branch == 0) {
             Statistics.deepestFloor = depth;
+            QuestScroll.onNewFloorReached();
 			
 			if (Statistics.qualifiedForNoKilling) {
 				Statistics.completedWithNoKilling = true;
@@ -459,7 +461,7 @@ public class Dungeon {
                     level = new DeadEndLevel();
                     Statistics.deepestFloor--;
             }
-        } else if (branch >= 1 && branch <= 4) {
+        } else if (isInRhodes()) {
             //Rhodes Island floors — depth 0, branches 1-4
             switch (branch) {
                 case 1:
@@ -891,21 +893,11 @@ public class Dungeon {
 			SecretRoom.restoreRoomsFromBundle(bundle);
 
             generatedLevels.clear();
-            if (bundle.contains(GENERATED_LEVELS)){
-                for (int i : bundle.getIntArray(GENERATED_LEVELS)) {
-                    generatedLevels.add(i);
-                }
-            } else {
-                for (int i = 1; i <= Statistics.deepestFloor; i++) {
-                    generatedLevels.add(i);
-                }
-            }
-            int maxDropFloor = 26;
-            for (int floor : generatedLevels) {
-                if (floor > maxDropFloor) maxDropFloor = floor;
+            for (int i : bundle.getIntArray(GENERATED_LEVELS)) {
+                generatedLevels.add(i);
             }
             droppedItems = new SparseArray<>();
-            for (int i=1; i <= maxDropFloor; i++) {
+            for (int i=1; i <= 40; i++) {
 
                 //dropped items
                 ArrayList<Item> items = new ArrayList<>();

@@ -350,6 +350,11 @@ public class GunWeapon extends MeleeWeapon {
     }
 
     protected boolean processGunHit(Char ch, float dmgMult, boolean triggerTalentProcs) {
+        return processGunHit(ch, dmgMult, triggerTalentProcs, -1);
+    }
+
+    // use a caller-supplied DR value instead of rolling. Pass -1 to roll normally.
+    protected boolean processGunHit(Char ch, float dmgMult, boolean triggerTalentProcs, int preRolledDr) {
         float dmg = fireDamageFactor(fireDamageRoll()) * dmgMult;
         int trueDmg = 0;
         if (ch.buff(Blindness.class) != null && Dungeon.hero.hasTalent(Talent.FLASH_SPEAR)) {
@@ -371,7 +376,7 @@ public class GunWeapon extends MeleeWeapon {
                 }
             }
 
-            int dr = ch.drRoll();
+            int dr = (preRolledDr >= 0) ? preRolledDr : ch.drRoll();
 
             int effectiveDamage = ch.defenseProc( Dungeon.hero, (int) dmg );
 

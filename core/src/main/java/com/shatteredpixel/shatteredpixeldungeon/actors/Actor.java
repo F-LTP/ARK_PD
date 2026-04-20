@@ -37,7 +37,7 @@ public abstract class Actor implements Bundlable {
 	
 	public static final float TICK	= 1f;
 
-	private float time;
+    protected float time;
 
 	private int id = 0;
 
@@ -142,7 +142,7 @@ public abstract class Actor implements Bundlable {
 	private static volatile Actor current;
 
 	private static SparseArray<Actor> ids = new SparseArray<>();
-	private static int nextID = 1;//change from budding;shattered
+	private static int nextID = 1;
 	private static float now = 0;
 	
 	public static float now(){

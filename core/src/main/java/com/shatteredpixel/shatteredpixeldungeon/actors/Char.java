@@ -135,6 +135,7 @@ import com.watabou.utils.Random;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 public abstract class Char extends Actor {
 	
@@ -164,8 +165,8 @@ public abstract class Char extends Actor {
 	public int viewDistance	= 8;
 	
 	public boolean[] fieldOfView = null;
-	
-	private HashSet<Buff> buffs = new HashSet<>();
+
+    private LinkedHashSet<Buff> buffs = new LinkedHashSet<>();
 	
 	@Override
 	protected boolean act() {
@@ -787,9 +788,9 @@ public abstract class Char extends Actor {
 		
 		super.spend( time / timeScale );
 	}
-	
-	public synchronized HashSet<Buff> buffs() {
-		return new HashSet<>(buffs);
+
+    public synchronized LinkedHashSet<Buff> buffs() {
+        return new LinkedHashSet<>(buffs);
 	}
 	
 	@SuppressWarnings("unchecked")

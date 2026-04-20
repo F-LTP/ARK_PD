@@ -161,28 +161,27 @@ public class Belongings implements Iterable<Item> {
 
     public void restoreFromBundle( Bundle bundle ) {
         bundleRestoring = true;
-		backpack.clear();
-		backpack.restoreFromBundle( bundle );
+        try {
+            backpack.clear();
+            backpack.restoreFromBundle(bundle);
 
-		weapon = (KindOfWeapon) bundle.get(WEAPON);
-		if (weapon() != null) {
-			weapon().activate(owner);
-		}
+            weapon = (KindOfWeapon) bundle.get(WEAPON);
+            if (weapon() != null) weapon().activate(owner);
 
-		armor = (Armor)bundle.get( ARMOR );
-		if (armor() != null){
-			armor().activate( owner );
-		}
+            armor = (Armor) bundle.get(ARMOR);
+            if (armor() != null) armor().activate(owner);
 
-        artifact = (Artifact) bundle.get(ARTIFACT);
-        if (artifact() != null)     artifact().activate(owner);
-        misc = (KindofMisc) bundle.get(MISC);
-        if (misc() != null)         misc().activate( owner );
+            artifact = (Artifact) bundle.get(ARTIFACT);
+            if (artifact() != null) artifact().activate(owner);
 
-        ring = (Ring) bundle.get(RING);
-        if (ring() != null)         ring().activate( owner );
+            misc = (KindofMisc) bundle.get(MISC);
+            if (misc() != null) misc().activate(owner);
 
-        bundleRestoring = false;
+            ring = (Ring) bundle.get(RING);
+            if (ring() != null) ring().activate(owner);
+        } finally {
+            bundleRestoring = false;
+        }
 	}
 
     public void clear(){

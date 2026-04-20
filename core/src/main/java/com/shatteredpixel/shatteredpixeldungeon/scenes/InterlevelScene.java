@@ -412,11 +412,7 @@ public class InterlevelScene extends PixelScene {
         if (curTransition != null) {
             LevelTransition destTransition = level.getTransition(curTransition.destType);
             curTransition = null;
-            if (destTransition != null) {
-                Dungeon.switchLevel(level, destTransition.cell());
-            } else {
-                Dungeon.switchLevel(level, level.entrance());
-            }
+            Dungeon.switchLevel(level, destTransition.cell());
         } else {
             Dungeon.switchLevel(level, level.entrance());
         }
@@ -437,7 +433,7 @@ public class InterlevelScene extends PixelScene {
 
             //depth and branch are already set by init() (depth=0, branch=2)
             Level level = Dungeon.newLevel();
-            Dungeon.switchLevel(level, 2929);
+            Dungeon.switchLevel(level, 2929); // dorm room
         } else {
             //returning to Rhodes from the dungeon
             Mob.holdAllies(Dungeon.level);
@@ -547,11 +543,7 @@ public class InterlevelScene extends PixelScene {
         if (curTransition != null) {
             LevelTransition destTransition = level.getTransition(curTransition.destType);
             curTransition = null;
-            if (destTransition != null) {
-                Dungeon.switchLevel(level, destTransition.cell());
-            } else {
-                Dungeon.switchLevel(level, level.exit());
-            }
+            Dungeon.switchLevel(level, destTransition.cell());
         } else {
             Dungeon.switchLevel(level, level.exit());
         }

@@ -87,7 +87,7 @@ public class Item implements Bundlable {
 	protected static final float TIME_TO_THROW		= 1.0f;
 	protected static final float TIME_TO_PICK_UP	= 1.0f;
 	protected static final float TIME_TO_DROP		= 1.0f;
-	
+
 	public static final String AC_DROP		= "DROP";
 	public static final String AC_THROW		= "THROW";
 	
@@ -160,8 +160,7 @@ public class Item implements Bundlable {
 
 			GameScene.pickUp( this, pos );
 			Sample.INSTANCE.play( Assets.Sounds.ITEM );
-			Talent.onItemCollected( hero, this );
-			hero.spendAndNext( TIME_TO_PICK_UP );
+            hero.spendAndNext(pickupDelay());
 			return true;
 			
 		} else {

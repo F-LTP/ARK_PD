@@ -214,6 +214,22 @@ public class CellSelector extends ScrollArea {
 	@Override
 	protected void onDrag( PointerEvent event ) {
 
+        //self-heal orphaned pinch state
+        if (pinching && (curEvent == null || another == null
+                || !PointerEvent.isActive(curEvent.id)
+                || !PointerEvent.isActive(another.id))) {
+            pinching = false;
+            if (another != null && PointerEvent.isActive(another.id)) {
+                curEvent = another;
+            }
+            another = null;
+            dragging = true;
+            if (curEvent != null) {
+                lastPos.set(curEvent.current);
+            }
+            zoom(Math.round(camera.zoom));
+        }
+
 		if (pinching) {
 
 			float curSpan = PointF.distance( curEvent.current, another.current );
