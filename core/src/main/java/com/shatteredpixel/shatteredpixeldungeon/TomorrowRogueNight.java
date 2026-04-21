@@ -39,6 +39,7 @@ public class TomorrowRogueNight extends Game {
     public static final int v0_5_0 = 627;
     public static final int v0_5_1 = 644;
     public static final int v0_5_2 = 676;
+    public static final int v0_5_2a = 677;
 	
 	public TomorrowRogueNight(PlatformSupport platform ) {
 		super( sceneClass == null ? WelcomeScene.class : sceneClass, platform );

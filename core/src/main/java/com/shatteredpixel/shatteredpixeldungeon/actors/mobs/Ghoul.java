@@ -152,7 +152,7 @@ public class Ghoul extends Mob {
 	public void die(Object cause) {
 		if (cause != Chasm.class && cause != GhoulLifeLink.class && !Dungeon.level.pit[pos]){
 			Ghoul nearby = GhoulLifeLink.searchForHost(this);
-			if (nearby != null){
+			if (nearby != null) {
 				beingLifeLinked = true;
                 timesDowned++;
 				Actor.remove(this);
@@ -257,9 +257,6 @@ public class Ghoul extends Mob {
 
 			turnsToRevive--;
 			if (turnsToRevive <= 0){
-				if (Dungeon.isChallenged(Challenges.TACTICAL_UPGRADE)) ghoul.HP = Math.round(ghoul.HT * 0.75f);
-				else ghoul.HP = Math.round(ghoul.HT/10f);
-
 				if (Actor.findChar( ghoul.pos ) != null) {
 					ArrayList<Integer> candidates = new ArrayList<>();
 					for (int n : PathFinder.NEIGHBOURS8) {
@@ -278,11 +275,17 @@ public class Ghoul extends Mob {
 						return true;
 					}
 				}
+                if (Dungeon.isChallenged(Challenges.TACTICAL_UPGRADE)) ghoul.HP = Math.round(ghoul.HT * 0.75f);
+                else ghoul.HP = Math.round(ghoul.HT/10f);
+                ghoul.beingLifeLinked = false;
 				Actor.add(ghoul);
 				ghoul.timeToNow();
 				Dungeon.level.mobs.add(ghoul);
 				Dungeon.level.occupyCell( ghoul );
 				ghoul.sprite.idle();
+                if (ghoul.enemy != null && ghoul.enemy.alignment == ghoul.alignment){//change from budding,shattered
+                    ghoul.enemy = null; //reset enemy
+                }
 				super.detach();
 				return true;
 			}
@@ -312,6 +315,7 @@ public class Ghoul extends Mob {
 				attachTo(newHost);
 				timeToNow();
 			} else {
+                ghoul.beingLifeLinked = false;//change from budding,shattered, DK problem
 				ghoul.die(this);
 			}
 		}
@@ -330,6 +334,7 @@ public class Ghoul extends Mob {
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
 			ghoul = (Ghoul) bundle.get(GHOUL);
+            ghoul.beingLifeLinked = true;//change from budding , shattered
 			turnsToRevive = bundle.getInt(LEFT);
 		}
 
