@@ -26,6 +26,8 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Silence;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
@@ -131,11 +133,8 @@ public class Ghoul extends Mob {
 					Actor.addDelayed( new Pushing( child, pos, child.pos ), -1 );
 				}
 
-				//champion buff, mainly
-				for (Buff b : buffs()){
-					if (b.revivePersists) {
-						Buff.affect(child, b.getClass());
-					}
+				for (Buff b : buffs(ChampionEnemy.class)){
+					Buff.affect( child, b.getClass());
 				}
 
 			}
@@ -152,11 +151,12 @@ public class Ghoul extends Mob {
 			Ghoul nearby = GhoulLifeLink.searchForHost(this);
 			if (nearby != null){
 				beingLifeLinked = true;
-				timesDowned++;
 				Actor.remove(this);
 				Dungeon.level.mobs.remove( this );
+				timesDowned++;
 				Buff.append(nearby, GhoulLifeLink.class).set(timesDowned*5, this);
 				((PossessedSprite)sprite).crumple();
+				beingLifeLinked = false;
 				return;
 			}
 		}
@@ -165,20 +165,13 @@ public class Ghoul extends Mob {
 	}
 
 	@Override
-	public boolean isAlive() {
-		return super.isAlive() || beingLifeLinked;
-	}
-
-	@Override
-	public boolean isActive() {
-		return !beingLifeLinked && isAlive();
-	}
-
-	@Override
 	protected synchronized void onRemove() {
 		if (beingLifeLinked) {
 			for (Buff buff : buffs()) {
-				if (!buff.revivePersists) {
+				//corruption, champion, and king damager are preserved when removed via life link
+				if (!(buff instanceof Corruption)
+						&& (!(buff instanceof ChampionEnemy))
+						&& !(buff instanceof DwarfKing.KingDamager)) {
 					buff.detach();
 				}
 			}
@@ -250,13 +243,15 @@ public class Ghoul extends Mob {
 
 			if (Dungeon.level.pit[ghoul.pos]){
 				super.detach();
-				ghoul.beingLifeLinked = false;
 				ghoul.die(this);
 				return true;
 			}
 
 			turnsToRevive--;
 			if (turnsToRevive <= 0){
+				if (Dungeon.isChallenged(Challenges.TACTICAL_UPGRADE)) ghoul.HP = Math.round(ghoul.HT * 0.75f);
+				else ghoul.HP = Math.round(ghoul.HT/10f);
+
 				if (Actor.findChar( ghoul.pos ) != null) {
 					ArrayList<Integer> candidates = new ArrayList<>();
 					for (int n : PathFinder.NEIGHBOURS8) {
@@ -275,9 +270,6 @@ public class Ghoul extends Mob {
 						return true;
 					}
 				}
-				if (Dungeon.isChallenged(Challenges.TACTICAL_UPGRADE)) ghoul.HP = Math.round(ghoul.HT * 0.75f);
-				else ghoul.HP = Math.round(ghoul.HT/10f);
-				ghoul.beingLifeLinked = false;
 				Actor.add(ghoul);
 				ghoul.spend(-ghoul.cooldown());
 				Dungeon.level.mobs.add(ghoul);
@@ -312,7 +304,6 @@ public class Ghoul extends Mob {
 				attachTo(newHost);
 				spend(-cooldown());
 			} else {
-				ghoul.beingLifeLinked = false;
 				ghoul.die(this);
 			}
 		}
@@ -331,7 +322,6 @@ public class Ghoul extends Mob {
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
 			ghoul = (Ghoul) bundle.get(GHOUL);
-			ghoul.beingLifeLinked = true;
 			turnsToRevive = bundle.getInt(LEFT);
 		}
 

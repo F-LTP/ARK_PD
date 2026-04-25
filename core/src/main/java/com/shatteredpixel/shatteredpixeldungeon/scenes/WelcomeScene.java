@@ -44,7 +44,7 @@ import com.watabou.utils.RectF;
 
 public class WelcomeScene extends PixelScene {
 
-    private static final int LATEST_UPDATE = TomorrowRogueNight.v0_5_2;
+    private static final int LATEST_UPDATE = TomorrowRogueNight.v0_5_2b;
 
     //used so that the game does not keep showing the window forever if cleaning fails
     private static boolean triedCleaningTemp = false;
