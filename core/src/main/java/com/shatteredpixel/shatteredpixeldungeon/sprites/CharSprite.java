@@ -530,7 +530,11 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		size = Math.max(size+4, 16);
 		aura = new Flare(5, size);
         aura.angularSpeed = angularSpeed;
-		aura.color(color, true).show(this, 0);
+		aura.color(color, true);
+        aura.visible = visible;
+        if (parent != null) {
+            aura.show(this, 0);
+        }
 	}
 
 	public void clearAura(){
