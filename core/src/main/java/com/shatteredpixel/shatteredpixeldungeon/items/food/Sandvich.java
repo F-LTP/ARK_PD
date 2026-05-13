@@ -55,7 +55,7 @@ public class Sandvich extends Food {
 
     @Override
     public int value() {
-        return  Math.max( 80 - 20 * eat, 0 );
+        return 20 * (4 - eat);
     }
 
     private static final String stack = "eat";

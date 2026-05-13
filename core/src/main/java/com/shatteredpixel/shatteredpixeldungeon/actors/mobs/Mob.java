@@ -1195,7 +1195,7 @@ public abstract class Mob extends Char {
 	@Override
 	protected void spend(float time) {
 		if (buff(Camouflage.class) != null) {
-			if (Dungeon.hero.buff(Light.class) != null || Dungeon.hero.buff(MindVision.class) != null) Buff.detach(this, Camouflage.class);
+            if (Camouflage.heroDetects(this))  Buff.detach(this, Camouflage.class);
 			else {
 				PathFinder.buildDistanceMap(this.pos, BArray.not(Dungeon.level.solid, null), 1);
 				for (int cell = 0; cell < PathFinder.distance.length; cell++) {

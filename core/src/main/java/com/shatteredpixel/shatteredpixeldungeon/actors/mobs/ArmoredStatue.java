@@ -76,7 +76,7 @@ public class ArmoredStatue extends Statue {
 	@Override
 	public int defenseProc(Char enemy, int damage) {
 		damage = armor.proc(enemy, this, damage);
-		return super.defenseProc(enemy, damage);//change from budding
+		return super.defenseProc(enemy, damage);
 	}
 
 	@Override

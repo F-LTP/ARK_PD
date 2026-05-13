@@ -53,21 +53,26 @@ public class Camouflage extends Invisibility {
                 if (c.buff(Camouflage.class)!=null)
                     Buff.detach(c, Camouflage.class);
     }
-    public static boolean CamoFlageEnemy(Char mob) {//change from budding
-        boolean det=false;
-        Hero h=Dungeon.hero;
-        if (!(mob instanceof Hero) && mob.buff(Camouflage.class)==null){
-            if (h.buff(Light.class) != null){
-                det=true;
-            }else if (h.buff(MindVision.class)!=null){
-                det=true;
-            }else {
-                TalismanOfForesight.CharAwareness b=h.buff(TalismanOfForesight.CharAwareness.class);
-                if (b!=null &&  b.charID == mob.id()){
-                    det=true;
-                }
-            }
+
+    @Override
+    public boolean act() {
+        if (!(target instanceof Hero) && heroDetects(target))
+            Buff.detach(target, Camouflage.class);
+        return super.act();
+    }
+
+    public static boolean CamoFlageEnemy(Char mob) {
+        return mob.buff(Camouflage.class) == null
+                && Dungeon.level.distance(mob.pos, Dungeon.hero.pos) != 1
+                && !heroDetects(mob);
+    }
+
+    public static boolean heroDetects(Char mob) {
+        if (Dungeon.hero.buff(Light.class) != null) return true;
+        if (Dungeon.hero.buff(MindVision.class) != null) return true;
+        for (TalismanOfForesight.CharAwareness b : Dungeon.hero.buffs(TalismanOfForesight.CharAwareness.class)) {
+            if (b.charID == mob.id()) return true;
         }
-        return !det;
+        return false;
     }
 }

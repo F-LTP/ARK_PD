@@ -44,7 +44,7 @@ public class SmallRation extends Food {
 	protected void satisfy(Hero hero) {
 		float EN = energy;
 		if (hero.hasTalent(Talent.DELICIOUS_FOOD)) {
-			EN *= 1 + hero.pointsInTalent(Talent.DELICIOUS_FOOD) / 2f;//change from budding
+			EN *= 1 + hero.pointsInTalent(Talent.DELICIOUS_FOOD) / 2f;
 		}
 
 		if (Dungeon.isChallenged(Challenges.NO_FOOD)){
