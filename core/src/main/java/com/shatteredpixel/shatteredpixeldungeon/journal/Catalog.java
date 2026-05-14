@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,97 @@
 package com.shatteredpixel.shatteredpixeldungeon.journal;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
+import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
+import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
+import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
+import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
+import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
+import com.shatteredpixel.shatteredpixeldungeon.items.Honeypot;
+import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
+import com.shatteredpixel.shatteredpixeldungeon.items.Torch;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.FoodBag;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.ArcaneBomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Firebomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Flashbang;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.FrostBomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.HolyBomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.LensBomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Noisemaker;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.RegrowthBomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.ShockBomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.ShrapnelBomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.WoollyBomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.Berry;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.Blandfruit;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.ChargrilledMeat;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.FrozenCarpaccio;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.MeatCutlet;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.MeatPie;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.Pasty;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.Sandvich;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.SmallRation;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.StewedMeat;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.Alchemize;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.BeaconOfReturning;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.CurseInfusion;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.FeatherFall;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.MagicalArmord;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.MagicalInfusion;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.PhaseShift;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.ReclaimTrap;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.Recycle;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.WildEnergy;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Enfild;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Enfild2;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Firmament;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gamzashield;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.GoldDogSword;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gluttony;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ImageoverForm;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.KollamSword;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MinosFury;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Niansword;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.PatriotSpear;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.RhodesSword;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SakuraSword;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SanktaBet;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.CatGun;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.TippedDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfAbsinthe;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfAngelina;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfBreeze;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfCorrupting;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfGreyy;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfLeaf;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfLena;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfMayer;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfMudrock;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfPodenco;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfPurgatory;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfShining;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfSkyfire;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfSnowsant;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfSussurro;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfSuzuran;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfTime;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfVigna;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfWeedy;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK1.BookCamouflage;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK1.BookChainHook;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK1.BookCrimsonCutter;
@@ -73,174 +163,9 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK3.BookSun;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK3.BookTerminationT;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK3.BookTrueSilverSlash;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK3.BookYourWish;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemyKit;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.ChaliceOfBlood;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CustomeSet;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.EtherealChains;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.IsekaiItem;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MasterThievesArmband;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.SandalsOfNature;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.UnstableSpellbook;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.WoundsofWar;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHaste;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibility;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLevitation;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlame;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfMindVision;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfParalyticGas;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfPurity;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfToxicGas;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAccuracy;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAmplified;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAssassin;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfCommand;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfDominate;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfElements;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEvasion;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfForce;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfFuror;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfHaste;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfMight;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfMistress;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSunLight;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfTenacity;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfWealth;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfLullaby;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMirrorImage;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRage;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRetribution;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTerror;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfWarp;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfAbsinthe;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfAngelina;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfBreeze;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfCorrupting;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfGreyy;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfLeaf;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfLena;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfMayer;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfMudrock;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfPodenco;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfPurgatory;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfShining;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfSkyfire;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfSnowsant;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfSussurro;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfSuzuran;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfTime;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfVigna;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfWeedy;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfCorrosion;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfCorruption;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfDisintegration;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFireblast;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfHallucination;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfHealing;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLightning;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLivingEarth;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfPrismaticLight;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfSilence;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfTransfusion;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.AssassinsBlade;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.BattleAxe;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Beowulf;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.C1_9mm;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Cassidy;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.CatGun;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.CrabGun;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Crossbow;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DP27;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Dagger;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Dirk;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DivineAvatar;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.EX42;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Echeveria;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Enfild;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Enfild2;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Firmament;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Flag;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Decapitator;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.FlameKatana;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.FlametailSword;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.FolkSong;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gamzashield;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gauntlet;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.KazemaruWeapon;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.KollamSword;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LoneJourney;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.M870;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Ots03;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Pkp;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SG_CQB;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SanktaBet;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ShadowFirmament;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gloves;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gluttony;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.GoldDogSword;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.DeepAbyss;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Greatshield;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Greatsword;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Halberd;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.HandAxe;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ImageoverForm;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.KRISSVector;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.M1887;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MetallicUnion;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MinosFury;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.NEARL_AXE;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Naginata;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Niansword;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Longsword;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Sig553;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Suffering;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ThermiteBlade;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MidnightSword;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.PatriotSpear;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.R4C;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.RadiantSpear;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.RhodesSword;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.RoundShield;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.RunicBlade;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SHISHIOH;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Sai;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Castlebreaker;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SakuraSword;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Scythe;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Shortsword;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SnowHunter;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Spear;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Sword;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SwordofArtorius;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Laevateinn;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Destreza;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Usg;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WarJournalist;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WintersScar;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WornShortsword;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
@@ -249,366 +174,387 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+//For items, but includes a few item-like effects, such as enchantments
 public enum Catalog {
 
-	WEAPONS,
-	SKILLBOOK,
-	WANDS,
-	RINGS,
-	ARTIFACTS,
-	POTIONS,
-	SCROLLS;
+    //EQUIPMENT
+    MELEE_WEAPONS,
+    ARMOR,
+    ENCHANTMENTS,
+    GLYPHS,
+    THROWN_WEAPONS,
+    WANDS,
+    RINGS,
+    ARTIFACTS,
+    MISC_EQUIPMENT,
+    SKILLBOOK,
 
-	private LinkedHashMap<Class<? extends Item>, Boolean> seen = new LinkedHashMap<>();
+    //CONSUMABLES
+    POTIONS,
+    SEEDS,
+    SCROLLS,
+    STONES,
+    FOOD,
+    EXOTIC_POTIONS,
+    EXOTIC_SCROLLS,
+    BOMBS,
+    TIPPED_DARTS,
+    BREWS_ELIXIRS,
+    SPELLS,
+    MISC_CONSUMABLES;
 
-	public Collection<Class<? extends Item>> items(){
-		return seen.keySet();
-	}
+    //tracks whether an item has been collected while identified
+    private final LinkedHashMap<Class<?>, Boolean> seen = new LinkedHashMap<>();
+    //tracks upgrades spent for equipment, uses for consumables
+    private final LinkedHashMap<Class<?>, Integer> useCount = new LinkedHashMap<>();
 
-	public boolean allSeen(){
-		for (Class<?extends Item> item : items()){
-			if (!seen.get(item)){
-				return false;
-			}
-		}
-		return true;
-	}
+    public Collection<Class<?>> items(){
+        return seen.keySet();
+    }
 
-	static {
-		WEAPONS.seen.put( WornShortsword.class,             false);
-		WEAPONS.seen.put( Gloves.class,                     false);
-		WEAPONS.seen.put( Dagger.class,                     false);
-		WEAPONS.seen.put( MagesStaff.class,                 false);
-		WEAPONS.seen.put( EX42.class,                     false);
-		WEAPONS.seen.put( NEARL_AXE.class,               false);
-		WEAPONS.seen.put( Sig553.class,               false);
+    //should only be used when initializing
+    private void addItems( Class<?>... items){
+        for (Class<?> item : items){
+            if (item == null) continue;
+            seen.put(item, false);
+            useCount.put(item, 0);
+        }
+    }
 
-		WEAPONS.seen.put( Shortsword.class,                 false);
-		WEAPONS.seen.put( HandAxe.class,                    false);
-		WEAPONS.seen.put( Spear.class,                      false);
-		WEAPONS.seen.put( Dirk.class,                       false);
-		WEAPONS.seen.put( Enfild.class,                   false);
-		WEAPONS.seen.put( MidnightSword.class,                   false);
-		WEAPONS.seen.put( Halberd.class,                       false);
-		WEAPONS.seen.put( FlameKatana.class,                       false);
-		WEAPONS.seen.put( Usg.class,                   false);
-        WEAPONS.seen.put( Cassidy.class,                   false);
+    public String title(){
+        return Messages.get(this, name() + ".title");
+    }
 
-		WEAPONS.seen.put( Sword.class,                      false);
-		WEAPONS.seen.put( ThermiteBlade.class,                       false);
-		WEAPONS.seen.put( Castlebreaker.class,                   false);
-		WEAPONS.seen.put( RoundShield.class,                false);
-		WEAPONS.seen.put( Sai.class,                        false);
-		WEAPONS.seen.put( Destreza.class,                       false);
-		WEAPONS.seen.put( SHISHIOH.class,                      false);
-		WEAPONS.seen.put( Flag.class,                false);
-		WEAPONS.seen.put( DP27.class,                false);
-		WEAPONS.seen.put( C1_9mm.class,                false);
+    public int totalItems(){
+        return seen.size();
+    }
 
-		WEAPONS.seen.put( Longsword.class,                  false);
-		WEAPONS.seen.put( BattleAxe.class,                  false);
-		WEAPONS.seen.put( RunicBlade.class,                 false);
-		WEAPONS.seen.put( AssassinsBlade.class,             false);
-		WEAPONS.seen.put( CrabGun.class,                       false);
-		WEAPONS.seen.put( Crossbow.class,                   false);
-		WEAPONS.seen.put( M1887.class,                       false);
-		WEAPONS.seen.put( Naginata.class,                       false);
-		WEAPONS.seen.put( Scythe.class,                false);
-		WEAPONS.seen.put( FolkSong.class,                false);
-		WEAPONS.seen.put( SnowHunter.class,                false);
-		WEAPONS.seen.put( FlametailSword.class,                false);
-		WEAPONS.seen.put( MetallicUnion.class,                false);
-		WEAPONS.seen.put( WarJournalist.class,                false);
-		WEAPONS.seen.put( KazemaruWeapon.class,                   false);
-		WEAPONS.seen.put( Beowulf.class,                   false);
-		WEAPONS.seen.put( Ots03.class,                   false);
-		WEAPONS.seen.put( SG_CQB.class,                   false);
+    public int totalSeen(){
+        int seenTotal = 0;
+        for (boolean itemSeen : seen.values()){
+            if (itemSeen) seenTotal++;
+        }
+        return seenTotal;
+    }
 
-		WEAPONS.seen.put( Greatsword.class,                 false);
-		WEAPONS.seen.put( Laevateinn.class,                  false);
-		WEAPONS.seen.put( ShadowFirmament.class,                     false);
-		WEAPONS.seen.put( DeepAbyss.class,                   false);
-		WEAPONS.seen.put( Greatshield.class,                false);
-		WEAPONS.seen.put( Gauntlet.class,                   false);
-		WEAPONS.seen.put( Decapitator.class,                      false);
-		WEAPONS.seen.put( WintersScar.class,                   false);
-		WEAPONS.seen.put( SwordofArtorius.class,                   false);
-		WEAPONS.seen.put( DivineAvatar.class,                false);
-		WEAPONS.seen.put( R4C.class,                false);
-        WEAPONS.seen.put( M870.class,                false);
-		WEAPONS.seen.put( Pkp.class,                   false);
-		WEAPONS.seen.put( RadiantSpear.class,                false);
-		WEAPONS.seen.put( KRISSVector.class,                false);
-		WEAPONS.seen.put( SakuraSword.class,                false);
-		WEAPONS.seen.put( LoneJourney.class,                   false);
-		WEAPONS.seen.put( Echeveria.class,                   false);
-		WEAPONS.seen.put( Suffering.class,                   false);
+    public boolean allSeen(){
+        for (boolean itemSeen : seen.values()){
+            if (!itemSeen) return false;
+        }
+        return true;
+    }
 
+    static {
 
-		WEAPONS.seen.put( RhodesSword.class,               false);
-		WEAPONS.seen.put( Firmament.class,                       false);
-		WEAPONS.seen.put( Gamzashield.class,               false);
-		WEAPONS.seen.put( Enfild2.class,                       false);
-		WEAPONS.seen.put( GoldDogSword.class,                false);
-		WEAPONS.seen.put( Gluttony.class,                       false);
-		WEAPONS.seen.put( SanktaBet.class,                   false);
-		WEAPONS.seen.put( Niansword.class,                   false);
-		WEAPONS.seen.put( PatriotSpear.class,                   false);
-		WEAPONS.seen.put( CatGun.class,                   false);
-		WEAPONS.seen.put( MinosFury.class,                   false);
-		WEAPONS.seen.put( ImageoverForm.class,                   false);
-		WEAPONS.seen.put( KollamSword.class,                   false);
+        MELEE_WEAPONS.addItems(Generator.Category.WEP_T1.classes);
+        MELEE_WEAPONS.addItems(Generator.Category.WEP_T2.classes);
+        MELEE_WEAPONS.addItems(Generator.Category.WEP_T3.classes);
+        MELEE_WEAPONS.addItems(Generator.Category.WEP_T4.classes);
+        MELEE_WEAPONS.addItems(Generator.Category.WEP_T5.classes);
+        //mod-only weapons not in tier rotations
+        MELEE_WEAPONS.addItems(
+                Enfild.class, SakuraSword.class,
+                RhodesSword.class, Firmament.class, Gamzashield.class, Enfild2.class,
+                GoldDogSword.class, Gluttony.class, SanktaBet.class, Niansword.class,
+                PatriotSpear.class, CatGun.class, MinosFury.class, ImageoverForm.class,
+                KollamSword.class
+        );
 
-		SKILLBOOK.seen.put( BookPowerfulStrike.class,      false);
-		SKILLBOOK.seen.put( BookTacticalChanting.class,    false);
-		SKILLBOOK.seen.put( BookExecutionMode.class,       false);
-		SKILLBOOK.seen.put( BookThoughts.class,              false);
-		SKILLBOOK.seen.put( BookHikari.class,              false);
-		SKILLBOOK.seen.put( BookFate.class,                false);
-		SKILLBOOK.seen.put( Bookpanorama.class,            false);
-		SKILLBOOK.seen.put( BookFoodPrep.class,            false);
-		SKILLBOOK.seen.put( BookChainHook.class,            false);
-		SKILLBOOK.seen.put( BookWhispers.class,            false);
-		SKILLBOOK.seen.put( BookCrimsonCutter.class,            false);
-		SKILLBOOK.seen.put( BookShinkageryu.class,             false);
-		SKILLBOOK.seen.put( BookFierceGlare.class,             false);
-		SKILLBOOK.seen.put( BookCamouflage.class,              false);
-		SKILLBOOK.seen.put( BookWolfSpirit.class,              false);
-		SKILLBOOK.seen.put( BookHotBlade.class,              false);
-		SKILLBOOK.seen.put( BookSpreadSpores.class,              false);
-		SKILLBOOK.seen.put( BookPhantomMirror.class,              false);
-		SKILLBOOK.seen.put( BookLive.class,              false);
-		SKILLBOOK.seen.put( BookSoul.class,              false);
+        ARMOR.addItems(Generator.Category.ARMOR.classes);
 
-		SKILLBOOK.seen.put( BookWolfPack.class,               false);
-		SKILLBOOK.seen.put( BookMentalBurst.class,              false);
-		SKILLBOOK.seen.put( BookReflow.class,                false);
-		SKILLBOOK.seen.put( BookNervous.class,              false);
-		SKILLBOOK.seen.put( BookDawn.class,              false);
-		SKILLBOOK.seen.put( BookEmergencyDefibrillator.class,  false);
-		SKILLBOOK.seen.put( BookJackinthebox.class,            false);
-		SKILLBOOK.seen.put( BookRockfailHammer.class,          false);
-		SKILLBOOK.seen.put( BookChargingPS.class,           false);
-        SKILLBOOK.seen.put( BookNeverBackDown.class,          false);
-        SKILLBOOK.seen.put( BookCoverSmoke.class,           false);
-        SKILLBOOK.seen.put( BookBenasProtracto.class,          false);
-        SKILLBOOK.seen.put( Bookancientkin.class,          false);
-        SKILLBOOK.seen.put( BookLandingStrike.class,          false);
-		SKILLBOOK.seen.put( BookDreamland.class,              false);
-		SKILLBOOK.seen.put( BookDeepHealing.class,              false);
-		SKILLBOOK.seen.put( BookSpikes.class,              false);
-		SKILLBOOK.seen.put( BookFlashShield.class,              false);
-		SKILLBOOK.seen.put( BookGenesis.class,              false);
-		SKILLBOOK.seen.put( BookPredators.class,              false);
+        ENCHANTMENTS.addItems(Weapon.Enchantment.common);
+        ENCHANTMENTS.addItems(Weapon.Enchantment.uncommon);
+        ENCHANTMENTS.addItems(Weapon.Enchantment.rare);
+        ENCHANTMENTS.addItems(Weapon.Enchantment.curses);
 
-        SKILLBOOK.seen.put( BookSBurst.class,          false);
-		SKILLBOOK.seen.put( BookShadowAssault.class,          false);
-        SKILLBOOK.seen.put( BookNigetRaid.class,          false);
-		SKILLBOOK.seen.put( BookSoaringFeather.class,          false);
-		SKILLBOOK.seen.put( BookYourWish.class,              false);
-		SKILLBOOK.seen.put( BookSun.class,          false);
-        SKILLBOOK.seen.put( BookTerminationT.class,          false);
-        SKILLBOOK.seen.put( BookTrueSilverSlash.class,          false);
-		SKILLBOOK.seen.put( BookEveryone.class,          false);
-		SKILLBOOK.seen.put( BookSharpness.class,              false);
+        GLYPHS.addItems(Armor.Glyph.common);
+        GLYPHS.addItems(Armor.Glyph.uncommon);
+        GLYPHS.addItems(Armor.Glyph.rare);
+        GLYPHS.addItems(Armor.Glyph.curses);
 
-		WANDS.seen.put( WandOfMagicMissile.class,           false);
-		WANDS.seen.put( StaffOfAbsinthe.class,               false);
-		WANDS.seen.put( WandOfLightning.class,              false);
-		WANDS.seen.put( StaffOfGreyy.class,               false);
-		WANDS.seen.put( WandOfDisintegration.class,         false);
-		WANDS.seen.put( StaffOfVigna.class,               false);
-		WANDS.seen.put( WandOfFireblast.class,              false);
-		WANDS.seen.put( StaffOfSkyfire.class,               false);
-		WANDS.seen.put( WandOfCorrosion.class,              false);
-		WANDS.seen.put( StaffOfBreeze.class,               false);
-		WANDS.seen.put( WandOfBlastWave.class,              false);
-		WANDS.seen.put( StaffOfWeedy.class,             false);
-		WANDS.seen.put( WandOfLivingEarth.class,            false);
-		WANDS.seen.put( StaffOfMudrock.class,               false);
-		WANDS.seen.put( WandOfFrost.class,                  false);
-		WANDS.seen.put( StaffOfLeaf.class,               false);
-		WANDS.seen.put( WandOfPrismaticLight.class,         false);
-		WANDS.seen.put( StaffOfShining.class,               false);
-		WANDS.seen.put( WandOfWarding.class,                false);
-		WANDS.seen.put( StaffOfMayer.class,               false);
-		WANDS.seen.put( WandOfTransfusion.class,            false);
-		WANDS.seen.put( StaffOfAngelina.class,               false);
-		WANDS.seen.put( WandOfCorruption.class,             false);
-		WANDS.seen.put( StaffOfCorrupting.class,             false);
-		WANDS.seen.put( WandOfRegrowth.class,               false);
-		WANDS.seen.put( StaffOfLena.class,             false);
-		WANDS.seen.put( WandOfSilence.class,               false);
-		WANDS.seen.put( StaffOfSnowsant.class,             false);
-		WANDS.seen.put( WandOfHealing.class,             false);
-		WANDS.seen.put( StaffOfSussurro.class,             false);
-		WANDS.seen.put( WandOfHallucination.class,             false);
-		WANDS.seen.put( StaffOfPodenco.class,             false);
-		WANDS.seen.put( StaffOfTime.class,             false);
-		WANDS.seen.put( StaffOfSuzuran.class,             false);
-		WANDS.seen.put( StaffOfPurgatory.class,             false);
+        THROWN_WEAPONS.addItems(Generator.Category.MIS_T1.classes);
+        THROWN_WEAPONS.addItems(Generator.Category.MIS_T2.classes);
+        THROWN_WEAPONS.addItems(Generator.Category.MIS_T3.classes);
+        THROWN_WEAPONS.addItems(Generator.Category.MIS_T4.classes);
+        THROWN_WEAPONS.addItems(Generator.Category.MIS_T5.classes);
 
-		RINGS.seen.put( RingOfAccuracy.class,               false);
-		RINGS.seen.put( RingOfEnergy.class,                 false);
-		RINGS.seen.put( RingOfElements.class,               false);
-		RINGS.seen.put( RingOfEvasion.class,                false);
-		RINGS.seen.put( RingOfForce.class,                  false);
-		RINGS.seen.put( RingOfFuror.class,                  false);
-		RINGS.seen.put( RingOfHaste.class,                  false);
-		RINGS.seen.put( RingOfMight.class,                  false);
-		RINGS.seen.put( RingOfSharpshooting.class,          false);
-		RINGS.seen.put( RingOfTenacity.class,               false);
-		RINGS.seen.put( RingOfWealth.class,                 false);
-		RINGS.seen.put( RingOfSunLight.class,               false);
-		RINGS.seen.put( RingOfAmplified.class,               false);
-		RINGS.seen.put( RingOfDominate.class,               false);
-		RINGS.seen.put( RingOfAssassin.class,               false);
-		RINGS.seen.put( RingOfMistress.class,               false);
-		RINGS.seen.put( RingOfCommand.class,               false);
+        WANDS.addItems(Generator.Category.WAND.classes);
+        //mod-only operator staffs
+        WANDS.addItems(
+                StaffOfAbsinthe.class, StaffOfGreyy.class, StaffOfVigna.class,
+                StaffOfSkyfire.class, StaffOfBreeze.class, StaffOfWeedy.class,
+                StaffOfMudrock.class, StaffOfLeaf.class, StaffOfShining.class,
+                StaffOfMayer.class, StaffOfAngelina.class, StaffOfCorrupting.class,
+                StaffOfLena.class, StaffOfSnowsant.class, StaffOfSussurro.class,
+                StaffOfPodenco.class, StaffOfTime.class, StaffOfSuzuran.class,
+                StaffOfPurgatory.class
+        );
 
-		//ARTIFACTS.seen.put( AlchemistsToolkit.class,        false);
-		//ARTIFACTS.seen.put( CapeOfThorns.class,             false);
-		ARTIFACTS.seen.put( ChaliceOfBlood.class,           false);
-		ARTIFACTS.seen.put( CloakOfShadows.class,           false);
-		ARTIFACTS.seen.put( DriedRose.class,                false);
-		ARTIFACTS.seen.put( EtherealChains.class,           false);
-		ARTIFACTS.seen.put( HornOfPlenty.class,             false);
-		//ARTIFACTS.seen.put( LloydsBeacon.class,             false);
-		ARTIFACTS.seen.put( MasterThievesArmband.class,     false);
-		ARTIFACTS.seen.put( SandalsOfNature.class,          false);
-		ARTIFACTS.seen.put( TalismanOfForesight.class,      false);
-		ARTIFACTS.seen.put( TimekeepersHourglass.class,     false);
-		ARTIFACTS.seen.put( UnstableSpellbook.class,        false);
-		ARTIFACTS.seen.put( CustomeSet.class,        false);
-		ARTIFACTS.seen.put( IsekaiItem.class,        false);
-		ARTIFACTS.seen.put( AlchemyKit.class,        false);
-		ARTIFACTS.seen.put( WoundsofWar.class,        false);
+        RINGS.addItems(Generator.Category.RING.classes);
 
-		POTIONS.seen.put( PotionOfHealing.class,            false);
-		POTIONS.seen.put( PotionOfStrength.class,           false);
-		POTIONS.seen.put( PotionOfLiquidFlame.class,        false);
-		POTIONS.seen.put( PotionOfFrost.class,              false);
-		POTIONS.seen.put( PotionOfToxicGas.class,           false);
-		POTIONS.seen.put( PotionOfParalyticGas.class,       false);
-		POTIONS.seen.put( PotionOfPurity.class,             false);
-		POTIONS.seen.put( PotionOfLevitation.class,         false);
-		POTIONS.seen.put( PotionOfMindVision.class,         false);
-		POTIONS.seen.put( PotionOfInvisibility.class,       false);
-		POTIONS.seen.put( PotionOfExperience.class,         false);
-		POTIONS.seen.put( PotionOfHaste.class,              false);
+        ARTIFACTS.addItems(Generator.Category.ARTIFACT.classes);
 
-		SCROLLS.seen.put( ScrollOfIdentify.class,           false);
-		SCROLLS.seen.put( ScrollOfUpgrade.class,            false);
-		SCROLLS.seen.put( ScrollOfRemoveCurse.class,        false);
-		SCROLLS.seen.put( ScrollOfMagicMapping.class,       false);
-		SCROLLS.seen.put( ScrollOfTeleportation.class,      false);
-		SCROLLS.seen.put( ScrollOfRecharging.class,         false);
-		SCROLLS.seen.put( ScrollOfMirrorImage.class,        false);
-		SCROLLS.seen.put( ScrollOfTerror.class,             false);
-		SCROLLS.seen.put( ScrollOfLullaby.class,            false);
-		SCROLLS.seen.put( ScrollOfRage.class,               false);
-		SCROLLS.seen.put( ScrollOfRetribution.class,        false);
-		SCROLLS.seen.put( ScrollOfTransmutation.class,      false);
-		SCROLLS.seen.put( ScrollOfWarp.class,      false);
-	}
+        MISC_EQUIPMENT.addItems(BrokenSeal.class, SpiritBow.class, VelvetPouch.class,
+                PotionBandolier.class, ScrollHolder.class, MagicalHolster.class,
+                FoodBag.class, Amulet.class);
 
-	public static LinkedHashMap<Catalog, Badges.Badge> catalogBadges = new LinkedHashMap<>();
-	static {
-		catalogBadges.put(WEAPONS, Badges.Badge.ALL_WEAPONS_IDENTIFIED);
-		catalogBadges.put(SKILLBOOK, Badges.Badge.ALL_SKILLBOOK_IDENTIFIED);
-		catalogBadges.put(WANDS, Badges.Badge.ALL_WANDS_IDENTIFIED);
-		catalogBadges.put(RINGS, Badges.Badge.ALL_RINGS_IDENTIFIED);
-		catalogBadges.put(ARTIFACTS, Badges.Badge.ALL_ARTIFACTS_IDENTIFIED);
-		catalogBadges.put(POTIONS, Badges.Badge.ALL_POTIONS_IDENTIFIED);
-		catalogBadges.put(SCROLLS, Badges.Badge.ALL_SCROLLS_IDENTIFIED);
-	}
+        SKILLBOOK.addItems(Generator.Category.SKL_T1.classes);
+        SKILLBOOK.addItems(Generator.Category.SKL_T2.classes);
+        SKILLBOOK.addItems(Generator.Category.SKL_T3.classes);
+        //mod skill books not in Generator (legacy/special)
+        SKILLBOOK.addItems(
+                BookPowerfulStrike.class, BookTacticalChanting.class, BookExecutionMode.class,
+                BookThoughts.class, BookHikari.class, BookWhispers.class,
+                BookWolfPack.class, BookMentalBurst.class, BookReflow.class,
+                BookNervous.class, BookDawn.class, BookEmergencyDefibrillator.class,
+                BookGenesis.class,
+                BookSBurst.class, BookShadowAssault.class, BookNigetRaid.class,
+                BookSoaringFeather.class, BookYourWish.class, BookSun.class
+        );
 
-	public static boolean isSeen(Class<? extends Item> itemClass){
-		for (Catalog cat : values()) {
-			if (cat.seen.containsKey(itemClass)) {
-				return cat.seen.get(itemClass);
-			}
-		}
-		return true;//the boolean changes in the annotation version
-	}
+        POTIONS.addItems(Generator.Category.POTION.classes);
 
-	public static void setSeen(Class<? extends Item> itemClass){
-		for (Catalog cat : values()) {
-			if (cat.seen.containsKey(itemClass) && !cat.seen.get(itemClass)) {
-				cat.seen.put(itemClass, true);
-				Journal.saveNeeded = true;
-			}
-		}
-		Badges.validateItemsIdentified();
-	}
+        SCROLLS.addItems(Generator.Category.SCROLL.classes);
 
-	private static final String CATALOG_ITEMS = "catalog_items";
+        SEEDS.addItems(Generator.Category.SEED.classes);
 
-	public static void store( Bundle bundle ){
+        STONES.addItems(Generator.Category.STONE.classes);
 
-		Badges.loadGlobal();
+        FOOD.addItems(Food.class, Pasty.class, MysteryMeat.class, ChargrilledMeat.class,
+                StewedMeat.class, FrozenCarpaccio.class, SmallRation.class, Berry.class,
+                Blandfruit.class, MeatPie.class, MeatCutlet.class, Sandvich.class);
 
-		ArrayList<Class> seen = new ArrayList<>();
+        EXOTIC_POTIONS.addItems(Generator.Category.EXOTIC_POTION.classes);
 
-		//if we have identified all items of a set, we use the badge to keep track instead.
-		if (!Badges.isUnlocked(Badges.Badge.ALL_ITEMS_IDENTIFIED)) {
-			for (Catalog cat : values()) {
-				if (!Badges.isUnlocked(catalogBadges.get(cat))) {
-					for (Class<? extends Item> item : cat.items()) {
-						if (cat.seen.get(item)) seen.add(item);
-					}
-				}
-			}
-		}
+        EXOTIC_SCROLLS.addItems(Generator.Category.EXOTIC_SCROLL.classes);
 
-		bundle.put( CATALOG_ITEMS, seen.toArray(new Class[0]) );
+        BOMBS.addItems(Bomb.class, FrostBomb.class, Firebomb.class, RegrowthBomb.class,
+                WoollyBomb.class, Noisemaker.class, HolyBomb.class, ArcaneBomb.class,
+                ShrapnelBomb.class, LensBomb.class, ShockBomb.class, Flashbang.class);
 
-	}
+        TIPPED_DARTS.addItems(TippedDart.types.values().toArray(new Class[0]));
 
-	public static void restore( Bundle bundle ){
+        BREWS_ELIXIRS.addItems(Generator.Category.ELIXIR_BREW.classes);
 
-		Badges.loadGlobal();
+        SPELLS.addItems(WildEnergy.class, PhaseShift.class, Alchemize.class,
+                CurseInfusion.class, MagicalInfusion.class, Recycle.class,
+                ReclaimTrap.class, BeaconOfReturning.class, FeatherFall.class,
+                MagicalArmord.class);
 
-		//logic for if we have all badges
-		if (Badges.isUnlocked(Badges.Badge.ALL_ITEMS_IDENTIFIED)){
-			for ( Catalog cat : values()){
-				for (Class<? extends Item> item : cat.items()){
-					cat.seen.put(item, true);
-				}
-			}
-			return;
-		}
+        MISC_CONSUMABLES.addItems(Gold.class, Dewdrop.class,
+                IronKey.class, GoldenKey.class, CrystalKey.class, SkeletonKey.class,
+                Stylus.class, Torch.class, Honeypot.class, Ankh.class);
 
-		//catalog-specific badge logic
-		for (Catalog cat : values()){
-			if (Badges.isUnlocked(catalogBadges.get(cat))){
-				for (Class<? extends Item> item : cat.items()){
-					cat.seen.put(item, true);
-				}
-			}
-		}
+    }
 
-		//general save/load
-		//includes "catalogs" for pre-0.8.2 saves
-		if (bundle.contains("catalogs") || bundle.contains(CATALOG_ITEMS)) {
-			List<Class> seenClasses = new ArrayList<>();
-			if (bundle.contains(CATALOG_ITEMS)) {
-				seenClasses = Arrays.asList(bundle.getClassArray(CATALOG_ITEMS));
-			}
-			List<String> seenItems = new ArrayList<>();
-			if (bundle.contains("catalogs")) {
-				Journal.saveNeeded = true; //we want to overwrite with the newer storage format
-				seenItems = Arrays.asList(bundle.getStringArray("catalogs"));
-			}
+    //old badges for pre-2.5
+    public static LinkedHashMap<Catalog, Badges.Badge> catalogBadges = new LinkedHashMap<>();
+    static {
+        catalogBadges.put(MELEE_WEAPONS, Badges.Badge.ALL_WEAPONS_IDENTIFIED);
+        catalogBadges.put(SKILLBOOK, Badges.Badge.ALL_SKILLBOOK_IDENTIFIED);
+        catalogBadges.put(WANDS, Badges.Badge.ALL_WANDS_IDENTIFIED);
+        catalogBadges.put(RINGS, Badges.Badge.ALL_RINGS_IDENTIFIED);
+        catalogBadges.put(ARTIFACTS, Badges.Badge.ALL_ARTIFACTS_IDENTIFIED);
+        catalogBadges.put(POTIONS, Badges.Badge.ALL_POTIONS_IDENTIFIED);
+        catalogBadges.put(SCROLLS, Badges.Badge.ALL_SCROLLS_IDENTIFIED);
+    }
 
-			for (Catalog cat : values()) {
-				for (Class<? extends Item> item : cat.items()) {
-					if (seenClasses.contains(item) || seenItems.contains(item.getSimpleName())) {
-						cat.seen.put(item, true);
-					}
-				}
-			}
-		}
-	}
+    public static ArrayList<Catalog> equipmentCatalogs = new ArrayList<>();
+    static {
+        equipmentCatalogs.add(MELEE_WEAPONS);
+        equipmentCatalogs.add(ARMOR);
+        equipmentCatalogs.add(ENCHANTMENTS);
+        equipmentCatalogs.add(GLYPHS);
+        equipmentCatalogs.add(THROWN_WEAPONS);
+        equipmentCatalogs.add(WANDS);
+        equipmentCatalogs.add(RINGS);
+        equipmentCatalogs.add(ARTIFACTS);
+        equipmentCatalogs.add(MISC_EQUIPMENT);
+        equipmentCatalogs.add(SKILLBOOK);
+    }
+
+    public static ArrayList<Catalog> consumableCatalogs = new ArrayList<>();
+    static {
+        consumableCatalogs.add(POTIONS);
+        consumableCatalogs.add(SCROLLS);
+        consumableCatalogs.add(SEEDS);
+        consumableCatalogs.add(STONES);
+        consumableCatalogs.add(FOOD);
+        consumableCatalogs.add(EXOTIC_POTIONS);
+        consumableCatalogs.add(EXOTIC_SCROLLS);
+        consumableCatalogs.add(BOMBS);
+        consumableCatalogs.add(TIPPED_DARTS);
+        consumableCatalogs.add(BREWS_ELIXIRS);
+        consumableCatalogs.add(SPELLS);
+        consumableCatalogs.add(MISC_CONSUMABLES);
+    }
+
+    public static boolean isSeen(Class<?> cls){
+        for (Catalog cat : values()) {
+            if (cat.seen.containsKey(cls)) {
+                return cat.seen.get(cls);
+            }
+        }
+        return false;
+    }
+
+    public static void setSeen(Class<?> cls){
+        for (Catalog cat : values()) {
+            if (cat.seen.containsKey(cls) && !cat.seen.get(cls)) {
+                cat.seen.put(cls, true);
+                Journal.saveNeeded = true;
+            }
+        }
+        Badges.validateItemsIdentified();
+    }
+
+    public static int useCount(Class<?> cls){
+        for (Catalog cat : values()) {
+            if (cat.useCount.containsKey(cls)) {
+                return cat.useCount.get(cls);
+            }
+        }
+        return 0;
+    }
+
+    public static void countUse(Class<?> cls){
+        countUses(cls, 1);
+    }
+
+    public static void countUses(Class<?> cls, int uses){
+        //uses in vault tester / deep branches don't count
+        if (Dungeon.depth > 15 && Dungeon.branch > 0){
+            return;
+        }
+        for (Catalog cat : values()) {
+            if (cat.useCount.containsKey(cls) && cat.useCount.get(cls) != Integer.MAX_VALUE) {
+                cat.useCount.put(cls, cat.useCount.get(cls) + uses);
+                if (cat.useCount.get(cls) < -1_000_000_000){ //catch overflow
+                    cat.useCount.put(cls, Integer.MAX_VALUE);
+                }
+                Journal.saveNeeded = true;
+            }
+        }
+    }
+
+    private static final String CATALOG_CLASSES = "catalog_classes";
+    private static final String CATALOG_SEEN    = "catalog_seen";
+    private static final String CATALOG_USES    = "catalog_uses";
+
+    public static void store( Bundle bundle ){
+
+        ArrayList<Class<?>> classes = new ArrayList<>();
+        ArrayList<Boolean> seen = new ArrayList<>();
+        ArrayList<Integer> uses = new ArrayList<>();
+
+        for (Catalog cat : values()) {
+            for (Class<?> item : cat.items()) {
+                if (cat.seen.get(item) || cat.useCount.get(item) > 0){
+                    classes.add(item);
+                    seen.add(cat.seen.get(item));
+                    uses.add(cat.useCount.get(item));
+                }
+            }
+        }
+
+        Class<?>[] storeCls = new Class[classes.size()];
+        boolean[] storeSeen = new boolean[seen.size()];
+        int[] storeUses = new int[uses.size()];
+
+        for (int i = 0; i < storeCls.length; i++){
+            storeCls[i] = classes.get(i);
+            storeSeen[i] = seen.get(i);
+            storeUses[i] = uses.get(i);
+        }
+
+        bundle.put( CATALOG_CLASSES, storeCls );
+        bundle.put( CATALOG_SEEN, storeSeen );
+        bundle.put( CATALOG_USES, storeUses );
+
+    }
+
+    //pre-v2.5 (mod's old format)
+    private static final String CATALOG_ITEMS = "catalog_items";
+    //pre-0.8.2 (string-array format)
+    private static final String CATALOG_LEGACY_ITEMS = "catalogs";
+
+    public static void restore( Bundle bundle ){
+
+        //old logic for pre-2.5 catalog-specific badges
+        Badges.loadGlobal();
+
+        //if ALL_ITEMS_IDENTIFIED was unlocked, every item in every category is seen
+        if (Badges.isUnlocked(Badges.Badge.ALL_ITEMS_IDENTIFIED)){
+            for (Catalog cat : values()){
+                for (Class<?> item : cat.items()){
+                    cat.seen.put(item, true);
+                }
+            }
+        } else {
+            for (Catalog cat : values()){
+                if (Badges.isUnlocked(catalogBadges.get(cat))){
+                    for (Class<?> item : cat.items()){
+                        cat.seen.put(item, true);
+                    }
+                }
+            }
+        }
+
+        //legacy CATALOG_ITEMS migration (mod's old format)
+        if (bundle.contains(CATALOG_ITEMS)) {
+            Journal.saveNeeded = true; //rewrite to new format
+            Class<?>[] legacy = bundle.getClassArray(CATALOG_ITEMS);
+            if (legacy != null) {
+                for (Class<?> cls : legacy) {
+                    if (cls == null) continue;
+                    for (Catalog cat : values()) {
+                        if (cat.seen.containsKey(cls)) {
+                            cat.seen.put(cls, true);
+                        }
+                    }
+                }
+            }
+        }
+
+        //pre-0.8.2 string-array format — match by simple class name
+        if (bundle.contains(CATALOG_LEGACY_ITEMS)) {
+            Journal.saveNeeded = true; //rewrite to new format
+            String[] legacyNames = bundle.getStringArray(CATALOG_LEGACY_ITEMS);
+            if (legacyNames != null) {
+                List<String> seenNames = Arrays.asList(legacyNames);
+                for (Catalog cat : values()) {
+                    for (Class<?> item : cat.items()) {
+                        if (seenNames.contains(item.getSimpleName())) {
+                            cat.seen.put(item, true);
+                        }
+                    }
+                }
+            }
+        }
+
+        //new format
+        if (bundle.contains(CATALOG_CLASSES)){
+            Class<?>[] classes = bundle.getClassArray(CATALOG_CLASSES);
+            boolean[] seen = bundle.contains(CATALOG_SEEN) ? bundle.getBooleanArray(CATALOG_SEEN) : null;
+            int[] uses = bundle.contains(CATALOG_USES) ? bundle.getIntArray(CATALOG_USES) : null;
+
+            if (classes == null || seen == null || uses == null
+                    || classes.length != seen.length
+                    || classes.length != uses.length) {
+                Journal.saveNeeded = true;
+            } else {
+                for (int i = 0; i < classes.length; i++){
+                    if (classes[i] == null) continue;
+                    for (Catalog cat : values()) {
+                        if (cat.seen.containsKey(classes[i])) {
+                            cat.seen.put(classes[i], seen[i]);
+                            cat.useCount.put(classes[i], uses[i]);
+                        }
+                    }
+                }
+            }
+        }
+
+    }
 
 }

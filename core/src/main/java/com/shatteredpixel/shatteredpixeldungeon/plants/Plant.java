@@ -39,6 +39,8 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SkillBook;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -72,6 +74,8 @@ public abstract class Plant implements Bundlable {
 
 		wither();
 		activate( ch );
+        Bestiary.setSeen(getClass());
+        Bestiary.countEncounter(getClass());
 
 		if (Dungeon.level.heroFOV[pos] && Dungeon.hero.hasTalent(Talent.NATURES_AID)){
 			// 3/5 turns based on talent points spent
@@ -161,6 +165,7 @@ public abstract class Plant implements Bundlable {
 					|| Dungeon.level.traps.get(cell) != null) {
 				super.onThrow( cell );
 			} else {
+                Catalog.countUse(getClass());
 				Dungeon.level.plant( this, cell );
 				if (Dungeon.hero.subClass == HeroSubClass.WARDEN) {
 					for (int i : PathFinder.NEIGHBOURS8) {

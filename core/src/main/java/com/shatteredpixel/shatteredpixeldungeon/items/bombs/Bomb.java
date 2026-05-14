@@ -47,6 +47,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.ForceCatalyst;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Platform;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.SeaTerror;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
@@ -158,6 +159,8 @@ public class Bomb extends Item {
     public void explode(int cell) {
         //We're blowing up, so no need for a fuse anymore.
         this.fuse = null;
+
+        Catalog.countUse(getClass());
 
         Sample.INSTANCE.play(Assets.Sounds.BLAST);
 

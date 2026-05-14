@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK3;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
@@ -32,6 +33,7 @@ public class BookSBurst extends Item {
             hero.busy();
             hero.sprite.operate(hero.pos);
             detach(hero.belongings.backpack);
+            Catalog.countUse(getClass());
 
             hero.SK3 = new SBurst();
             hero.SetSkill3Num(3);

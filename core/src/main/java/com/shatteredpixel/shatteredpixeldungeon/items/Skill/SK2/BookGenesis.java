@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK2;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class BookGenesis extends Item {
             hero.busy();
             hero.sprite.operate(hero.pos);
             detach(hero.belongings.backpack);
+            Catalog.countUse(getClass());
 
             hero.SK2 = new Genesis();
             hero.SetSkill2Num(18);

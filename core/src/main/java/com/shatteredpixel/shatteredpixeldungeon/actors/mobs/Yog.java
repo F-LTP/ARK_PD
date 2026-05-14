@@ -46,6 +46,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRetribution;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfPsionicBlast;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Grim;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GrimTrap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -160,12 +161,14 @@ public class Yog extends Mob {
 	@Override
 	public void die( Object cause ) {
 
+        Bestiary.skipCountingEncounters = true;
 		for (Mob mob : (Iterable<Mob>)Dungeon.level.mobs.clone()) {
 			if (mob instanceof BurningFist || mob instanceof RottingFist) {
 				mob.die( cause );
 			}
 		}
-		
+        Bestiary.skipCountingEncounters = false;
+
 		GameScene.bossSlain();
 		Dungeon.level.drop( new SkeletonKey( Dungeon.depth ), pos ).sprite.drop();
 		Dungeon.level.drop(new Certificate(25), pos).sprite.drop(pos);

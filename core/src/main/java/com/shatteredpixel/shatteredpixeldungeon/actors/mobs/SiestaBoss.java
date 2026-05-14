@@ -23,6 +23,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.MirrorImage;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Certificate;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.SurfaceScene;
@@ -153,6 +154,7 @@ public class SiestaBoss extends Mob {
 
     @Override
     public void die(Object cause) {
+        Bestiary.skipCountingEncounters = true;
         for (Mob mob : (Iterable<Mob>)Dungeon.level.mobs.clone()) {
             if (mob instanceof BossAgent || mob instanceof Schwarz) {
                 mob.die( cause );
@@ -160,6 +162,7 @@ public class SiestaBoss extends Mob {
 
             Badges.validatesiesta1();
         }
+        Bestiary.skipCountingEncounters = false;
 
         yell(Messages.get(this, "defeated"));
 

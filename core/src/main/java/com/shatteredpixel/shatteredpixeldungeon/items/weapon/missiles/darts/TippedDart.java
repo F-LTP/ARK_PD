@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Blindweed;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Dreamfoil;
@@ -113,6 +114,7 @@ public abstract class TippedDart extends Dart {
 		if (durability <= 0){
 			//attempt to stick the dart to the enemy, just drop it if we can't.
 			Dart d = new Dart();
+            Catalog.countUse(getClass());
 			if (enemy.isAlive() && sticky) {
 				PinCushion p = Buff.affect(enemy, PinCushion.class);
 				if (p.target == enemy){
@@ -162,8 +164,8 @@ public abstract class TippedDart extends Dart {
 		//value of regular dart plus half of the seed
 		return 8 * quantity;
 	}
-	
-	private static HashMap<Class<?extends Plant.Seed>, Class<?extends TippedDart>> types = new HashMap<>();
+
+    public static HashMap<Class<?extends Plant.Seed>, Class<?extends TippedDart>> types = new HashMap<>();
 	static {
 		types.put(Blindweed.Seed.class,     BlindingDart.class);
 		types.put(Dreamfoil.Seed.class,     SleepDart.class);

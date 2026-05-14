@@ -81,6 +81,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WarJournalist;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
@@ -749,7 +750,9 @@ public abstract class Mob extends Char {
 				Badges.validateMonstersSlain();
 				Badges.validateNearlUnlock();
 				Statistics.qualifiedForNoKilling = false;
-				
+                Bestiary.setSeen(getClass());
+                Bestiary.countEncounter(getClass());
+
 				int exp = Dungeon.hero.lvl <= maxLvl ? EXP : 0;
 				if (exp > 0) {
 					Dungeon.hero.sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "exp", exp));

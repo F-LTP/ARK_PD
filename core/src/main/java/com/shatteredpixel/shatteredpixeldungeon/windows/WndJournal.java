@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,744 +21,1170 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.TomorrowRogueNight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.TerrainFeaturesTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BadgesGrid;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BadgesList;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickRecipe;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingGridPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.RectF;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.Collection;
 
 public class WndJournal extends WndTabbed {
-	
-	public static final int WIDTH_P     = 126;
-	public static final int HEIGHT_P    = 180;
-	
-	public static final int WIDTH_L     = 200;
-	public static final int HEIGHT_L    = 130;
-	
-	private static final int ITEM_HEIGHT	= 18;
-	
-	private GuideTab guideTab;
-	private AlchemyTab alchemyTab;
-	private NotesTab notesTab;
-	private CatalogTab catalogTab;
-	
-	public static int last_index = 0;
-	
-	public WndJournal(){
-		
-		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
-		int height = PixelScene.landscape() ? HEIGHT_L : HEIGHT_P;
-		
-		resize(width, height);
-		
-		guideTab = new GuideTab();
-		add(guideTab);
-		guideTab.setRect(0, 0, width, height);
-		guideTab.updateList();
-		
-		alchemyTab = new AlchemyTab();
-		add(alchemyTab);
-		alchemyTab.setRect(0, 0, width, height);
-		
-		notesTab = new NotesTab();
-		add(notesTab);
-		notesTab.setRect(0, 0, width, height);
-		notesTab.updateList();
-		
-		catalogTab = new CatalogTab();
-		add(catalogTab);
-		catalogTab.setRect(0, 0, width, height);
-		catalogTab.updateList();
-		
-		Tab[] tabs = {
-				new IconTab( new ItemSprite(ItemSpriteSheet.GUIDE_PAGE, null) ) {
-					protected void select( boolean value ) {
-						super.select( value );
-						guideTab.active = guideTab.visible = value;
-						if (value) last_index = 0;
-					}
-				},
-				new IconTab( new ItemSprite(ItemSpriteSheet.ALCH_PAGE, null) ) {
-					protected void select( boolean value ) {
-						super.select( value );
-						alchemyTab.active = alchemyTab.visible = value;
-						if (value) last_index = 1;
-					}
-				},
-				new IconTab( Icons.get(Icons.DEPTH) ) {
-					protected void select( boolean value ) {
-						super.select( value );
-						notesTab.active = notesTab.visible = value;
-						if (value) last_index = 2;
-					}
-				},
-				new IconTab( new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER, null) ) {
-					protected void select( boolean value ) {
-						super.select( value );
-						catalogTab.active = catalogTab.visible = value;
-						if (value) last_index = 3;
-					}
-				}
-		};
-		
-		for (Tab tab : tabs) {
-			add( tab );
-		}
-		
-		layoutTabs();
-		
-		select(last_index);
-	}
-	
-	private static class ListItem extends Component {
-		
-		protected RenderedTextBlock label;
-		protected BitmapText depth;
-		protected ColorBlock line;
-		protected Image icon;
-		
-		public ListItem( Image icon, String text ) {
-			this(icon, text, -1);
-		}
-		
-		public ListItem( Image icon, String text, int d ) {
-			super();
-			
-			this.icon.copy(icon);
-			
-			label.text( text );
-			
-			if (d >= 0) {
-				depth.text(Integer.toString(d));
-				depth.measure();
-				
-				if (d == Dungeon.depth) {
-					label.hardlight(TITLE_COLOR);
-					depth.hardlight(TITLE_COLOR);
-				}
-			}
-		}
-		
-		@Override
-		protected void createChildren() {
-			label = PixelScene.renderTextBlock( 7 );
-			add( label );
-			
-			icon = new Image();
-			add( icon );
-			
-			depth = new BitmapText( PixelScene.pixelFont);
-			add( depth );
-			
-			line = new ColorBlock( 1, 1, 0xFF222222);
-			add(line);
-			
-		}
-		
-		@Override
-		protected void layout() {
-			
-			icon.y = y + 1 + (height() - 1 - icon.height()) / 2f;
-			icon.x = x + (16 - icon.width())/2f;
-			PixelScene.align(icon);
-			
-			depth.x = icon.x + (icon.width - depth.width()) / 2f;
-			depth.y = icon.y + (icon.height - depth.height()) / 2f + 1;
-			PixelScene.align(depth);
-			
-			line.size(width, 1);
-			line.x = 0;
-			line.y = y;
-			
-			label.maxWidth((int)(width - 16 - 1));
-			label.setPos(17, y + 1 + (height() - label.height()) / 2f);
-			PixelScene.align(label);
-		}
-	}
-	
-	private static class GuideTab extends Component {
-		
-		private ScrollPane list;
-		private ArrayList<GuideItem> pages = new ArrayList<>();
-		
-		@Override
-		protected void createChildren() {
-			list = new ScrollPane( new Component() ){
-				@Override
-				public void onClick( float x, float y ) {
-					int size = pages.size();
-					for (int i=0; i < size; i++) {
-						if (pages.get( i ).onClick( x, y )) {
-							break;
-						}
-					}
-				}
-			};
-			add( list );
-		}
-		
-		@Override
-		protected void layout() {
-			super.layout();
-			list.setRect( 0, 0, width, height);
-		}
-		
-		private void updateList(){
-			Component content = list.content();
-			
-			float pos = 0;
-			
-			ColorBlock line = new ColorBlock( width(), 1, 0xFF222222);
-			line.y = pos;
-			content.add(line);
-			
-			RenderedTextBlock title = PixelScene.renderTextBlock(Document.ADVENTURERS_GUIDE.title(), 9);
-			title.hardlight(TITLE_COLOR);
-			title.maxWidth( (int)width() - 2 );
-			title.setPos( (width() - title.width())/2f, pos + 1 + ((ITEM_HEIGHT) - title.height())/2f);
-			PixelScene.align(title);
-			content.add(title);
-			
-			pos += Math.max(ITEM_HEIGHT, title.height());
-			
-			for (String page : Document.ADVENTURERS_GUIDE.pages()){
-				GuideItem item = new GuideItem( page );
-				
-				item.setRect( 0, pos, width(), ITEM_HEIGHT );
-				content.add( item );
-				
-				pos += item.height();
-				pages.add(item);
-			}
-			
-			content.setSize( width(), pos );
-			list.setSize( list.width(), list.height() );
-		}
-		
-		private static class GuideItem extends ListItem {
-			
-			private boolean found = false;
-			private String page;
-			
-			public GuideItem( String page ){
-				super( iconForPage(page), Messages.titleCase(Document.ADVENTURERS_GUIDE.pageTitle(page)));
-				
-				this.page = page;
-				found = Document.ADVENTURERS_GUIDE.hasPage(page);
-				
-				if (!found) {
-					icon.hardlight( 0.5f, 0.5f, 0.5f);
-					label.text( Messages.titleCase(Messages.get( this, "missing" )));
-					label.hardlight( 0x999999 );
-				}
-				
-			}
-			
-			public boolean onClick( float x, float y ) {
-				if (inside( x, y ) && found) {
-					GameScene.show( new WndStory( iconForPage(page),
-							Document.ADVENTURERS_GUIDE.pageTitle(page),
-							Document.ADVENTURERS_GUIDE.pageBody(page) ));
-					return true;
-				} else {
-					return false;
-				}
-			}
 
-			//TODO might just want this to be part of the Document class
-			private static Image iconForPage( String page ){
-				if (!Document.ADVENTURERS_GUIDE.hasPage(page)){
-					return new ItemSprite( ItemSpriteSheet.GUIDE_PAGE );
-				}
-				switch (page){
-					case Document.GUIDE_INTRO_PAGE: default:
-						return new ItemSprite(ItemSpriteSheet.ICON_1 );
-					case "Identifying":
-						return new ItemSprite( ItemSpriteSheet.ICON_2 );
-					case Document.GUIDE_SEARCH_PAGE:
-						return new ItemSprite( ItemSpriteSheet.ICON_3 );
-					case "Strength":
-						return new ItemSprite( ItemSpriteSheet.ICON_4 );
-					case "Food":
-						return new ItemSprite( ItemSpriteSheet.ICON_5 );
-					case "Levelling":
-						return new ItemSprite( ItemSpriteSheet.ICON_6 );
-					case "Surprise_Attacks":
-						return new ItemSprite( ItemSpriteSheet.ICON_7 );
-					case "Dieing":
-						return new ItemSprite( ItemSpriteSheet.ICON_8 );
-					case "Looting":
-						return new ItemSprite( ItemSpriteSheet.ICON_9 );
-					case "Magic":
-						return new ItemSprite( ItemSpriteSheet.ICON_10 );
-				}
-			}
-			
-		}
-		
-	}
-	
-	public static class AlchemyTab extends Component {
-		
-		private RedButton[] pageButtons;
-		private static final int NUM_BUTTONS = 9;
-		
-		private static final int[] spriteIndexes = {10, 12, 7, 8, 9, 11, 13, 14, 15};
-		
-		private static int currentPageIdx   = -1;
-		
-		private IconTitle title;
-		private RenderedTextBlock body;
-		
-		private ScrollPane list;
-		private ArrayList<QuickRecipe> recipes = new ArrayList<>();
-		
-		@Override
-		protected void createChildren() {
-			pageButtons = new RedButton[NUM_BUTTONS];
-			for (int i = 0; i < NUM_BUTTONS; i++){
-				final int idx = i;
-				pageButtons[i] = new RedButton( "" ){
-					@Override
-					protected void onClick() {
-						currentPageIdx = idx;
-						updateList();
-					}
-				};
-				if (Document.ALCHEMY_GUIDE.hasPage(i)) {
-					pageButtons[i].icon(new ItemSprite(ItemSpriteSheet.SOMETHING + spriteIndexes[i], null));
-				} else {
-					pageButtons[i].icon(new ItemSprite(ItemSpriteSheet.SOMETHING, null));
-					pageButtons[i].enable(false);
-				}
-				add( pageButtons[i] );
-			}
-			
-			title = new IconTitle();
-			title.icon( new ItemSprite(ItemSpriteSheet.ALCH_PAGE));
-			title.visible = false;
+    public static final int WIDTH_P = 126;
+    public static final int HEIGHT_P = 180;
 
-			body = PixelScene.renderTextBlock(6);
-			
-			list = new ScrollPane(new Component());
-			add(list);
-		}
-		
-		@Override
-		protected void layout() {
-			super.layout();
-			
-			if (PixelScene.landscape()){
-				float buttonWidth = width()/pageButtons.length;
-				for (int i = 0; i < NUM_BUTTONS; i++) {
-					pageButtons[i].setRect(i*buttonWidth, 0, buttonWidth, ITEM_HEIGHT);
-					PixelScene.align(pageButtons[i]);
-				}
-			} else {
-				//for first row
-				float buttonWidth = width()/4;
-				float y = 0;
-				float x = 0;
-				for (int i = 0; i < NUM_BUTTONS; i++) {
-					pageButtons[i].setRect(x, y, buttonWidth, ITEM_HEIGHT);
-					PixelScene.align(pageButtons[i]);
-					x += buttonWidth;
-					if (i == 3){
-						y += ITEM_HEIGHT;
-						x = 0;
-						buttonWidth = width()/5;
-					}
-				}
-			}
-			
-			list.setRect(0, pageButtons[NUM_BUTTONS-1].bottom() + 1, width,
-					height - pageButtons[NUM_BUTTONS-1].bottom() - 1);
-			
-			updateList();
-		}
-		
-		private void updateList() {
+    public static final int WIDTH_L = 216;
+    public static final int HEIGHT_L = 130;
 
-			for (int i = 0; i < NUM_BUTTONS; i++) {
-				if (i == currentPageIdx) {
-					pageButtons[i].icon().color(TITLE_COLOR);
-				} else {
-					pageButtons[i].icon().resetColor();
-				}
-			}
-			
-			if (currentPageIdx == -1){
-				return;
-			}
-			
-			for (QuickRecipe r : recipes){
-				if (r != null) {
-					r.killAndErase();
-					r.destroy();
-				}
-			}
-			recipes.clear();
-			
-			Component content = list.content();
-			
-			content.clear();
-			
-			title.visible = true;
-			title.label(Document.ALCHEMY_GUIDE.pageTitle(currentPageIdx));
-			title.setRect(0, 0, width(), 10);
-			content.add(title);
-			
-			body.maxWidth((int)width());
-			body.text(Document.ALCHEMY_GUIDE.pageBody(currentPageIdx));
-			body.setPos(0, title.bottom());
-			content.add(body);
-			
-			ArrayList<QuickRecipe> toAdd = QuickRecipe.getRecipes(currentPageIdx);
-			
-			float left;
-			float top = body.bottom()+1;
-			int w;
-			ArrayList<QuickRecipe> toAddThisRow = new ArrayList<>();
-			while (!toAdd.isEmpty()){
-				if (toAdd.get(0) == null){
-					toAdd.remove(0);
-					top += 6;
-				}
-				
-				w = 0;
-				while(!toAdd.isEmpty() && toAdd.get(0) != null
-						&& w + toAdd.get(0).width() <= width()){
-					toAddThisRow.add(toAdd.remove(0));
-					w += toAddThisRow.get(0).width();
-				}
-				
-				float spacing = (width() - w)/(toAddThisRow.size() + 1);
-				left = spacing;
-				while (!toAddThisRow.isEmpty()){
-					QuickRecipe r = toAddThisRow.remove(0);
-					r.setPos(left, top);
-					left += r.width() + spacing;
-					if (!toAddThisRow.isEmpty()) {
-						ColorBlock spacer = new ColorBlock(1, 16, 0xFF222222);
-						spacer.y = top;
-						spacer.x = left - spacing / 2 - 0.5f;
-						PixelScene.align(spacer);
-						content.add(spacer);
-					}
-					recipes.add(r);
-					content.add(r);
-				}
-				
-				if (!toAdd.isEmpty() && toAdd.get(0) == null){
-					toAdd.remove(0);
-				}
-				
-				if (!toAdd.isEmpty() && toAdd.get(0) != null) {
-					ColorBlock spacer = new ColorBlock(width(), 1, 0xFF222222);
-					spacer.y = top + 16;
-					spacer.x = 0;
-					content.add(spacer);
-				}
-				top += 17;
-				toAddThisRow.clear();
-			}
-			top -=1;
-			content.setSize(width(), top);
-			list.setSize(list.width(), list.height());
-			list.scrollTo(0, 0);
-		}
-	}
-	
-	private static class NotesTab extends Component {
-		
-		private ScrollPane list;
-		
-		@Override
-		protected void createChildren() {
-			list = new ScrollPane( new Component() );
-			add( list );
-		}
-		
-		@Override
-		protected void layout() {
-			super.layout();
-			list.setRect( 0, 0, width, height);
-		}
-		
-		private void updateList(){
-			Component content = list.content();
-			
-			float pos = 0;
-			
-			//Keys
-			ArrayList<Notes.KeyRecord> keys = Notes.getRecords(Notes.KeyRecord.class);
-			if (!keys.isEmpty()){
-				ColorBlock line = new ColorBlock( width(), 1, 0xFF222222);
-				line.y = pos;
-				content.add(line);
-				
-				RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(this, "keys"), 9);
-				title.hardlight(TITLE_COLOR);
-				title.maxWidth( (int)width() - 2 );
-				title.setPos( (width() - title.width())/2f, pos + 1 + ((ITEM_HEIGHT) - title.height())/2f);
-				PixelScene.align(title);
-				content.add(title);
-				
-				pos += Math.max(ITEM_HEIGHT, title.height());
-			}
-			for(Notes.Record rec : keys){
-				ListItem item = new ListItem( Icons.get(Icons.DEPTH),
-						Messages.titleCase(rec.desc()), rec.depth() );
-				item.setRect( 0, pos, width(), ITEM_HEIGHT );
-				content.add( item );
-				
-				pos += item.height();
-			}
-			
-			//Landmarks
-			ArrayList<Notes.LandmarkRecord> landmarks = Notes.getRecords(Notes.LandmarkRecord.class);
-			if (!landmarks.isEmpty()){
-				ColorBlock line = new ColorBlock( width(), 1, 0xFF222222);
-				line.y = pos;
-				content.add(line);
-				
-				RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(this, "landmarks"), 9);
-				title.hardlight(TITLE_COLOR);
-				title.maxWidth( (int)width() - 2 );
-				title.setPos( (width() - title.width())/2f, pos + 1 + ((ITEM_HEIGHT) - title.height())/2f);
-				PixelScene.align(title);
-				content.add(title);
-				
-				pos += Math.max(ITEM_HEIGHT, title.height());
-			}
-			for (Notes.Record rec : landmarks) {
-				ListItem item = new ListItem( Icons.get(Icons.DEPTH),
-						Messages.titleCase(rec.desc()), rec.depth() );
-				item.setRect( 0, pos, width(), ITEM_HEIGHT );
-				content.add( item );
-				
-				pos += item.height();
-			}
-			
-			content.setSize( width(), pos );
-			list.setSize( list.width(), list.height() );
-		}
-		
-	}
-	
-	private static class CatalogTab extends Component{
-		
-		private RedButton[] itemButtons;
-		private static final int NUM_BUTTONS = 7;
-		
-		private static int currentItemIdx   = 0;
-		
-		//sprite locations
-		private static final int WEAPON_IDX = 0;
-		private static final int SKILL_IDX  = 1;
-		private static final int WAND_IDX   = 2;
-		private static final int RING_IDX   = 3;
-		private static final int ARTIF_IDX  = 4;
-		private static final int POTION_IDX = 5;
-		private static final int SCROLL_IDX = 6;
-		
-		private static final int spriteIndexes[] = {1, 16, 4, 5, 6, 9, 11};
-		
-		private ScrollPane list;
-		
-		private ArrayList<CatalogItem> items = new ArrayList<>();
-		
-		@Override
-		protected void createChildren() {
-			itemButtons = new RedButton[NUM_BUTTONS];
-			for (int i = 0; i < NUM_BUTTONS; i++){
-				final int idx = i;
-				itemButtons[i] = new RedButton( "" ){
-					@Override
-					protected void onClick() {
-						currentItemIdx = idx;
-						updateList();
-					}
-				};
-				itemButtons[i].icon(new ItemSprite(ItemSpriteSheet.SOMETHING + spriteIndexes[i], null));
-				add( itemButtons[i] );
-			}
-			
-			list = new ScrollPane( new Component() ) {
-				@Override
-				public void onClick( float x, float y ) {
-					int size = items.size();
-					for (int i=0; i < size; i++) {
-						if (items.get( i ).onClick( x, y )) {
-							break;
-						}
-					}
-				}
-			};
-			add( list );
-		}
-		
-		@Override
-		protected void layout() {
-			super.layout();
-			
-			int perRow = NUM_BUTTONS;
-			float buttonWidth = width()/perRow;
-			
-			for (int i = 0; i < NUM_BUTTONS; i++) {
-				itemButtons[i].setRect((i%perRow) * (buttonWidth), (i/perRow) * (ITEM_HEIGHT ),
-						buttonWidth, ITEM_HEIGHT);
-				PixelScene.align(itemButtons[i]);
-			}
-			
-			list.setRect(0, itemButtons[NUM_BUTTONS-1].bottom() + 1, width,
-					height - itemButtons[NUM_BUTTONS-1].bottom() - 1);
-		}
-		
-		private void updateList() {
-			
-			items.clear();
-			
-			for (int i = 0; i < NUM_BUTTONS; i++){
-				if (i == currentItemIdx){
-					itemButtons[i].icon().color(TITLE_COLOR);
-				} else {
-					itemButtons[i].icon().resetColor();
-				}
-			}
-			
-			Component content = list.content();
-			content.clear();
-			list.scrollTo( 0, 0 );
-			
-			ArrayList<Class<? extends Item>> itemClasses;
-			final HashMap<Class<?  extends Item>, Boolean> known = new HashMap<>();
-			if (currentItemIdx == WEAPON_IDX) {
-				itemClasses = new ArrayList<>(Catalog.WEAPONS.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, true);
-			} else if (currentItemIdx == SKILL_IDX){
-				itemClasses = new ArrayList<>(Catalog.SKILLBOOK.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, true);
-			} else if (currentItemIdx == WAND_IDX){
-				itemClasses = new ArrayList<>(Catalog.WANDS.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, true);
-			} else if (currentItemIdx == RING_IDX){
-				itemClasses = new ArrayList<>(Catalog.RINGS.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, Ring.getKnown().contains(cls));
-			} else if (currentItemIdx == ARTIF_IDX){
-				itemClasses = new ArrayList<>(Catalog.ARTIFACTS.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, true);
-			} else if (currentItemIdx == POTION_IDX){
-				itemClasses = new ArrayList<>(Catalog.POTIONS.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, Potion.getKnown().contains(cls));
-			} else if (currentItemIdx == SCROLL_IDX) {
-				itemClasses = new ArrayList<>(Catalog.SCROLLS.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, Scroll.getKnown().contains(cls));
-			} else {
-				itemClasses = new ArrayList<>();
-			}
-			
-			Collections.sort(itemClasses, new Comparator<Class<? extends Item>>() {
-				@Override
-				public int compare(Class<? extends Item> a, Class<? extends Item> b) {
-					int result = 0;
-					
-					//specifically known items appear first, then seen items, then unknown items.
-					if (known.get(a) && Catalog.isSeen(a)) result -= 2;
-					if (known.get(b) && Catalog.isSeen(b)) result += 2;
-					if (Catalog.isSeen(a))                 result --;
-					if (Catalog.isSeen(b))                 result ++;
-					
-					return result;
-				}
-			});
-			
-			float pos = 0;
-			for (Class<? extends Item> itemClass : itemClasses) {
-				CatalogItem item = new CatalogItem(Reflection.newInstance(itemClass), known.get(itemClass), Catalog.isSeen(itemClass));
-				item.setRect( 0, pos, width, ITEM_HEIGHT );
-				content.add( item );
-				items.add( item );
-				
-				pos += item.height();
-			}
-			
-			content.setSize( width, pos );
-			list.setSize( list.width(), list.height() );
-		}
-		
-		private static class CatalogItem extends ListItem {
-			
-			private Item item;
-			private boolean seen;
-			
-			public CatalogItem(Item item, boolean IDed, boolean seen ) {
-				super( new ItemSprite(item), Messages.titleCase(item.trueName()));
-				
-				this.item = item;
-				this.seen = seen;
+    private static final int ITEM_HEIGHT = 18;
 
-				if ( seen && !IDed ){
-					if (item instanceof Ring){
-						((Ring) item).anonymize();
-					} else if (item instanceof Potion){
-						((Potion) item).anonymize();
-					} else if (item instanceof Scroll){
-						((Scroll) item).anonymize();
-					}
-				}
-				
-				if (!seen) {
-					icon.copy( new ItemSprite( ItemSpriteSheet.SOMETHING + spriteIndexes[currentItemIdx], null) );
-					label.text("???");
-					label.hardlight( 0x999999 );
-				} else if (!IDed) {
-					icon.copy( new ItemSprite( ItemSpriteSheet.SOMETHING + spriteIndexes[currentItemIdx], null) );
-					label.hardlight( 0xCCCCCC );
-				}
-				
-			}
-			
-			public boolean onClick( float x, float y ) {
-				if (inside( x, y ) && seen) {
-					if (item instanceof ClassArmor){
-						GameScene.show(new WndTitledMessage(new Image(icon),
-								Messages.titleCase(item.trueName()), item.desc()));
-					} else {
-						GameScene.show(new WndTitledMessage(new Image(icon),
-								Messages.titleCase(item.trueName()), item.info()));
-					}
-					return true;
-				} else {
-					return false;
-				}
-			}
-		}
-		
-	}
-	
+    private GuideTab guideTab;
+    private AlchemyTab alchemyTab;
+    private NotesTab notesTab;
+    private CatalogTab catalogTab;
+    private BadgesTab badgesTab;
+
+    public static int last_index = 0;
+
+    private static WndJournal INSTANCE = null;
+
+    public WndJournal() {
+
+        if (INSTANCE != null) {
+            INSTANCE.hide();
+        }
+
+        int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
+        int height = PixelScene.landscape() ? HEIGHT_L : HEIGHT_P;
+
+        resize(width, height);
+
+        guideTab = new GuideTab();
+        add(guideTab);
+        guideTab.setRect(0, 0, width, height);
+        guideTab.updateList();
+
+        alchemyTab = new AlchemyTab();
+        add(alchemyTab);
+        alchemyTab.setRect(0, 0, width, height);
+
+        notesTab = new NotesTab();
+        add(notesTab);
+        notesTab.setRect(0, 0, width, height);
+        notesTab.updateList();
+
+        catalogTab = new CatalogTab();
+        add(catalogTab);
+        catalogTab.setRect(0, 0, width, height);
+        catalogTab.updateList();
+
+        badgesTab = new BadgesTab();
+        add(badgesTab);
+        badgesTab.setRect(0, 0, width, height);
+        badgesTab.updateList();
+
+        Tab[] tabs = {
+                new IconTab(Icons.get(Icons.DEPTH)) {
+                    protected void select(boolean value) {
+                        super.select(value);
+                        notesTab.active = notesTab.visible = value;
+                        if (value) last_index = 0;
+                    }
+                },
+                new IconTab(new ItemSprite(ItemSpriteSheet.MASTERY, null)) {
+                    protected void select(boolean value) {
+                        super.select(value);
+                        guideTab.active = guideTab.visible = value;
+                        if (value) last_index = 1;
+                    }
+                },
+                new IconTab(new ItemSprite(ItemSpriteSheet.ALCH_PAGE, null)) {
+                    protected void select(boolean value) {
+                        super.select(value);
+                        alchemyTab.active = alchemyTab.visible = value;
+                        if (value) last_index = 2;
+                    }
+                },
+                new IconTab(new ItemSprite(ItemSpriteSheet.CATA_HOLDER, null)) {
+                    protected void select(boolean value) {
+                        super.select(value);
+                        catalogTab.active = catalogTab.visible = value;
+                        if (value) last_index = 3;
+                    }
+                },
+                new IconTab(Icons.get(Icons.BADGES)) {
+                    protected void select(boolean value) {
+                        super.select(value);
+                        badgesTab.active = badgesTab.visible = value;
+                        if (value) last_index = 4;
+                    }
+                }
+        };
+
+        for (Tab tab : tabs) {
+            add(tab);
+        }
+
+        layoutTabs();
+
+        select(last_index);
+
+        INSTANCE = this;
+    }
+
+    @Override
+    public void offset(int xOffset, int yOffset) {
+        super.offset(xOffset, yOffset);
+        guideTab.layout();
+        alchemyTab.layout();
+        notesTab.layout();
+        catalogTab.layout();
+    }
+
+    private static class ListItem extends Component {
+
+        protected RenderedTextBlock label;
+        protected BitmapText depth;
+        protected ColorBlock line;
+        protected Image icon;
+
+        public ListItem(Image icon, String text) {
+            this(icon, text, -1);
+        }
+
+        public ListItem(Image icon, String text, int d) {
+            super();
+
+            this.icon.copy(icon);
+
+            label.text(text);
+
+            if (d >= 0) {
+                depth.text(Integer.toString(d));
+                depth.measure();
+
+                if (d == Dungeon.depth) {
+                    label.hardlight(TITLE_COLOR);
+                    depth.hardlight(TITLE_COLOR);
+                }
+            }
+        }
+
+        @Override
+        protected void createChildren() {
+            label = PixelScene.renderTextBlock(7);
+            add(label);
+
+            icon = new Image();
+            add(icon);
+
+            depth = new BitmapText(PixelScene.pixelFont);
+            add(depth);
+
+            line = new ColorBlock(1, 1, 0xFF222222);
+            add(line);
+
+        }
+
+        @Override
+        protected void layout() {
+
+            icon.y = y + 1 + (height() - 1 - icon.height()) / 2f;
+            icon.x = x + (16 - icon.width()) / 2f;
+            PixelScene.align(icon);
+
+            depth.x = icon.x + (icon.width - depth.width()) / 2f;
+            depth.y = icon.y + (icon.height - depth.height()) / 2f + 1;
+            PixelScene.align(depth);
+
+            line.size(width, 1);
+            line.x = 0;
+            line.y = y;
+
+            label.maxWidth((int) (width - 16 - 1));
+            label.setPos(17, y + 1 + (height() - label.height()) / 2f);
+            PixelScene.align(label);
+        }
+    }
+
+    private static class GuideTab extends Component {
+
+        private ScrollingListPane list;
+
+        @Override
+        protected void createChildren() {
+            list = new ScrollingListPane();
+            add(list);
+        }
+
+        @Override
+        protected void layout() {
+            super.layout();
+            list.setRect(0, 0, width, height);
+        }
+
+        private void updateList() {
+            list.addTitle(Document.ADVENTURERS_GUIDE.title());
+
+            for (final String page : Document.ADVENTURERS_GUIDE.pageNames()) {
+                final boolean found = Document.ADVENTURERS_GUIDE.isPageFound(page);
+                ScrollingListPane.ListItem item = new ScrollingListPane.ListItem(
+                        iconForPage(page),
+                        null,
+                        found ? Messages.titleCase(Document.ADVENTURERS_GUIDE.pageTitle(page))
+                                : Messages.titleCase(Messages.get(this, "missing"))
+                ) {
+                    @Override
+                    public boolean onClick(float x, float y) {
+                        if (inside(x, y) && found) {
+                            GameScene.show(new WndStory(iconForPage(page),
+                                    Document.ADVENTURERS_GUIDE.pageTitle(page),
+                                    Document.ADVENTURERS_GUIDE.pageBody(page)));
+                            Document.ADVENTURERS_GUIDE.readPage(page);
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                };
+                if (!found) {
+                    item.hardlight(0x999999);
+                    item.hardlightIcon(0x999999);
+                }
+                list.addItem(item);
+            }
+
+            list.setRect(x, y, width, height);
+        }
+
+        private static Image iconForPage(String page) {
+            if (!Document.ADVENTURERS_GUIDE.hasPage(page)) {
+                return new ItemSprite(ItemSpriteSheet.GUIDE_PAGE);
+            }
+            switch (page) {
+                case Document.GUIDE_INTRO_PAGE:
+                default:
+                    return new ItemSprite(ItemSpriteSheet.ICON_1);
+                case "Identifying":
+                    return new ItemSprite(ItemSpriteSheet.ICON_2);
+                case Document.GUIDE_SEARCH_PAGE:
+                    return new ItemSprite(ItemSpriteSheet.ICON_3);
+                case "Strength":
+                    return new ItemSprite(ItemSpriteSheet.ICON_4);
+                case "Food":
+                    return new ItemSprite(ItemSpriteSheet.ICON_5);
+                case "Levelling":
+                    return new ItemSprite(ItemSpriteSheet.ICON_6);
+                case "Surprise_Attacks":
+                    return new ItemSprite(ItemSpriteSheet.ICON_7);
+                case "Dieing":
+                    return new ItemSprite(ItemSpriteSheet.ICON_8);
+                case "Looting":
+                    return new ItemSprite(ItemSpriteSheet.ICON_9);
+                case "Magic":
+                    return new ItemSprite(ItemSpriteSheet.ICON_10);
+            }
+        }
+
+    }
+
+    public static class AlchemyTab extends Component {
+
+        private RedButton[] pageButtons;
+        private static final int NUM_BUTTONS = 9;
+
+        private static final int[] sprites = {
+                ItemSpriteSheet.SEED_HOLDER,
+                ItemSpriteSheet.STONE_HOLDER,
+                ItemSpriteSheet.FOOD_HOLDER,
+                ItemSpriteSheet.BOMB_HOLDER,
+                ItemSpriteSheet.POTION_HOLDER,
+                ItemSpriteSheet.SCROLL_HOLDER,
+                ItemSpriteSheet.CATA_HOLDER,
+                ItemSpriteSheet.ELIXIR_HOLDER,
+                ItemSpriteSheet.SPELL_HOLDER
+        };
+
+        private static int currentPageIdx = -1;
+
+        private IconTitle title;
+        private RenderedTextBlock body;
+
+        private ScrollPane list;
+        private ArrayList<QuickRecipe> recipes = new ArrayList<>();
+
+        @Override
+        protected void createChildren() {
+            pageButtons = new RedButton[NUM_BUTTONS];
+            for (int i = 0; i < NUM_BUTTONS; i++) {
+                final int idx = i;
+                pageButtons[i] = new RedButton("") {
+                    @Override
+                    protected void onClick() {
+                        currentPageIdx = idx;
+                        updateList();
+                    }
+                };
+                if (Document.ALCHEMY_GUIDE.hasPage(i)) {
+                    pageButtons[i].icon(new ItemSprite(sprites[i], null));
+                } else {
+                    pageButtons[i].icon(new ItemSprite(ItemSpriteSheet.SOMETHING, null));
+                    pageButtons[i].enable(false);
+                }
+                add(pageButtons[i]);
+            }
+
+            title = new IconTitle();
+            title.icon(new ItemSprite(ItemSpriteSheet.ALCH_PAGE));
+            title.visible = false;
+
+            body = PixelScene.renderTextBlock(6);
+
+            list = new ScrollPane(new Component());
+            add(list);
+        }
+
+        @Override
+        protected void layout() {
+            super.layout();
+
+            if (PixelScene.landscape()) {
+                float buttonWidth = width() / pageButtons.length;
+                for (int i = 0; i < NUM_BUTTONS; i++) {
+                    pageButtons[i].setRect(i * buttonWidth, 0, buttonWidth, ITEM_HEIGHT);
+                    PixelScene.align(pageButtons[i]);
+                }
+            } else {
+                //for first row
+                float buttonWidth = width() / 4;
+                float y = 0;
+                float x = 0;
+                for (int i = 0; i < NUM_BUTTONS; i++) {
+                    pageButtons[i].setRect(x, y, buttonWidth, ITEM_HEIGHT);
+                    PixelScene.align(pageButtons[i]);
+                    x += buttonWidth;
+                    if (i == 3) {
+                        y += ITEM_HEIGHT;
+                        x = 0;
+                        buttonWidth = width() / 5;
+                    }
+                }
+            }
+
+            list.setRect(0, pageButtons[NUM_BUTTONS - 1].bottom() + 1, width,
+                    height - pageButtons[NUM_BUTTONS - 1].bottom() - 1);
+
+            updateList();
+        }
+
+        private void updateList() {
+
+            for (int i = 0; i < NUM_BUTTONS; i++) {
+                if (i == currentPageIdx) {
+                    pageButtons[i].icon().color(TITLE_COLOR);
+                } else {
+                    pageButtons[i].icon().resetColor();
+                }
+            }
+
+            if (currentPageIdx == -1) {
+                return;
+            }
+
+            for (QuickRecipe r : recipes) {
+                if (r != null) {
+                    r.killAndErase();
+                    r.destroy();
+                }
+            }
+            recipes.clear();
+
+            Component content = list.content();
+
+            content.clear();
+
+            title.visible = true;
+            title.label(Document.ALCHEMY_GUIDE.pageTitle(currentPageIdx));
+            title.setRect(0, 0, width(), 10);
+            content.add(title);
+
+            body.maxWidth((int) width());
+            body.text(Document.ALCHEMY_GUIDE.pageBody(currentPageIdx));
+            body.setPos(0, title.bottom());
+            content.add(body);
+
+            ArrayList<QuickRecipe> toAdd = QuickRecipe.getRecipes(currentPageIdx);
+
+            float left;
+            float top = body.bottom() + 1;
+            int w;
+            ArrayList<QuickRecipe> toAddThisRow = new ArrayList<>();
+            while (!toAdd.isEmpty()) {
+                if (toAdd.get(0) == null) {
+                    toAdd.remove(0);
+                    top += 6;
+                }
+
+                w = 0;
+                while (!toAdd.isEmpty() && toAdd.get(0) != null
+                        && w + toAdd.get(0).width() <= width()) {
+                    toAddThisRow.add(toAdd.remove(0));
+                    w += toAddThisRow.get(0).width();
+                }
+
+                float spacing = (width() - w) / (toAddThisRow.size() + 1);
+                left = spacing;
+                while (!toAddThisRow.isEmpty()) {
+                    QuickRecipe r = toAddThisRow.remove(0);
+                    r.setPos(left, top);
+                    left += r.width() + spacing;
+                    if (!toAddThisRow.isEmpty()) {
+                        ColorBlock spacer = new ColorBlock(1, 16, 0xFF222222);
+                        spacer.y = top;
+                        spacer.x = left - spacing / 2 - 0.5f;
+                        PixelScene.align(spacer);
+                        content.add(spacer);
+                    }
+                    recipes.add(r);
+                    content.add(r);
+                }
+
+                if (!toAdd.isEmpty() && toAdd.get(0) == null) {
+                    toAdd.remove(0);
+                }
+
+                if (!toAdd.isEmpty() && toAdd.get(0) != null) {
+                    ColorBlock spacer = new ColorBlock(width(), 1, 0xFF222222);
+                    spacer.y = top + 16;
+                    spacer.x = 0;
+                    content.add(spacer);
+                }
+                top += 17;
+                toAddThisRow.clear();
+            }
+            top -= 1;
+            content.setSize(width(), top);
+            list.setSize(list.width(), list.height());
+            list.scrollTo(0, 0);
+        }
+    }
+
+    private static class NotesTab extends Component {
+
+        private ScrollPane list;
+
+        @Override
+        protected void createChildren() {
+            list = new ScrollPane(new Component());
+            add(list);
+        }
+
+        @Override
+        protected void layout() {
+            super.layout();
+            list.setRect(0, 0, width, height);
+        }
+
+        private void updateList() {
+            Component content = list.content();
+
+            float pos = 0;
+
+            //Keys
+            ArrayList<Notes.KeyRecord> keys = Notes.getRecords(Notes.KeyRecord.class);
+            if (!keys.isEmpty()) {
+                ColorBlock line = new ColorBlock(width(), 1, 0xFF222222);
+                line.y = pos;
+                content.add(line);
+
+                RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(this, "keys"), 9);
+                title.hardlight(TITLE_COLOR);
+                title.maxWidth((int) width() - 2);
+                title.setPos((width() - title.width()) / 2f, pos + 1 + ((ITEM_HEIGHT) - title.height()) / 2f);
+                PixelScene.align(title);
+                content.add(title);
+
+                pos += Math.max(ITEM_HEIGHT, title.height());
+            }
+            for (Notes.Record rec : keys) {
+                ListItem item = new ListItem(Icons.get(Icons.DEPTH),
+                        Messages.titleCase(rec.desc()), rec.depth());
+                item.setRect(0, pos, width(), ITEM_HEIGHT);
+                content.add(item);
+
+                pos += item.height();
+            }
+
+            //Landmarks
+            ArrayList<Notes.LandmarkRecord> landmarks = Notes.getRecords(Notes.LandmarkRecord.class);
+            if (!landmarks.isEmpty()) {
+                ColorBlock line = new ColorBlock(width(), 1, 0xFF222222);
+                line.y = pos;
+                content.add(line);
+
+                RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(this, "landmarks"), 9);
+                title.hardlight(TITLE_COLOR);
+                title.maxWidth((int) width() - 2);
+                title.setPos((width() - title.width()) / 2f, pos + 1 + ((ITEM_HEIGHT) - title.height()) / 2f);
+                PixelScene.align(title);
+                content.add(title);
+
+                pos += Math.max(ITEM_HEIGHT, title.height());
+            }
+            for (Notes.Record rec : landmarks) {
+                ListItem item = new ListItem(Icons.get(Icons.DEPTH),
+                        Messages.titleCase(rec.desc()), rec.depth());
+                item.setRect(0, pos, width(), ITEM_HEIGHT);
+                content.add(item);
+
+                pos += item.height();
+            }
+
+            content.setSize(width(), pos);
+            list.setSize(list.width(), list.height());
+        }
+
+    }
+
+    public static class CatalogTab extends Component {
+
+        private RedButton[] itemButtons;
+        private static final int NUM_BUTTONS = 4;
+
+        public static int currentItemIdx = 0;
+        private static float[] scrollPositions = new float[NUM_BUTTONS];
+
+        private static final int EQUIP_IDX = 0;
+        private static final int CONSUM_IDX = 1;
+        private static final int BESTIARY_IDX = 2;
+        private static final int LORE_IDX = 3;
+
+        private ScrollingGridPane grid;
+
+        @Override
+        protected void createChildren() {
+            itemButtons = new RedButton[NUM_BUTTONS];
+            for (int i = 0; i < NUM_BUTTONS; i++) {
+                final int idx = i;
+                itemButtons[i] = new RedButton("") {
+                    @Override
+                    protected void onClick() {
+                        currentItemIdx = idx;
+                        updateList();
+                    }
+                };
+                add(itemButtons[i]);
+            }
+            itemButtons[EQUIP_IDX].icon(new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER));
+            itemButtons[CONSUM_IDX].icon(new ItemSprite(ItemSpriteSheet.POTION_HOLDER));
+            itemButtons[BESTIARY_IDX].icon(new ItemSprite(ItemSpriteSheet.MOB_HOLDER));
+            itemButtons[LORE_IDX].icon(new ItemSprite(ItemSpriteSheet.DOCUMENT_HOLDER));
+
+            grid = new ScrollingGridPane() {
+                @Override
+                public synchronized void update() {
+                    super.update();
+                    scrollPositions[currentItemIdx] = content.camera.scroll.y;
+                }
+            };
+            add(grid);
+        }
+
+        @Override
+        protected void layout() {
+            super.layout();
+
+            int perRow = NUM_BUTTONS;
+            float buttonWidth = width() / perRow;
+
+            for (int i = 0; i < NUM_BUTTONS; i++) {
+                itemButtons[i].setRect((i % perRow) * (buttonWidth),
+                        (i / perRow) * (ITEM_HEIGHT),
+                        buttonWidth, ITEM_HEIGHT);
+                PixelScene.align(itemButtons[i]);
+            }
+
+            grid.setRect(0, itemButtons[NUM_BUTTONS - 1].bottom() + 1, width,
+                    height - itemButtons[NUM_BUTTONS - 1].height() - 1);
+        }
+
+        private void updateList() {
+
+            grid.clear();
+
+            for (int i = 0; i < NUM_BUTTONS; i++) {
+                if (i == currentItemIdx) {
+                    itemButtons[i].icon().color(TITLE_COLOR);
+                } else {
+                    itemButtons[i].icon().resetColor();
+                }
+            }
+
+            grid.scrollTo(0, 0);
+
+            if (currentItemIdx == EQUIP_IDX) {
+                int totalItems = 0;
+                int totalSeen = 0;
+                for (Catalog catalog : Catalog.equipmentCatalogs) {
+                    totalItems += catalog.totalItems();
+                    totalSeen += catalog.totalSeen();
+                }
+                grid.addHeader("_" + Messages.get(this, "title_equipment") + "_ (" + totalSeen + "/" + totalItems + ")", 9, true);
+
+                for (Catalog catalog : Catalog.equipmentCatalogs) {
+                    grid.addHeader("_" + Messages.titleCase(catalog.title()) + "_ (" + catalog.totalSeen() + "/" + catalog.totalItems() + "):");
+                    addGridItems(grid, catalog.items());
+                }
+
+            } else if (currentItemIdx == CONSUM_IDX) {
+                int totalItems = 0;
+                int totalSeen = 0;
+                for (Catalog catalog : Catalog.consumableCatalogs) {
+                    totalItems += catalog.totalItems();
+                    totalSeen += catalog.totalSeen();
+                }
+                grid.addHeader("_" + Messages.get(this, "title_consumables") + "_ (" + totalSeen + "/" + totalItems + ")", 9, true);
+
+                for (Catalog catalog : Catalog.consumableCatalogs) {
+                    grid.addHeader("_" + Messages.titleCase(catalog.title()) + "_ (" + catalog.totalSeen() + "/" + catalog.totalItems() + "):");
+                    addGridItems(grid, catalog.items());
+                }
+
+            } else if (currentItemIdx == BESTIARY_IDX) {
+                int totalItems = 0;
+                int totalSeen = 0;
+                for (Bestiary bestiary : Bestiary.values()) {
+                    totalItems += bestiary.totalEntities();
+                    totalSeen += bestiary.totalSeen();
+                }
+                grid.addHeader("_" + Messages.get(this, "title_bestiary") + "_ (" + totalSeen + "/" + totalItems + ")", 9, true);
+
+                for (Bestiary bestiary : Bestiary.values()) {
+                    grid.addHeader("_" + Messages.titleCase(bestiary.title()) + "_ (" + bestiary.totalSeen() + "/" + bestiary.totalEntities() + "):");
+                    addGridEntities(grid, bestiary.entities());
+                }
+
+            } else {
+                int totalItems = 0;
+                int totalSeen = 0;
+                for (Document doc : Document.values()) {
+                    if (!doc.isLoreDoc()) {
+                        continue;
+                    }
+                    for (String page : doc.pageNames()) {
+                        totalItems++;
+                        if (doc.isPageFound(page)) {
+                            totalSeen++;
+                        }
+                    }
+                }
+                grid.addHeader("_" + Messages.get(this, "title_lore") + "_ (" + totalSeen + "/" + totalItems + ")", 9, true);
+
+                for (Document doc : Document.values()) {
+                    if (!doc.isLoreDoc()) {
+                        continue;
+                    }
+                    totalItems = totalSeen = 0;
+                    for (String page : doc.pageNames()) {
+                        totalItems++;
+                        if (doc.isPageFound(page)) {
+                            totalSeen++;
+                        }
+                    }
+                    if (!doc.anyPagesFound()) {
+                        grid.addHeader("_???_ (" + totalSeen + "/" + totalItems + "):");
+                    } else {
+                        grid.addHeader("_" + Messages.titleCase(doc.title()) + "_ (" + totalSeen + "/" + totalItems + "):");
+                    }
+                    addGridDocuments(grid, doc);
+                }
+            }
+
+            grid.setRect(0, itemButtons[NUM_BUTTONS - 1].bottom() + 1, width,
+                    height - itemButtons[NUM_BUTTONS - 1].height() - 1);
+
+            grid.scrollTo(0, scrollPositions[currentItemIdx]);
+        }
+
+    }
+
+    private static void addGridItems(ScrollingGridPane grid, Collection<Class<?>> classes) {
+        for (Class<?> itemClass : classes) {
+
+            boolean seen = Catalog.isSeen(itemClass);
+            ItemSprite sprite = null;
+            Image secondIcon = null;
+            String title = "";
+            String desc = "";
+
+            if (Item.class.isAssignableFrom(itemClass)) {
+
+                Item item = (Item) Reflection.newInstance(itemClass);
+
+                if (seen) {
+                    if (item instanceof Ring) {
+                        ((Ring) item).anonymize();
+                    } else if (item instanceof Potion) {
+                        ((Potion) item).anonymize();
+                    } else if (item instanceof Scroll) {
+                        ((Scroll) item).anonymize();
+                    }
+                }
+
+                sprite = new ItemSprite(item.image, seen ? item.glowing() : null);
+                if (!seen) {
+                    if (item instanceof ExoticPotion) {
+                        sprite.frame(ItemSpriteSheet.POTION_CRIMSON);
+                    }
+                    sprite.lightness(0);
+                    title = "???";
+                    desc = Messages.get(CatalogTab.class, "not_seen_item");
+                    String hint = Messages.get(item, "discover_hint");
+                    if (hint.equals("!!!NO TEXT FOUND!!!")) {
+                        hint = Messages.get(CatalogTab.class, "discover_hint_generic");
+                    }
+                    desc += "\n\n" + hint;
+                } else {
+                    title = Messages.titleCase(item.name());
+                    if (item instanceof ClassArmor || item instanceof SpiritBow) {
+                        desc += item.desc();
+                    } else {
+                        desc += item.info();
+                    }
+
+                    if (Catalog.useCount(itemClass) > 1) {
+                        if (item.isUpgradable() || item instanceof Artifact) {
+                            desc += "\n\n" + Messages.get(CatalogTab.class, "upgrade_count", Catalog.useCount(itemClass));
+                        } else {
+                            desc += "\n\n" + Messages.get(CatalogTab.class, "use_count", Catalog.useCount(itemClass));
+                        }
+                    }
+
+                    if (item instanceof MagesStaff) {
+                        RectF frame = sprite.frame();
+                        frame.top += frame.height() / 8f;
+                        sprite.frame(frame);
+                    }
+
+                    if (item.icon != -1) {
+                        secondIcon = new Image(Assets.Sprites.ITEM_ICONS);
+                        secondIcon.frame(ItemSpriteSheet.Icons.film.get(item.icon));
+                    }
+                }
+
+            } else if (Weapon.Enchantment.class.isAssignableFrom(itemClass)) {
+
+                Weapon.Enchantment ench = (Weapon.Enchantment) Reflection.newInstance(itemClass);
+
+                if (seen) {
+                    sprite = new ItemSprite(ItemSpriteSheet.WORN_SHORTSWORD, ench.glowing());
+                    title = Messages.titleCase(ench.name());
+                    desc = ench.desc();
+                } else {
+                    sprite = new ItemSprite(ItemSpriteSheet.WORN_SHORTSWORD);
+                    sprite.lightness(0f);
+                    title = "???";
+                    desc = Messages.get(CatalogTab.class, "not_seen_enchantment");
+                    String hint = Messages.get(ench, "discover_hint");
+                    if (hint.equals("!!!NO TEXT FOUND!!!")) {
+                        hint = Messages.get(CatalogTab.class, "discover_hint_generic");
+                    }
+                    desc += "\n\n" + hint;
+                }
+
+            } else if (Armor.Glyph.class.isAssignableFrom(itemClass)) {
+
+                Armor.Glyph glyph = (Armor.Glyph) Reflection.newInstance(itemClass);
+
+                if (seen) {
+                    sprite = new ItemSprite(ItemSpriteSheet.ARMOR_CLOTH, glyph.glowing());
+                    title = Messages.titleCase(glyph.name());
+                    desc = glyph.desc();
+                } else {
+                    sprite = new ItemSprite(ItemSpriteSheet.ARMOR_CLOTH);
+                    sprite.lightness(0f);
+                    title = "???";
+                    desc = Messages.get(CatalogTab.class, "not_seen_glyph");
+                    String hint = Messages.get(glyph, "discover_hint");
+                    if (hint.equals("!!!NO TEXT FOUND!!!")) {
+                        hint = Messages.get(CatalogTab.class, "discover_hint_generic");
+                    }
+                    desc += "\n\n" + hint;
+                }
+
+            }
+
+            if (sprite == null) continue;
+
+            final String finalTitle = title;
+            final String finalDesc = desc;
+            ScrollingGridPane.GridItem gridItem = new ScrollingGridPane.GridItem(sprite) {
+                @Override
+                public boolean onClick(float x, float y) {
+                    if (inside(x, y)) {
+                        Image s = new ItemSprite();
+                        s.copy(icon);
+                        if (TomorrowRogueNight.scene() instanceof GameScene) {
+                            GameScene.show(new WndJournalItem(s, finalTitle, finalDesc));
+                        } else {
+                            TomorrowRogueNight.scene().addToFront(new WndJournalItem(s, finalTitle, finalDesc));
+                        }
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            };
+            if (secondIcon != null) {
+                gridItem.addSecondIcon(secondIcon);
+            }
+            if (!seen) {
+                gridItem.hardLightBG(2f, 1f, 2f);
+            }
+            gridItem.setScale(0.5f);
+            grid.addItem(gridItem);
+        }
+    }
+
+    private static void addGridEntities(ScrollingGridPane grid, Collection<Class<?>> classes) {
+        for (Class<?> entityCls : classes) {
+
+            boolean seen = Bestiary.isSeen(entityCls);
+            Mob mob = null;
+            Image icon = null;
+            String title = null;
+            String desc = null;
+
+            if (Mob.class.isAssignableFrom(entityCls)) {
+
+                mob = (Mob) Reflection.newInstance(entityCls);
+                if (mob == null) continue;
+
+                if (mob instanceof Mimic || mob instanceof Pylon) {
+                    mob.alignment = Char.Alignment.ENEMY;
+                }
+                if (mob instanceof WandOfWarding.Ward) {
+                    ((WandOfWarding.Ward) mob).upgrade(0);
+                }
+
+                CharSprite sprite = mob.sprite();
+                if (sprite == null) continue;
+                sprite.idle();
+
+                icon = new Image(sprite);
+                if (seen) {
+                    title = Messages.titleCase(mob.name());
+                    desc = mob.description();
+                    if (Bestiary.encounterCount(entityCls) > 1) {
+                        desc += "\n\n" + Messages.get(CatalogTab.class, "enemy_count", Bestiary.encounterCount(entityCls));
+                    }
+                } else {
+                    icon.lightness(0f);
+                    title = "???";
+                    if (mob instanceof WandOfRegrowth.Lotus) {
+                        desc = Messages.get(CatalogTab.class, "not_seen_plant");
+                    } else if (mob.alignment == Char.Alignment.ENEMY) {
+                        desc = Messages.get(CatalogTab.class, "not_seen_enemy");
+                    } else {
+                        desc = Messages.get(CatalogTab.class, "not_seen_ally");
+                    }
+                    String hint = Messages.get(mob, "discover_hint");
+                    if (hint.equals("!!!NO TEXT FOUND!!!")) {
+                        hint = Messages.get(CatalogTab.class, "discover_hint_generic");
+                    }
+                    desc += "\n\n" + hint;
+                }
+
+                if (icon.width() >= 33 || icon.height() >= 33) {
+                    RectF frame = icon.frame();
+
+                    float wShrink = frame.width() * (1f - 33f / icon.width());
+                    if (wShrink > 0) {
+                        frame.left += wShrink / 2f;
+                        frame.right -= wShrink / 2f;
+                    }
+                    float hShrink = frame.height() * (1f - 33f / icon.height());
+                    if (hShrink > 0) {
+                        frame.top += hShrink / 2f;
+                        frame.bottom -= hShrink / 2f;
+                    }
+                    icon.frame(frame);
+                }
+            } else if (Trap.class.isAssignableFrom(entityCls)) {
+
+                Trap trap = (Trap) Reflection.newInstance(entityCls);
+                if (trap == null) continue;
+                icon = TerrainFeaturesTilemap.getTrapVisual(trap);
+                if (icon == null) icon = new Image();
+
+                if (seen) {
+                    title = Messages.titleCase(trap.name());
+                    desc = trap.desc();
+                    if (Bestiary.encounterCount(entityCls) > 1) {
+                        desc += "\n\n" + Messages.get(CatalogTab.class, "trap_count", Bestiary.encounterCount(entityCls));
+                    }
+                } else {
+                    icon.lightness(0f);
+                    title = "???";
+                    desc = Messages.get(CatalogTab.class, "not_seen_trap");
+                    String hint = Messages.get(trap, "discover_hint");
+                    if (hint.equals("!!!NO TEXT FOUND!!!")) {
+                        hint = Messages.get(CatalogTab.class, "discover_hint_generic");
+                    }
+                    desc += "\n\n" + hint;
+                }
+
+            } else if (Plant.class.isAssignableFrom(entityCls)) {
+
+                Plant plant = (Plant) Reflection.newInstance(entityCls);
+                if (plant == null) continue;
+                icon = TerrainFeaturesTilemap.getPlantVisual(plant);
+                if (icon == null) icon = new Image();
+
+                if (seen) {
+                    title = Messages.titleCase(plant.plantName);
+                    desc = plant.desc();
+                    if (Bestiary.encounterCount(entityCls) > 1) {
+                        desc += "\n\n" + Messages.get(CatalogTab.class, "plant_count", Bestiary.encounterCount(entityCls));
+                    }
+                } else {
+                    icon.lightness(0f);
+                    title = "???";
+                    desc = Messages.get(CatalogTab.class, "not_seen_plant");
+                    String hint = Messages.get(plant, "discover_hint");
+                    if (hint.equals("!!!NO TEXT FOUND!!!")) {
+                        hint = Messages.get(CatalogTab.class, "discover_hint_generic");
+                    }
+                    desc += "\n\n" + hint;
+                }
+
+            }
+
+            if (icon == null) continue;
+
+            final Mob finalMob = mob;
+            final String finalTitle = title;
+            final String finalDesc = desc;
+            final Image finalIcon = icon;
+            final boolean finalSeen = seen;
+            ScrollingGridPane.GridItem gridItem = new ScrollingGridPane.GridItem(icon) {
+                @Override
+                public boolean onClick(float x, float y) {
+                    if (inside(x, y)) {
+                        Image image;
+                        if (finalSeen && finalMob != null) {
+                            image = finalMob.sprite();
+                        } else {
+                            image = new Image(finalIcon);
+                        }
+
+                        if (TomorrowRogueNight.scene() instanceof GameScene) {
+                            GameScene.show(new WndJournalItem(image, finalTitle, finalDesc));
+                        } else {
+                            TomorrowRogueNight.scene().addToFront(new WndJournalItem(image, finalTitle, finalDesc));
+                        }
+
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            };
+            if (!seen) {
+                gridItem.hardLightBG(2f, 1f, 2f);
+            }
+            gridItem.setScale(0.5f);
+            grid.addItem(gridItem);
+        }
+    }
+
+    private static void addGridDocuments(ScrollingGridPane grid, final Document doc) {
+        for (final String page : doc.pageNames()) {
+
+            Image sprite = doc.pageSprite(page);
+
+            final boolean seen = doc.isPageFound(page);
+            final boolean read = doc.isPageRead(page);
+
+            if (!seen) {
+                sprite.lightness(0f);
+            }
+
+            ScrollingGridPane.GridItem gridItem = new ScrollingGridPane.GridItem(sprite) {
+                @Override
+                public boolean onClick(float x, float y) {
+                    if (inside(x, y)) {
+                        Image s = new Image(icon);
+                        if (seen) {
+                            if (TomorrowRogueNight.scene() instanceof GameScene) {
+                                GameScene.show(new WndStory(s, doc.pageTitle(page), doc.pageBody(page)));
+                            } else {
+                                TomorrowRogueNight.scene().addToFront(new WndStory(s, doc.pageTitle(page), doc.pageBody(page)));
+                            }
+
+                            doc.readPage(page);
+                            hardLightBG(1, 1, 1);
+                        } else {
+                            if (TomorrowRogueNight.scene() instanceof GameScene) {
+                                GameScene.show(new WndJournalItem(s, "???",
+                                        Messages.get(CatalogTab.class, "not_seen_lore") + "\n\n" + doc.discoverHint()));
+                            } else {
+                                TomorrowRogueNight.scene().addToFront(new WndJournalItem(s, "???",
+                                        Messages.get(CatalogTab.class, "not_seen_lore") + "\n\n" + doc.discoverHint()));
+                            }
+
+                        }
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            };
+
+            if (seen) {
+                BitmapText text = new BitmapText(Integer.toString(doc.pageIdx(page) + 1), PixelScene.pixelFont);
+                text.measure();
+                gridItem.addSecondIcon(text);
+                if (!read) {
+                    gridItem.hardLightBG(0.6f, 1f, 2f);
+                }
+            } else {
+                gridItem.hardLightBG(2.2f, 1f, 2.2f);
+            }
+            grid.addItem(gridItem);
+        }
+    }
+
+    public static class BadgesTab extends Component {
+
+        private RedButton btnLocal;
+        private RedButton btnGlobal;
+
+        private RenderedTextBlock title;
+
+        private Component badgesLocal;
+        private Component badgesGlobal;
+
+        public static boolean global = false;
+
+        @Override
+        protected void createChildren() {
+
+            if (Dungeon.hero != null) {
+                btnLocal = new RedButton(Messages.get(this, "this_run")) {
+                    @Override
+                    protected void onClick() {
+                        super.onClick();
+                        global = false;
+                        updateList();
+                    }
+                };
+                btnLocal.icon(Icons.get(Icons.BADGES));
+                add(btnLocal);
+
+                btnGlobal = new RedButton(Messages.get(this, "overall")) {
+                    @Override
+                    protected void onClick() {
+                        super.onClick();
+                        global = true;
+                        updateList();
+                    }
+                };
+                btnGlobal.icon(Icons.get(Icons.BADGES));
+                add(btnGlobal);
+
+                if (Badges.filterReplacedBadges(false).size() <= 8) {
+                    badgesLocal = new BadgesList(false);
+                } else {
+                    badgesLocal = new BadgesGrid(false);
+                }
+                add(badgesLocal);
+            } else {
+                title = PixelScene.renderTextBlock(Messages.get(this, "title_main_menu"), 9);
+                title.hardlight(Window.TITLE_COLOR);
+                add(title);
+            }
+
+            badgesGlobal = new BadgesGrid(true);
+            add(badgesGlobal);
+        }
+
+        @Override
+        protected void layout() {
+            super.layout();
+
+            if (btnLocal != null) {
+                btnLocal.setRect(x, y, width / 2, 18);
+                btnGlobal.setRect(x + width / 2, y, width / 2, 18);
+
+                badgesLocal.setRect(x, y + 20, width, height - 20);
+                badgesGlobal.setRect(x, y + 20, width, height - 20);
+            } else {
+                title.setPos(x + (width - title.width()) / 2, y + (12 - title.height()) / 2);
+
+                badgesGlobal.setRect(x, y + 14, width, height - 14);
+            }
+        }
+
+        private void updateList() {
+            if (btnLocal != null) {
+                badgesLocal.visible = badgesLocal.active = !global;
+                badgesGlobal.visible = badgesGlobal.active = global;
+
+                btnLocal.textColor(global ? Window.WHITE : Window.TITLE_COLOR);
+                btnGlobal.textColor(global ? Window.TITLE_COLOR : Window.WHITE);
+            } else {
+                badgesGlobal.visible = badgesGlobal.active = true;
+            }
+        }
+
+    }
+
 }

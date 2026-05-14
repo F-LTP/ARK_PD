@@ -205,6 +205,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SanktaBet;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Suffering;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -2356,7 +2357,7 @@ public class Hero extends Char {
                 Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
                 GLog.w(Messages.get(this, "revive"));
                 Statistics.ankhsUsed++;
-                //Catalog.countUse(Ankh.class);
+                Catalog.countUse(Ankh.class);
 
                 ankh.detach(belongings.backpack);
 

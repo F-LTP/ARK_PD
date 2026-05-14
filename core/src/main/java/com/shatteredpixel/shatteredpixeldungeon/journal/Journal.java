@@ -45,11 +45,27 @@ public class Journal {
 		} catch (IOException e){
 			bundle = new Bundle();
 		}
-		
-		Catalog.restore( bundle );
-		Document.restore( bundle );
+
+        try { Catalog.restore( bundle ); }
+        catch (Exception e) {
+            TomorrowRogueNight.reportException(e);
+            Journal.saveNeeded = true;
+        }
+
+        try { Bestiary.restore( bundle ); }
+        catch (Exception e) {
+            TomorrowRogueNight.reportException(e);
+            Journal.saveNeeded = true;
+        }
+
+        try { Document.restore( bundle ); }
+        catch (Exception e) {
+            TomorrowRogueNight.reportException(e);
+            Journal.saveNeeded = true;
+        }
 		
 		loaded = true;
+        if (saveNeeded) saveGlobal();
 	}
 	
 	//package-private
@@ -61,9 +77,18 @@ public class Journal {
 		}
 		
 		Bundle bundle = new Bundle();
-		
-		Catalog.store(bundle);
-		Document.store(bundle);
+
+        boolean anyStoreFailed = false;
+        try { Catalog.store(bundle); }
+        catch (Exception e) { TomorrowRogueNight.reportException(e); anyStoreFailed = true; }
+        try { Bestiary.store(bundle); }
+        catch (Exception e) { TomorrowRogueNight.reportException(e); anyStoreFailed = true; }
+        try { Document.store(bundle); }
+        catch (Exception e) { TomorrowRogueNight.reportException(e); anyStoreFailed = true; }
+
+        if (anyStoreFailed) {
+            return; // leave saveNeeded = true; retry on next save
+        }
 		
 		try {
 			FileUtils.bundleToFile( JOURNAL_FILE, bundle );

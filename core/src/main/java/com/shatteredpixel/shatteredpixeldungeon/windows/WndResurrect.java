@@ -126,7 +126,7 @@ public class WndResurrect extends Window {
         hide();
 
         Statistics.ankhsUsed++;
-        //Catalog.countUse(Ankh.class); // Not available in this project yet
+        Catalog.countUse(Ankh.class);
 
         ankh.detach(Dungeon.hero.belongings.backpack);
 

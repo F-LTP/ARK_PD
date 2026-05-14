@@ -4,6 +4,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.levels.Level.set;
 
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -82,9 +83,11 @@ public class Isharmla extends Mob {
     }
 
     public void detach() {
+        Bestiary.skipCountingEncounters = true;
         for (Mob m : getSubjects()) {
             m.die(null);
         }
+        Bestiary.skipCountingEncounters = false;
 
         Ballistica trajectory = new Ballistica(pos, Dungeon.hero.pos, Ballistica.STOP_TARGET);
         trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);

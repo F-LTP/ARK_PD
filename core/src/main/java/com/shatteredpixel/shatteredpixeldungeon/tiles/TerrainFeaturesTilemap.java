@@ -102,7 +102,29 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 	public static Image tile(int pos, int tile ) {
 		RectF uv = instance.tileset.get( instance.getTileVisual( pos, tile, true ) );
 		if (uv == null) return null;
-		
+
+        Image img = new Image( instance.texture );
+        img.frame(uv);
+        return img;
+    }
+
+    public static Image getTrapVisual( Trap trap ){
+        if (instance == null) return null;
+
+        RectF uv = instance.tileset.get((trap.active ? trap.color : Trap.BLACK) + (trap.shape * 16));
+        if (uv == null) return null;
+
+        Image img = new Image( instance.texture );
+        img.frame(uv);
+        return img;
+    }
+
+    public static Image getPlantVisual( Plant plant ){
+        if (instance == null) return null;
+
+        RectF uv = instance.tileset.get(plant.image + 7*16);
+        if (uv == null) return null;
+
 		Image img = new Image( instance.texture );
 		img.frame(uv);
 		return img;

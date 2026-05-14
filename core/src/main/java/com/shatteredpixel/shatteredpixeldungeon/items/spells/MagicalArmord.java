@@ -25,46 +25,46 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ArcaneArmor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.items.MerchantsBeacon;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfAntiMagic;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
 
 public class MagicalArmord extends Spell {
-	
-	{
-		image = ItemSpriteSheet.MAGIC_ARMOR;
-	}
-	
-	@Override
-	protected void onCast(Hero hero) {
-		Sample.INSTANCE.play(Assets.Sounds.TELEPORT, 1.33f, 1.65f);
-	   Buff.affect(hero, ArcaneArmor.class).set(2 + hero.lvl/2, 10);
-		hero.sprite.operate(hero.pos);
-	   hero.spendAndNext(1f);
 
-	   this.detach(hero.belongings.backpack);
-	}
-	
+    {
+        image = ItemSpriteSheet.MAGIC_ARMOR;
+    }
 
-	
-	@Override
-	public int value() {
-		//prices of ingredients, divided by output quantity
-		return Math.round(quantity * ((5 + 40) / 8f));
-	}
-	
-	public static class Recipe extends com.shatteredpixel.shatteredpixeldungeon.items.Recipe.SimpleRecipe {
-		
-		{
-			inputs =  new Class[]{ScrollOfAntiMagic.class, ForceCatalyst.class};
-			inQuantity = new int[]{1, 1};
-			
-			cost = 8;
-			
-			output = MagicalArmord.class;
-			outQuantity = 6;
-		}
-		
-	}
+    @Override
+    protected void onCast(Hero hero) {
+        Sample.INSTANCE.play(Assets.Sounds.TELEPORT, 1.33f, 1.65f);
+        Buff.affect(hero, ArcaneArmor.class).set(2 + hero.lvl / 2, 10);
+        hero.sprite.operate(hero.pos);
+        hero.spendAndNext(1f);
+
+        this.detach(hero.belongings.backpack);
+        Catalog.countUse(getClass());
+    }
+
+
+    @Override
+    public int value() {
+        //prices of ingredients, divided by output quantity
+        return Math.round(quantity * ((5 + 40) / 8f));
+    }
+
+    public static class Recipe extends com.shatteredpixel.shatteredpixeldungeon.items.Recipe.SimpleRecipe {
+
+        {
+            inputs = new Class[]{ScrollOfAntiMagic.class, ForceCatalyst.class};
+            inQuantity = new int[]{1, 1};
+
+            cost = 8;
+
+            output = MagicalArmord.class;
+            outQuantity = 6;
+        }
+
+    }
 }

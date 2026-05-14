@@ -304,6 +304,10 @@ public class Potion extends Item {
 		Sample.INSTANCE.play( Assets.Sounds.DRINK );
 		
 		hero.sprite.operate( hero.pos );
+
+        if (!anonymous) {
+            Catalog.countUse(getClass());
+        }
 	}
 	
 	@Override
@@ -316,7 +320,10 @@ public class Potion extends Item {
 
 			Dungeon.level.pressCell( cell );
 			shatter( cell );
-			
+
+            if (!anonymous) {
+                Catalog.countUse(getClass());
+            }
 		}
 	}
 	

@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
@@ -153,6 +154,7 @@ public class LloydsBeacon extends Artifact {
 			
 			hero.sprite.operate( hero.pos );
 			Sample.INSTANCE.play( Assets.Sounds.BEACON );
+            Catalog.countUse(getClass());
 			
 			GLog.i( Messages.get(this, "return") );
 			
@@ -175,6 +177,7 @@ public class LloydsBeacon extends Artifact {
 				Dungeon.level.occupyCell(hero );
 				Dungeon.observe();
 				GameScene.updateFog();
+                Catalog.countUse(getClass());
 			} else {
 
 				Buff buff = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
@@ -185,6 +188,7 @@ public class LloydsBeacon extends Artifact {
 				InterlevelScene.mode = InterlevelScene.Mode.RETURN;
 				InterlevelScene.returnDepth = returnDepth;
 				InterlevelScene.returnPos = returnPos;
+                Catalog.countUse(getClass());
 				Game.switchScene( InterlevelScene.class );
 			}
 			

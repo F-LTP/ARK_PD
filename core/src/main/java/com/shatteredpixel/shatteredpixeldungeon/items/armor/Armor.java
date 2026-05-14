@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.armor;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -60,6 +61,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Swiftness;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Thorns;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Viscosity;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
@@ -426,6 +429,10 @@ public class Armor extends EquipableItem {
 	}
 	
 	public int proc( Char attacker, Char defender, int damage ) {
+
+        if (defender == Dungeon.hero) {
+            Catalog.countUse(getClass());
+        }
 		
 		if (glyph != null && defender.buff(MagicImmune.class) == null) {
 			damage = glyph.proc( this, attacker, defender, damage );
@@ -595,6 +602,28 @@ public class Armor extends EquipableItem {
 		return price;
 	}
 
+    @Override
+    public boolean collect(Bag container) {
+        if (super.collect(container)) {
+            if (Dungeon.hero != null && Dungeon.hero.isAlive() && isIdentified() && glyph != null) {
+                Catalog.setSeen(glyph.getClass());
+                Statistics.itemTypesDiscovered.add(glyph.getClass());
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public Item identify(boolean byHero) {
+        if (glyph != null && byHero && Dungeon.hero != null && Dungeon.hero.isAlive()) {
+            Catalog.setSeen(glyph.getClass());
+            Statistics.itemTypesDiscovered.add(glyph.getClass());
+        }
+        return super.identify(byHero);
+    }
+
 	public Armor inscribe( Glyph glyph ) {
 		if (glyph == null || !glyph.curse()) curseInfusionBonus = false;
 		this.glyph = glyph;
@@ -604,6 +633,11 @@ public class Armor extends EquipableItem {
 		if (seal != null){
 			seal.setGlyph(glyph);
 		}
+        if (glyph != null && isIdentified() && Dungeon.hero != null
+                && Dungeon.hero.isAlive() && Dungeon.hero.belongings.contains(this)) {
+            Catalog.setSeen(glyph.getClass());
+            Statistics.itemTypesDiscovered.add(glyph.getClass());
+        }
 		return this;
 	}
 
@@ -634,16 +668,16 @@ public class Armor extends EquipableItem {
 	}
 	
 	public static abstract class Glyph implements Bundlable {
-		
-		private static final Class<?>[] common = new Class<?>[]{
+
+        public static final Class<?>[] common = new Class<?>[]{
 				Obfuscation.class, Swiftness.class, Viscosity.class, Potential.class };
-		
-		private static final Class<?>[] uncommon = new Class<?>[]{
+
+        public static final Class<?>[] uncommon = new Class<?>[]{
 				Brimstone.class, Stone.class, Entanglement.class,
 				Repulsion.class, Camouflage.class, Flow.class,
 				Hostility.class};
-		
-		private static final Class<?>[] rare = new Class<?>[]{
+
+        public static final Class<?>[] rare = new Class<?>[]{
 				Affection.class, AntiMagic.class, Thorns.class };
 		
 		private static final float[] typeChances = new float[]{
@@ -652,7 +686,7 @@ public class Armor extends EquipableItem {
 				10  //3.33% each
 		};
 
-		private static final Class<?>[] curses = new Class<?>[]{
+        public static final Class<?>[] curses = new Class<?>[]{
 				AntiEntropy.class, Corrosion.class, Displacement.class, Metabolism.class,
 				Multiplicity.class, Stench.class, Overgrowth.class, Bulk.class
 		};

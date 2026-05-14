@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.utils.Random;
@@ -116,6 +117,7 @@ public class MasterThievesArmband extends Artifact {
 			Talent.onArtifactUsed(Dungeon.hero);
 			while(exp >= (250 + 50*level()) && level() < levelCap) {
 				exp -= (250 + 50*level());
+                Catalog.countUse(MasterThievesArmband.class);
 				upgrade();
 			}
 			return true;

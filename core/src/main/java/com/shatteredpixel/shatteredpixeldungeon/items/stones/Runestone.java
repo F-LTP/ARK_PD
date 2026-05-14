@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.stones;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
 public abstract class Runestone extends Item {
@@ -38,6 +39,7 @@ public abstract class Runestone extends Item {
 		if (Dungeon.level.pit[cell] || !defaultAction.equals(AC_THROW)){
 			super.onThrow( cell );
 		} else {
+            Catalog.countUse(getClass());
 			activate(cell);
 			Invisibility.dispel();
 		}

@@ -56,6 +56,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Certificate;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SkillBook;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -432,13 +433,13 @@ public class Talulah extends Mob {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void die( Object cause ) {
-
+        Bestiary.skipCountingEncounters = true;
 		for (Mob mob : (Iterable<Mob>)Dungeon.level.mobs.clone()) {
 			if (mob instanceof InfectedPatrolCaptain || mob instanceof RipperDemon) {
 				mob.die( cause );
 			}
 		}
-
+        Bestiary.skipCountingEncounters = false;
 		updateVisibility(Dungeon.level);
 
 		GameScene.bossSlain();

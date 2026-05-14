@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotio
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -109,6 +110,7 @@ public class StoneOfIntuition extends InventoryStone {
                     } else {
                         GLog.n( Messages.get(WndGuess.class, "incorrect") );
                     }
+                    Catalog.countUse(StoneOfIntuition.class);
                     curGuess = null;
                     hide();
                 }

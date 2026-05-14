@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -54,7 +55,7 @@ public class StoneOfAugmentation extends InventoryStone {
 		weapon.augment = augment;
 		useAnimation();
 		ScrollOfUpgrade.upgrade(curUser);
-		
+        Catalog.countUse(getClass());
 	}
 	
 	public void apply( Armor armor, Armor.Augment augment ) {
@@ -62,6 +63,7 @@ public class StoneOfAugmentation extends InventoryStone {
 		armor.augment = augment;
 		useAnimation();
 		ScrollOfUpgrade.upgrade(curUser);
+        Catalog.countUse(getClass());
 	}
 	
 	@Override

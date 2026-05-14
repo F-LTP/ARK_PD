@@ -193,6 +193,7 @@ public abstract class Scroll extends Item {
 	public abstract void doRead();
 
 	protected void readAnimation() {
+        Catalog.countUse(getClass());
 		Invisibility.dispel();
 
 		if (curUser.hasTalent(Talent.PSYCHOANALYSIS)){

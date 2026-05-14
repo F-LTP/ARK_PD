@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SkillBook;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -341,6 +342,7 @@ public class CloakOfShadows extends Artifact {
 					
 					if (exp >= (level() + 1) * 55 && level() < levelCap) {
 						upgrade();
+                        Catalog.countUse(CloakOfShadows.class);
 						exp -= level() * 55;
 						GLog.p(Messages.get(this, "levelup"));
 						

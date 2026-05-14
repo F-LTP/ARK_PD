@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Token1;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.NewCityBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -293,9 +294,11 @@ public class Tomimi extends Mob {
     public void die(Object cause) {
         yell(Messages.get(this, "die"));
 
+        Bestiary.skipCountingEncounters = true;
         for (Mob m : getSubjects()) {
             m.die(null);
         }
+        Bestiary.skipCountingEncounters = false;
 
         Dungeon.level.drop(new Certificate(40), pos).sprite.drop(pos);
 

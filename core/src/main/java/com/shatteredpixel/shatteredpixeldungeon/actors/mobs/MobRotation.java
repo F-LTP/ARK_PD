@@ -27,7 +27,7 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Bestiary {
+public class MobRotation {
 	
 	public static ArrayList<Class<? extends Mob>> getMobRotation( int depth ){
 		ArrayList<Class<? extends Mob>> mobs = standardMobRotation( depth );

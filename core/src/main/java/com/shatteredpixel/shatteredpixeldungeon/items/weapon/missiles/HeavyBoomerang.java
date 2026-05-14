@@ -51,11 +51,6 @@ public class HeavyBoomerang extends MissileWeapon {
 	}
 
 	@Override
-	public boolean isUpgradable() {
-		return true;
-	}
-
-	@Override
 	protected void rangedHit(Char enemy, int cell) {
 		decrementDurability();
 		if (durability > 0){

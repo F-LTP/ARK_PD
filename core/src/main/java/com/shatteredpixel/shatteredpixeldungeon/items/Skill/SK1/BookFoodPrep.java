@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK1;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public class BookFoodPrep extends Item {
             hero.busy();
             hero.sprite.operate(hero.pos);
             detach(hero.belongings.backpack);
+            Catalog.countUse(getClass());
 
             hero.SK1 = new FoodPrep();
             hero.SetSkill1Num(6);
