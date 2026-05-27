@@ -106,8 +106,10 @@ public class Generators_Skill extends Generators {
     }
     private int maxSlots(int t){
         switch (t){
-            default:case 1:case 2:return 20;
-            case 3:return 10;
+            case 1:return Generator.Category.SKL_T1.classes.length;
+            case 2:return Generator.Category.SKL_T2.classes.length;
+            case 3:return Generator.Category.SKL_T3.classes.length;
+            default:return 20;
         }
     }
     private class SettingsWindow extends Window {

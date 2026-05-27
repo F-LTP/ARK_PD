@@ -165,6 +165,7 @@ public class Longsword extends MeleeWeapon {
 						ss.fx(shot, new Callback() {
 							public void call() {
 								ss.onZap(shot);
+                                curUser.spendAndNext( 0f );
 							}
 						});
 					}
