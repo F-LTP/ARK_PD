@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.testtool;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAccuracy;
@@ -58,6 +59,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfSilence;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfTransfusion;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wrench;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -246,8 +248,10 @@ public class Generators_Ring extends Generators {
             case 14:
                 return WandOfHealing.class;
             case 15:
-            default:
                 return WandOfSilence.class;
+            case 16:
+            default:
+                return Wrench.class;
         }
 
     }
@@ -301,27 +305,32 @@ public class Generators_Ring extends Generators {
 
     private void buildRingList() {
         if (!ringList.isEmpty()) return;
-        for (int i = 0; i < 17; ++i) {
+        for (int i = 0; i < total(RING_CAT); ++i) {
             ringList.add(idToRing(i));
         }
     }
 
     private void buildWandList() {
         if (!wandList.isEmpty()) return;
-        for (int i = 0; i < 16; ++i) {
+        for (int i = 0; i < total(WAND_CAT); ++i) {
             wandList.add(idToWand(i));
         }
     }
     private void buildSPWandList(){
         if (!spwandList.isEmpty()) return;
-        for (int i = 0; i < 20; ++i) {
+        for (int i = 0; i < total(WAND_SP); ++i) {
             spwandList.add(idToSPWand(i));
         }
     }
     private int total(int category){
-        if (category == RING_CAT) return 17;
-        if (category == WAND_CAT) return 16;
-        if (category == WAND_SP) return 20;
+        switch (category) {
+            case RING_CAT:
+                return Generator.Category.RING.classes.length;
+            case WAND_CAT:
+                return Generator.Category.WAND.classes.length;
+            case WAND_SP:
+                return 20;
+        }
         return 0;
     }
 

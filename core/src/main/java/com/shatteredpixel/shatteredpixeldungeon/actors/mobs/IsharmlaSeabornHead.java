@@ -120,7 +120,6 @@ public class IsharmlaSeabornHead extends Mob {
 
                 Badges.silentValidateHappyEnd();
                 Badges.validateiberia2();
-                Badges.validatewill();
                 Dungeon.win(Amulet.class);
                 Dungeon.deleteGame(GamesInProgress.curSlot, true);
                 Game.switchScene(SurfaceScene.class);

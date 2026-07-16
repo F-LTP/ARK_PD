@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
@@ -37,22 +38,7 @@ public class ScrollOfDominate extends ExoticScroll {
         for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
             if (mob.alignment != Char.Alignment.ALLY && Dungeon.level.heroFOV[mob.pos]) {
                 if (!mob.isImmune(Corruption.class)) {
-                    Buff.affect(mob, Corruption.class);
-
-                    boolean droppingLoot = mob.alignment != Char.Alignment.ALLY;
-
-                    if (mob.buff(Corruption.class) != null){
-                        if (droppingLoot) mob.rollToDropLoot();
-                        Statistics.enemiesSlain++;
-                        Badges.validateMonstersSlain();
-                        Statistics.qualifiedForNoKilling = false;
-                        if (mob.EXP > 0 && curUser.lvl <= mob.maxLvl) {
-                            curUser.sprite.showStatus(CharSprite.POSITIVE, Messages.get(mob, "exp", mob.EXP));
-                            curUser.earnExp(mob.EXP, mob.getClass());
-                        } else {
-                            curUser.earnExp(0, mob.getClass());
-                        }
-                    }
+                    AllyBuff.affectAndLoot(mob, curUser, Corruption.class);
                 }
             }
         }

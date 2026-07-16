@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Guardoper_ItermUpgrade;
@@ -158,24 +159,11 @@ abstract public class Weapon extends KindOfWeapon {
 			float Resists = 100 * enemyResist, dd=RingOfDominate.Dominate(Dungeon.hero);
 			int rr=Random.Int((int)Resists);
 			if (rr < dd) {
-				if (defender.isAlive() && !defender.isImmune(Corruption.class) && defender.buff(Corruption.class) == null && defender.alignment != Char.Alignment.ALLY) {
-					Buff.affect(defender, Corruption.class);
-					defender.HP = defender.HT;
-					damage = 0;
-				}
-				if (defender instanceof Mob) {
-					if (defender.isAlive() && !defender.isImmune(Corruption.class)) {
-						((Mob)defender).rollToDropLoot();
-						Statistics.enemiesSlain++;
-						Badges.validateMonstersSlain();
-						Statistics.qualifiedForNoKilling = false;
-						if (((Mob) defender).EXP > 0 && Dungeon.hero.lvl <= ((Mob) defender).maxLvl) {//change from budding
-							Dungeon.hero.sprite.showStatus(CharSprite.POSITIVE, Messages.get(defender, "exp", ((Mob) defender).EXP));
-							Dungeon.hero.earnExp(((Mob) defender).EXP, defender.getClass());
-						} else {
-							Dungeon.hero.earnExp(0, defender.getClass());
-						}
-					}
+                if (defender instanceof Mob && defender.isAlive() && !defender.isImmune(Corruption.class)
+                        && defender.buff(Corruption.class) == null && defender.alignment != Char.Alignment.ALLY) {
+                    defender.HP = defender.HT;
+                    damage = 0;
+                    AllyBuff.affectAndLoot((Mob) defender, curUser, Corruption.class);
 				}
 			}
 			}

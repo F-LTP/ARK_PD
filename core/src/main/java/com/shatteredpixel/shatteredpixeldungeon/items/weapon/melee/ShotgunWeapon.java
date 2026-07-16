@@ -203,9 +203,8 @@ public class ShotgunWeapon extends GunWeapon {
                 if (!ch.isAlive()) anyKill = true;
             }
 
-            // Press cells where no enemy was hit (triggers traps etc.)
             for (int cell : emptyCells) {
-                Dungeon.level.pressCell(cell);
+                Dungeon.level.pressCellGunfire(cell);
             }
 
             postShotCleanup(closerRange, false, anyKill);

@@ -4,6 +4,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.levels.Level.set;
 
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
@@ -235,7 +236,7 @@ public class Isharmla extends Mob {
 
             immunities.add(Drowsy.class);
             immunities.add(MagicalSleep.class);
-            immunities.add(Corruption.class);
+            immunities.add(AllyBuff.class);
 
             //no loot or exp
             maxLvl = -5;
@@ -248,7 +249,7 @@ public class Isharmla extends Mob {
 
             immunities.add(Drowsy.class);
             immunities.add(MagicalSleep.class);
-            immunities.add(Corruption.class);
+            immunities.add(AllyBuff.class);
 
             //no loot or exp
             maxLvl = -5;
@@ -261,7 +262,7 @@ public class Isharmla extends Mob {
 
             immunities.add(Drowsy.class);
             immunities.add(MagicalSleep.class);
-            immunities.add(Corruption.class);
+            immunities.add(AllyBuff.class);
 
             //no loot or exp
             maxLvl = -5;

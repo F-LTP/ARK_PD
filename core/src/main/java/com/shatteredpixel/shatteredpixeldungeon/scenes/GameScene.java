@@ -347,7 +347,7 @@ public class GameScene extends PixelScene {
 		for (Mob mob : Dungeon.level.mobs) {
 			addMobSprite( mob );
 			if (Statistics.amuletObtained) {
-				if (!Dungeon.isInRhodes()) mob.beckon( Dungeon.hero.pos );
+                if (!Dungeon.isInRhodes() && Dungeon.depth < 31) mob.beckon(Dungeon.hero.pos);
 			}
 		}
 

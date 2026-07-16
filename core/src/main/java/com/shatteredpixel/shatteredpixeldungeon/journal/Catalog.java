@@ -78,6 +78,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.spells.Recycle;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.WildEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ChenSword;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Enfild;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Enfild2;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Firmament;
@@ -257,7 +258,7 @@ public enum Catalog {
                 RhodesSword.class, Firmament.class, Gamzashield.class, Enfild2.class,
                 GoldDogSword.class, Gluttony.class, SanktaBet.class, Niansword.class,
                 PatriotSpear.class, CatGun.class, MinosFury.class, ImageoverForm.class,
-                KollamSword.class
+                KollamSword.class, ChenSword.class
         );
 
         ARMOR.addItems(Generator.Category.ARMOR.classes);

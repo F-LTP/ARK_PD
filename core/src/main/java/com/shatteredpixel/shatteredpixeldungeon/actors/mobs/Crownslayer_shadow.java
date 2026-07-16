@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
@@ -37,7 +38,7 @@ public class Crownslayer_shadow extends Mob {
         properties.add(Property.BOSS);
         properties.add(Property.INFECTED);
         immunities.add(Silence.class);
-        immunities.add(Corruption.class);
+        immunities.add(AllyBuff.class);
     }
 
     public Crownslayer_shadow() {

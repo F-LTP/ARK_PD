@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Electricity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Adrenaline;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ArcaneArmor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
@@ -984,9 +985,9 @@ public abstract class Char extends Actor {
 
 	public enum Property{
 		BOSS ( new HashSet<Class>( Arrays.asList(Grim.class, GrimTrap.class, ScrollOfRetribution.class, ScrollOfPsionicBlast.class, Oblivion.class)),
-				new HashSet<Class>( Arrays.asList(Corruption.class, StoneOfAggression.Aggression.class, Silence.class) )),
+				new HashSet<Class>( Arrays.asList(AllyBuff.class, StoneOfAggression.Aggression.class, Silence.class) )),
 		MINIBOSS ( new HashSet<Class>(),
-				new HashSet<Class>( Arrays.asList(Corruption.class, Silence.class) )),
+				new HashSet<Class>( Arrays.asList(AllyBuff.class, Silence.class) )),
 		UNDEAD,
 		DEMONIC,
 		INORGANIC ( new HashSet<Class>(),
@@ -1013,7 +1014,7 @@ public abstract class Char extends Actor {
 		SARKAZ( new HashSet<Class>( Arrays.asList(Grim.class, WandOfDisintegration.class, Oblivion.class)),
 				new HashSet<Class>()),
 		NPC ( new HashSet<Class>(),
-				new HashSet<Class>(Arrays.asList(Corruption.class, Amok.class, Terror.class, MagicalSleep.class))),
+				new HashSet<Class>(Arrays.asList(AllyBuff.class, Amok.class, Terror.class, MagicalSleep.class))),
 		SEA,
 		INFECTED;
 

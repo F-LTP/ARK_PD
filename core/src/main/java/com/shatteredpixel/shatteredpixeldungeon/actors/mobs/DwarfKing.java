@@ -457,8 +457,9 @@ public class DwarfKing extends Mob {
 	public void die(Object cause) {
 		// 이지모드라면 플레이어 사망
 		if (Dungeon.eazymode == 1) {
-			Item item = Dungeon.hero.belongings.getItem(Ankh.class);
-			if (item != null) item.detachAll(Dungeon.hero.belongings.backpack);
+            for (Ankh ankh : Dungeon.hero.belongings.getAllItems(Ankh.class)) {
+                ankh.detachAll(Dungeon.hero.belongings.backpack);
+            }
 			while (Dungeon.hero.isAlive() == true) {
 				Dungeon.hero.die(Dungeon.hero);
 			}

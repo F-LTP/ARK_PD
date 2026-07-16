@@ -2,7 +2,6 @@ package com.shatteredpixel.shatteredpixeldungeon.levels;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Closure;
@@ -12,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Firewall;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.FrostLeaf;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Jessica;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_Gglow;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_Mage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_Phantom;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_PhantomShadow;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Npc_Astesia;
@@ -27,8 +27,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_Scroll
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_TGBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_TransBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_WandBox;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
-import com.shatteredpixel.shatteredpixeldungeon.items.quest.QuestCat;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
@@ -48,17 +46,17 @@ public class NewRhodesLevel2 extends Level {
     }
 
     @Override
-    public String tilesTex () {
+    public String tilesTex() {
         return Assets.Environment.TILSE_RHODES;
     }
 
     @Override
-    public String waterTex () {
+    public String waterTex() {
         return Assets.Environment.WATER_PRISON;
     }
 
     @Override
-    public void create () {
+    public void create() {
         super.create();
         for (int i = 0; i < length(); i++) {
             int flags = Terrain.flags[map[i]];
@@ -72,7 +70,7 @@ public class NewRhodesLevel2 extends Level {
     private static final int ROOM_TOP = 6;
 
     @Override
-    protected boolean build () {
+    protected boolean build() {
 
         setSize(68, 85);
         Arrays.fill(map, Terrain.CHASM);
@@ -91,7 +89,7 @@ public class NewRhodesLevel2 extends Level {
         Painter.fill(this, 2, 53, 24, 1, Terrain.AVOID);
         Painter.fill(this, 8, 53, 1, 4, Terrain.AVOID);
         Painter.fill(this, 0, 57, 31, 1, Terrain.AVOID);
-        
+
         // + 상점 부분
         Painter.fill(this, 18, 53, 1, 4, Terrain.AVOID);
 
@@ -149,20 +147,47 @@ public class NewRhodesLevel2 extends Level {
         Painter.fill(this, 26, 48, 2, 11, Terrain.EMPTY);
 
         // 맵 경계선. 못나가도록 막음
-        Painter.fill(this, 28, 42, 1, 19, Terrain.WALL);
+        Painter.fill(this, 28, 42, 1, 16, Terrain.WALL);
         map[4164] = Terrain.EMPTY;
+
+        // 확장 상점구역
+        Painter.fill(this, 29, 53, 22, 4, Terrain.EMPTY);
+        Painter.fill(this, 34, 57, 17, 6, Terrain.EMPTY);
+
+        // 확장 상점구역 선반
+        Painter.fill(this, 37, 57, 2, 1, Terrain.WALL);
+        Painter.fill(this, 37, 58, 2, 1, Terrain.STATUE);
+        Painter.fill(this, 42, 57, 2, 1, Terrain.WALL);
+        Painter.fill(this, 42, 58, 2, 1, Terrain.STATUE);
+        Painter.fill(this, 37, 60, 2, 1, Terrain.WALL);
+        Painter.fill(this, 37, 61, 2, 1, Terrain.STATUE);
+        Painter.fill(this, 42, 60, 2, 1, Terrain.WALL);
+        Painter.fill(this, 42, 61, 2, 1, Terrain.STATUE);
+
+        // 위디 옆 확장통로 벽
+        Painter.fill(this, 29, 57, 4, 1, Terrain.WALL);
+        Painter.fill(this, 30, 60, 1, 5, Terrain.WALL);
+        Painter.fill(this, 33, 57, 1, 6, Terrain.WALL);
+        Painter.fill(this, 33, 63, 18, 1, Terrain.WALL);
+        Painter.fill(this, 31, 60, 2, 6, Terrain.EMPTY);
+        Painter.fill(this, 31, 64, 23, 2, Terrain.EMPTY);
+
+        map[4319] = Terrain.EMPTY;
+        map[4332] = Terrain.EMPTY;
+        map[4587] = Terrain.EMPTY;
+        map[4588] = Terrain.EMPTY;
 
         entrance = 4015;
         exit = 3607;
 
-        map[exit-1] = Terrain.EXIT;
+        map[exit - 1] = Terrain.EXIT;
         map[exit] = Terrain.EXIT;
 
         feeling = Level.Feeling.NONE;
 
         NewRhodesLevel2.CustomeMap vis = new NewRhodesLevel2.CustomeMap();
         vis.setRect(0, 0, width(), height());
-       customTiles.add(vis);
+        customTiles.add(vis);
 
         return true;
     }
@@ -185,26 +210,28 @@ public class NewRhodesLevel2 extends Level {
     }
 
     @Override
-    protected void createMobs () {
+    protected void createMobs() {
     }
 
-    public Actor addRespawner () {
+    public Actor addRespawner() {
         return null;
     }
 
     @Override
-    protected void createItems () {
-        Closure.spawn(this, 3682);
+    protected void createItems() {
+
+        Closure.spawn(this, 3683);
         SkinModel.spawn(this, 3751);
         Firewall.spawn(this, 3882);
-        Weedy.spawn(this, 3971);
+        Weedy.spawn(this, 4404);
         Dummy.spawn(this, 4286);
         Dummy.spawn(this, 4354);
         Jessica.spawn(this, 4295);
         Dobermann.spawn(this, 4298);
         FrostLeaf.spawn(this, 4305);
         NPC_Phantom.spawn(this, 3010);
-        NPC_Gglow.spawn(this, 3964);
+        NPC_Gglow.spawn(this, 3910);
+        NPC_Mage.spawn(this, 3202);
 
         if (Random.Int(2) == 0) Npc_Astesia.spawn(this, 3004);
         else Npc_Astesia.spawn(this, 3218);
@@ -216,19 +243,19 @@ public class NewRhodesLevel2 extends Level {
 
         // 특수 상점 관련
 
-        drop( new Closure_FoodBox(), 3692 ).type = Heap.Type.FOR_SALE_28F;
-        drop( new Closure_PotionBox(), 3693 ).type = Heap.Type.FOR_SALE_28F;
-        drop( new Closure_ScrollBox(), 3694 ).type = Heap.Type.FOR_SALE_28F;
-        drop( new Closure_IdentifyBox(), 3695 ).type = Heap.Type.FOR_SALE_28F;
-        drop( new Closure_HealingBox(), 3696 ).type = Heap.Type.FOR_SALE_28F;
-        drop( new Closure_WandBox(), 3828 ).type = Heap.Type.FOR_SALE_28F;
-        drop( new Closure_TransBox(), 3829 ).type = Heap.Type.FOR_SALE_28F;
-        drop( new Closure_RingBox(), 3830 ).type = Heap.Type.FOR_SALE_28F;
-        drop( new Closure_TGBox(), 3832 ).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_FoodBox(), 3709).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_PotionBox(), 3710).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_ScrollBox(), 3777).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_IdentifyBox(), 3778).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_HealingBox(), 3714).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_WandBox(), 3715).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_TransBox(), 3782).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_RingBox(), 3783).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_TGBox(), 3784).type = Heap.Type.FOR_SALE_28F;
     }
 
     @Override
-    public int randomRespawnCell (Char ch ){
+    public int randomRespawnCell(Char ch) {
         int cell;
         int count = 0;
         do {
@@ -244,14 +271,14 @@ public class NewRhodesLevel2 extends Level {
 
 
     @Override
-    public Group addVisuals () {
+    public Group addVisuals() {
         super.addVisuals();
         HallsLevel.addHallsVisuals(this, visuals);
         return visuals;
     }
 
     @Override
-    public void restoreFromBundle (Bundle bundle){
+    public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
     }
 
@@ -264,12 +291,12 @@ public class NewRhodesLevel2 extends Level {
         @Override
         public Tilemap create() {
             Tilemap v = super.create();
-            int[] data = new int[tileW*tileH];
-            for (int i = 0; i < data.length; i++){
+            int[] data = new int[tileW * tileH];
+            for (int i = 0; i < data.length; i++) {
                 data[i] = i;
             }
 
-            v.map( data, tileW );
+            v.map(data, tileW);
             return v;
         }
     }

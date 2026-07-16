@@ -404,6 +404,7 @@ import com.watabou.utils.DeviceCompat;
 
 	 private static void testToolSpawn(Hero hero) {
 		 if (Dungeon.isChallenged(Challenges.TEST)) {
+             new Heamyo().identify().collect();
 			 new TestToolBag().collect();
 			 new DictBook().collect();
 			 new MobBook().collect();

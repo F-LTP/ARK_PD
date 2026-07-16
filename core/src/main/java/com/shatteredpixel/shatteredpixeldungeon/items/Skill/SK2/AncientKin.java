@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK2;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.TomorrowRogueNight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -46,18 +47,32 @@ public class AncientKin extends Skill {
                             Seaborn seaborn = new Seaborn();
                             seaborn.pos = mob.pos;
 
-                            mob.die(Dungeon.hero);
-                            Dungeon.level.mobs.remove(mob);
-                            TargetHealthIndicator.instance.target(null);
-                            GameScene.add(seaborn);
-                            CellEmitter.get(seaborn.pos).burst(Speck.factory(Speck.WOOL), 4);
-                        } else Buff.affect(mob, Paralysis.class, 5f);}}
-                else GLog.n( Messages.get(AncientKin.class, "fail") );
+                            try {
+                                ((Mob) mob).rollToDropLoot();
+                                ((Mob) mob).onConvertKilled(Dungeon.hero);
+                                ((Mob) mob).destroy();
+                                if (mob.sprite != null) mob.sprite.killAndErase();
+                                TargetHealthIndicator.instance.target(null);
+                                GameScene.add(seaborn);
+                                CellEmitter.get(seaborn.pos).burst(Speck.factory(Speck.WOOL), 4);
+                            } catch (RuntimeException e) {
+                                TomorrowRogueNight.reportException(
+                                        new RuntimeException("AncientKin Seaborn conversion failed; victim="
+                                                + mob.getClass().getSimpleName(), e));
+                                throw e;
+                            }
+                        } else Buff.affect(mob, Paralysis.class, 5f);
+                    }
+                } else GLog.n(Messages.get(AncientKin.class, "fail"));
             }
 
             for (Mob Mob : Dungeon.level.mobs.toArray( new Mob[0] )) {
                 if (Mob.alignment != Char.Alignment.ALLY && Dungeon.level.heroFOV[Mob.pos]) {
-                    Buff.affect( Mob, Terror.class, Terror.DURATION ).object = curUser.id(); }}}
+                    Terror t = Buff.affect(Mob, Terror.class, Terror.DURATION);
+                    if (t != null) t.object = curUser.id();
+                }
+            }
+        }
 
         @Override
         public String prompt() {

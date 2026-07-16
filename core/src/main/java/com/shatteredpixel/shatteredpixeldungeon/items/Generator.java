@@ -228,6 +228,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfSilence;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfTransfusion;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wrench;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.AssassinsBlade;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.BattleAxe;
 
@@ -511,8 +512,10 @@ public class Generator {
                     WandOfRegrowth.class,
                     WandOfSilence.class,
                     WandOfHealing.class,
-                    WandOfHallucination.class};
-            WAND.probs = new float[]{3, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 2, 3};
+                    WandOfHallucination.class,
+                    Wrench.class
+            };
+            WAND.probs = new float[]{3, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 2, 3, 0};
 
             //see generator.randomWeapon
             WEAPON.classes = new Class<?>[]{};

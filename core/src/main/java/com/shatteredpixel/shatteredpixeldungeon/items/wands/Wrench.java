@@ -1,48 +1,35 @@
-package com.shatteredpixel.shatteredpixeldungeon.items.wands.SP;
+package com.shatteredpixel.shatteredpixeldungeon.items.wands;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.WardSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.WardSprite_Mayer;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.SentrySprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
-import com.watabou.utils.PathFinder;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 
-public class StaffOfMayer extends Wand
-{
-    private static ItemSprite.Glowing COL = new ItemSprite.Glowing( 0xE9967A );
+public class Wrench extends Wand {
+
     {
-        image = ItemSpriteSheet.WAND_WARDING;
+        image = ItemSpriteSheet.WRENCH;
     }
-
-    @Override
-    public ItemSprite.Glowing glowing() {
-        return COL;
-    }
-
 
     @Override
     protected int collisionProperties(int target) {
@@ -57,15 +44,15 @@ public class StaffOfMayer extends Wand
 
         int currentWardEnergy = 0;
         for (Char ch : Actor.chars()){
-            if (ch instanceof StaffOfMayer.Ward){
-                currentWardEnergy += ((StaffOfMayer.Ward) ch).tier;
+            if (ch instanceof Ward){
+                currentWardEnergy += ((Ward) ch).tier;
             }
         }
 
         int maxWardEnergy = 0;
         for (Buff buff : curUser.buffs()){
             if (buff instanceof Wand.Charger){
-                if (((Charger) buff).wand() instanceof StaffOfMayer){
+                if (((Charger) buff).wand() instanceof WandOfWarding){
                     maxWardEnergy += 2 + ((Charger) buff).wand().level();
                 }
             }
@@ -74,8 +61,8 @@ public class StaffOfMayer extends Wand
         wardAvailable = (currentWardEnergy < maxWardEnergy);
 
         Char ch = Actor.findChar(target);
-        if (ch instanceof StaffOfMayer.Ward){
-            if (!wardAvailable && ((StaffOfMayer.Ward) ch).tier <= 3){
+        if (ch instanceof Ward){
+            if (!wardAvailable && ((Ward) ch).tier <= 3){
                 GLog.w( Messages.get(this, "no_more_wards"));
                 return false;
             }
@@ -94,11 +81,11 @@ public class StaffOfMayer extends Wand
 
         int target = bolt.collisionPos;
         Char ch = Actor.findChar(target);
-        if (ch != null && !(ch instanceof StaffOfMayer.Ward)){
+        if (ch != null && !(ch instanceof Ward)){
             if (bolt.dist > 1) target = bolt.path.get(bolt.dist-1);
 
             ch = Actor.findChar(target);
-            if (ch != null && !(ch instanceof StaffOfMayer.Ward)){
+            if (ch != null && !(ch instanceof Ward)){
                 GLog.w( Messages.get(this, "bad_location"));
                 Dungeon.level.pressCell(bolt.collisionPos);
                 return;
@@ -110,20 +97,20 @@ public class StaffOfMayer extends Wand
             Dungeon.level.pressCell(target);
 
         } else if (ch != null){
-            if (ch instanceof StaffOfMayer.Ward){
+            if (ch instanceof Ward){
                 if (wardAvailable) {
-                    ((StaffOfMayer.Ward) ch).upgrade( buffedLvl() );
+                    ((Ward) ch).upgrade( buffedLvl() );
                 } else {
-                    ((StaffOfMayer.Ward) ch).wandHeal( buffedLvl() );
+                    ((Ward) ch).wandHeal( buffedLvl() );
                 }
-                ch.sprite.emitter().burst(MagicMissile.WardParticle.UP, ((StaffOfMayer.Ward) ch).tier);
+                ch.sprite.emitter().burst(MagicMissile.WardParticle.UP, ((Ward) ch).tier);
             } else {
                 GLog.w( Messages.get(this, "bad_location"));
                 Dungeon.level.pressCell(target);
             }
 
         } else {
-            StaffOfMayer.Ward ward = new StaffOfMayer.Ward();
+            Ward ward = new Ward();
             ward.pos = target;
             ward.wandLevel = buffedLvl();
             GameScene.add(ward, 1f);
@@ -158,9 +145,9 @@ public class StaffOfMayer extends Wand
         // lvl 2 - 43%
         if (Random.Int( level + 5 ) >= 4) {
             for (Char ch : Actor.chars()){
-                if (ch instanceof StaffOfMayer.Ward){
-                    ((StaffOfMayer.Ward) ch).wandHeal(staff.buffedLvl());
-                    ch.sprite.emitter().burst(MagicMissile.WardParticle.UP, ((StaffOfMayer.Ward) ch).tier);
+                if (ch instanceof Ward){
+                    ((Ward) ch).wandHeal(staff.buffedLvl());
+                    ch.sprite.emitter().burst(MagicMissile.WardParticle.UP, ((Ward) ch).tier);
                 }
             }
         }
@@ -182,7 +169,7 @@ public class StaffOfMayer extends Wand
         public int totalZaps = 0;
 
         {
-            spriteClass = WardSprite_Mayer.class;
+            spriteClass = SentrySprite.class;
 
             alignment = Alignment.ALLY;
 
@@ -207,15 +194,15 @@ public class StaffOfMayer extends Wand
                 case 1: case 2: default:
                     break; //do nothing
                 case 3:
-                    HT = 20;
+                    HT = 35;
                     HP = 15 + (5-totalZaps)*4;
                     break;
                 case 4:
-                    HT = 36;
+                    HT = 54;
                     HP += 19;
                     break;
                 case 5:
-                    HT = 58;
+                    HT = 84;
                     HP += 30;
                     break;
                 case 6:
@@ -227,7 +214,7 @@ public class StaffOfMayer extends Wand
                 tier++;
                 viewDistance++;
                 if (sprite != null){
-                    ((WardSprite_Mayer)sprite).updateTier(tier);
+                    ((SentrySprite)sprite).updateTier(tier);
                     sprite.place(pos);
                 }
                 GameScene.updateFog(pos, viewDistance+1);
@@ -307,7 +294,7 @@ public class StaffOfMayer extends Wand
             spend( 1f );
 
             //always hits
-            int dmg = Random.NormalIntRange( 2 + wandLevel, 8 + 3*wandLevel );
+            int dmg = Random.NormalIntRange( 2 + wandLevel, 8 + 4*wandLevel );
             enemy.damage( dmg, this );
             if (enemy.isAlive()){
                 Wand.processSoulMark(enemy, wandLevel, 1);
@@ -353,7 +340,7 @@ public class StaffOfMayer extends Wand
 
         @Override
         public CharSprite sprite() {
-            WardSprite_Mayer sprite = (WardSprite_Mayer) super.sprite();
+            SentrySprite sprite = (SentrySprite) super.sprite();
             sprite.linkVisuals(this);
             return sprite;
         }
@@ -361,7 +348,7 @@ public class StaffOfMayer extends Wand
         @Override
         public void updateSpriteState() {
             super.updateSpriteState();
-            ((WardSprite_Mayer)sprite).updateTier(tier);
+            ((SentrySprite)sprite).updateTier(tier);
             sprite.place(pos);
         }
 
@@ -385,10 +372,10 @@ public class StaffOfMayer extends Wand
             Game.runOnRenderThread(new Callback() {
                 @Override
                 public void call() {
-                    GameScene.show(new WndOptions( Messages.get(StaffOfMayer.Ward.this, "dismiss_title"),
-                            Messages.get(StaffOfMayer.Ward.this, "dismiss_body"),
-                            Messages.get(StaffOfMayer.Ward.this, "dismiss_confirm"),
-                            Messages.get(StaffOfMayer.Ward.this, "dismiss_cancel") ){
+                    GameScene.show(new WndOptions( Messages.get(Ward.this, "dismiss_title"),
+                            Messages.get(Ward.this, "dismiss_body"),
+                            Messages.get(Ward.this, "dismiss_confirm"),
+                            Messages.get(Ward.this, "dismiss_cancel") ){
                         @Override
                         protected void onSelect(int index) {
                             if (index == 0){
@@ -402,38 +389,12 @@ public class StaffOfMayer extends Wand
         }
 
         @Override
-        public void die(Object cause) {
-            super.die(cause);
-
-            boolean heroKilled = false;
-            for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
-                Char ch = findChar( pos + PathFinder.NEIGHBOURS8[i] );
-                if (ch != null && ch.isAlive()) {
-                    int damage = Random.NormalIntRange(4 + wandLevel + (tier * 4), 8 + wandLevel* (2 * (tier+1)));
-                    ch.damage( damage, this );
-                    if (ch == Dungeon.hero && !ch.isAlive()) {
-                        heroKilled = true;
-                    }
-                }
-            }
-
-            if (Dungeon.level.heroFOV[pos]) {
-                Sample.INSTANCE.play( Assets.Sounds.BONES );
-            }
-
-            if (heroKilled) {
-                Dungeon.fail( getClass() );
-                GLog.n( Messages.get(this, "explo_kill") );
-            }
-        }
-
-        @Override
         public String description() {
-            return Messages.get(this, "desc_" + tier, 2+wandLevel, 8 + 3*wandLevel, tier );
+            return Messages.get(this, "desc_" + tier, 2+wandLevel, 8 + 4*wandLevel, tier );
         }
 
         {
-            immunities.add( AllyBuff.class );
+            immunities.add( Corruption.class );
         }
 
         private static final String TIER = "tier";

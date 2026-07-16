@@ -26,26 +26,15 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 
-public class Corruption extends Buff {
+public class Corruption extends AllyBuff {
 
 	{
 		type = buffType.NEGATIVE;
 		announced = true;
-        revivePersists = true;
 	}
 
 	private float buildToDamage = 0f;
-	
-	@Override
-	public boolean attachTo(Char target) {
-		if (super.attachTo(target)){
-			target.alignment = Char.Alignment.ALLY;
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
+
 	@Override
 	public boolean act() {
 		buildToDamage += target.HT/200f;

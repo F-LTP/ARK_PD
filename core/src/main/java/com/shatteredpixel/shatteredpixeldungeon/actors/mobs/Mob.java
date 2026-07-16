@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Adrenaline;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Camouflage;
@@ -648,22 +649,11 @@ public abstract class Mob extends Char {
 					int chancevalue = Random.Int(HT * (55 - (Dungeon.hero.pointsInTalent(Talent.SOUL_SIPHON) * 9)));
 					boolean chance = (chancevalue < damage);
 					if (chance) {
-						boolean droppingLoot = this.alignment != Char.Alignment.ALLY;
-						Buff.affect(this, Corruption.class);
+                        AllyBuff.affectAndLoot(this, Dungeon.hero, Corruption.class);
 
 						if (this.buff(Corruption.class) != null){
 							damage = 0;
 							HP = HT;
-							if (droppingLoot) this.rollToDropLoot();
-							Statistics.enemiesSlain++;
-							Badges.validateMonstersSlain();
-							Statistics.qualifiedForNoKilling = false;
-							if (this.EXP > 0 && Dungeon.hero.lvl <= this.maxLvl) {
-								Dungeon.hero.sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "exp", this.EXP));
-								Dungeon.hero.earnExp(this.EXP, this.getClass());
-							} else {
-								Dungeon.hero.earnExp(0, this.getClass());
-							}
 						}
 					}
 				}
@@ -761,8 +751,17 @@ public abstract class Mob extends Char {
 			}
 		}
 	}
-	
-	@Override
+
+    //Runs the kill-tracking bookkeeping that destroy() omits (quest progress) for mobs that are
+    //removed via ally-conversion (e.g. Seaborn) instead of a normal death. destroy() already covers
+    //Statistics/Badges/Bestiary/EXP; this fills the quest gap without re-running the victim's full
+    //die() override (which can revive, spawn gas, etc.). Subclasses with custom quest counters
+    //should override this and call super.onConvertKilled(cause).
+    public void onConvertKilled(Object cause) {
+        QuestScroll.onMobKilled(cause);
+    }
+
+    @Override
 	public void die( Object cause ) {
 
 		if (cause == Chasm.class){

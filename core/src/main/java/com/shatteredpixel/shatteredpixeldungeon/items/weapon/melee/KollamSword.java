@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
@@ -104,25 +105,11 @@ public class KollamSword extends MeleeWeapon {
                     if (!ch.isImmune(Corruption.class)) {
                         boolean chance = setbouns() || Random.Int(2) != 0;
 
-                        if (chance)Buff.affect(ch, Corruption.class);
-
-                        boolean droppingLoot = ch.alignment != Char.Alignment.ALLY;
-
-                        if (ch.buff(Corruption.class) != null){
-                            if (droppingLoot) ((Mob)ch).rollToDropLoot();
-                            Statistics.enemiesSlain++;
-                            Badges.validateMonstersSlain();
-                            Statistics.qualifiedForNoKilling = false;
-                            if (((Mob)ch).EXP > 0 && curUser.lvl <= ((Mob)ch).maxLvl) {
-                                curUser.sprite.showStatus(CharSprite.POSITIVE, Messages.get(((Mob)ch), "exp", ((Mob)ch).EXP));
-                                curUser.earnExp(((Mob)ch).EXP, ((Mob)ch).getClass());
-                            } else {
-                                curUser.earnExp(0, ((Mob)ch).getClass());
-                            }
-                        }
+                        if (chance) AllyBuff.affectAndLoot((Mob) ch, curUser, Corruption.class);
                     }
-
-                }}}
+                }
+            }
+        }
     }
 
     private boolean setbouns() {

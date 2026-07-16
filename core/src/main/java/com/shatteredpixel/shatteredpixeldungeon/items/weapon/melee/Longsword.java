@@ -165,7 +165,6 @@ public class Longsword extends MeleeWeapon {
 						ss.fx(shot, new Callback() {
 							public void call() {
 								ss.onZap(shot);
-                                curUser.spendAndNext( 0f );
 							}
 						});
 					}
@@ -222,5 +221,6 @@ public class Longsword extends MeleeWeapon {
 		updateQuickslot();
         Invisibility.dispel();
 		if (arts <= 0) curUser.spendAndNext(1f);
+        else curUser.spendAndNext( 0f );
 	}
 }

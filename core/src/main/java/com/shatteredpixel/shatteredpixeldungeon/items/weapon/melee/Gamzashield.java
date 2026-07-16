@@ -186,7 +186,6 @@ public class Gamzashield extends MeleeWeapon {
                         gamza.fx(shot, new Callback() {
                             public void call() {
                                 gamza.onZap(shot);
-                                curUser.spendAndNext( 0f );
                             }
                         });
                     }
@@ -212,6 +211,7 @@ public class Gamzashield extends MeleeWeapon {
             affectTarget(ch);
         }
         Invisibility.dispel();
+        curUser.spendAndNext( 0f );
     }
 
     private void affectTarget(Char ch) {

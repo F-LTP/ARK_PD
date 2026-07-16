@@ -80,6 +80,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Platform;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.SeaTerror;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.TenguDartTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -691,7 +692,7 @@ public abstract class Level implements Bundlable {
 				mob.pos = Dungeon.level.randomRespawnCell( mob );
 				if (Dungeon.hero.isAlive() && mob.pos != -1 && PathFinder.distance[mob.pos] >= 12) {
 					GameScene.add( mob );
-					if (Statistics.amuletObtained && !Dungeon.isInRhodes()) {
+                    if (Statistics.amuletObtained && !Dungeon.isInRhodes() && Dungeon.depth < 31) {
 						mob.beckon( Dungeon.hero.pos );
 					}
 					if (!mob.buffs(ChampionEnemy.class).isEmpty()){
@@ -1133,26 +1134,36 @@ public abstract class Level implements Bundlable {
 	
 	//public method for forcing the hard press of a cell. e.g. when an item lands on it
 	public void pressCell( int cell ){
-		pressCell( cell, true );
+		pressCell( cell, true, true );
 	}
-	
-	//a 'soft' press ignores hidden traps
-	//a 'hard' press triggers all things
-	private void pressCell( int cell, boolean hard ) {
 
+    public void pressCellGunfire(int cell) {
+        boolean tenguDart = traps.get(cell) instanceof TenguDartTrap;
+        pressCell(cell, true, !tenguDart);
+    }
+
+	private void pressCell( int cell, boolean hard ) {
+        pressCell(cell, hard, true);
+    }
+
+    //a 'soft' press ignores hidden traps
+    //a 'hard' press triggers all things
+    private void pressCell(int cell, boolean hard, boolean triggerTraps) {
 		Trap trap = null;
 		
 		switch (map[cell]) {
 		
 		case Terrain.SECRET_TRAP:
-			if (hard) {
+			if (hard && triggerTraps) {
 				trap = traps.get( cell );
 				GLog.i(Messages.get(Level.class, "hidden_trap", trap.name()));
 			}
 			break;
 			
 		case Terrain.TRAP:
-			trap = traps.get( cell );
+            if (triggerTraps) {
+                trap = traps.get(cell);
+            }
 			break;
 			
 		case Terrain.HIGH_GRASS:
