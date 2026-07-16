@@ -364,7 +364,14 @@ public class Badges {
         String names[] = new String[badges.size()];
 
         for (Badge badge : badges) {
+            if (badge == null) continue; // 跳过 null 元素 防止已存在的坏数据导致崩溃
             names[count++] = badge.name();
+        }
+        // 截断数组，避免尾部 null 元素
+        if (count < names.length) {
+            String[] trimmed = new String[count];
+            System.arraycopy(names, 0, trimmed, 0, count);
+            names = trimmed;
         }
         bundle.put(BADGES, names);
     }
@@ -387,6 +394,7 @@ public class Badges {
                 global = new HashSet<>();
             }
         }
+        global.remove(null);//临时解决方案
     }
 
     public static void DestroyGlobal() {
@@ -871,7 +879,7 @@ public class Badges {
     static {
         thirdBossSubclassBadges.put(HeroSubClass.GLADIATOR, Badge.BOSS_SLAIN_3_GLADIATOR);
         thirdBossSubclassBadges.put(HeroSubClass.BERSERKER, Badge.BOSS_SLAIN_3_BERSERKER);
-        thirdBossSubclassBadges.put(HeroSubClass.HEAT, Badge.BOSS_SLAIN_3_BATTLEMAGE);
+        thirdBossSubclassBadges.put(HeroSubClass.HEAT, Badge.BOSS_SLAIN_3_HEAT);
         thirdBossSubclassBadges.put(HeroSubClass.WARLOCK, Badge.BOSS_SLAIN_3_WARLOCK);
         thirdBossSubclassBadges.put(HeroSubClass.CHAOS, Badge.BOSS_SLAIN_3_CHAOS);
         thirdBossSubclassBadges.put(HeroSubClass.BATTLEMAGE, Badge.BOSS_SLAIN_3_BATTLEMAGE);
@@ -1316,9 +1324,11 @@ public class Badges {
             badge = firstChamionClassBadges.get(Dungeon.hero.heroClass);
         }
         if (challenges >= 3) {
+            unlock(badge);
             badge = secondChamionClassBadges.get(Dungeon.hero.heroClass);
         }
         if (challenges >= 6) {
+            unlock(badge);
             badge = thirdChamionClassBadges.get(Dungeon.hero.heroClass);
         }
 
@@ -1495,6 +1505,7 @@ public class Badges {
     }
 
     public static void unlock(Badge badge) {
+        if (badge == null) return; // 防御性检查
         if (!isUnlocked(badge) && Dungeon.customSeedText.isEmpty() && !Dungeon.isChallenged(TEST)){
             global.add(badge);
             saveNeeded = true;
@@ -1508,9 +1519,10 @@ public class Badges {
         Iterator<Badge> iterator = badges.iterator();
         while (iterator.hasNext()) {
             Badge badge = iterator.next();
-            if ((!global && badge.meta) || badge.skin || badge.image == -1) {
-                iterator.remove();
-            }
+            if (badge!=null)//临时解决方案
+                if ((!global && badge.meta) || badge.skin || badge.image == -1) {
+                    iterator.remove();
+                }
         }
 
         Collections.sort(badges);
@@ -1526,9 +1538,10 @@ public class Badges {
         Iterator<Badge> iterator = badges.iterator();
         while (iterator.hasNext()) {
             Badge badge = iterator.next();
-            if ((!global && badge.meta) || !badge.skin || badge.image == -1) {
-                iterator.remove();
-            }
+            if (badge!=null)//临时解决方案
+                if ((!global && badge.meta) || !badge.skin || badge.image == -1) {
+                    iterator.remove();
+                }
         }
 
         Collections.sort(badges);

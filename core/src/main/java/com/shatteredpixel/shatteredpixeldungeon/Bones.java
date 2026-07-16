@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -45,22 +46,33 @@ public class Bones {
 	private static final String BONES_FILE	= "bones.dat";
 	
 	private static final String LEVEL	= "level";
+    private static final String BRANCH	= "branch";
 	private static final String ITEM	= "item";
+    private static final String HERO_CLASS	= "hero_class";
 
 	private static int depth = -1;
+    private static int branch = -1;
+
 	private static Item item;
+    private static HeroClass heroClass;
 	
 	public static void leave() {
 
 		depth = Dungeon.depth;
+        if (Dungeon.depth < 0) {//临时解决方案
+            depth = -1;
+            return;
+        }
+        branch = Dungeon.branch;
 
 		//heroes drop no bones if they have the amulet, die far above their farthest depth, are challenged, or are playing with a custom seed.
-		if (Statistics.amuletObtained || (Statistics.deepestFloor - 5) >= depth || Dungeon.challenges > 0 || Dungeon.isChallenged(TEST) || !Dungeon.customSeedText.isEmpty()) {//change from budding
-			depth = -1;
+		if (Statistics.amuletObtained || (Statistics.deepestFloor - 5) >= depth || Dungeon.challenges > 0 || Dungeon.isChallenged(TEST) || !Dungeon.customSeedText.isEmpty() || Dungeon.daily) {//change from budding
+			depth = branch = -1;
 			return;
 		}
 
 		item = pickItem(Dungeon.hero);
+        heroClass = Dungeon.hero.heroClass;
 
 		Bundle bundle = new Bundle();
 		bundle.put( LEVEL, depth );
@@ -140,7 +152,23 @@ public class Bones {
 				Bundle bundle = FileUtils.bundleFromFile(BONES_FILE);
 
 				depth = bundle.getInt( LEVEL );
-				item = (Item)bundle.get( ITEM );
+                if (depth > 0) {
+                    if (bundle.contains(ITEM)) {
+                        item = (Item) bundle.get(ITEM);
+                    } else {
+                        item = null;
+                    }
+                    if (bundle.contains(HERO_CLASS)){
+                        heroClass = bundle.getEnum(HERO_CLASS, HeroClass.class);
+                    } else {
+                        heroClass = null;
+                    }
+                }
+                else { //临时解决方案
+                    FileUtils.deleteFile(BONES_FILE);
+                    depth = 1;
+                    return null;
+                }
 
 				return get();
 
