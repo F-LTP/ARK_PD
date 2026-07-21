@@ -15,6 +15,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_Mage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_Phantom;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_PhantomShadow;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Npc_Astesia;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Purestream;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.SkinModel;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Weedy;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -27,6 +28,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_Scroll
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_TGBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_TransBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_WandBox;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.UnstableSpellbook;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfMistress;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
@@ -97,7 +100,7 @@ public class NewRhodesLevel2 extends Level {
         map[3617] = Terrain.EMPTY;
         map[3882] = Terrain.EMPTY;
         map[3889] = Terrain.EMPTY;
-        map[3750] = Terrain.AVOID;
+        map[3751] = Terrain.AVOID;
         map[3758] = Terrain.EMPTY;
 
         // 훈련실 구역 A2
@@ -120,6 +123,19 @@ public class NewRhodesLevel2 extends Level {
         Painter.fill(this, 2, 43, 26, 6, Terrain.EMPTY);
         Painter.fill(this, 2, 46, 26, 1, Terrain.AVOID);
         Painter.fill(this, 20, 42, 6, 4, Terrain.WALL);
+        map[3341] = Terrain.EMPTY;
+        map[3409] = Terrain.EMPTY;
+        map[3477] = Terrain.EMPTY;
+        map[3545] = Terrain.EMPTY;
+        map[3613] = Terrain.EMPTY;
+        map[3681] = Terrain.EMPTY;
+        map[3749] = Terrain.EMPTY;
+        map[3817] = Terrain.EMPTY;
+        map[3885] = Terrain.EMPTY;
+
+        map[3818] = Terrain.WALL;
+        map[3750] = Terrain.WALL;
+        map[3682] = Terrain.WALL;
 
         // 숙소 B1구역-세부
         Painter.fill(this, 2, 42, 3, 4, Terrain.AVOID);
@@ -220,8 +236,10 @@ public class NewRhodesLevel2 extends Level {
     @Override
     protected void createItems() {
 
-        Closure.spawn(this, 3683);
-        SkinModel.spawn(this, 3751);
+        Closure.spawn(this, 3910);
+        //TODO placeholder cell — set the real position (upper-right of the shop area per npc_mage.quest3)
+        Purestream.spawn(this, 3785);
+        SkinModel.spawn(this, 3752);
         Firewall.spawn(this, 3882);
         Weedy.spawn(this, 4404);
         Dummy.spawn(this, 4286);
@@ -230,7 +248,7 @@ public class NewRhodesLevel2 extends Level {
         Dobermann.spawn(this, 4298);
         FrostLeaf.spawn(this, 4305);
         NPC_Phantom.spawn(this, 3010);
-        NPC_Gglow.spawn(this, 3910);
+        NPC_Gglow.spawn(this, 3684);
         NPC_Mage.spawn(this, 3202);
 
         if (Random.Int(2) == 0) Npc_Astesia.spawn(this, 3004);
@@ -249,9 +267,27 @@ public class NewRhodesLevel2 extends Level {
         drop(new Closure_IdentifyBox(), 3778).type = Heap.Type.FOR_SALE_28F;
         drop(new Closure_HealingBox(), 3714).type = Heap.Type.FOR_SALE_28F;
         drop(new Closure_WandBox(), 3715).type = Heap.Type.FOR_SALE_28F;
-        drop(new Closure_TransBox(), 3782).type = Heap.Type.FOR_SALE_28F;
-        drop(new Closure_RingBox(), 3783).type = Heap.Type.FOR_SALE_28F;
-        drop(new Closure_TGBox(), 3784).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_TransBox(), 3781).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_RingBox(), 3782).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_TGBox(), 3783).type = Heap.Type.FOR_SALE_28F;
+
+        // 유물
+
+        drop(new UnstableSpellbook(), 3980).type = Heap.Type.FOR_SALE_28F;
+        drop(new UnstableSpellbook(), 3981).type = Heap.Type.FOR_SALE_28F;
+        drop(new UnstableSpellbook(), 3982).type = Heap.Type.FOR_SALE_28F;
+        drop(new UnstableSpellbook(), 3912).type = Heap.Type.FOR_SALE_28F;
+        drop(new UnstableSpellbook(), 3913).type = Heap.Type.FOR_SALE_28F;
+        drop(new UnstableSpellbook(), 3914).type = Heap.Type.FOR_SALE_28F;
+
+        // 반지
+
+        drop(new RingOfMistress(), 3985).type = Heap.Type.FOR_SALE_28F;
+        drop(new RingOfMistress(), 3986).type = Heap.Type.FOR_SALE_28F;
+        drop(new RingOfMistress(), 3987).type = Heap.Type.FOR_SALE_28F;
+        drop(new RingOfMistress(), 3917).type = Heap.Type.FOR_SALE_28F;
+        drop(new RingOfMistress(), 3918).type = Heap.Type.FOR_SALE_28F;
+        drop(new RingOfMistress(), 3919).type = Heap.Type.FOR_SALE_28F;
     }
 
     @Override

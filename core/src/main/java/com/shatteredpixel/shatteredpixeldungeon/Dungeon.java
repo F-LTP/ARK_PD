@@ -59,6 +59,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
+import com.shatteredpixel.shatteredpixeldungeon.journal.quests.Quests;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CavesLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CityLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.DeadEndLevel;
@@ -295,6 +296,7 @@ public class Dungeon {
 		
 		Statistics.reset();
 		Notes.reset();
+        Quests.reset();
 
 		quickslot.reset();
 		QuickSlotButton.reset();
@@ -371,7 +373,7 @@ public class Dungeon {
         //depth is now set by callers before calling newLevel()
         if (depth > Statistics.deepestFloor && branch == 0) {
             Statistics.deepestFloor = depth;
-            QuestScroll.onNewFloorReached();
+            Quests.onNewFloorReached();
 			
 			if (Statistics.qualifiedForNoKilling) {
 				Statistics.completedWithNoKilling = true;
@@ -780,6 +782,7 @@ public class Dungeon {
 
 			Statistics.storeInBundle( bundle );
 			Notes.storeInBundle( bundle );
+            Quests.storeInBundle(bundle);
 			Generator.storeInBundle( bundle );
             TheEndspeaker.Status.storeInBundle( bundle );
 
@@ -920,6 +923,7 @@ public class Dungeon {
 		}
 		
 		Notes.restoreFromBundle( bundle );
+        Quests.restoreFromBundle(bundle);
 		
 		hero = null;
 		hero = (Hero)bundle.get( HERO );

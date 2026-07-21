@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DeliveryDrone;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.Bonk;
@@ -116,6 +117,21 @@ public class ShopRoom extends SpecialRoom {
         Mob shopkeeper = new Shopkeeper();
         shopkeeper.pos = pos;
         level.mobs.add(shopkeeper);
+
+        //tutorial quest 1: a delivery drone lives in the floor-6 shop. spawned unconditionally
+        if (Dungeon.depth == 6 && Dungeon.branch == 0) {
+            int w = level.width();
+            int[] candidates = new int[]{pos - w + 1, pos + w + 1, pos + w - 1, pos - w - 1}; //NE, SE, SW, NW
+            for (int cell : candidates) {
+                if (cell >= 0 && cell < level.length()
+                        && level.map[cell] == Terrain.EMPTY_SP
+                        && level.heaps.get(cell) == null
+                        && level.findMob(cell) == null) {
+                    DeliveryDrone.spawn(level, cell);
+                    break;
+                }
+            }
+        }
 
     }
 

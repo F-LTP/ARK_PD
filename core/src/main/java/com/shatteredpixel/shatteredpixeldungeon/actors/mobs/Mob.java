@@ -65,7 +65,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MeatCutlet;
-import com.shatteredpixel.shatteredpixeldungeon.items.quest.QuestScroll;
+import com.shatteredpixel.shatteredpixeldungeon.journal.quests.Quests;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfCommand;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfWealth;
@@ -758,7 +758,7 @@ public abstract class Mob extends Char {
     //die() override (which can revive, spawn gas, etc.). Subclasses with custom quest counters
     //should override this and call super.onConvertKilled(cause).
     public void onConvertKilled(Object cause) {
-        QuestScroll.onMobKilled(cause);
+        Quests.onMobKilled(cause);
     }
 
     @Override
@@ -772,7 +772,7 @@ public abstract class Mob extends Char {
 
 		if (alignment == Alignment.ENEMY){
 			rollToDropLoot();
-            QuestScroll.onMobKilled(cause);
+            Quests.onMobKilled(cause);
 
 			if (cause == Dungeon.hero
 					&& Dungeon.hero.hasTalent(Talent.LETHAL_MOMENTUM)
