@@ -525,6 +525,7 @@ public class Assets {
 		public static final String NPC_DARIO	= "sprites/npc_dario.png";
         public static final String NPC_PURESTREAM	= "sprites/npc_purestream.png";
         public static final String NPC_MAGE	= "sprites/npc_mage.png";
+        public static final String NPC_SHU	= "sprites/shu.png";
         public static final String NPC_GUARD	= "sprites/npc_guard.png";
 		public static final String TEXAS_SHOPKEEPER	= "sprites/texas_shopkeeper.png";
         public static final String DELIVERY_DRON	= "sprites/delivery_dron.png";
@@ -543,6 +544,7 @@ public class Assets {
 		public static final String MON3TER	= "sprites/mon3ter.png";
 		public static final String ZUZAI	= "sprites/zuzai.png";
 		public static final String KAZE	= "sprites/kazemaru.png";
+        public static final String ZAARO	= "sprites/zaaro.png";
 
 		public static final String FANATIC	= "sprites/fanatic.png";
 		public static final String AIRBORNE	= "sprites/airborne.png";

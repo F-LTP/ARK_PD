@@ -36,6 +36,7 @@ import com.watabou.gltextures.TextureCache;
 import com.watabou.glwrap.Matrix;
 import com.watabou.glwrap.Vertexbuffer;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.MovieClip;
 import com.watabou.noosa.NoosaScript;
 import com.watabou.noosa.audio.Sample;
@@ -248,8 +249,17 @@ public class ItemSprite extends MovieClip {
 			perspectiveRaise =  (5 + 8 - height) / 16f;
 		}
 	}
-	
-	public synchronized void glow( Glowing glowing ){
+
+    @Override
+    public void copy( Image other ) {
+        super.copy(other);
+
+        if (other instanceof ItemSprite && ((ItemSprite) other).glowing != null){
+            glow(((ItemSprite) other).glowing);
+        }
+    }
+
+    public synchronized void glow( Glowing glowing ){
 		this.glowing = glowing;
 		if (glowing == null) resetColor();
 	}

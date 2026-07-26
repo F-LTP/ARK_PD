@@ -31,7 +31,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Electricity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.NewDM300;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.OldDM300;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -812,9 +811,9 @@ public class NewCavesBossLevel extends Level {
 						if (c instanceof Pylon && c.alignment != Char.Alignment.NEUTRAL){
 							energySourceSprite = c.sprite;
 							break;
-						} else if (c instanceof NewDM300){
+						} /*else if (c instanceof NewDM300){
 							energySourceSprite = c.sprite;
-						}
+						}*/
 					}
 					if (energySourceSprite == null){
 						return;

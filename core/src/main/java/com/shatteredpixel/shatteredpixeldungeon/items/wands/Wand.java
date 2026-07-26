@@ -351,7 +351,6 @@ public abstract class Wand extends Item {
 	}
 
 	protected void wandUsed() {
-        Catalog.countUse(getClass());
 		if (!isIdentified()) {
 			float uses = Math.min( availableUsesToID, Talent.itemIDSpeedFactor(Dungeon.hero, this) );
 			availableUsesToID -= uses;

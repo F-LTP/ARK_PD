@@ -22,31 +22,37 @@
 package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.watabou.noosa.TextureFilm;
 
-public class AjimuSprite extends MobSprite {
+public class ZaaroSprite extends MobSprite {
 
-	public AjimuSprite() {
-		super();
+    public ZaaroSprite() {
+        super();
 
-		final int c = 0;
-		
-		texture( Assets.Sprites.AJIMU );
-		
-		TextureFilm frames = new TextureFilm( texture, 32, 32 );
-		
-		idle = new Animation( 2, true );
-		idle.frames( frames, c+8, c+9, c+10, c+10, c+10, c+10, c+9, c+8, c+8, c+8, c+8, c+8, c+8, c+8, c+8 );
-		
-		run = new Animation( 15, true );
-		run.frames( frames, c+0, c+1, c+2, c+3, c+4, c+5, c+6);
-		
-		attack = new Animation( 15, false );
-		attack.frames( frames, c+0 );
-		
-		die = new Animation( 10, false );
-		die.frames( frames, c+0 );
-		
-		play( idle );
-	}
+        texture( Assets.Sprites.ZAARO );
+
+        TextureFilm frames = new TextureFilm( texture, 56, 30 );
+
+        idle = new Animation( 8, true );
+        idle.frames( frames, 0, 1, 2, 3, 4, 5 );
+
+        run = new Animation( 15, true );
+        run.frames( frames, 6, 7, 8, 9 );
+
+        attack = new Animation( 20, false );
+        attack.frames( frames, 0, 1, 2, 3, 4, 5 );
+
+        die = new Animation( 15, false );
+        die.frames( frames, 0, 1, 2, 3, 4, 5 );
+
+        play( idle );
+    }
+
+    @Override
+    public void die() {
+        emitter().burst( Speck.factory( Speck.WOOL ), 5 );
+        super.die();
+    }
+
 }

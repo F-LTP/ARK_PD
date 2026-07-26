@@ -1324,14 +1324,15 @@ public class Badges {
             badge = firstChamionClassBadges.get(Dungeon.hero.heroClass);
         }
         if (challenges >= 3) {
-            unlock(badge);
+            if (badge != null) unlock(badge);
             badge = secondChamionClassBadges.get(Dungeon.hero.heroClass);
         }
         if (challenges >= 6) {
-            unlock(badge);
+            if (badge != null) unlock(badge);
             badge = thirdChamionClassBadges.get(Dungeon.hero.heroClass);
         }
 
+        if (badge == null) return;
         local.add(badge);
         displayBadge(badge);
     }
@@ -1505,7 +1506,7 @@ public class Badges {
     }
 
     public static void unlock(Badge badge) {
-        if (badge == null) return; // 防御性检查
+        if (badge == null) return;
         if (!isUnlocked(badge) && Dungeon.customSeedText.isEmpty() && !Dungeon.isChallenged(TEST)){
             global.add(badge);
             saveNeeded = true;

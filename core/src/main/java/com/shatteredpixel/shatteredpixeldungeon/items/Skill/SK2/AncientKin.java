@@ -80,7 +80,7 @@ public class AncientKin extends Skill {
         }
     };
 
-    public static class Seaborn extends Mob
+    public static class Seaborn extends NPC
     {
         {
             spriteClass = SeabornSprite.class;

@@ -18,7 +18,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Npc_Astesia;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Purestream;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.SkinModel;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Weedy;
+import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_FoodBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_HealingBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_IdentifyBox;
@@ -28,8 +30,16 @@ import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_Scroll
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_TGBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_TransBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_WandBox;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.UnstableSpellbook;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfMistress;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ChenSword;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Dagger;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.EX42;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gloves;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.NEARL_AXE;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WornShortsword;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
@@ -38,6 +48,7 @@ import com.watabou.noosa.Tilemap;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 
 import java.util.Arrays;
 
@@ -67,6 +78,13 @@ public class NewRhodesLevel2 extends Level {
                 passable[i] = avoid[i] = false;
                 solid[i] = true;
             }
+        }
+        //shelf decoration (WALL/STATUE) overlaps some for-sale item cells, blocking purchase; clear them
+        for (int cell : SHOP_ITEM_CELLS) {
+            map[cell] = Terrain.EMPTY;
+            passable[cell] = true;
+            avoid[cell] = false;
+            solid[cell] = false;
         }
     }
 
@@ -170,19 +188,9 @@ public class NewRhodesLevel2 extends Level {
         Painter.fill(this, 29, 53, 22, 4, Terrain.EMPTY);
         Painter.fill(this, 34, 57, 17, 6, Terrain.EMPTY);
 
-        // 확장 상점구역 선반
-        Painter.fill(this, 37, 57, 2, 1, Terrain.WALL);
-        Painter.fill(this, 37, 58, 2, 1, Terrain.STATUE);
-        Painter.fill(this, 42, 57, 2, 1, Terrain.WALL);
-        Painter.fill(this, 42, 58, 2, 1, Terrain.STATUE);
-        Painter.fill(this, 37, 60, 2, 1, Terrain.WALL);
-        Painter.fill(this, 37, 61, 2, 1, Terrain.STATUE);
-        Painter.fill(this, 42, 60, 2, 1, Terrain.WALL);
-        Painter.fill(this, 42, 61, 2, 1, Terrain.STATUE);
-
         // 위디 옆 확장통로 벽
         Painter.fill(this, 29, 57, 4, 1, Terrain.WALL);
-        Painter.fill(this, 30, 60, 1, 5, Terrain.WALL);
+        Painter.fill(this, 30, 61, 1, 5, Terrain.WALL);
         Painter.fill(this, 33, 57, 1, 6, Terrain.WALL);
         Painter.fill(this, 33, 63, 18, 1, Terrain.WALL);
         Painter.fill(this, 31, 60, 2, 6, Terrain.EMPTY);
@@ -271,23 +279,92 @@ public class NewRhodesLevel2 extends Level {
         drop(new Closure_RingBox(), 3782).type = Heap.Type.FOR_SALE_28F;
         drop(new Closure_TGBox(), 3783).type = Heap.Type.FOR_SALE_28F;
 
-        // 유물
+        // 무기 (근접, 총기 포함)
+        for (int cell : new int[]{4116, 4117, 4118, 4184, 4185, 4186}) {
+            sellShopWeapon(cell, Generator.wepTiers, SHOP_WEAPON_TIER_PRICE, true);
+        }
 
-        drop(new UnstableSpellbook(), 3980).type = Heap.Type.FOR_SALE_28F;
-        drop(new UnstableSpellbook(), 3981).type = Heap.Type.FOR_SALE_28F;
-        drop(new UnstableSpellbook(), 3982).type = Heap.Type.FOR_SALE_28F;
-        drop(new UnstableSpellbook(), 3912).type = Heap.Type.FOR_SALE_28F;
-        drop(new UnstableSpellbook(), 3913).type = Heap.Type.FOR_SALE_28F;
-        drop(new UnstableSpellbook(), 3914).type = Heap.Type.FOR_SALE_28F;
+        // 무기 (원거리)
+        for (int cell : new int[]{4121, 4122, 4123, 4189, 4190, 4191}) {
+            sellShopWeapon(cell, Generator.misTiers, SHOP_MISSILE_TIER_PRICE, false);
+        }
+
+        // 유물
+        for (int cell : new int[]{3980, 3981, 3982, 3912, 3913, 3914}) {
+            Artifact art = Generator.randomArtifact();
+            if (art != null) {
+                //shop artifacts: no curse, no upgrade
+                art.cursed = false;
+                sellForCertificates(art, cell, ARTIFACT_PRICE);
+            }
+        }
 
         // 반지
+        for (int cell : new int[]{3985, 3986, 3987, 3917, 3918, 3919}) {
+            Ring ring = (Ring) Generator.random(Generator.Category.RING);
+            applyShopQuality(ring);
+            sellForCertificates(ring, cell, RING_PRICE);
+        }
+    }
 
-        drop(new RingOfMistress(), 3985).type = Heap.Type.FOR_SALE_28F;
-        drop(new RingOfMistress(), 3986).type = Heap.Type.FOR_SALE_28F;
-        drop(new RingOfMistress(), 3987).type = Heap.Type.FOR_SALE_28F;
-        drop(new RingOfMistress(), 3917).type = Heap.Type.FOR_SALE_28F;
-        drop(new RingOfMistress(), 3918).type = Heap.Type.FOR_SALE_28F;
-        drop(new RingOfMistress(), 3919).type = Heap.Type.FOR_SALE_28F;
+    private static final int[] SHOP_ITEM_CELLS = {
+            4116, 4117, 4118, 4184, 4185, 4186, //melee weapons
+            4121, 4122, 4123, 4189, 4190, 4191, //missile weapons
+            3980, 3981, 3982, 3912, 3913, 3914, //artifacts
+            3985, 3986, 3987, 3917, 3918, 3919  //rings
+    };
+
+    private static final int RING_PRICE = 500;
+    private static final int ARTIFACT_PRICE = 600;
+
+    //tier weights for the certificate shop: T1-T5
+    private static final float[] SHOP_WEAPON_TIER_PROBS = {0.1f, 0.1f, 0.2f, 0.3f, 0.3f};
+    //price scales with tier, T1 = 300 up to T5 = 700 (melee)
+    private static final int[] SHOP_WEAPON_TIER_PRICE = {300, 400, 500, 600, 700};
+    //price scales with tier, T1 = 100 up to T5 = 300 (missile)
+    private static final int[] SHOP_MISSILE_TIER_PRICE = {100, 150, 200, 250, 300};
+
+    //shop-only T1 melee pool: adds hero starting weapons Generator.WEP_T1 omits/zero-weights (ChenSword, MagesStaff), without touching regular dungeon drops
+    private static final Class<?>[] SHOP_MELEE_T1_CLASSES = {
+            WornShortsword.class,
+            Gloves.class,
+            Dagger.class,
+            MagesStaff.class,
+            EX42.class,
+            NEARL_AXE.class,
+            ChenSword.class
+    };
+    private static final float[] SHOP_MELEE_T1_PROBS = {1, 1, 1, 1, 1, 1, 1};
+
+    private void sellForCertificates(Item item, int cell, int price) {
+        Heap heap = drop(item, cell);
+        heap.type = Heap.Type.FOR_SALE_28F;
+        heap.priceOverride = price;
+    }
+
+    private void sellShopWeapon(int cell, Generator.Category[] tiers, int[] prices, boolean rerollQuality) {
+        int tierIndex = Random.chances(SHOP_WEAPON_TIER_PROBS);
+        Weapon w;
+        if (rerollQuality && tierIndex == 0) {
+            w = (Weapon) Reflection.newInstance(SHOP_MELEE_T1_CLASSES[Random.chances(SHOP_MELEE_T1_PROBS)]);
+        } else {
+            Generator.Category c = tiers[tierIndex];
+            w = (Weapon) Reflection.newInstance(c.classes[Random.chances(c.probs)]);
+        }
+        w.random();
+        //shop weapons: no curse, small upgrade chance only (rest of the game keeps default odds)
+        if (rerollQuality) applyShopQuality(w);
+        sellForCertificates(w, cell, prices[tierIndex]);
+    }
+
+    //strips any curse and rerolls the upgrade level to +0 85% / +1 10% / +2 5%
+    private static void applyShopQuality(Item item) {
+        if (item instanceof Weapon && ((Weapon) item).cursed) {
+            ((Weapon) item).enchant(null);
+        }
+        item.cursed = false;
+        float roll = Random.Float();
+        item.level(roll < 0.05f ? 2 : roll < 0.15f ? 1 : 0);
     }
 
     @Override

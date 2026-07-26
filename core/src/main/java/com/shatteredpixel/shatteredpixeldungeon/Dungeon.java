@@ -25,7 +25,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Awareness;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
@@ -47,11 +46,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_FoodBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
-import com.shatteredpixel.shatteredpixeldungeon.items.quest.QuestCat;
-import com.shatteredpixel.shatteredpixeldungeon.items.quest.QuestScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfMayer;
@@ -74,16 +70,12 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.NewRhodesLevel4;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.HallsLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.LastLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.LastShopLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.NewCavesBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.NewCityBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.NewHallsBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.NewPrisonBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.RhodesLevel2;
-import com.shatteredpixel.shatteredpixeldungeon.levels.RhodesLevel3;
-import com.shatteredpixel.shatteredpixeldungeon.levels.RhodesLevel4;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SeaBossLevel1;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SeaBossLevel2;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SeaLevel_part1;
@@ -895,9 +887,12 @@ public class Dungeon {
 			SpecialRoom.restoreRoomsFromBundle(bundle);
 			SecretRoom.restoreRoomsFromBundle(bundle);
 
+            int[] generated = bundle.getIntArray(GENERATED_LEVELS);//防御性措施 针对已经遇到跨版本读取存档失败的玩家
             generatedLevels.clear();
-            for (int i : bundle.getIntArray(GENERATED_LEVELS)) {
-                generatedLevels.add(i);
+            if (generated != null) {
+                for (int i : generated) {
+                    generatedLevels.add(i);
+                }
             }
             droppedItems = new SparseArray<>();
             for (int i=1; i <= 40; i++) {

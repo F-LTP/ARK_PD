@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hallucination;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Silence;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.LeatherArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -111,7 +112,7 @@ public class KazemaruWeapon extends MeleeWeapon {
         summon.alignment = alignment;
         GameScene.add(summon);
     }
-    public static class KazemaruSummon extends Mob {
+    public static class KazemaruSummon extends NPC {
         {
             HP = HT = 1;
 

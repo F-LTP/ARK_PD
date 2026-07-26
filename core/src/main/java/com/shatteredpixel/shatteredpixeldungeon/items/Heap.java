@@ -83,6 +83,9 @@ public class Heap implements Bundlable {
 	public ItemSprite sprite;
 	public boolean seen = false;
 	public boolean haunted = false;
+
+    //overrides item.value() for FOR_SALE_28F pricing when >= 0
+    public int priceOverride = -1;
 	
 	public LinkedList<Item> items = new LinkedList<>();
 	
@@ -377,7 +380,8 @@ public class Heap implements Bundlable {
 			case FOR_SALE_28F:
 				Item k = peek();
 				if (size() == 1) {
-					return Messages.get(this, "for_sale_sp", k.value(), k.title());
+                    int price = priceOverride >= 0 ? priceOverride : k.value();
+                    return Messages.get(this, "for_sale_sp", price, k.title());
 				} else {
 					return k.title();
 				}

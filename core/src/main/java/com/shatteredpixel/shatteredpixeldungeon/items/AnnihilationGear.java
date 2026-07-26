@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.NewDM300;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Talulah;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.miniboss.Mon3tr;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.BlastParticle;
@@ -495,7 +496,7 @@ public class Spriteex extends MissileWeapon {
      public static class WarCatBuff2 extends Buff {}
     public static class WarCatArts3{};
 
-      public static class EX44 extends Mob {
+      public static class EX44 extends NPC {
           {
               spriteClass = EX42_GroundSprite.class;
 
