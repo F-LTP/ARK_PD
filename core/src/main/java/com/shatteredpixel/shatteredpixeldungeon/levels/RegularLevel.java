@@ -145,7 +145,7 @@ public abstract class RegularLevel extends Level {
 		
 		if (Dungeon.shopOnLevel())
 			initRooms.add(new ShopRoom());
-		else if (Random.Int(80) == 0) {
+		else  {
 			initRooms.add(new MiniShopRoom());
 		}
 

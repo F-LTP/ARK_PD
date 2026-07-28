@@ -3,26 +3,8 @@ package com.shatteredpixel.shatteredpixeldungeon.items.testtool;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemyKit;
+import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CapeOfThorns;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.ChaliceOfBlood;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CustomeSet;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.EtherealChains;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.IsekaiItem;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.LloydsBeacon;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MasterThievesArmband;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.SandalsOfNature;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.SealOfLight;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.UnstableSpellbook;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.WoundsofWar;
-import com.shatteredpixel.shatteredpixeldungeon.items.testtool.Generators;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -60,17 +42,14 @@ public class Generators_Artifact extends Generators {
         }
     }
 
-    private void modifyArtifact(Artifact a){
-        int max = Math.min(level, maxLevel(selected));
-        for(int i=0;i<max; ++i){
-            a.upgrade();
-        }
-        a.cursed = cursed;
+    private static Class<? extends Artifact>[] artifactList(){
+        return (Class<? extends Artifact>[]) Generator.Category.ARTIFACT.classes.clone();
     }
     private void createArtifact(){
-        Artifact a = Reflection.newInstance(idToArtifact(selected));
+        Artifact a = Reflection.newInstance(artifactList()[selected]);
         if(a != null){
-            modifyArtifact(a);
+            a.transferUpgrade(level);
+            a.cursed = cursed;
             if(Challenges.isItemBlocked(a)) return;
             a.identify();
             if(a.collect()){
@@ -91,51 +70,12 @@ public class Generators_Artifact extends Generators {
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
         selected = bundle.getInt("selected");
+        if (selected < 0 || selected >= artifactList().length) {
+            selected = 0;
+        }
         cursed = bundle.getBoolean("is_cursed");
         level = bundle.getInt("level");
     }
-
-    private Class<? extends Artifact> idToArtifact(int sel){
-        switch(sel){
-            case 0: return AlchemistsToolkit.class;
-            case 1: return CapeOfThorns.class;
-            case 2: return ChaliceOfBlood.class;
-            case 3: return CloakOfShadows.class;
-            case 4: return DriedRose.class;
-            case 5: return EtherealChains.class;
-            case 6: return HornOfPlenty.class;
-            case 7: return LloydsBeacon.class;
-            case 8: return MasterThievesArmband.class;
-            case 9: return SandalsOfNature.class;
-            case 10: return TalismanOfForesight.class;
-            case 11: return TimekeepersHourglass.class;
-            case 12: return UnstableSpellbook.class;
-            case 13: return AlchemyKit.class;
-            case 14: return CustomeSet.class;
-            case 15: return IsekaiItem.class;
-            case 16: return SealOfLight.class;
-            default:case 17: return WoundsofWar.class;
-        }
-    }
-
-    private int maxLevel(int id){
-        switch (id){
-            case 0: case 1: case 2: case 3: case 4: case 6: case 8: case 10: case 12: case 13: case 14: case 15: case 17: default: return 10;
-            case 5: case 11: return 5;
-            case 7: case 9: return 3;
-            case 16: return 0;
-        }
-    }
-
-    private static ArrayList<Class<? extends Artifact>> artifactList = new ArrayList<Class<? extends Artifact>>();
-    private void buildArtifactArray(){
-        if(!artifactList.isEmpty()) return;
-        for(int i=0;i<18;++i){
-            artifactList.add(idToArtifact(i));
-        }
-    }
-
-
 
     private class SettingsWindow extends Window {
         private static final int WIDTH = 140;
@@ -148,7 +88,6 @@ public class Generators_Artifact extends Generators {
         private ArrayList<IconButton> artifactSprites = new ArrayList<>();
 
         public SettingsWindow(){
-            buildArtifactArray();
             createArtifactImage();
             t_selected = PixelScene.renderTextBlock("", 6);
             t_selected.text();
@@ -196,7 +135,12 @@ public class Generators_Artifact extends Generators {
             float left;
             float top = GAP;
             int placed = 0;
-            int length = artifactList.size();
+            int length = artifactList().length;
+            // 根据数量自动计算行列布局
+            int cols = length <= 9 ? length : (length + 1) / 2;
+            // 更健壮：最大每行9个，超过则换行
+            int maxCols = 9;
+            int rows = (length + maxCols - 1) / maxCols;
             for (int i = 0; i < length; ++i) {
                 final int j = i;
                 IconButton btn = new IconButton() {
@@ -208,17 +152,13 @@ public class Generators_Artifact extends Generators {
                     }
                 };
                 Image im = new Image(Assets.Sprites.ITEMS);
-                im.frame(ItemSpriteSheet.film.get(Objects.requireNonNull(Reflection.newInstance(artifactList.get(i))).image));
+                im.frame(ItemSpriteSheet.film.get(Objects.requireNonNull(Reflection.newInstance(artifactList()[i])).image));
                 im.scale.set(0.5f);
                 btn.icon(im);
-                if(i<9) {
-                    left = (WIDTH - BTN_SIZE * 9) / 2f;
-                    btn.setRect(left + placed * BTN_SIZE, top, BTN_SIZE, BTN_SIZE);
-                }
-                else {
-                    left = (WIDTH - BTN_SIZE * 9) / 2f;
-                    btn.setRect(left + (placed-9) * BTN_SIZE, top + GAP + BTN_SIZE, BTN_SIZE, BTN_SIZE);
-                }
+                int row = i / maxCols;
+                int col = i % maxCols;
+                float leftOffset = (WIDTH - maxCols * BTN_SIZE) / 2f;
+                btn.setRect(leftOffset + col * BTN_SIZE, top + row * (BTN_SIZE + GAP), BTN_SIZE, BTN_SIZE);
                 add(btn);
                 placed++;
                 artifactSprites.add(btn);
@@ -226,7 +166,7 @@ public class Generators_Artifact extends Generators {
         }
 
         private void updateText(){
-            t_selected.text(Messages.get(Generators_Artifact.class, "selected", Messages.get(idToArtifact(selected), "name")));
+            t_selected.text(Messages.get(Generators_Artifact.class, "selected", Messages.get(artifactList()[selected], "name")));
             layout();
         }
     }

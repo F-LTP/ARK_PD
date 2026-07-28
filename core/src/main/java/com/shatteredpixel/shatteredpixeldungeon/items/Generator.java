@@ -90,6 +90,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolki
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemyKit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CapeOfThorns;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Catastrofe;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.ChaliceOfBlood;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CustomeSet;
@@ -737,9 +738,10 @@ public class Generator {
                     AlchemyKit.class,
                     IsekaiItem.class,
                     WoundsofWar.class,
-                    SealOfLight.class//Nearl hero class starting artifact, never randomly rolled
+                    SealOfLight.class,
+                    Catastrofe.class
             };
-            ARTIFACT.defaultProbs = new float[]{0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0};
+            ARTIFACT.defaultProbs = new float[]{0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0};
             ARTIFACT.probs = ARTIFACT.defaultProbs.clone();
 
             SKL_T1.classes = new Class<?>[]{
