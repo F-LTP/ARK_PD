@@ -86,6 +86,7 @@ public class Generators_Artifact extends Generators {
         private CheckBox c_curse;
         private RedButton b_create;
         private ArrayList<IconButton> artifactSprites = new ArrayList<>();
+        private int iconRows;   // 新增：记录图标实际行数
 
         public SettingsWindow(){
             createArtifactImage();
@@ -124,7 +125,7 @@ public class Generators_Artifact extends Generators {
         }
 
         private void layout(){
-            t_selected.setPos(0, 3*GAP + BTN_SIZE *2);
+            t_selected.setPos(0, GAP + iconRows * (BTN_SIZE + GAP));
             o_level.setRect(0, t_selected.bottom() + GAP, WIDTH, 24);
             c_curse.setRect(0, o_level.bottom() + GAP, WIDTH, 18);
             b_create.setRect(0, c_curse.bottom() + GAP, WIDTH, 16);
@@ -132,15 +133,11 @@ public class Generators_Artifact extends Generators {
         }
 
         private void createArtifactImage(){
-            float left;
+            Class<? extends Artifact>[] artifactList = artifactList();
             float top = GAP;
-            int placed = 0;
-            int length = artifactList().length;
-            // 根据数量自动计算行列布局
-            int cols = length <= 9 ? length : (length + 1) / 2;
-            // 更健壮：最大每行9个，超过则换行
-            int maxCols = 9;
-            int rows = (length + maxCols - 1) / maxCols;
+            int length = artifactList.length;
+            int maxCols = 8;
+            iconRows = (length + maxCols - 1) / maxCols;
             for (int i = 0; i < length; ++i) {
                 final int j = i;
                 IconButton btn = new IconButton() {
@@ -152,7 +149,7 @@ public class Generators_Artifact extends Generators {
                     }
                 };
                 Image im = new Image(Assets.Sprites.ITEMS);
-                im.frame(ItemSpriteSheet.film.get(Objects.requireNonNull(Reflection.newInstance(artifactList()[i])).image));
+                im.frame(ItemSpriteSheet.film.get(Objects.requireNonNull(Reflection.newInstance(artifactList[i])).image));
                 im.scale.set(0.5f);
                 btn.icon(im);
                 int row = i / maxCols;
@@ -160,7 +157,6 @@ public class Generators_Artifact extends Generators {
                 float leftOffset = (WIDTH - maxCols * BTN_SIZE) / 2f;
                 btn.setRect(leftOffset + col * BTN_SIZE, top + row * (BTN_SIZE + GAP), BTN_SIZE, BTN_SIZE);
                 add(btn);
-                placed++;
                 artifactSprites.add(btn);
             }
         }

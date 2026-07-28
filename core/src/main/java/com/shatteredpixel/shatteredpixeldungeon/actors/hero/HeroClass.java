@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.DewVial;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 
+import com.shatteredpixel.shatteredpixeldungeon.items.testtool.TerrainPlacer;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.SeaPlatform;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SkillBook;
 
@@ -410,6 +411,7 @@ import com.watabou.utils.DeviceCompat;
 			 new MobBook().collect();
 
 			 new MobPlacer().collect();
+             new TerrainPlacer().collect();
 
 			 CustomWeapon customWeapon = new CustomWeapon();
 			 customWeapon.adjustStatus();
