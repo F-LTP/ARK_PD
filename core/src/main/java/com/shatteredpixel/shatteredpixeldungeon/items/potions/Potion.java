@@ -294,36 +294,43 @@ public class Potion extends Item {
 	}
 	
 	protected void drink( Hero hero ) {
-		
+
 		detach( hero.belongings.backpack );
-		
+
 		hero.spend( TIME_TO_DRINK );
 		hero.busy();
 		apply( hero );
-		
+
 		Sample.INSTANCE.play( Assets.Sounds.DRINK );
-		
+
 		hero.sprite.operate( hero.pos );
+
+		if (!anonymous) {
+			Catalog.countUse(getClass());
+		}
 	}
-	
+
 	@Override
 	protected void onThrow( int cell ) {
 		if (Dungeon.level.map[cell] == Terrain.WELL || Dungeon.level.pit[cell]) {
-			
+
 			super.onThrow( cell );
-			
+
 		} else  {
 
 			Dungeon.level.pressCell( cell );
 			shatter( cell );
-			
+
+			if (!anonymous) {
+				Catalog.countUse(getClass());
+			}
 		}
 	}
-	
+
 	public void apply( Hero hero ) {
 		shatter( hero.pos );
 	}
-	
+
 	public void shatter( int cell ) {
 		if (Dungeon.level.heroFOV[cell]) {
 			GLog.i( Messages.get(Potion.class, "shatter") );

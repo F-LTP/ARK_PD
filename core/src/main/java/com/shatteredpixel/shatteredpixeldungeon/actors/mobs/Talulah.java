@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -433,11 +434,13 @@ public class Talulah extends Mob {
     @Override
     public void die(Object cause) {
 
+        Bestiary.skipCountingEncounters = true;
         for (Mob mob : (Iterable<Mob>) Dungeon.level.mobs.clone()) {
             if (mob instanceof InfectedPatrolCaptain || mob instanceof RipperDemon) {
                 mob.die(cause);
             }
         }
+        Bestiary.skipCountingEncounters = false;
 
         updateVisibility(Dungeon.level);
 

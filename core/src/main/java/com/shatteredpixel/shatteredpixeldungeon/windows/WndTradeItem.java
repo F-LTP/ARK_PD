@@ -114,7 +114,7 @@ public class WndTradeItem extends WndInfoItem {
 
 		float pos = height;
 
-		final int price = Shopkeeper.sellPrice(item);
+		final int price = heap.priceOverride >= 0 ? heap.priceOverride : Shopkeeper.sellPrice(item);
 
 		RedButton btnBuy = new RedButton(Messages.get(this, "buy", price)) {
 			@Override
@@ -202,7 +202,7 @@ public class WndTradeItem extends WndInfoItem {
 
 		float pos = height;
 
-		final int price = item.value();
+		final int price = heap.priceOverride >= 0 ? heap.priceOverride : item.value();
 
 		RedButton btnBuy = new RedButton(Messages.get(this, "buy_sp", price)) {
 			@Override
@@ -264,11 +264,12 @@ public class WndTradeItem extends WndInfoItem {
 	}
 	
 	private void buy( Heap heap ) {
-		
+
+		int priceOverride = heap.priceOverride;
 		Item item = heap.pickUp();
 		if (item == null) return;
-		
-		int price = Shopkeeper.sellPrice( item );
+
+		int price = priceOverride >= 0 ? priceOverride : Shopkeeper.sellPrice( item );
 		Dungeon.gold -= price;
 		
 		if (!item.doPickUp( Dungeon.hero )) {
@@ -281,7 +282,7 @@ public class WndTradeItem extends WndInfoItem {
 		Item item = heap.pickUp();
 		if (item == null) return;
 
-		int price = item.value();
+		int price = heap.priceOverride >= 0 ? heap.priceOverride : item.value();
 		SPDSettings.addSpecialcoin(price * -1);
 
 		if (!item.doPickUp( Dungeon.hero )) {

@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
@@ -60,6 +61,7 @@ public class LloydsBeacon extends Artifact {
 	public static final String AC_RETURN	= "RETURN";
 	
 	public int returnDepth	= -1;
+	public int returnBranch = 0;
 	public int returnPos;
 	
 	{
@@ -75,21 +77,24 @@ public class LloydsBeacon extends Artifact {
 	}
 	
 	private static final String DEPTH	= "depth";
+	private static final String BRANCH	= "branch";
 	private static final String POS		= "pos";
-	
+
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( DEPTH, returnDepth );
 		if (returnDepth != -1) {
+			bundle.put( BRANCH, returnBranch );
 			bundle.put( POS, returnPos );
 		}
 	}
-	
+
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle(bundle);
 		returnDepth	= bundle.getInt( DEPTH );
+		returnBranch	= bundle.getInt( BRANCH );
 		returnPos	= bundle.getInt( POS );
 	}
 	
@@ -146,6 +151,7 @@ public class LloydsBeacon extends Artifact {
 		} else if (action == AC_SET) {
 			
 			returnDepth = Dungeon.depth;
+			returnBranch = Dungeon.depth == 0 ? Dungeon.branch : 0;
 			returnPos = hero.pos;
 			
 			hero.spend( LloydsBeacon.TIME_TO_USE );
@@ -153,12 +159,13 @@ public class LloydsBeacon extends Artifact {
 			
 			hero.sprite.operate( hero.pos );
 			Sample.INSTANCE.play( Assets.Sounds.BEACON );
+			Catalog.countUse(getClass());
 			
 			GLog.i( Messages.get(this, "return") );
 			
 		} else if (action == AC_RETURN) {
 			
-			if (returnDepth == Dungeon.depth) {
+			if (returnDepth == Dungeon.depth && returnBranch == Dungeon.branch) {
 				ScrollOfTeleportation.appear( hero, returnPos );
 				for(Mob m : Dungeon.level.mobs){
 					if (m.pos == hero.pos){
@@ -175,6 +182,7 @@ public class LloydsBeacon extends Artifact {
 				Dungeon.level.occupyCell(hero );
 				Dungeon.observe();
 				GameScene.updateFog();
+				Catalog.countUse(getClass());
 			} else {
 
 				Buff buff = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
@@ -184,7 +192,9 @@ public class LloydsBeacon extends Artifact {
 
 				InterlevelScene.mode = InterlevelScene.Mode.RETURN;
 				InterlevelScene.returnDepth = returnDepth;
+				InterlevelScene.returnBranch = returnBranch;
 				InterlevelScene.returnPos = returnPos;
+				Catalog.countUse(getClass());
 				Game.switchScene( InterlevelScene.class );
 			}
 			
@@ -202,6 +212,7 @@ public class LloydsBeacon extends Artifact {
 			Invisibility.dispel();
 			charge -= Dungeon.depth > 20 ? 2 : 1;
 			updateQuickslot();
+			Catalog.countUse(LloydsBeacon.class);
 
 			if (Actor.findChar(target) == curUser){
 				ScrollOfTeleportation.teleportHero(curUser);

@@ -11,12 +11,16 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Firewall;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.FrostLeaf;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Jessica;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_Gglow;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_Mage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_Phantom;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_PhantomShadow;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Npc_Astesia;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Purestream;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.SkinModel;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Weedy;
+import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_FoodBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_HealingBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_IdentifyBox;
@@ -26,6 +30,16 @@ import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_Scroll
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_TGBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_TransBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Closure_WandBox;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ChenSword;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Dagger;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.EX42;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gloves;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.NEARL_AXE;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WornShortsword;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
@@ -34,6 +48,7 @@ import com.watabou.noosa.Tilemap;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 
 import java.util.Arrays;
 
@@ -63,6 +78,13 @@ public class NewRhodesLevel2 extends Level {
                 passable[i] = avoid[i] = false;
                 solid[i] = true;
             }
+        }
+        //shelf decoration (WALL/STATUE) overlaps some for-sale item cells, blocking purchase; clear them
+        for (int cell : SHOP_ITEM_CELLS) {
+            map[cell] = Terrain.EMPTY;
+            passable[cell] = true;
+            avoid[cell] = false;
+            solid[cell] = false;
         }
     }
 
@@ -96,7 +118,7 @@ public class NewRhodesLevel2 extends Level {
         map[3617] = Terrain.EMPTY;
         map[3882] = Terrain.EMPTY;
         map[3889] = Terrain.EMPTY;
-        map[3750] = Terrain.AVOID;
+        map[3751] = Terrain.AVOID;
         map[3758] = Terrain.EMPTY;
 
         // 훈련실 구역 A2
@@ -119,6 +141,19 @@ public class NewRhodesLevel2 extends Level {
         Painter.fill(this, 2, 43, 26, 6, Terrain.EMPTY);
         Painter.fill(this, 2, 46, 26, 1, Terrain.AVOID);
         Painter.fill(this, 20, 42, 6, 4, Terrain.WALL);
+        map[3341] = Terrain.EMPTY;
+        map[3409] = Terrain.EMPTY;
+        map[3477] = Terrain.EMPTY;
+        map[3545] = Terrain.EMPTY;
+        map[3613] = Terrain.EMPTY;
+        map[3681] = Terrain.EMPTY;
+        map[3749] = Terrain.EMPTY;
+        map[3817] = Terrain.EMPTY;
+        map[3885] = Terrain.EMPTY;
+
+        map[3818] = Terrain.WALL;
+        map[3750] = Terrain.WALL;
+        map[3682] = Terrain.WALL;
 
         // 숙소 B1구역-세부
         Painter.fill(this, 2, 42, 3, 4, Terrain.AVOID);
@@ -146,8 +181,25 @@ public class NewRhodesLevel2 extends Level {
         Painter.fill(this, 26, 48, 2, 11, Terrain.EMPTY);
 
         // 맵 경계선. 못나가도록 막음
-        Painter.fill(this, 28, 42, 1, 19, Terrain.WALL);
+        Painter.fill(this, 28, 42, 1, 16, Terrain.WALL);
         map[4164] = Terrain.EMPTY;
+
+        // 확장 상점구역
+        Painter.fill(this, 29, 53, 22, 4, Terrain.EMPTY);
+        Painter.fill(this, 34, 57, 17, 6, Terrain.EMPTY);
+
+        // 위디 옆 확장통로 벽
+        Painter.fill(this, 29, 57, 4, 1, Terrain.WALL);
+        Painter.fill(this, 30, 61, 1, 5, Terrain.WALL);
+        Painter.fill(this, 33, 57, 1, 6, Terrain.WALL);
+        Painter.fill(this, 33, 63, 18, 1, Terrain.WALL);
+        Painter.fill(this, 31, 60, 2, 6, Terrain.EMPTY);
+        Painter.fill(this, 31, 64, 23, 2, Terrain.EMPTY);
+
+        map[4319] = Terrain.EMPTY;
+        map[4332] = Terrain.EMPTY;
+        map[4587] = Terrain.EMPTY;
+        map[4588] = Terrain.EMPTY;
 
         entrance = 4015;
         exit = 3607;
@@ -191,17 +243,21 @@ public class NewRhodesLevel2 extends Level {
 
     @Override
     protected void createItems() {
-        Closure.spawn(this, 3682);
-        SkinModel.spawn(this, 3751);
+
+        Closure.spawn(this, 3910);
+        //TODO placeholder cell — set the real position (upper-right of the shop area per npc_mage.quest3)
+        Purestream.spawn(this, 3785);
+        SkinModel.spawn(this, 3752);
         Firewall.spawn(this, 3882);
-        Weedy.spawn(this, 3971);
+        Weedy.spawn(this, 4404);
         Dummy.spawn(this, 4286);
         Dummy.spawn(this, 4354);
         Jessica.spawn(this, 4295);
         Dobermann.spawn(this, 4298);
         FrostLeaf.spawn(this, 4305);
         NPC_Phantom.spawn(this, 3010);
-        NPC_Gglow.spawn(this, 3964);
+        NPC_Gglow.spawn(this, 3684);
+        NPC_Mage.spawn(this, 3202);
 
         if (Random.Int(2) == 0) Npc_Astesia.spawn(this, 3004);
         else Npc_Astesia.spawn(this, 3218);
@@ -213,15 +269,102 @@ public class NewRhodesLevel2 extends Level {
 
         // 특수 상점 관련
 
-        drop(new Closure_FoodBox(), 3692).type = Heap.Type.FOR_SALE_28F;
-        drop(new Closure_PotionBox(), 3693).type = Heap.Type.FOR_SALE_28F;
-        drop(new Closure_ScrollBox(), 3694).type = Heap.Type.FOR_SALE_28F;
-        drop(new Closure_IdentifyBox(), 3695).type = Heap.Type.FOR_SALE_28F;
-        drop(new Closure_HealingBox(), 3696).type = Heap.Type.FOR_SALE_28F;
-        drop(new Closure_WandBox(), 3828).type = Heap.Type.FOR_SALE_28F;
-        drop(new Closure_TransBox(), 3829).type = Heap.Type.FOR_SALE_28F;
-        drop(new Closure_RingBox(), 3830).type = Heap.Type.FOR_SALE_28F;
-        drop(new Closure_TGBox(), 3832).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_FoodBox(), 3709).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_PotionBox(), 3710).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_ScrollBox(), 3777).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_IdentifyBox(), 3778).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_HealingBox(), 3714).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_WandBox(), 3715).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_TransBox(), 3781).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_RingBox(), 3782).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_TGBox(), 3783).type = Heap.Type.FOR_SALE_28F;
+
+        // 무기 (근접, 총기 포함)
+        for (int cell : new int[]{4116, 4117, 4118, 4184, 4185, 4186}) {
+            sellShopWeapon(cell, Generator.wepTiers, SHOP_WEAPON_TIER_PRICE, true);
+        }
+
+        // 무기 (원거리)
+        for (int cell : new int[]{4121, 4122, 4123, 4189, 4190, 4191}) {
+            sellShopWeapon(cell, Generator.misTiers, SHOP_MISSILE_TIER_PRICE, false);
+        }
+
+        // 유물
+        for (int cell : new int[]{3980, 3981, 3982, 3912, 3913, 3914}) {
+            Artifact art = Generator.randomArtifact();
+            if (art != null) {
+                //shop artifacts: no curse, no upgrade
+                art.cursed = false;
+                sellForCertificates(art, cell, ARTIFACT_PRICE);
+            }
+        }
+
+        // 반지
+        for (int cell : new int[]{3985, 3986, 3987, 3917, 3918, 3919}) {
+            Ring ring = (Ring) Generator.random(Generator.Category.RING);
+            applyShopQuality(ring);
+            sellForCertificates(ring, cell, RING_PRICE);
+        }
+    }
+
+    private static final int[] SHOP_ITEM_CELLS = {
+            4116, 4117, 4118, 4184, 4185, 4186, //melee weapons
+            4121, 4122, 4123, 4189, 4190, 4191, //missile weapons
+            3980, 3981, 3982, 3912, 3913, 3914, //artifacts
+            3985, 3986, 3987, 3917, 3918, 3919  //rings
+    };
+
+    private static final int RING_PRICE = 500;
+    private static final int ARTIFACT_PRICE = 600;
+
+    //tier weights for the certificate shop: T1-T5
+    private static final float[] SHOP_WEAPON_TIER_PROBS = {0.1f, 0.1f, 0.2f, 0.3f, 0.3f};
+    //price scales with tier, T1 = 300 up to T5 = 700 (melee)
+    private static final int[] SHOP_WEAPON_TIER_PRICE = {300, 400, 500, 600, 700};
+    //price scales with tier, T1 = 100 up to T5 = 300 (missile)
+    private static final int[] SHOP_MISSILE_TIER_PRICE = {100, 150, 200, 250, 300};
+
+    //shop-only T1 melee pool: adds hero starting weapons Generator.WEP_T1 omits/zero-weights (ChenSword, MagesStaff), without touching regular dungeon drops
+    private static final Class<?>[] SHOP_MELEE_T1_CLASSES = {
+            WornShortsword.class,
+            Gloves.class,
+            Dagger.class,
+            MagesStaff.class,
+            EX42.class,
+            NEARL_AXE.class,
+            ChenSword.class
+    };
+    private static final float[] SHOP_MELEE_T1_PROBS = {1, 1, 1, 1, 1, 1, 1};
+
+    private void sellForCertificates(Item item, int cell, int price) {
+        Heap heap = drop(item, cell);
+        heap.type = Heap.Type.FOR_SALE_28F;
+        heap.priceOverride = price;
+    }
+
+    private void sellShopWeapon(int cell, Generator.Category[] tiers, int[] prices, boolean rerollQuality) {
+        int tierIndex = Random.chances(SHOP_WEAPON_TIER_PROBS);
+        Weapon w;
+        if (rerollQuality && tierIndex == 0) {
+            w = (Weapon) Reflection.newInstance(SHOP_MELEE_T1_CLASSES[Random.chances(SHOP_MELEE_T1_PROBS)]);
+        } else {
+            Generator.Category c = tiers[tierIndex];
+            w = (Weapon) Reflection.newInstance(c.classes[Random.chances(c.probs)]);
+        }
+        w.random();
+        //shop weapons: no curse, small upgrade chance only (rest of the game keeps default odds)
+        if (rerollQuality) applyShopQuality(w);
+        sellForCertificates(w, cell, prices[tierIndex]);
+    }
+
+    //strips any curse and rerolls the upgrade level to +0 85% / +1 10% / +2 5%
+    private static void applyShopQuality(Item item) {
+        if (item instanceof Weapon && ((Weapon) item).cursed) {
+            ((Weapon) item).enchant(null);
+        }
+        item.cursed = false;
+        float roll = Random.Float();
+        item.level(roll < 0.05f ? 2 : roll < 0.15f ? 1 : 0);
     }
 
     @Override

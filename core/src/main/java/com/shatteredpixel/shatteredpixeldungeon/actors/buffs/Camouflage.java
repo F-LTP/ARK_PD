@@ -42,13 +42,23 @@ public class Camouflage extends Invisibility {
 
     @Override
     public boolean act() {
-        if (!(target instanceof Hero) && (Dungeon.hero.buffs(Light.class) != null || Dungeon.hero.buff(MindVision.class) != null)
-        || target.buff(TalismanOfForesight.CharAwareness.class) != null)
+        if (!(target instanceof Hero) && heroDetects(target))
             Buff.detach(target, Camouflage.class);
         return super.act();
     }
 
     public static boolean CamoFlageEnemy(Char mob) {
-        return (mob.buff(Camouflage.class) == null && Dungeon.level.distance(mob.pos, Dungeon.hero.pos) != 1);
+        return mob.buff(Camouflage.class) == null
+                && Dungeon.level.distance(mob.pos, Dungeon.hero.pos) != 1
+                && !heroDetects(mob);
+    }
+
+    public static boolean heroDetects(Char mob) {
+        if (Dungeon.hero.buff(Light.class) != null) return true;
+        if (Dungeon.hero.buff(MindVision.class) != null) return true;
+        for (TalismanOfForesight.CharAwareness b : Dungeon.hero.buffs(TalismanOfForesight.CharAwareness.class)) {
+            if (b.charID == mob.id()) return true;
+        }
+        return false;
     }
 }

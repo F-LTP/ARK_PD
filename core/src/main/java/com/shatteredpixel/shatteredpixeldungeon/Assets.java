@@ -526,7 +526,13 @@ public class Assets {
 		public static final String NPC_PINK	= "sprites/pink_doggi.png";
 		public static final String NPC_IRENE	= "sprites/npc_irene.png";
 		public static final String NPC_DARIO	= "sprites/npc_dario.png";
+        public static final String NPC_PURESTREAM	= "sprites/npc_purestream.png";
+        public static final String NPC_MAGE	= "sprites/npc_mage.png";
+
+        public static final String NPC_SHU	= "sprites/shu.png";
+        public static final String NPC_GUARD	= "sprites/npc_guard.png";
 		public static final String TEXAS_SHOPKEEPER	= "sprites/texas_shopkeeper.png";
+        public static final String DELIVERY_DRON	= "sprites/delivery_dron.png";
 
 		public static final String SARKAZ_SENTINEL	= "sprites/Sarkaz_Sentinel.png";
 		public static final String SARKAZ_CENTURION	= "sprites/Sarkaz_Centurion.png";
@@ -534,12 +540,16 @@ public class Assets {
 		public static final String FAUST	= "sprites/Faust.png";
 		public static final String ZEALOT	= "sprites/zealot.png";
 
+        public static final String SENTRY	= "sprites/sentry.png";
+
 		public static final String LENS	= "sprites/lens.png";
 		public static final String ROCK_CRAB	= "sprites/rock_crab.png";
 		public static final String SEABORN	= "sprites/seaborn.png";
 		public static final String MON3TER	= "sprites/mon3ter.png";
 		public static final String ZUZAI	= "sprites/zuzai.png";
 		public static final String KAZE	= "sprites/kazemaru.png";
+
+        public static final String ZAARO	= "sprites/zaaro.png";
 
 		public static final String FANATIC	= "sprites/fanatic.png";
 		public static final String AIRBORNE	= "sprites/airborne.png";

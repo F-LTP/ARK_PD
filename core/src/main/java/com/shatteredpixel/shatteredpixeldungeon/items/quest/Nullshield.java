@@ -14,7 +14,10 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfPurgatory;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.SP.StaffOfSuzuran;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFireblast;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wrench;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ChenSword;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Dagger;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.EX42;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Enfild;
@@ -25,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.GoldDogSword;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MinosFury;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.NEARL_AXE;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Niansword;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.PatriotSpear;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.RhodesSword;
@@ -91,7 +95,7 @@ public class Nullshield extends Item {
                     item.detach( curUser.belongings.backpack );
                     detach(curUser.belongings.backpack);
                 }
-                else if (item instanceof WornShortsword || item instanceof Dagger || item instanceof MagesStaff || item instanceof EX42 || item instanceof Gloves)
+                else if (item instanceof WornShortsword || item instanceof Dagger || item instanceof MagesStaff || item instanceof EX42 || item instanceof Gloves || item instanceof NEARL_AXE || item instanceof ChenSword)
                 {
                     if (curUser.belongings.weapon != item) {
                         if (Random.Int(3) < 2) {
@@ -178,6 +182,24 @@ public class Nullshield extends Item {
                         detach(curUser.belongings.backpack);
                     }
                     else GLog.h(Messages.get(Nullshield.class, "fail_weapon"));
+                }
+                else if (item instanceof WandOfWarding)
+                {
+                    GLog.h(Messages.get(Nullshield.class, "suc"));
+                    Wrench nya = new Wrench();
+                    nya.identify();
+
+                    int level = item.level();
+                    if (((Wand) item).curseInfusionBonus) level--;
+                    if (level > 0) {
+                        nya.upgrade(level);
+                    } else if (level < 0) {
+                        nya.degrade(-level);
+                    }
+
+                    Dungeon.level.drop(nya, Dungeon.hero.pos).sprite.drop(Dungeon.hero.pos);
+                    item.detach(curUser.belongings.backpack);
+                    detach(curUser.belongings.backpack);
                 }
                 else if (item instanceof Wand)
                 {

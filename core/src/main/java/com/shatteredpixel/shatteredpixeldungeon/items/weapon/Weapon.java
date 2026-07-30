@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Guardoper_ItermUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
@@ -38,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.IsekaiItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfDominate;
@@ -56,6 +58,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Blocki
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Blooming;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Chilling;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Corrupting;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Dragonkill;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Elastic;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Grim;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Kinetic;
@@ -67,8 +70,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Shocki
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Unstable;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Vampiric;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ThermiteBlade;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -151,24 +154,11 @@ abstract public class Weapon extends KindOfWeapon {
                 float Resists = 100 * enemyResist;
 
                 if (Random.Int((int)Resists) < RingOfDominate.Dominate(Dungeon.hero)) {
-                    if (defender.isAlive() && !defender.isImmune(Corruption.class) && defender.buff(Corruption.class) == null && defender.alignment != Char.Alignment.ALLY) {
-                        Buff.affect(defender, Corruption.class);
+                    if (defender instanceof Mob && defender.isAlive() && !defender.isImmune(Corruption.class)
+                            && defender.buff(Corruption.class) == null && defender.alignment != Char.Alignment.ALLY) {
                         defender.HP = defender.HT;
                         damage = 0;
-                    }
-                    if (defender instanceof Mob) {
-                        if (defender.isAlive() && !defender.isImmune(Corruption.class)) {
-                            ((Mob)defender).rollToDropLoot();
-                            Statistics.enemiesSlain++;
-                            Badges.validateMonstersSlain();
-                            Statistics.qualifiedForNoKilling = false;
-                            if (((Mob) defender).EXP > 0 && curUser.lvl <= ((Mob) defender).maxLvl) {
-                                curUser.sprite.showStatus(CharSprite.POSITIVE, Messages.get(defender, "exp", ((Mob) defender).EXP));
-                                curUser.earnExp(((Mob) defender).EXP, defender.getClass());
-                            } else {
-                                curUser.earnExp(0, defender.getClass());
-                            }
-                        }
+                        AllyBuff.affectAndLoot((Mob) defender, curUser, Corruption.class);
                     }
                 }
 			}
@@ -440,10 +430,37 @@ abstract public class Weapon extends KindOfWeapon {
 		return this;
 	}
 	
+	@Override
+	public boolean collect(Bag container) {
+		if (super.collect(container)) {
+			if (Dungeon.hero != null && Dungeon.hero.isAlive() && isIdentified() && enchantment != null) {
+				Catalog.setSeen(enchantment.getClass());
+				Statistics.itemTypesDiscovered.add(enchantment.getClass());
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public Item identify(boolean byHero) {
+		if (enchantment != null && byHero && Dungeon.hero != null && Dungeon.hero.isAlive()) {
+			Catalog.setSeen(enchantment.getClass());
+			Statistics.itemTypesDiscovered.add(enchantment.getClass());
+		}
+		return super.identify(byHero);
+	}
+
 	public Weapon enchant( Enchantment ench ) {
 		if (ench == null || !ench.curse()) curseInfusionBonus = false;
 		enchantment = ench;
 		updateQuickslot();
+		if (ench != null && isIdentified() && Dungeon.hero != null
+				&& Dungeon.hero.isAlive() && Dungeon.hero.belongings.contains(this)) {
+			Catalog.setSeen(ench.getClass());
+			Statistics.itemTypesDiscovered.add(ench.getClass());
+		}
 		return this;
 	}
 
@@ -475,15 +492,15 @@ abstract public class Weapon extends KindOfWeapon {
 
 	public static abstract class Enchantment implements Bundlable {
 
-		private static final Class<?>[] common = new Class<?>[]{
+		public static final Class<?>[] common = new Class<?>[]{
 				Blazing.class, Chilling.class, Kinetic.class, Shocking.class,};
 
-		private static final Class<?>[] uncommon = new Class<?>[]{
+		public static final Class<?>[] uncommon = new Class<?>[]{
 				Blocking.class, Blooming.class, Elastic.class,
 				Lucky.class, Projecting.class, Unstable.class, Penetrate.class, Overeating.class};
 
-		private static final Class<?>[] rare = new Class<?>[]{
-				Corrupting.class, Grim.class, Vampiric.class};
+		public static final Class<?>[] rare = new Class<?>[]{
+				Corrupting.class, Grim.class, Vampiric.class, Dragonkill.class};
 
 		private static final float[] typeChances = new float[]{
 				50, //12.5% each
@@ -491,7 +508,7 @@ abstract public class Weapon extends KindOfWeapon {
 				10  //3.33% each
 		};
 
-		private static final Class<?>[] curses = new Class<?>[]{
+		public static final Class<?>[] curses = new Class<?>[]{
 				Annoying.class, Displacing.class, Exhausting.class, Fragile.class,
 				Sacrificial.class, Wayward.class, Polarized.class, Friendly.class,
 				contamination.class

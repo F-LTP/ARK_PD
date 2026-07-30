@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Fire;
@@ -277,9 +278,11 @@ public class Tomimi extends Mob {
     public void die(Object cause) {
         yell(Messages.get(this, "die"));
 
+        Bestiary.skipCountingEncounters = true;
         for (Mob m : getSubjects()) {
             m.die(null);
         }
+        Bestiary.skipCountingEncounters = false;
 
         Dungeon.level.drop(new Certificate(40), pos).sprite.drop(pos);
 

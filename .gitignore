@@ -100,3 +100,4 @@ fabric.properties
 /.claude/settings.local.json
 /.claude/
 CLAUDE.md
+/.gradle-home

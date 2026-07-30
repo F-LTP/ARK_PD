@@ -83,6 +83,9 @@ public class Heap implements Bundlable {
     public boolean seen = false;
     public boolean haunted = false;
 
+    //overrides item.value() for FOR_SALE_28F pricing when >= 0
+    public int priceOverride = -1;
+
     public LinkedList<Item> items = new LinkedList<>();
 
     public void open(Hero hero) {
@@ -182,7 +185,8 @@ public class Heap implements Bundlable {
 
         }
 
-        if (item.dropsDownHeap && type != Type.FOR_SALE && type != Type.FOR_SALE_28F) {
+        //lost backpack must always be on top of a heap, to avoid softlocking players out of it
+        if ((item.dropsDownHeap && type != Type.FOR_SALE && type != Type.FOR_SALE_28F) || peek() instanceof LostBackpack) {
             items.add(item);
         } else {
             items.addFirst(item);
@@ -377,14 +381,16 @@ public class Heap implements Bundlable {
             case FOR_SALE_28F:
                 Item k = peek();
                 if (size() == 1) {
-                    return Messages.get(this, "for_sale_sp", k.value(), k.title());
+                    int price = priceOverride >= 0 ? priceOverride : k.value();
+                    return Messages.get(this, "for_sale_sp", price, k.title());
                 } else {
                     return k.title();
                 }
             case FOR_SALE:
                 Item i = peek();
                 if (size() == 1) {
-                    return Messages.get(this, "for_sale", Shopkeeper.sellPrice(i), i.title());
+                    int price = priceOverride >= 0 ? priceOverride : Shopkeeper.sellPrice(i);
+                    return Messages.get(this, "for_sale", price, i.title());
                 } else {
                     return i.title();
                 }

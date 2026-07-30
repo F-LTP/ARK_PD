@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK2;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SK1.ExecutionMode;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.Skill;
 import com.shatteredpixel.shatteredpixeldungeon.items.Skill.SkillBook;
@@ -35,6 +36,7 @@ public class BookWolfPack extends Item {
             hero.busy();
             hero.sprite.operate(hero.pos);
             detach(hero.belongings.backpack);
+            Catalog.countUse(getClass());
 
             hero.SK2 = new WolfPack();
             hero.SetSkill2Num(1);

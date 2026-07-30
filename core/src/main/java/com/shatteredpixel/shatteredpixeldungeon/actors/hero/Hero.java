@@ -175,7 +175,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfMight;
-import com.shatteredpixel.shatteredpixeldungeon.items.quest.QuestScroll;
+import com.shatteredpixel.shatteredpixeldungeon.journal.quests.Quests;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAccuracy;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAssassin;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfDominate;
@@ -199,6 +199,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Echeveria;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Enfild2;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gluttony;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.KRISSVector;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Niansword;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.PatriotSpear;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SHISHIOH;
@@ -206,6 +207,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.SanktaBet;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Suffering;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.NewHallsBossLevel;
@@ -2350,7 +2352,7 @@ public class Hero extends Char {
                 Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
                 GLog.w(Messages.get(this, "revive"));
                 Statistics.ankhsUsed++;
-                //Catalog.countUse(Ankh.class);
+                Catalog.countUse(Ankh.class);
 
                 ankh.detach(belongings.backpack);
 
@@ -2498,7 +2500,6 @@ public class Hero extends Char {
                 Certificate.specialEndingBouns();
 
                 Badges.silentValidateHappyEnd();
-                Badges.validatewill();
                 Dungeon.win(Amulet.class);
                 Dungeon.deleteGame(GamesInProgress.curSlot, true);
                 Game.switchScene(SurfaceScene.class);
@@ -2621,7 +2622,7 @@ public class Hero extends Char {
                     if (opened == Type.CHEST
                             || opened == Type.LOCKED_CHEST
                             || opened == Type.CRYSTAL_CHEST) {
-                        QuestScroll.onChestOpened();
+                        Quests.onChestOpened();
                     }
                     spend(Key.TIME_TO_UNLOCK);
                 }
@@ -2797,6 +2798,8 @@ public class Hero extends Char {
                 } else {
                     ((Wand) i).charge(this);
                 }
+            } else if (i instanceof MagesStaff && i.keptThroughLostInventory()) {
+                ((MagesStaff) i).applyWandChargeBuff(this);
             }
         }
 

@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -10,7 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Drowsy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSleep;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
@@ -146,6 +147,7 @@ public class SiestaBoss extends Mob {
 
     @Override
     public void die(Object cause) {
+        Bestiary.skipCountingEncounters = true;
         for (Mob mob : (Iterable<Mob>)Dungeon.level.mobs.clone()) {
             if (mob instanceof BossAgent || mob instanceof Schwarz) {
                 mob.die( cause );
@@ -153,6 +155,7 @@ public class SiestaBoss extends Mob {
 
             Badges.validatesiesta1();
         }
+        Bestiary.skipCountingEncounters = false;
 
         yell(Messages.get(this, "defeated"));
 
@@ -377,7 +380,7 @@ public class SiestaBoss extends Mob {
 
             immunities.add(Drowsy.class);
             immunities.add(MagicalSleep.class);
-            immunities.add(Corruption.class);
+            immunities.add(AllyBuff.class);
 
             //no loot or exp
             maxLvl = -5;

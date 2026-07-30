@@ -27,8 +27,8 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Bestiary {
-	
+public class MobRotation {
+
 	public static ArrayList<Class<? extends Mob>> getMobRotation( int depth ){
 		ArrayList<Class<? extends Mob>> mobs = standardMobRotation( depth );
 		addRareMobs(depth, mobs);
@@ -36,11 +36,11 @@ public class Bestiary {
 		Random.shuffle(mobs);
 		return mobs;
 	}
-	
+
 	//returns a rotation of standard mobs, unshuffled.
 	private static ArrayList<Class<? extends Mob>> standardMobRotation( int depth ){
 		switch(depth){
-			
+
 			// Sewers
 			case 1: default:
 				//3x rat, 1x snake
@@ -65,7 +65,7 @@ public class Bestiary {
 						Swarm.class,
 						Hound.class, Hound.class,
 						Slime.class, Slime.class));
-				
+
 			// Prison
 			case 6:
 				//1x skeleton, 1x thief, 1x swarm, 2x AirborneSoldiers
@@ -95,7 +95,7 @@ public class Bestiary {
 						Guard.class, Guard.class,
 						AirborneSoldier.class,
 						Necromancer.class, Necromancer.class));
-				
+
 			// Caves
 			case 11:
 				//3x bat, 1x brute, 1x shaman
@@ -128,7 +128,7 @@ public class Bestiary {
 						ExplodSlug_N.class, ExplodSlug_N.class,
 						MudrockZealot.class, MudrockZealot.class,
 						DM200.class, DM200.class));
-				
+
 			// City
 			case 16:
 				//2x ghoul, 2x elemental, 1x warlock
@@ -158,7 +158,7 @@ public class Bestiary {
 						Warlock.class, Warlock.class,
 						Monk.class, Monk.class,
 						Golem.class, Golem.class, Golem.class));
-				
+
 			// Halls
 			case 21:
 				//2x succubus, 1x evil eye
@@ -340,38 +340,38 @@ public class Bestiary {
 				));
 
 		}
-		
+
 	}
-	
+
 	//has a chance to add a rarely spawned mobs to the rotation
 	public static void addRareMobs( int depth, ArrayList<Class<?extends Mob>> rotation ){
-		
+
 		switch (depth){
-			
+
 			// Sewers
 			default:
 				return;
 			case 4:
 				if (Random.Float() < 0.025f) rotation.add(Thief.class);
 				return;
-				
+
 			// Prison
 			case 9:
 				if (Random.Float() < 0.025f) rotation.add(Bat.class);
 				return;
-				
+
 			// Caves
 			case 14:
 				if (Random.Float() < 0.025f) rotation.add(Ghoul.class);
 				return;
-				
+
 			// City
 			case 19:
 				if (Random.Float() < 0.025f) rotation.add(Succubus.class);
 				return;
 		}
 	}
-	
+
 	//switches out regular mobs for their alt versions when appropriate
 	private static void swapMobAlts(ArrayList<Class<?extends Mob>> rotation){
 		for (int i = 0; i < rotation.size(); i++){
