@@ -10,9 +10,58 @@ import java.util.ArrayList;
 
 public class v0_5_X_Changes {
     public static void addAllChanges(ArrayList<ChangeInfo> changeInfos) {
+        add_v0_5_3_Changes(changeInfos);
         add_v0_5_2_Changes(changeInfos);
         add_v0_5_1_Changes(changeInfos);
         add_v0_5_0_Changes(changeInfos);
+    }
+
+    public static void add_v0_5_3_Changes(ArrayList<ChangeInfo> changeInfos) {
+        ChangeInfo changes = new ChangeInfo("v0.5.3", true, "");
+        changes.hardlight(Window.TITLE_COLOR);
+        changeInfos.add(changes);
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+        changes.hardlight(Window.TITLE_COLOR);
+        changes.addButton(new ChangeButton(Icons.get(Icons.ARKPD), "罗德岛商店新增",
+                "罗德岛右下角可露希尔新开了一家商店。可以使用情报凭证购买物品。"));
+        changes.addButton(new ChangeButton(Icons.get(Icons.SCROLL), "任务线",
+                "新增了需要连续完成多个目标的任务。"));
+        changes.addButton(new ChangeButton(Icons.get(Icons.WEP_WOND), "扳手",
+                "通过特定组合获得的特殊物品。使用时召唤坚固的炮塔，可升级至3级。炮塔每次攻击消耗生命值，可使用扳手恢复生命值。" + "\n\n" +
+                        "1级：每3回合攻击一次。" + "\n\n" +
+                        "2级：每1回合攻击一次。" + "\n\n" +
+                        "3级：每1回合攻击一次。每第4次攻击会发射击退敌人的震荡波。"));
+        changes.addButton(new ChangeButton(Icons.get(Icons.ARTI), "终幕 - 浩劫",
+                "可在特殊商店中获得的特殊遗物。使用时召唤3只特殊召唤物，召唤物会快速寻找敌人，对首次发现的敌人造成范围伤害后消失。"));
+        changeInfos.add(changes);
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+        changes.hardlight(CharSprite.WARNING);
+        changes.addButton(new ChangeButton(Icons.get(Icons.ARKPD), "图鉴UI改版",
+                "图鉴页面完全翻新。游戏中可查看的物品和敌人都可登记在图鉴中。"));
+        changes.addButton(new ChangeButton(Icons.get(Icons.ARKPD), "笔记UI改版",
+                "笔记页面布局已改版。可以查看之前记录的条目和任务。" + "\n\n" +
+                        "部分任务可通过笔记UI完成/放弃。"));
+        changes.addButton(new ChangeButton(Icons.get(Icons.ARKPD), "罗德岛扩建工程",
+                "现在可以前往商店区域。皮肤解锁现可通过澄闪干员进行。"));
+        changes.addButton(new ChangeButton(Icons.get(Icons.BUG_KILL), "Bug修复",
+                "重型回旋镖不再可强化。" + "\n\n" +
+                        "修复了十字架相关的Bug。" + "\n\n" +
+                        "修复了多个与成就相关的（显示、解锁）Bug。" + "\n\n" +
+                        "修复了与特效相关的崩溃Bug。" + "\n\n" +
+                        "修复了持有博士时额外关卡敌人会吸引仇恨的Bug。"));
+        changeInfos.add(changes);
+
+        changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
+        changes.hardlight(CharSprite.POSITIVE);
+        changes.addButton(new ChangeButton(Icons.get(Icons.ARKPD), "商店变更",
+                "德克萨斯的商店现在会出现稀有物品。"));
+        changes.addButton(new ChangeButton(Icons.get(Icons.BADGES), "成就调整",
+                "与游戏游玩相关的成就所需游戏次数从250/1000调整为100/250。"));
+        changes.addButton(new ChangeButton(Icons.get(Icons.WEP), "射击武器变更",
+                "射击武器不再触发W的陷阱。"));
+        changeInfos.add(changes);
     }
 
     public static void add_v0_5_2_Changes(ArrayList<ChangeInfo> changeInfos) {

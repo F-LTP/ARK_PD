@@ -1356,7 +1356,7 @@ public abstract class Level implements Bundlable {
 
 			for (Mob m : mobs){
 				if (m instanceof WandOfWarding.Ward || m instanceof WandOfRegrowth.Lotus ||
-				m instanceof StaffOfMayer.Ward || m instanceof Zaaro){
+				m instanceof StaffOfMayer.Ward){
 					if (m.fieldOfView == null || m.fieldOfView.length != length()){
 						m.fieldOfView = new boolean[length()];
 						Dungeon.level.updateFieldOfView( m, m.fieldOfView );

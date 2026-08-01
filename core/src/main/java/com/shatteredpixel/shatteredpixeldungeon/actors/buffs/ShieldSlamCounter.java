@@ -62,7 +62,7 @@ public class ShieldSlamCounter extends CounterBuff implements ActionIndicator.Ac
 
     @Override
     public boolean act() {
-        if (count() > 0 && ActionIndicator.action == null) {
+        if (count() > 0 && ActionIndicator.action != this) {
             ActionIndicator.setAction(this);
         }
         boolean charged = isCharged();
