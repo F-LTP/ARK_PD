@@ -58,6 +58,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Thunderbolt;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -356,7 +357,7 @@ public class Item implements Bundlable {
 		} else
 		if (quantity == 1) {
 
-			if (stackable){
+			if (stackable || this instanceof ThrowingKnife){
 				Dungeon.quickslot.convertToPlaceholder(this);
 			}
 
