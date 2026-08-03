@@ -160,7 +160,7 @@ abstract public class Weapon extends KindOfWeapon {
                         && defender.buff(Corruption.class) == null && defender.alignment != Char.Alignment.ALLY) {
                     defender.HP = defender.HT;
                     damage = 0;
-                    AllyBuff.affectAndLoot((Mob) defender, curUser, Corruption.class);
+                    AllyBuff.affectAndLoot((Mob) defender, (Hero) attacker, Corruption.class);
 				}
 			}
 			}

@@ -111,7 +111,7 @@ public class KollamSword extends MeleeWeapon {
                     if (!ch.isImmune(Corruption.class)) {
                         boolean chance = setbouns() || Random.Int(2) != 0;
 
-                        if (chance) AllyBuff.affectAndLoot((Mob) ch, curUser, Corruption.class);
+                        if (chance) AllyBuff.affectAndLoot((Mob) ch, hero, Corruption.class);
                     }
                 }
             }
