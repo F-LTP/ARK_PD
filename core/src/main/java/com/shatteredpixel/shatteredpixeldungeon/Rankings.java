@@ -186,19 +186,19 @@ public enum Rankings {
 		Belongings belongings = Dungeon.hero.belongings;
 
 		//save the hero and belongings
-		ArrayList<Item> allItems = (ArrayList<Item>) belongings.backpack.items.clone();
+		ArrayList<Item> filteredItems = new ArrayList<>();
 		//remove items that won't show up in the rankings screen
-		for (Item item : belongings.backpack.items.toArray( new Item[0])) {
+		for (Item item : belongings.backpack.items) {
 			if (item instanceof Bag){
-				for (Item bagItem : ((Bag) item).items.toArray( new Item[0])){
+				for (Item bagItem : ((Bag) item).items){
                     if (Dungeon.quickslot.contains(bagItem)
                             && !Dungeon.quickslot.contains(item)){
-                        belongings.backpack.items.add(bagItem);
+                        filteredItems.add(bagItem);
                     }
 				}
 			}
-            if (!Dungeon.quickslot.contains(item)) {
-                belongings.backpack.items.remove(item);
+            if (Dungeon.quickslot.contains(item)) {
+                filteredItems.add(item);
             }
 		}
 
@@ -221,16 +221,13 @@ public enum Rankings {
 
 		//save handler information
 		Bundle handler = new Bundle();
-		Scroll.saveSelectively(handler, belongings.backpack.items);
-		Potion.saveSelectively(handler, belongings.backpack.items);
+		Scroll.saveSelectively(handler, filteredItems);
+		Potion.saveSelectively(handler, filteredItems);
 		//include potentially worn rings
-		if (belongings.misc != null)        belongings.backpack.items.add(belongings.misc);
-		if (belongings.ring != null)        belongings.backpack.items.add(belongings.ring);
-		Ring.saveSelectively(handler, belongings.backpack.items);
+		if (belongings.misc != null)        filteredItems.add(belongings.misc);
+		if (belongings.ring != null)        filteredItems.add(belongings.ring);
+		Ring.saveSelectively(handler, filteredItems);
 		rec.gameData.put( HANDLERS, handler);
-
-		//restore items now that we're done saving
-		belongings.backpack.items = allItems;
 		
 		//save challenges
 		rec.gameData.put( CHALLENGES, Dungeon.challenges );
