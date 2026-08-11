@@ -134,6 +134,34 @@ abstract public class Weapon extends KindOfWeapon {
 
 	public Augment augment = Augment.NONE;
 
+	//subclasses may reinterpret the shared augments, so the factors and text go through these rather than the enum
+	public int augmentDamageFactor( int dmg ){
+		return augment.damageFactor(dmg);
+	}
+
+	public float augmentDelayFactor( float dly ){
+		return augment.delayFactor(dly);
+	}
+
+	public float augmentAccFactor( float acc ){
+		return augment.accFactor(acc);
+	}
+
+	//message key for the StoneOfAugmentation button offering this augment
+	public String augmentKey( Augment aug ){
+		return aug.name();
+	}
+
+	//Weapon.class message key for the line info() prints, or null for no line
+	public String augmentDescKey(){
+		switch (augment) {
+			case SPEED:    return "faster";
+			case DAMAGE:   return "stronger";
+			case OVERLOAD: return "overload";
+			default:       return null;
+		}
+	}
+
 	private static final int USES_TO_ID = 20;
 	private float usesLeftToID = USES_TO_ID;
 	private float availableUsesToID = USES_TO_ID/2f;
