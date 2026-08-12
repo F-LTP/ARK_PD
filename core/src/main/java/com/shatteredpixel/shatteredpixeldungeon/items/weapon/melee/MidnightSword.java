@@ -8,13 +8,13 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.Bonk;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -70,8 +70,11 @@ public class MidnightSword extends MeleeWeapon {
 
         super.execute(hero, action);
 
+        usesTargeting=false;
+
         if (action.equals(AC_ZAP) && arts > 0 && isEquipped(hero)) {
             if (this.cursed != true) {
+                usesTargeting = true;
                 cursedKnown = true;
                 GameScene.selectCell(zapper);
             }
@@ -84,12 +87,12 @@ public class MidnightSword extends MeleeWeapon {
     }
 
     public String statsInfo() {
-            return Messages.get(this, "stats_desc", 2+buffedLvl(),11+buffedLvl()*2);
+        return Messages.get(this, "stats_desc", 2+buffedLvl(),11+buffedLvl()*2);
     }
 
-    public void SPCharge(int n) {
+    public void SPCharge(float n) {
         if (Random.Int(17) < 2) {
-            arts += n;
+            arts += (int)n;
             if (artschargeCap < arts) arts = artschargeCap;
             updateQuickslot();
         }
@@ -200,12 +203,14 @@ public class MidnightSword extends MeleeWeapon {
 
         arts -=1;
         updateQuickslot();
+
         Buff buff = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
         if (buff != null) buff.detach();
         buff = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
         if (buff != null) buff.detach();
         if (Dungeon.hero.buff(Bonk.BonkBuff.class) != null) Buff.detach(Dungeon.hero, Bonk.BonkBuff.class);
         Invisibility.dispel();
-       curUser.spendAndNext(1f);
+
+        curUser.spendAndNext(1f);
     }
 }

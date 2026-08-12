@@ -87,9 +87,10 @@ public class Longsword extends MeleeWeapon {
 	public void execute(Hero hero, String action) {
 
 		super.execute(hero, action);
-
+		usesTargeting=false;
 		if (action.equals(AC_ZAP) && arts > 0 && isEquipped(hero)) {
 			if (this.cursed != true) {
+				usesTargeting=true;
 				cursedKnown = true;
 				GameScene.selectCell(zapper);
 			}

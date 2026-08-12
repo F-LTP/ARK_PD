@@ -216,7 +216,7 @@ public class GunWeapon extends MeleeWeapon {
         super.execute(hero, action);
 
         if (action.equals(AC_ZAP)) {
-
+            usesTargeting=false;
             if (Dungeon.hero.belongings.weapon != this) {
                 GLog.n(Messages.get(this, "not_equipped"));
                 QuickSlotButton.cancel();
@@ -225,6 +225,7 @@ public class GunWeapon extends MeleeWeapon {
                 cursedKnown = true;
                 bullet = Math.max(0, bullet - 1);
             } else {
+                usesTargeting=true;
                 curUser = hero;
                 curItem = this;
                 cursedKnown = true;

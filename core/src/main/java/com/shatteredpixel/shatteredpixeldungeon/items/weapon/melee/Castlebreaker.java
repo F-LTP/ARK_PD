@@ -92,10 +92,11 @@ public class Castlebreaker extends MeleeWeapon {
 	public void execute(Hero hero, String action) {
 
 		super.execute(hero, action);
-
+		usesTargeting=false;
 		if (Dungeon.hero.belongings.weapon == this) {
 			if (action.equals(AC_ZAP) && charge >= 40) {
 				if (this.cursed != true) {
+					usesTargeting=true;
 					cursedKnown = true;
 					GameScene.selectCell(zapper);
 				} else {

@@ -76,8 +76,11 @@ public class Echeveria extends MeleeWeapon{
     public void execute(Hero hero, String action) {
         super.execute(hero, action);
         if (action.equals(AC_SUMON)) {
+            usesTargeting=false;
             if (!isEquipped(hero)) return;
-            if (charge >= 30) GameScene.selectCell(zapper);
+            if (charge >= 30) {
+                usesTargeting=true;
+                GameScene.selectCell(zapper);}
         }
     }
 
