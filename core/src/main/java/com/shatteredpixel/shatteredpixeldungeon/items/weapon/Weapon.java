@@ -292,7 +292,7 @@ abstract public class Weapon extends KindOfWeapon {
 		if (hasEnchant(Wayward.class, owner))
 			encumbrance = Math.max(2, encumbrance+2);
 
-		float ACC = augment.accFactor(this.ACC);
+		float ACC = augmentAccFactor(this.ACC);
 		return encumbrance > 0 ? (float)(ACC / Math.pow( 1.5, encumbrance )) : ACC;
 	}
 
@@ -304,7 +304,7 @@ abstract public class Weapon extends KindOfWeapon {
 			encumbrance = STRReq() - ((Hero)owner).STR();
 		}
 
-		float DLY = augment.delayFactor(this.DLY);
+		float DLY = augmentDelayFactor(this.DLY);
 
 		DLY *= RingOfFuror.attackDelayMultiplier(owner);
 		return (encumbrance > 0 ? (float)(DLY * Math.pow( 1.2, encumbrance )) : DLY);

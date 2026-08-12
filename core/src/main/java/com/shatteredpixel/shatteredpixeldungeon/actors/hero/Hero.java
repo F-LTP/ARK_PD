@@ -174,6 +174,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfMight;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ShieldWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.quests.Quests;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAccuracy;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAssassin;
@@ -1658,6 +1659,11 @@ public class Hero extends Char {
 
     @Override
     public int defenseProc(Char enemy, int damage) {
+        //pre-DR damage, and fires even on a hit the DR fully absorbs; magic never routes through here
+        if (belongings.weapon() instanceof ShieldWeapon) {
+            ((ShieldWeapon) belongings.weapon()).onMitigated(this, damage);
+        }
+
         if (RingOfDominate.Dominate_curse(this) == true) {
             if (Random.Int(HT) > HP * 3) {
                 Buff.affect(this, Corruption.class);
@@ -1841,6 +1847,15 @@ public class Hero extends Char {
         if (belongings.armor() != null && belongings.armor().hasGlyph(AntiMagic.class, this)
                 && AntiMagic.RESISTS.contains(src.getClass())) {
             dmg -= AntiMagic.drRoll(belongings.armor().buffedLvl());
+        }
+
+        //the MAGIC augment is the only way a shield weapon covers damage that never touches Char.attack()
+        if (belongings.weapon() instanceof ShieldWeapon
+                && ((ShieldWeapon) belongings.weapon()).augment == ShieldWeapon.MAGIC
+                && AntiMagic.RESISTS.contains(src.getClass())) {
+            ShieldWeapon w = (ShieldWeapon) belongings.weapon();
+            w.onMitigated(this, dmg);
+            dmg = Math.max(0, dmg - Random.NormalIntRange(0, w.defenseFactor(this)));
         }
 
         if (buff(Talent.WarriorFoodImmunity.class) != null) {
