@@ -132,7 +132,7 @@ public class EmperorPursuer extends Mob {
                     enemy.damage(Random.NormalIntRange(16, 32), new EmperorPursuer.DarkBolt());
                 }
                 else enemy.damage(Random.NormalIntRange(4, 10), new EmperorPursuer.DarkBolt());
-                if (!Dungeon.hero.isAlive()) {//change from budding
+                if (!Dungeon.hero.isAlive()) {
                     Dungeon.fail(getClass());
                     GLog.n(Messages.get(Char.class, "kill", name()));
                 }
@@ -147,7 +147,8 @@ public class EmperorPursuer extends Mob {
     protected boolean act() {
         if (state == PASSIVE) return super.act();
         if (!UseAbility()) {
-            return true; }
+            return true;
+        }
 
         if (BurstCoolDown > 0) BurstCoolDown--;
         if (GasCoolDown > 0) GasCoolDown--;
@@ -157,16 +158,18 @@ public class EmperorPursuer extends Mob {
     private boolean UseAbility() {
         // 폭발 > 국가 순
 
-        if (enemy == null) {
+        if (enemy == null || !enemy.isAlive() || !enemySeen) {
             Burstpos = -1;
-            BurstTime = 0;//change from budding
+            BurstTime = 0;
+            enemy=null;
             return true;
         }
         //폭발
         if (BurstCoolDown <= 0) {
             if (Burstpos == -1) {
+                spend(1f);
                 // 위치 미지정시, 이번 턴에는 폭발을 일으킬 지점을 정합니다.
-                Burstpos = enemy.pos;//change from budding
+                Burstpos = enemy.pos;
                 sprite.parent.addToBack(new TargetedCell(Burstpos, 0xFF0000));
 
                 for (int i : PathFinder.NEIGHBOURS9) {
@@ -176,7 +179,7 @@ public class EmperorPursuer extends Mob {
                     }
                 }
 
-                sprite.zap(Burstpos);
+                //sprite.zap(Burstpos);  
 
                 Sample.INSTANCE.play( Assets.Sounds.BURNING );
                 BurstTime++;
@@ -187,7 +190,8 @@ public class EmperorPursuer extends Mob {
                 Sample.INSTANCE.play( Assets.Sounds.CURSED );
 
                 BurstTime++;
-                return true;}
+                return true;
+            }
             else if (BurstTime == 2) {
                 PathFinder.buildDistanceMap(Burstpos, BArray.not(Dungeon.level.solid, null), 1);
                 for (int cell = 0; cell < PathFinder.distance.length; cell++) {
