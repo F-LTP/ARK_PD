@@ -40,8 +40,8 @@ android {
             shrinkResources false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            applicationIdSuffix '.Release'
-            versionNameSuffix '-Release'
+            applicationIdSuffix '.Annotation'
+            versionNameSuffix '-Annotation'
         }
 
         applicationVariants.all { variant ->
