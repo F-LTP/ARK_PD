@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Transmuting;
+import com.shatteredpixel.shatteredpixeldungeon.items.DropTable;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -230,7 +231,9 @@ public class Closure_TGBox extends ClosuresBox {
             c = Generator.misTiers[((MissileWeapon) w).tier - 1];
         }
         do {
-            n = (Weapon) Reflection.newInstance(c.classes[Random.chances(c.probs)]);
+            int i = Random.chances(DropTable.mask(c, c.probs));
+            if (i == -1) i = Random.chances(c.probs); //backstop: degrade to vanilla rather than crash
+            n = (Weapon) Reflection.newInstance(c.classes[i]);
         } while (Challenges.isItemBlocked(n) || n.getClass() == w.getClass());
 
         int level = w.level();

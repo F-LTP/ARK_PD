@@ -960,7 +960,7 @@ public class Generator {
                     for (int i = 0; i < cat.dropped; i++) Random.Long();
                 }
 
-                int i = Random.chances(cat.probs);
+                int i = Random.chances(DropTable.mask(cat, cat.probs));
                 if (i == -1) {
                     reset(cat);
                     i = Random.chances(cat.probs);
@@ -1019,7 +1019,9 @@ public class Generator {
         floorSet = (int) GameMath.gate(0, floorSet, floorSetTierProbs.length - 1);
 
         Category c = wepTiers[Random.chances(floorSetTierProbs[floorSet])];
-        MeleeWeapon w = (MeleeWeapon) Reflection.newInstance(c.classes[Random.chances(c.probs)]);
+        int i = Random.chances(DropTable.mask(c, c.probs));
+        if (i == -1) i = Random.chances(c.probs); //backstop: degrade to vanilla rather than crash
+        MeleeWeapon w = (MeleeWeapon) Reflection.newInstance(c.classes[i]);
         w.random();
         return w;
     }
@@ -1119,8 +1121,10 @@ public class Generator {
 
         if (bundle.contains(GENERAL_PROBS)) {
             float[] probs = bundle.getFloatArray(GENERAL_PROBS);
-            for (int i = 0; i < probs.length; i++) {
-                categoryProbs.put(Category.values()[i], probs[i]);
+            if (probs.length == Category.values().length) { //cross-version saves fall back to defaults
+                for (int i = 0; i < probs.length; i++) {
+                    categoryProbs.put(Category.values()[i], probs[i]);
+                }
             }
         }
 
