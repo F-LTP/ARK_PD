@@ -42,6 +42,7 @@ public class Alchemize extends Spell implements AlchemyScene.AlchemyProvider {
 			GLog.i( Messages.get(this, "enemy_near") );
 			return;
 		}
+		energy = 4;
 		detach( curUser.belongings.backpack );
         Catalog.countUse(getClass());
 		updateQuickslot();
