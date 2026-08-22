@@ -101,7 +101,7 @@ public class Echeveria extends MeleeWeapon{
                 if (curItem instanceof Echeveria) {
                     ss = (Echeveria) Echeveria.curItem;
 
-                    Ballistica shot = new Ballistica(curUser.pos, target, Ballistica.PROJECTILE);
+                    Ballistica shot = new Ballistica(curUser.pos, target, Ballistica.STOP_TARGET);
                     int cell = shot.collisionPos;
 
                     if (target == curUser.pos || cell == curUser.pos) {
@@ -152,7 +152,10 @@ public class Echeveria extends MeleeWeapon{
         ArrayList<Integer> respawnPoints = new ArrayList<>();
         Char ch = Actor.findChar( bolt.collisionPos );
         if (ch != null && ch instanceof Mob) {
-            if (ch.alignment == Char.Alignment.ALLY) return;
+            if (ch.alignment == Char.Alignment.ALLY) {
+                curUser.spendAndNext(0);
+                return;
+            }
             for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
                 int p = ch.pos + PathFinder.NEIGHBOURS8[i];
                 if (Actor.findChar(p) == null && Dungeon.level.passable[p]) {
