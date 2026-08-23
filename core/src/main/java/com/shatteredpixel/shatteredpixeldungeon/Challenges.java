@@ -77,7 +77,7 @@ public class Challenges {
 			return true;
 		}
 
-		if ((Dungeon.eazymode == 1  || Dungeon.isChallenged(TEST))&& item instanceof Certificate) {//change from budding
+		if ((Dungeon.eazymode == 1)&& item instanceof Certificate) {
 			return true;
 		}
 

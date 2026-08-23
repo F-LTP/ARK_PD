@@ -606,8 +606,9 @@ import com.watabou.utils.DeviceCompat;
 	}
 	
 	public boolean isUnlocked(){
+		return true;
 		//always unlock on debug builds
-		if (DeviceCompat.isDebug()) return true;
+		/*if (DeviceCompat.isDebug()) return true;
 		//if (true)return true;//for sixfa
 		switch (this){
 			case WARRIOR: default:
@@ -624,7 +625,7 @@ import com.watabou.utils.DeviceCompat;
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_NEARL);
 			case CHEN:
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_CHEN);
-		}
+		}*/
 	}
 	
 	public String unlockMsg() {

@@ -11,10 +11,10 @@ buildscript {
 allprojects {
 
     ext {
-        appName = '明日方舟地牢注解版'
+        appName = '测试-明日方舟地牢'
         appPackageName = 'com.shatteredpixel.tomorrowpixel'
 
-        appVersionCode = 26081218
+        appVersionCode = 26082310
         appVersionName = '0.5.3'
 
         appJavaCompatibility = JavaVersion.VERSION_11

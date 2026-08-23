@@ -677,6 +677,7 @@ public class DwarfKing extends Mob {
 					m.state = m.HUNTING;
 					if (((DwarfKing)target).phase == 2){
 						Buff.affect(m, KingDamager.class);
+						GLog.i(m.name()+"被施加了梅菲斯特的标记。");
 					}
 				} else {
 					Char ch = Actor.findChar(pos);
@@ -695,7 +696,7 @@ public class DwarfKing extends Mob {
 
 		@Override
 		public void fx(boolean on) {
-			if (on && (particles == null || particles.parent == null)) {//change from budding,shattered
+			if (on && (particles == null || particles.parent == null)) {
 				particles = CellEmitter.get(pos);
 
 				if (summon == DKWarlock.class){
@@ -753,6 +754,7 @@ public class DwarfKing extends Mob {
 			for (Mob m : Dungeon.level.mobs){
 				if (m instanceof DwarfKing){
 					m.damage(m.HT/12, this);
+					GLog.w(m.name()+"的梅菲斯特标记被移除并对他造成伤害。");
 				}
 			}
 		}

@@ -1236,16 +1236,12 @@ public class Badges {
 
     //necessary in order to display the happy end badge in the surface scene
     public static void silentValidateHappyEnd() {
-        if (!Dungeon.isChallenged(TEST)){
             local.add( Badge.HAPPY_END );
-        }
     }
 
     //하극상 배지용
     public static void silentValidateFragging() {
-        if (!Dungeon.isChallenged(TEST)){
             local.add( Badge.FRAGGING );
-        }
     }
 
     public static void validateHappyEnd() {
@@ -1464,7 +1460,7 @@ public class Badges {
 
     private static void displayBadge(Badge badge) {
 
-        if (badge == null || !Dungeon.customSeedText.isEmpty() || Dungeon.isChallenged(TEST)) {
+        if (badge == null) {
             return;
         }
 
@@ -1507,7 +1503,7 @@ public class Badges {
 
     public static void unlock(Badge badge) {
         if (badge == null) return;
-        if (!isUnlocked(badge) && Dungeon.customSeedText.isEmpty() && !Dungeon.isChallenged(TEST)){
+        if (!isUnlocked(badge)){
             global.add(badge);
             saveNeeded = true;
         }

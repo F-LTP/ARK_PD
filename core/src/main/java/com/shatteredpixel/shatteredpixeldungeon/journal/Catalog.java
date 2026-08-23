@@ -493,7 +493,6 @@ public enum Catalog {
 
     //debug-only: marks every item in every catalog as seen, for testing the journal UI
     public static void debugRevealAll(){
-        if (!DeviceCompat.isDebug()) return;
         for (Catalog cat : values()){
             for (Class<?> item : cat.items()){
                 cat.seen.put(item, true);
@@ -506,7 +505,6 @@ public enum Catalog {
 
     //debug-only: clears seen/use-count state across all catalogs, for testing the journal UI
     public static void debugReset(){
-        if (!DeviceCompat.isDebug()) return;
         for (Catalog cat : values()){
             for (Class<?> item : cat.items()){
                 cat.seen.put(item, false);
