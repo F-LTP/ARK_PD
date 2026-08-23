@@ -251,6 +251,7 @@ public class Ghoul extends Mob {
 
 			if (Dungeon.level.pit[ghoul.pos]){
 				super.detach();
+				ghoul.beingLifeLinked = false;
 				ghoul.die(this);
 				return true;
 			}
@@ -283,7 +284,7 @@ public class Ghoul extends Mob {
 				Dungeon.level.mobs.add(ghoul);
 				Dungeon.level.occupyCell( ghoul );
 				ghoul.sprite.idle();
-                if (ghoul.enemy != null && ghoul.enemy.alignment == ghoul.alignment){//change from budding,shattered
+                if (ghoul.enemy != null && ghoul.enemy.alignment == ghoul.alignment){
                     ghoul.enemy = null; //reset enemy
                 }
 				super.detach();
@@ -315,7 +316,7 @@ public class Ghoul extends Mob {
 				attachTo(newHost);
 				timeToNow();
 			} else {
-                ghoul.beingLifeLinked = false;//change from budding,shattered, DK problem
+                ghoul.beingLifeLinked = false;
 				ghoul.die(this);
 			}
 		}
@@ -334,7 +335,7 @@ public class Ghoul extends Mob {
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
 			ghoul = (Ghoul) bundle.get(GHOUL);
-            ghoul.beingLifeLinked = true;//change from budding , shattered
+            ghoul.beingLifeLinked = true;
 			turnsToRevive = bundle.getInt(LEFT);
 		}
 

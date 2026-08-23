@@ -435,6 +435,11 @@ public class DwarfKing extends Mob {
 					}
 				}
                 Bestiary.skipCountingEncounters = false;
+				for (Buff b: buffs()){
+					if (b instanceof LifeLink){
+						b.detach();
+					}
+				}
 			}
 		} else if (phase == 2 && shielding() == 0) {
 			properties.remove(Property.IMMOVABLE);
