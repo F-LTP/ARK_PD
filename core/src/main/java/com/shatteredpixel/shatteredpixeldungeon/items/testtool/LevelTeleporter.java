@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
@@ -25,60 +26,101 @@ import com.watabou.noosa.tweeners.AlphaTweener;
 
 import java.util.ArrayList;
 
-public class LevelTeleporter extends ChallengeItem{
+public class LevelTeleporter extends ChallengeItem {
     {
         image = ItemSpriteSheet.ARTIFACT_TALISMAN;
         defaultAction = AC_DESCEND;
         changeDefAct = true;
     }
+
     private static final String AC_DESCEND = "descend";
     private static final String AC_ASCEND = "ascend";
     private static final String AC_VIEW = "view";
     private static final String AC_TP = "tp";
-    public ArrayList<String> actions(Hero hero ) {
+
+    public ArrayList<String> actions(Hero hero) {
         ArrayList<String> actions = super.actions(hero);
-        actions.add( AC_ASCEND );
+        actions.add(AC_ASCEND);
         actions.add(AC_DESCEND);
         actions.add(AC_VIEW);
         actions.add(AC_TP);
         return actions;
     }
-    public void execute(Hero hero, String action ) {
-        super.execute(hero, action);
-        if(action.equals(AC_DESCEND)){
-            if(Dungeon.level.locked || Dungeon.depth==26 || Dungeon.depth==40) {
-            GLog.w(Messages.get(this,"cannot_send"));
-            return;
-        }
-            Buff buff = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
-            if (buff != null) buff.detach();
-            buff = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
-            if (buff != null) buff.detach();
 
-            InterlevelScene.mode = InterlevelScene.Mode.DESCEND;
-            Game.switchScene( InterlevelScene.class );
-            }
-        else if(action.equals(AC_ASCEND)){
-            if(Dungeon.level.locked) {
-                GLog.w(Messages.get(this,"cannot_send"));
+    public void execute(Hero hero, String action) {
+        super.execute(hero, action);
+        if (action.equals(AC_DESCEND)) {
+            if (Dungeon.level.locked || Dungeon.depth == 26 || Dungeon.depth == 40) {
+                GLog.w(Messages.get(this, "cannot_send"));
                 return;
             }
             Buff buff = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
             if (buff != null) buff.detach();
             buff = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
             if (buff != null) buff.detach();
-            InterlevelScene.mode = InterlevelScene.Mode.ASCEND;
-            InterlevelScene.returnPos = -1;
-            Game.switchScene( InterlevelScene.class );
-        } else if(action.equals(AC_VIEW)){
-            Buff.affect( hero, MindVision.class, MindVision.DURATION );
+
+            if (Dungeon.depth == 0) {
+                int branch = Dungeon.branch;
+                if (branch == 1) {
+                    InterlevelScene.mode = InterlevelScene.Mode.EXIT_RHODES;
+                } else {
+                    LevelTransition tempTransistion = new LevelTransition(Dungeon.level, 0,
+                            LevelTransition.Type.BRANCH_ENTRANCE, 0, branch - 1, LevelTransition.Type.BRANCH_EXIT);
+                    InterlevelScene.mode = InterlevelScene.Mode.ENTER_RHODES;
+                    InterlevelScene.curTransition = tempTransistion;
+                }
+            } else {
+                InterlevelScene.mode = InterlevelScene.Mode.DESCEND;
+            }
+            Game.switchScene(InterlevelScene.class);
+        } else if (action.equals(AC_ASCEND)) {
+            if (Dungeon.level.locked) {
+                GLog.w(Messages.get(this, "cannot_send"));
+                return;
+            }
+            Buff buff = Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
+            if (buff != null) buff.detach();
+            buff = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
+            if (buff != null) buff.detach();
+            int branch = Dungeon.branch;
+            LevelTransition tempTransistion = new LevelTransition(Dungeon.level, 0,
+                    LevelTransition.Type.BRANCH_EXIT, 0, 1, LevelTransition.Type.BRANCH_ENTRANCE);
+            switch (Dungeon.depth) {
+                case 0:
+                    if (branch == 4) {
+                        tempTransistion.destDepth = 31;
+                        tempTransistion.destBranch = 0;
+                        tempTransistion.destType = LevelTransition.Type.REGULAR_ENTRANCE;
+                        InterlevelScene.mode = InterlevelScene.Mode.EXIT_RHODES;
+                    } else {
+                        tempTransistion.destBranch = branch + 1;
+                        InterlevelScene.mode = InterlevelScene.Mode.ENTER_RHODES;
+                    }
+                    InterlevelScene.curTransition = tempTransistion;
+                    break;
+                case 1:
+                    InterlevelScene.mode = InterlevelScene.Mode.ENTER_RHODES;
+                    InterlevelScene.curTransition = tempTransistion;
+                    break;
+                case 31:
+                    tempTransistion.destBranch = 4;
+                    InterlevelScene.mode = InterlevelScene.Mode.ENTER_RHODES;
+                    InterlevelScene.curTransition = tempTransistion;
+                    break;
+                default:
+                    InterlevelScene.mode = InterlevelScene.Mode.ASCEND;
+                    InterlevelScene.returnPos = -1;
+            }
+            Game.switchScene(InterlevelScene.class);
+        } else if (action.equals(AC_VIEW)) {
+            Buff.affect(hero, MindVision.class, MindVision.DURATION);
             Dungeon.observe();
             ScrollOfMagicMapping som = new ScrollOfMagicMapping();
             som.doRead();
-        }else if(action.equals(AC_TP)){
+        } else if (action.equals(AC_TP)) {
             empoweredRead();
         }
-        }
+    }
 
     public void empoweredRead() {
 
@@ -87,7 +129,7 @@ public class LevelTeleporter extends ChallengeItem{
             public void onSelect(Integer target) {
                 if (target != null) {
                     //time isn't spent
-                    ((HeroSprite)curUser.sprite).read();
+                    ((HeroSprite) curUser.sprite).read();
                     teleportToLocation(curUser, target);
 
                 }
@@ -100,38 +142,38 @@ public class LevelTeleporter extends ChallengeItem{
         });
     }
 
-    public static void teleportToLocation(Hero hero, int pos){
+    public static void teleportToLocation(Hero hero, int pos) {
         if (Dungeon.level.avoid[pos] || !Dungeon.level.passable[pos]
-                || Actor.findChar(pos) != null){
-            GLog.w( Messages.get(ScrollOfTeleportation.class, "cant_reach") );
+                || Actor.findChar(pos) != null) {
+            GLog.w(Messages.get(ScrollOfTeleportation.class, "cant_reach"));
             return;
         }
 
-        appear( hero, pos );
-        Dungeon.level.occupyCell(hero );
+        appear(hero, pos);
+        Dungeon.level.occupyCell(hero);
         Dungeon.observe();
         GameScene.updateFog();
 
     }
 
-    public static void appear(Char ch, int pos ) {
+    public static void appear(Char ch, int pos) {
 
         ch.sprite.interruptMotion();
 
-        if (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[ch.pos]){
+        if (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[ch.pos]) {
             Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
         }
 
-        ch.move( pos );
-        if (ch.pos == pos) ch.sprite.place( pos );
+        ch.move(pos);
+        if (ch.pos == pos) ch.sprite.place(pos);
 
         if (ch.invisible == 0) {
-            ch.sprite.alpha( 0 );
-            ch.sprite.parent.add( new AlphaTweener( ch.sprite, 1, 0.4f ) );
+            ch.sprite.alpha(0);
+            ch.sprite.parent.add(new AlphaTweener(ch.sprite, 1, 0.4f));
         }
 
-        if (Dungeon.level.heroFOV[pos] || ch == Dungeon.hero ) {
+        if (Dungeon.level.heroFOV[pos] || ch == Dungeon.hero) {
             ch.sprite.emitter().start(Speck.factory(Speck.LIGHT), 0.2f, 3);
         }
     }
-    }
+}
