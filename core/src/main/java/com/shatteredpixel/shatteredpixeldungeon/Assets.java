@@ -168,12 +168,12 @@ public class Assets {
 
 
 		public static final String CLICK	= "sounds/click.mp3";
-		public static final String BADGE	= "sounds/badge.mp3";
+		public static final String BADGE	= "sounds/badge.wav";
 		public static final String GOLD		= "sounds/gold.mp3";
 
 		public static final String OPEN		= "sounds/door_open.mp3";
 		public static final String UNLOCK	= "sounds/unlock.mp3";
-		public static final String ITEM		= "sounds/item.mp3";
+		public static final String ITEM		= "sounds/item.wav";
 		public static final String DEWDROP	= "sounds/dewdrop.mp3";
 		public static final String STEP		= "sounds/step.mp3";
 		public static final String WATER	= "sounds/water.mp3";
@@ -183,7 +183,7 @@ public class Assets {
 
 		public static final String HIT		        = "sounds/hit.mp3";
 		public static final String MISS		        = "sounds/miss.mp3";
-		public static final String HIT_SLASH        = "sounds/hit_slash.mp3";
+		public static final String HIT_SLASH        = "sounds/hit_slash.wav";
 		public static final String HIT_SLASH2        = "sounds/hit_slash2.mp3";
 		public static final String HIT_PUNCH        = "sounds/hit_punch.mp3";
 		public static final String HIT_SPEAR        = "sounds/hit_spear.mp3";
@@ -195,7 +195,7 @@ public class Assets {
 		public static final String HIT_STRONG       = "sounds/hit_strong.mp3";
 		public static final String HIT_PARRY        = "sounds/hit_parry.mp3";
 		public static final String HIT_ARROW        = "sounds/hit_arrow.mp3";
-		public static final String ATK_SPIRITBOW    = "sounds/atk_spiritbow.mp3";
+		public static final String ATK_SPIRITBOW    = "sounds/atk_spiritbow.wav";
 		public static final String ATK_CROSSBOW     = "sounds/atk_crossbow.mp3";
 		public static final String HEALTH_WARN      = "sounds/health_warn.mp3";
 		public static final String HEALTH_CRITICAL  = "sounds/health_critical.mp3";
@@ -205,12 +205,12 @@ public class Assets {
 		public static final String READ		= "sounds/read.mp3";
 		public static final String LULLABY	= "sounds/lullaby.mp3";
 		public static final String DRINK	= "sounds/drink.mp3";
-		public static final String SHATTER	= "sounds/shatter.mp3";
+		public static final String SHATTER	= "sounds/shatter.wav";
 		public static final String ZAP		= "sounds/zap.mp3";
 		public static final String ZAP_GUN		= "sounds/zap_gun.mp3";
 		public static final String LIGHTNING= "sounds/lightning.mp3";
-		public static final String LEVELUP	= "sounds/levelup.mp3";
-		public static final String DEATH	= "sounds/death.mp3";
+		public static final String LEVELUP	= "sounds/levelup.wav";
+		public static final String DEATH	= "sounds/death.wav";
 		public static final String CHALLENGE= "sounds/challenge.mp3";
 		public static final String CURSED	= "sounds/cursed.mp3";
 		public static final String TRAP		= "sounds/trap.mp3";
@@ -218,19 +218,19 @@ public class Assets {
 		public static final String TOMB		= "sounds/tomb.mp3";
 		public static final String ALERT	= "sounds/alert.mp3";
 		public static final String MELD		= "sounds/meld.mp3";
-		public static final String BOSS		= "sounds/boss.mp3";
+		public static final String BOSS		= "sounds/boss.wav";
 		public static final String BLAST	= "sounds/blast.mp3";
 		public static final String PLANT	= "sounds/plant.mp3";
 		public static final String RAY		= "sounds/ray.mp3";
 		public static final String BEACON	= "sounds/beacon.mp3";
 		public static final String TELEPORT	= "sounds/teleport.mp3";
 		public static final String CHARMS	= "sounds/charms.mp3";
-		public static final String MASTERY	= "sounds/mastery.mp3";
+		public static final String MASTERY	= "sounds/mastery.wav";
 		public static final String PUFF		= "sounds/puff.mp3";
 		public static final String ROCKS	= "sounds/rocks.mp3";
 		public static final String BURNING	= "sounds/burning.mp3";
 		public static final String FALLING	= "sounds/falling.mp3";
-		public static final String GHOST	= "sounds/ghost.mp3";
+		public static final String GHOST	= "sounds/ghost.wav";
 		public static final String SECRET	= "sounds/secret.mp3";
 		public static final String BONES	= "sounds/bones.mp3";
 		public static final String BEE      = "sounds/bee.mp3";
