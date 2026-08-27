@@ -53,11 +53,10 @@ public class WoollyBomb extends Bomb {
 	public boolean explodesDestructively(){
 		return false;
 	}
-	
+
 	@Override
 	public void explode(int cell) {
-		//super.explode(cell);
-		this.fuse = null;
+		super.explode(cell);
 
 		PathFinder.buildDistanceMap(cell, BArray.not(Dungeon.level.solid, null), 2);
 		for (int cell2 = 0; cell2 < PathFinder.distance.length; cell2++) {
