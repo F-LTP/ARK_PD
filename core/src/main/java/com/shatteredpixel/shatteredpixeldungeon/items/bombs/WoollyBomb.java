@@ -48,9 +48,16 @@ public class WoollyBomb extends Bomb {
 	{
 		image = ItemSpriteSheet.WOOLY_BOMB;
 	}
+
+	@Override
+	public boolean explodesDestructively(){
+		return false;
+	}
 	
 	@Override
 	public void explode(int cell) {
+		//super.explode(cell);
+		this.fuse = null;
 
 		PathFinder.buildDistanceMap(cell, BArray.not(Dungeon.level.solid, null), 2);
 		for (int cell2 = 0; cell2 < PathFinder.distance.length; cell2++) {
