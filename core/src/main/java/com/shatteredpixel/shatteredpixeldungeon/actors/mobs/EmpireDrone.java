@@ -36,6 +36,7 @@ public class EmpireDrone extends Mob {
         baseSpeed = 0.5f;
         immunities.add(Silence.class);
         immunities.add(AllyBuff.class);
+        properties.add(Property.DRONE);
     }
 
     private int cooldown = 0;
