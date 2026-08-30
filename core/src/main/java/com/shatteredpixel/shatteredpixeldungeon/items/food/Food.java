@@ -102,7 +102,7 @@ public class Food extends Item {
 				counter.countUp(1);
 
 				if (counter.count() > 9 - (Dungeon.hero.pointsInTalent(Talent.SMARTMEALS) * 2)) {
-					GLog.i(Messages.get(this, "smart"));
+					GLog.p(Messages.get(this, "smart"));
 				}
 			}
 
