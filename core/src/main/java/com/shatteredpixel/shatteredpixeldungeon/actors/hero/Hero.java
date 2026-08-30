@@ -1497,21 +1497,23 @@ public class Hero extends Char {
 
         if (enemy instanceof Mob) {
             if (((Mob) enemy).surprisedBy(this)) {
-                bounsDamage += damage * (RingOfAssassin.supriseattackbouns(this) - 1f);}
+                bounsDamage += damage * (RingOfAssassin.supriseattackbouns(this) - 1f);
+            }
         }
 
         AnnihilationGear Gear = this.belongings.getItem(AnnihilationGear.class);
-        if (hasTalent(Talent.RHODES_CAT)) {
-            if (Gear != null)
+        if (Gear != null){
+            if (hasTalent(Talent.RHODES_CAT)) {
                 if (Gear.charge > 0) {
                     damage *= 1f + (float) this.pointsInTalent(Talent.RHODES_CAT) * 0.12f;
                 }
-        }
+            }
         if (hasTalent(Talent.WEAKNESS_COVER)) {
             int geardmg = Gear.level();
             geardmg *= Random.IntRange(pointsInTalent(Talent.WEAKNESS_COVER) - 1, 2);
             bounsDamage += geardmg;
         }
+    }
 
         if (buff(RadiantKnight.class) != null) {
             if (subClass == HeroSubClass.SAVIOR) damage *= 1.40f;
