@@ -21,6 +21,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Honeypot;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.MerchantsBeacon;
 import com.shatteredpixel.shatteredpixeldungeon.items.NervousPotion;
+import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Certificate;
 import com.shatteredpixel.shatteredpixeldungeon.items.OriginiumShard;
 import com.shatteredpixel.shatteredpixeldungeon.items.PortableCover;
 import com.shatteredpixel.shatteredpixeldungeon.items.RandomBox;
@@ -196,7 +197,7 @@ import com.watabou.utils.Reflection;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Generators_Misc extends Generators{
+public class Generators_Misc extends Generators {
     {
         image = ItemSpriteSheet.POTION_HOLDER;
     }
@@ -219,21 +220,25 @@ public class Generators_Misc extends Generators{
         }
     }
 
-    private void createItem(){
+    private void createItem() {
         boolean collect = false;
         Item item = Reflection.newInstance(idToItem(selected));
-        if(Challenges.isItemBlocked(item)) return;
+        if (Challenges.isItemBlocked(item)) return;
         if (item != null) {
-            if(item.stackable){
-                int qu = item_quantity * (multiply?10:1);
-                collect = item.quantity(qu).collect();
-            }
-            else collect = item.collect();
-            item.identify();
-            if(collect){
-                GLog.i(Messages.get(this, "collect_success", item.name()));
-            }else{
+            if (item instanceof Certificate) {
+                item = new Certificate(item_quantity * (multiply ? 10 : 1));
                 item.doDrop(curUser);
+            } else {
+                if (item.stackable) {
+                    int qu = item_quantity * (multiply ? 10 : 1);
+                    collect = item.quantity(qu).collect();
+                } else collect = item.collect();
+                item.identify();
+                if (collect) {
+                    GLog.i(Messages.get(this, "collect_success", item.name()));
+                } else {
+                    item.doDrop(curUser);
+                }
             }
         }
     }
@@ -256,37 +261,63 @@ public class Generators_Misc extends Generators{
         cateSelected = bundle.getInt("cate_selected");
     }
 
-    private Class<? extends Item> idToItem(int id){
-        switch (cateSelected){
-            case 0: return idToPotion(id);
-            case 1: return idToExoticPotion(id);
-            case 2: return idToSeed(id);
-            case 3: return idToTippedDart(id);
-            case 4: return idToScroll(id);
-            case 5: return idToExoticScroll(id);
-            case 6: return idToStone(id);
-            case 7: return idToBomb(id);
-            case 8: return idToSpecialPotion(id);
-            case 9: return idToSpell(id);
-            case 10: return idToFood(id);
-            case 11: default: return idToMisc(id);
+    private Class<? extends Item> idToItem(int id) {
+        switch (cateSelected) {
+            case 0:
+                return idToPotion(id);
+            case 1:
+                return idToExoticPotion(id);
+            case 2:
+                return idToSeed(id);
+            case 3:
+                return idToTippedDart(id);
+            case 4:
+                return idToScroll(id);
+            case 5:
+                return idToExoticScroll(id);
+            case 6:
+                return idToStone(id);
+            case 7:
+                return idToBomb(id);
+            case 8:
+                return idToSpecialPotion(id);
+            case 9:
+                return idToSpell(id);
+            case 10:
+                return idToFood(id);
+            case 11:
+            default:
+                return idToMisc(id);
         }
     }
 
-    private int idToCategoryImage(int selected){
-        switch (selected){
-            case 0: return ItemSpriteSheet.POTION_AZURE;
-            case 1: return ItemSpriteSheet.EXOTIC_AZURE;
-            case 2: return ItemSpriteSheet.SEED_ICECAP;
-            case 3: return ItemSpriteSheet.CHILLING_DART;
-            case 4: return ItemSpriteSheet.SCROLL_LAGUZ;
-            case 5: return ItemSpriteSheet.EXOTIC_LAGUZ;
-            case 6: return ItemSpriteSheet.STONE_AUGMENTATION;
-            case 7: return ItemSpriteSheet.BOMB;
-            case 8: return ItemSpriteSheet.BREW_CAUSTIC;
-            case 9: return ItemSpriteSheet.PHASE_SHIFT;
-            case 10: return ItemSpriteSheet.RATION;
-            case 11: default: return ItemSpriteSheet.CHEST;
+    private int idToCategoryImage(int selected) {
+        switch (selected) {
+            case 0:
+                return ItemSpriteSheet.POTION_AZURE;
+            case 1:
+                return ItemSpriteSheet.EXOTIC_AZURE;
+            case 2:
+                return ItemSpriteSheet.SEED_ICECAP;
+            case 3:
+                return ItemSpriteSheet.CHILLING_DART;
+            case 4:
+                return ItemSpriteSheet.SCROLL_LAGUZ;
+            case 5:
+                return ItemSpriteSheet.EXOTIC_LAGUZ;
+            case 6:
+                return ItemSpriteSheet.STONE_AUGMENTATION;
+            case 7:
+                return ItemSpriteSheet.BOMB;
+            case 8:
+                return ItemSpriteSheet.BREW_CAUSTIC;
+            case 9:
+                return ItemSpriteSheet.PHASE_SHIFT;
+            case 10:
+                return ItemSpriteSheet.RATION;
+            case 11:
+            default:
+                return ItemSpriteSheet.CHEST;
         }
     }
 
@@ -354,20 +385,33 @@ public class Generators_Misc extends Generators{
         }
     }
 
-    private Class<? extends TippedDart> idToTippedDart(int id){
-        switch (id){
-            case 0: return HolyDart.class;
-            case 1: return ChillingDart.class;
-            case 2: return AdrenalineDart.class;
-            case 3: return HealingDart.class;
-            case 4: return BlindingDart.class;
-            case 5: return ShockingDart.class;
-            case 6: return IncendiaryDart.class;
-            case 7: return DisplacingDart.class;
-            case 8: return ParalyticDart.class;
-            case 9: return SleepDart.class;
-            case 10: return RotDart.class;
-            case 11: default: return PoisonDart.class;
+    private Class<? extends TippedDart> idToTippedDart(int id) {
+        switch (id) {
+            case 0:
+                return HolyDart.class;
+            case 1:
+                return ChillingDart.class;
+            case 2:
+                return AdrenalineDart.class;
+            case 3:
+                return HealingDart.class;
+            case 4:
+                return BlindingDart.class;
+            case 5:
+                return ShockingDart.class;
+            case 6:
+                return IncendiaryDart.class;
+            case 7:
+                return DisplacingDart.class;
+            case 8:
+                return ParalyticDart.class;
+            case 9:
+                return SleepDart.class;
+            case 10:
+                return RotDart.class;
+            case 11:
+            default:
+                return PoisonDart.class;
         }
     }
 
@@ -441,141 +485,258 @@ public class Generators_Misc extends Generators{
         }
     }
 
-    private Class<? extends Item> idToBomb(int id){
-        switch (id){
-            case 0: return Bomb.class;
-            case 1: return ArcaneBomb.class;
-            case 2: return Firebomb.class;
-            case 3: return Flashbang.class;
-            case 4: return FrostBomb.class;
-            case 5: return HolyBomb.class;
-            case 6: return Noisemaker.class;
-            case 7: return RegrowthBomb.class;
-            case 8: return ShockBomb.class;
-            case 9: return ShrapnelBomb.class;
-            case 10: return WoollyBomb.class;
-            case 11: default: return LensBomb.class;
+    private Class<? extends Item> idToBomb(int id) {
+        switch (id) {
+            case 0:
+                return Bomb.class;
+            case 1:
+                return ArcaneBomb.class;
+            case 2:
+                return Firebomb.class;
+            case 3:
+                return Flashbang.class;
+            case 4:
+                return FrostBomb.class;
+            case 5:
+                return HolyBomb.class;
+            case 6:
+                return Noisemaker.class;
+            case 7:
+                return RegrowthBomb.class;
+            case 8:
+                return ShockBomb.class;
+            case 9:
+                return ShrapnelBomb.class;
+            case 10:
+                return WoollyBomb.class;
+            case 11:
+            default:
+                return LensBomb.class;
         }
     }
 
-    private Class<? extends Potion> idToSpecialPotion(int id){
-        switch (id){
-            case 0: return BlizzardBrew.class;
-            case 1: return CausticBrew.class;
-            case 2: return InfernalBrew.class;
-            case 3: return ShockingBrew.class;
-            case 4: return ElixirOfAquaticRejuvenation.class;
-            case 5: return ElixirOfArcaneArmor.class;
-            case 6: return ElixirOfDragonsBlood.class;
-            case 7: return ElixirOfHoneyedHealing.class;
-            case 8: return ElixirOfIcyTouch.class;
-            case 9: return ElixirOfMight.class;
-            case 10: return ElixirOfToxicEssence.class;
-            case 11: return AlchemicalCatalyst.class;
-            case 12: return ElixirsOfIronSkin.class;
-            case 13: return ElixirsOfSoulBreak.class;
-            case 14: default: return ElixirsOfSoulProtection.class;
+    private Class<? extends Potion> idToSpecialPotion(int id) {
+        switch (id) {
+            case 0:
+                return BlizzardBrew.class;
+            case 1:
+                return CausticBrew.class;
+            case 2:
+                return InfernalBrew.class;
+            case 3:
+                return ShockingBrew.class;
+            case 4:
+                return ElixirOfAquaticRejuvenation.class;
+            case 5:
+                return ElixirOfArcaneArmor.class;
+            case 6:
+                return ElixirOfDragonsBlood.class;
+            case 7:
+                return ElixirOfHoneyedHealing.class;
+            case 8:
+                return ElixirOfIcyTouch.class;
+            case 9:
+                return ElixirOfMight.class;
+            case 10:
+                return ElixirOfToxicEssence.class;
+            case 11:
+                return AlchemicalCatalyst.class;
+            case 12:
+                return ElixirsOfIronSkin.class;
+            case 13:
+                return ElixirsOfSoulBreak.class;
+            case 14:
+            default:
+                return ElixirsOfSoulProtection.class;
         }
     }
 
-    private Class<? extends Spell> idToSpell(int id){
-        switch (id){
-            case 0: return Alchemize.class;
-            case 1: return AquaBlast.class;
-            case 2: return BeaconOfReturning.class;
-            case 3: return CurseInfusion.class;
-            case 4: return FeatherFall.class;
-            case 5: return MagicalInfusion.class;
-            case 6: return Avantgardeform.class;
-            case 7: return PhaseShift.class;
-            case 8: return ReclaimTrap.class;
-            case 9: return Recycle.class;
-            case 10: return WildEnergy.class;
-            case 11: return BlastSpell.class;
-            case 12: return ArcaneCatalyst.class;
-            case 13: return ChaosCatalyst.class;
-            case 14: return ForceCatalyst.class;
-            case 15: return InstantRecharge.class;
-            case 16: return MagicalArmord.class;
-            case 17: return OathofFire.class;
-            case 18: return SaltBlast.class;
-            case 19: default: return WeaponTransform.class;
+    private Class<? extends Spell> idToSpell(int id) {
+        switch (id) {
+            case 0:
+                return Alchemize.class;
+            case 1:
+                return AquaBlast.class;
+            case 2:
+                return BeaconOfReturning.class;
+            case 3:
+                return CurseInfusion.class;
+            case 4:
+                return FeatherFall.class;
+            case 5:
+                return MagicalInfusion.class;
+            case 6:
+                return Avantgardeform.class;
+            case 7:
+                return PhaseShift.class;
+            case 8:
+                return ReclaimTrap.class;
+            case 9:
+                return Recycle.class;
+            case 10:
+                return WildEnergy.class;
+            case 11:
+                return BlastSpell.class;
+            case 12:
+                return ArcaneCatalyst.class;
+            case 13:
+                return ChaosCatalyst.class;
+            case 14:
+                return ForceCatalyst.class;
+            case 15:
+                return InstantRecharge.class;
+            case 16:
+                return MagicalArmord.class;
+            case 17:
+                return OathofFire.class;
+            case 18:
+                return SaltBlast.class;
+            case 19:
+            default:
+                return WeaponTransform.class;
         }
     }
 
-    private Class<? extends Food> idToFood(int id){
-        switch (id){
-            case 0: return Food.class;
-            case 1: return SmallRation.class;
-            case 2: return Pasty.class;
-            case 3: return Blandfruit.class;
-            case 4: return MysteryMeat.class;
-            case 5: return StewedMeat.class;
-            case 6: return FrozenCarpaccio.class;
-            case 7: return ChargrilledMeat.class;
-            case 8: return Berry.class;
-            case 9: return MeatCutlet.class;
-            case 10: return MeatPie.class;
-            case 11: return Sandvich.class;
-            case 12: return FRY_EGG.class;
-            case 13: return FRY_GAMZA.class;
-            case 14: return Glassate.class;
-            case 15: return HoneyBread.class;
-            case 16: return NotBarFood.class;
-            case 17: return SmokeEgg.class;
-            case 18: default: return Yukjeon.class;
+    private Class<? extends Food> idToFood(int id) {
+        switch (id) {
+            case 0:
+                return Food.class;
+            case 1:
+                return SmallRation.class;
+            case 2:
+                return Pasty.class;
+            case 3:
+                return Blandfruit.class;
+            case 4:
+                return MysteryMeat.class;
+            case 5:
+                return StewedMeat.class;
+            case 6:
+                return FrozenCarpaccio.class;
+            case 7:
+                return ChargrilledMeat.class;
+            case 8:
+                return Berry.class;
+            case 9:
+                return MeatCutlet.class;
+            case 10:
+                return MeatPie.class;
+            case 11:
+                return Sandvich.class;
+            case 12:
+                return FRY_EGG.class;
+            case 13:
+                return FRY_GAMZA.class;
+            case 14:
+                return Glassate.class;
+            case 15:
+                return HoneyBread.class;
+            case 16:
+                return NotBarFood.class;
+            case 17:
+                return SmokeEgg.class;
+            case 18:
+            default:
+                return Yukjeon.class;
         }
     }
 
-    private Class<? extends Item> idToMisc(int id){
-        switch (id){
-            case 0: return Torch.class;
-            case 1: return GooBlob.class;
-            case 2: return MetalShard.class;
-            case 3: return Honeypot.class;
-            case 4: return Ankh.class;
-            case 5: return DewVial.class;
-            case 6: return Stylus.class;
-            case 7: return AnnihilationGear.class;
-            case 8: return TomeOfMastery.class;
-            case 9: return ArmorUpKit.class;
-            case 10: return Bonk.class;
-            case 11: return Gamza.class;
-            case 12: return CorpseDust.class;
-            case 13: return Nullshield.class;
-            case 14: return Obsidian.class;
-            case 15: default: return Token4.class;
-            case 16: return MerchantsBeacon.class;
-            case 17: return NervousPotion.class;
-            case 18: return OriginiumShard.class;
-            case 19: return PortableCover.class;
-            case 20: return RandomBox.class;
-            case 21: return RingKit.class;
-            case 22: return Snowsants_Coin.class;
-            case 23: return StaffKit.class;
-            case 24: return W0502.class;
-            case 25: return C_Mag.class;
-            case 26: return DotSight.class;
-            case 27: return GunScope.class;
-            case 28: return GunScope_II.class;
-            case 29: return Ironsight.class;
-            case 30: return Muzzlebrake.class;
+    private Class<? extends Item> idToMisc(int id) {
+        switch (id) {
+            case 0:
+                return Torch.class;
+            case 1:
+                return GooBlob.class;
+            case 2:
+                return MetalShard.class;
+            case 3:
+                return Honeypot.class;
+            case 4:
+                return Ankh.class;
+            case 5:
+                return DewVial.class;
+            case 6:
+                return Stylus.class;
+            case 7:
+                return AnnihilationGear.class;
+            case 8:
+                return TomeOfMastery.class;
+            case 9:
+                return ArmorUpKit.class;
+            case 10:
+                return Bonk.class;
+            case 11:
+                return Gamza.class;
+            case 12:
+                return CorpseDust.class;
+            case 13:
+                return Nullshield.class;
+            case 14:
+                return Obsidian.class;
+            case 15:
+            default:
+                return Token4.class;
+            case 16:
+                return MerchantsBeacon.class;
+            case 17:
+                return NervousPotion.class;
+            case 18:
+                return OriginiumShard.class;
+            case 19:
+                return PortableCover.class;
+            case 20:
+                return RandomBox.class;
+            case 21:
+                return RingKit.class;
+            case 22:
+                return Snowsants_Coin.class;
+            case 23:
+                return StaffKit.class;
+            case 24:
+                return W0502.class;
+            case 25:
+                return C_Mag.class;
+            case 26:
+                return DotSight.class;
+            case 27:
+                return GunScope.class;
+            case 28:
+                return GunScope_II.class;
+            case 29:
+                return Ironsight.class;
+            case 30:
+                return Muzzlebrake.class;
+            case 31:
+                return Certificate.class;
         }
     }
 
-    private int maxIndex(int cate){
-        switch (cate){
-            case 4: case 5: return 12;
-            case 6: return 13;
-            case 8: return 14;
-            case 9: return 19;
-            case 10: return 18;
-            case 11: return 30;
-            case 0: case 1: case 2: case 3: case 7: default:return 11;
+    private int maxIndex(int cate) {
+        switch (cate) {
+            case 4:
+            case 5:
+                return 12;
+            case 6:
+                return 13;
+            case 8:
+                return 14;
+            case 9:
+                return 19;
+            case 10:
+                return 18;
+            case 11:
+                return 31;
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 7:
+            default:
+                return 11;
         }
     }
 
-    private int maxCategory(){
+    private int maxCategory() {
         return 11;
     }
 
@@ -594,72 +755,72 @@ public class Generators_Misc extends Generators{
 
     private void buildList() {
         if (potionList.isEmpty()) {
-            for (int i = 0; i < maxIndex(0)+1; ++i) {
+            for (int i = 0; i < maxIndex(0) + 1; ++i) {
                 potionList.add(idToPotion(i));
             }
         }
         if (exoticPotionList.isEmpty()) {
-            for (int i = 0; i < maxIndex(1)+1; ++i) {
+            for (int i = 0; i < maxIndex(1) + 1; ++i) {
                 exoticPotionList.add(idToExoticPotion(i));
             }
         }
 
         if (seedList.isEmpty()) {
-            for (int i = 0; i < maxIndex(2)+1; ++i) {
+            for (int i = 0; i < maxIndex(2) + 1; ++i) {
                 seedList.add(idToSeed(i));
             }
         }
 
         if (scrollList.isEmpty()) {
-            for (int i = 0; i < maxIndex(4)+1; ++i) {
+            for (int i = 0; i < maxIndex(4) + 1; ++i) {
                 scrollList.add(idToScroll(i));
             }
         }
 
         if (exoticScrollList.isEmpty()) {
-            for (int i = 0; i < maxIndex(5)+1; ++i) {
+            for (int i = 0; i < maxIndex(5) + 1; ++i) {
                 exoticScrollList.add(idToExoticScroll(i));
             }
         }
 
         if (stoneList.isEmpty()) {
-            for (int i = 0; i < maxIndex(6)+1; ++i) {
+            for (int i = 0; i < maxIndex(6) + 1; ++i) {
                 stoneList.add(idToStone(i));
             }
         }
 
-        if(dartList.isEmpty()){
-            for(int i=0; i<maxIndex(3)+1; ++i){
+        if (dartList.isEmpty()) {
+            for (int i = 0; i < maxIndex(3) + 1; ++i) {
                 dartList.add(idToTippedDart(i));
             }
         }
 
-        if(bombList.isEmpty()){
-            for(int i=0; i<maxIndex(7)+1; ++i){
+        if (bombList.isEmpty()) {
+            for (int i = 0; i < maxIndex(7) + 1; ++i) {
                 bombList.add(idToBomb(i));
             }
         }
 
-        if(brewList.isEmpty()){
-            for(int i=0; i<maxIndex(8)+1; ++i){
+        if (brewList.isEmpty()) {
+            for (int i = 0; i < maxIndex(8) + 1; ++i) {
                 brewList.add(idToSpecialPotion(i));
             }
         }
 
-        if(spellList.isEmpty()){
-            for(int i=0; i<maxIndex(9)+1; ++i){
+        if (spellList.isEmpty()) {
+            for (int i = 0; i < maxIndex(9) + 1; ++i) {
                 spellList.add(idToSpell(i));
             }
         }
 
-        if(foodList.isEmpty()){
-            for(int i=0; i<maxIndex(10)+1; ++i){
+        if (foodList.isEmpty()) {
+            for (int i = 0; i < maxIndex(10) + 1; ++i) {
                 foodList.add(idToFood(i));
             }
         }
 
-        if(miscList.isEmpty()){
-            for(int i=0; i<maxIndex(11)+1; ++i){
+        if (miscList.isEmpty()) {
+            for (int i = 0; i < maxIndex(11) + 1; ++i) {
                 miscList.add(idToMisc(i));
             }
         }
@@ -698,7 +859,7 @@ public class Generators_Misc extends Generators{
             o_quantity.setRect(0, t_select.bottom() + 2 * GAP, WIDTH, 24);
             add(o_quantity);
 
-            c_multiply = new CheckBox(Messages.get(this, "multiply")){
+            c_multiply = new CheckBox(Messages.get(this, "multiply")) {
                 @Override
                 protected void onClick() {
                     super.onClick();
@@ -722,14 +883,14 @@ public class Generators_Misc extends Generators{
         }
 
         private void layout() {
-            t_select.setPos(0, TITLE_BTM +8*GAP + 5*BTN_SIZE + 6);
+            t_select.setPos(0, TITLE_BTM + 8 * GAP + 5 * BTN_SIZE + 6);
             o_quantity.setRect(0, t_select.bottom() + 2 * GAP, WIDTH, 24);
-            c_multiply.setRect(0, o_quantity.bottom() + GAP, WIDTH/2f - GAP/2f, 16);
-            b_create.setRect(WIDTH/2f + GAP/2f, o_quantity.bottom() + GAP, WIDTH/2f - GAP/2f, 16);
+            c_multiply.setRect(0, o_quantity.bottom() + GAP, WIDTH / 2f - GAP / 2f, 16);
+            b_create.setRect(WIDTH / 2f + GAP / 2f, o_quantity.bottom() + GAP, WIDTH / 2f - GAP / 2f, 16);
             resize(WIDTH, (int) b_create.bottom());
         }
 
-        private void createCategoryImage(){
+        private void createCategoryImage() {
             float left;
             float top = GAP + TITLE_BTM;
             int placed = 0;
@@ -742,7 +903,7 @@ public class Generators_Misc extends Generators{
                     protected void onClick() {
                         cateButtonList.get(cateSelected).icon().resetColor();
                         cateSelected = Math.min(j, maxCategory());
-                        if(selected > maxIndex(cateSelected)) selected = maxIndex(cateSelected);
+                        if (selected > maxIndex(cateSelected)) selected = maxIndex(cateSelected);
                         cateButtonList.get(cateSelected).icon().color(0xFFFF44);
                         updateImage();
                         updateText();
@@ -750,7 +911,7 @@ public class Generators_Misc extends Generators{
                         super.onClick();
                     }
                 };
-                Image im =  new Image(Assets.Sprites.ITEMS);
+                Image im = new Image(Assets.Sprites.ITEMS);
                 im.frame(ItemSpriteSheet.film.get(idToCategoryImage(i)));
                 im.scale.set(0.5f);
                 btn.icon(im);
@@ -770,10 +931,10 @@ public class Generators_Misc extends Generators{
 
         private void createImage() {
             float left;
-            float top = TITLE_BTM + 4*GAP + 2*BTN_SIZE + 3;
+            float top = TITLE_BTM + 4 * GAP + 2 * BTN_SIZE + 3;
             int placed = 0;
-            int length = maxIndex(cateSelected)+1;
-            int oneRow = (length+2)/3;
+            int length = maxIndex(cateSelected) + 1;
+            int oneRow = (length + 2) / 3;
             for (int i = 0; i < length; ++i) {
                 final int j = i;
                 IconButton btn = new IconButton() {
@@ -784,74 +945,86 @@ public class Generators_Misc extends Generators{
                         super.onClick();
                     }
                 };
-                switch (cateSelected){
-                    case 0 :{
+                switch (cateSelected) {
+                    case 0: {
                         Image im = new Image(Assets.Sprites.ITEM_ICONS);
                         im.frame(ItemSpriteSheet.Icons.film.get(Objects.requireNonNull(Reflection.newInstance(potionList.get(i))).icon));
                         im.scale.set(0.8f);
                         btn.icon(im);
-                    } break;
-                    case 1:{
+                    }
+                    break;
+                    case 1: {
                         Image im = new Image(Assets.Sprites.ITEM_ICONS);
                         im.frame(ItemSpriteSheet.Icons.film.get(Objects.requireNonNull(Reflection.newInstance(exoticPotionList.get(i))).icon));
                         im.scale.set(0.8f);
                         btn.icon(im);
-                    } break;
-                    case 2:{
+                    }
+                    break;
+                    case 2: {
                         Image im = new Image(Assets.Sprites.ITEMS);
                         im.frame(ItemSpriteSheet.film.get(Objects.requireNonNull(Reflection.newInstance(seedList.get(i))).image));
                         im.scale.set(0.5f);
                         btn.icon(im);
-                    } break;
-                    case 3:{
+                    }
+                    break;
+                    case 3: {
                         Image im = new Image(Assets.Sprites.ITEMS);
                         im.frame(ItemSpriteSheet.film.get(Objects.requireNonNull(Reflection.newInstance(dartList.get(i))).image));
                         im.scale.set(0.5f);
                         btn.icon(im);
-                    } break;
-                    case 4:{
+                    }
+                    break;
+                    case 4: {
                         Image im = new Image(Assets.Sprites.ITEM_ICONS);
                         im.frame(ItemSpriteSheet.Icons.film.get(Objects.requireNonNull(Reflection.newInstance(scrollList.get(i))).icon));
                         im.scale.set(0.8f);
                         btn.icon(im);
-                    }break;
-                    case 5:{
+                    }
+                    break;
+                    case 5: {
                         Image im = new Image(Assets.Sprites.ITEM_ICONS);
                         im.frame(ItemSpriteSheet.Icons.film.get(Objects.requireNonNull(Reflection.newInstance(exoticScrollList.get(i))).icon));
                         im.scale.set(0.8f);
                         btn.icon(im);
-                    } break;
-                    case 6:{
+                    }
+                    break;
+                    case 6: {
                         Image im = new Image(Assets.Sprites.ITEMS);
                         im.frame(ItemSpriteSheet.film.get(Objects.requireNonNull(Reflection.newInstance(stoneList.get(i))).image));
                         im.scale.set(0.5f);
                         btn.icon(im);
-                    } break;
-                    case 7:{
+                    }
+                    break;
+                    case 7: {
                         Image im = new Image(Assets.Sprites.ITEMS);
                         im.frame(ItemSpriteSheet.film.get(Objects.requireNonNull(Reflection.newInstance(bombList.get(i))).image));
                         im.scale.set(0.5f);
                         btn.icon(im);
-                    } break;
-                    case 8:{
+                    }
+                    break;
+                    case 8: {
                         Image im = new Image(Assets.Sprites.ITEMS);
                         im.frame(ItemSpriteSheet.film.get(Objects.requireNonNull(Reflection.newInstance(brewList.get(i))).image));
                         im.scale.set(0.5f);
                         btn.icon(im);
-                    } break;
+                    }
+                    break;
                     case 9: {
                         Image im = new Image(Assets.Sprites.ITEMS);
                         im.frame(ItemSpriteSheet.film.get(Objects.requireNonNull(Reflection.newInstance(spellList.get(i))).image));
                         im.scale.set(0.5f);
                         btn.icon(im);
-                    } break;
+                    }
+                    break;
                     case 10: {
                         Image im = new Image(Assets.Sprites.ITEMS);
                         im.frame(ItemSpriteSheet.film.get(Objects.requireNonNull(Reflection.newInstance(foodList.get(i))).image));
                         im.scale.set(0.5f);
                         btn.icon(im);
-                    } break;
-                    case 11: default:{
+                    }
+                    break;
+                    case 11:
+                    default: {
                         Image im = new Image(Assets.Sprites.ITEMS);
                         im.frame(ItemSpriteSheet.film.get(Objects.requireNonNull(Reflection.newInstance(miscList.get(i))).image));
                         im.scale.set(0.5f);
@@ -862,15 +1035,12 @@ public class Generators_Misc extends Generators{
                 if (i < oneRow) {
                     left = (WIDTH - BTN_SIZE * oneRow) / 2f;
                     btn.setRect(left + placed * BTN_SIZE, top, BTN_SIZE, BTN_SIZE);
-                }
-                else if (i < 2*oneRow)
-                {
+                } else if (i < 2 * oneRow) {
                     left = (WIDTH - BTN_SIZE * oneRow) / 2f;
                     btn.setRect(left + (placed - oneRow) * BTN_SIZE, top + GAP + BTN_SIZE, BTN_SIZE, BTN_SIZE);
-                }
-                else {
-                    left = (WIDTH - BTN_SIZE * (length - 2 * oneRow)) /2f;
-                    btn.setRect(left + (placed - 2* oneRow) * BTN_SIZE,top + 2*GAP + 2* BTN_SIZE, BTN_SIZE, BTN_SIZE);
+                } else {
+                    left = (WIDTH - BTN_SIZE * (length - 2 * oneRow)) / 2f;
+                    btn.setRect(left + (placed - 2 * oneRow) * BTN_SIZE, top + 2 * GAP + 2 * BTN_SIZE, BTN_SIZE, BTN_SIZE);
                 }
                 add(btn);
                 placed++;
