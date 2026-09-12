@@ -232,7 +232,6 @@ public class Ghoul extends Mob {
 
 		@Override
 		public boolean act() {
-			ghoul.sprite.visible = Dungeon.level.heroFOV[ghoul.pos];
 
 			if (target.alignment != ghoul.alignment){
 				detach();
@@ -268,7 +267,7 @@ public class Ghoul extends Mob {
 					}
 					if (candidates.size() > 0) {
 						int newPos = Random.element( candidates );
-						Actor.addDelayed( new Pushing( ghoul, ghoul.pos, newPos ), -1 );
+						Actor.add( new Pushing( ghoul, ghoul.pos, newPos ) );
 						ghoul.pos = newPos;
 
 					} else {
