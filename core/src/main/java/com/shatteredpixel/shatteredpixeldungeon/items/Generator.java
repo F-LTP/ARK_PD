@@ -635,7 +635,7 @@ public class Generator {
                     SakuraSword.class
             };
 
-            WEP_T5.probs = new float[]{4, 3, 3, 4, 4, 4, 4, 3, 3, 4, 4, 4, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0};
+            WEP_T5.probs = new float[]{4, 3, 3, 4, 4, 4, 4, 3, 3, 4, 4, 4, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0};
 
 
             //see Generator.randomArmor
