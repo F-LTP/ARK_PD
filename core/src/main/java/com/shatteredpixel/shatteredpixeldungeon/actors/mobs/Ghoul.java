@@ -314,7 +314,7 @@ public class Ghoul extends Mob {
 			if (newHost != null){
 				attachTo(newHost);
 				timeToNow();
-			} else {
+			} else if (ghoul.beingLifeLinked) {
                 ghoul.beingLifeLinked = false;
 				ghoul.die(this);
 			}

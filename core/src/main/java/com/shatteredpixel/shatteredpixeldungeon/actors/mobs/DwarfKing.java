@@ -754,7 +754,7 @@ public class DwarfKing extends Mob {
 			for (Mob m : Dungeon.level.mobs){
 				if (m instanceof DwarfKing){
 					m.damage(m.HT/12, this);
-					GLog.w(m.name()+"的梅菲斯特标记被移除并对他造成伤害。");
+					GLog.w(target.name()+"的梅菲斯特标记被移除并造成伤害。");
 				}
 			}
 		}
