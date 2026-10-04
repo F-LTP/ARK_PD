@@ -56,6 +56,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
+import com.shatteredpixel.shatteredpixeldungeon.journal.quests.PhantomCatQuestLine;
 import com.shatteredpixel.shatteredpixeldungeon.journal.quests.Quests;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CavesLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CityLevel;
@@ -322,12 +323,8 @@ public class Dungeon {
 		extrastage_Sea = false;
 		mulaCount = 0;
 
-		Jessica.QuestClear = false;
-		NPC_Phantom.QuestClear = false;
-		FrostLeaf.QuestClear = false;
-
-		QuestCatPoint = Random.Int(2);
-
+		//which Rhodes floor hosts the lost cat; the reward pair lives on PhantomCatQuestLine
+		QuestCatPoint = Random.Int(3);
 		droppedItems = new SparseArray<>();
 
 		LimitedDrops.reset();
@@ -694,9 +691,7 @@ public class Dungeon {
 
 	private static final String SEA    = "extrastage_SeA";
 	private static final String CATQUEST    = "QuestCatPoint";
-	private static final String PHANTOM_QUESTCLEAR    = "NPC_Phantom.QuestClear";
-	private static final String JESI_QUESTCLEAR    = "Jessica.QuestClear";
-	private static final String LEAF_QUESTCLEAR    = "FrostLeaf.QuestClear";
+	private static final String LEGACY_PHANTOM_QUESTCLEAR = "NPC_Phantom.QuestClear";   //read-only, <=v716 saves
 
 	private static final String MULA_COUNT = "mulaCount";
 
@@ -738,10 +733,6 @@ public class Dungeon {
 
 			bundle.put (SEA, extrastage_Sea);
 			bundle.put (MULA_COUNT, mulaCount);
-
-			bundle.put (PHANTOM_QUESTCLEAR, NPC_Phantom.QuestClear);
-			bundle.put (JESI_QUESTCLEAR, Jessica.QuestClear);
-			bundle.put (LEAF_QUESTCLEAR, FrostLeaf.QuestClear);
 
 			bundle.put (CATQUEST, QuestCatPoint);
 
@@ -958,9 +949,11 @@ public class Dungeon {
 		mulaCount = bundle.getInt(MULA_COUNT);
 		QuestCatPoint = bundle.getInt(CATQUEST);
 
-		NPC_Phantom.QuestClear = bundle.getBoolean(PHANTOM_QUESTCLEAR);
-		Jessica.QuestClear = bundle.getBoolean(JESI_QUESTCLEAR);
-		FrostLeaf.QuestClear = bundle.getBoolean(LEAF_QUESTCLEAR);
+		//<=v716 save that already finished the cat quest: seed it COMPLETED, since the shadow is
+		//dead and the Rhodes floors are generated, so a re-offer could never be turned in
+		if (bundle.getBoolean(LEGACY_PHANTOM_QUESTCLEAR) && Quests.get(PhantomCatQuestLine.class) == null) {
+			Quests.add(PhantomCatQuestLine.alreadyCompleted());
+		}
 
 		Statistics.restoreFromBundle( bundle );
 		Generator.restoreFromBundle( bundle );

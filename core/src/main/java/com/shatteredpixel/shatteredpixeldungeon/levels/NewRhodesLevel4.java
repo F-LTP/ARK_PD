@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_Irene;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_PhantomShadow;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC_Pilot;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.QuestCat;
+import com.shatteredpixel.shatteredpixeldungeon.journal.quests.PhantomCatQuestLine;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
@@ -142,7 +143,7 @@ public class NewRhodesLevel4 extends Level {
         NPC_Irene.spawn(this,749);
         NPC_Pilot.spawn(this, 870);
 
-        if (Dungeon.QuestCatPoint == 2 && !NPC_PhantomShadow.Clear) {
+        if (Dungeon.QuestCatPoint == 2 && PhantomCatQuestLine.catStillOut()) {
             NPC_PhantomShadow.spawn(this, 2);
         }
     }

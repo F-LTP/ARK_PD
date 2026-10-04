@@ -41,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gloves;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.NEARL_AXE;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WornShortsword;
+import com.shatteredpixel.shatteredpixeldungeon.journal.quests.PhantomCatQuestLine;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
@@ -264,7 +265,7 @@ public class NewRhodesLevel2 extends Level {
         else Npc_Astesia.spawn(this, 3218);
 
 
-        if (Dungeon.QuestCatPoint == 0 && !NPC_PhantomShadow.Clear) {
+        if (Dungeon.QuestCatPoint == 0 && PhantomCatQuestLine.catStillOut()) {
             NPC_PhantomShadow.spawn(this, 0);
         }
 

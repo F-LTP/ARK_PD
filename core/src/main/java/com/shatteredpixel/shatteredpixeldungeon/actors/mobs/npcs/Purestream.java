@@ -54,6 +54,18 @@ public class Purestream extends NPC {
             return true;
         }
 
+        //he handed out step 2, so an abandon there is his to take back
+        if (q != null && q.resumeAt(2)) {
+            final String next = Messages.get(this, "quest_next");
+            Game.runOnRenderThread(new Callback() {
+                @Override
+                public void call() {
+                    GameScene.show(new WndQuest(Purestream.this, next));
+                }
+            });
+            return true;
+        }
+
         //interact() runs on the actor thread; constructing a window there trips RenderedText's thread assert
         Game.runOnRenderThread(new Callback() {
             @Override
