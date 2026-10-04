@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **RogueNights (Arrrknights)** is a modified version of Shattered Pixel Dungeon, which itself is based on the original Pixel Dungeon by Watabou. This is a roguelike RPG with randomly generated levels, items, enemies, and traps, built on LibGDX for cross-platform support (Android and Desktop).
 
 - **Package**: `com.shatteredpixel.tomorrowpixel`
-- **Version**: 0.5.0-B4 (build 583)
+- **Version**: 0.5.3
 - **License**: GPLv3
 - **Language**: Java
 - **Build System**: Gradle with multi-module setup
