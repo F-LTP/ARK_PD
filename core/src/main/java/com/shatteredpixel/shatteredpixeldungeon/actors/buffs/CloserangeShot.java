@@ -17,6 +17,9 @@ import com.watabou.utils.PathFinder;
 public class CloserangeShot extends Buff {
     private boolean actived = false;
     private static final String ACTIVE    = "actived";
+    {
+        revivePersists = true;
+    }
 
     @Override
     public int icon() {
