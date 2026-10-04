@@ -474,7 +474,7 @@ public class Heap implements Bundlable {
 		}
 		
 		haunted = bundle.getBoolean( HAUNTED );
-
+		//saves from before this was persisted have no key, so keep the -1 default
 		if (bundle.contains(PRICE_OVERRIDE)){
 			priceOverride=bundle.getInt(PRICE_OVERRIDE);
 		}
