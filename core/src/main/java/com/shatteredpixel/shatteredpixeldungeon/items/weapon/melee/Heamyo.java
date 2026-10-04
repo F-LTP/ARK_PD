@@ -199,7 +199,7 @@ public class Heamyo extends MeleeWeapon {
 
         @Override
         public String prompt() {
-            return "召唤/删除训练人偶";
+            return Messages.get(Heamyo.class, "prompt");
         }
     };
 
@@ -216,7 +216,7 @@ public class Heamyo extends MeleeWeapon {
 
         @Override
         public String prompt() {
-            return "选择要输出坐标的格子";
+            return Messages.get(Heamyo.class, "pos_prompt");
         }
     };
 
