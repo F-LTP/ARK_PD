@@ -2155,8 +2155,8 @@ public class Hero extends Char {
                     curAction = new HeroAction.PickUp(cell);
                     break;
                 case FOR_SALE: case FOR_SALE_28F:
-                    int price = heap.priceOverride >= 0 ? heap.priceOverride : heap.peek().value();
-                    curAction = heap.size() == 1 && price > 0 ?
+                    //priceOverride must count too, e.g. MagesStaff has value() 0 but a Rhodes shop price
+                    curAction = heap.size() == 1 && (heap.priceOverride > 0 || heap.peek().value() > 0) ?
                             new HeroAction.Buy(cell) :
                             new HeroAction.PickUp(cell);
                     break;
