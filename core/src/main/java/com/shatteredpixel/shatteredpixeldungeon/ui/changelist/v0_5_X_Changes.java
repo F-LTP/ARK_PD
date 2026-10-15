@@ -3,8 +3,13 @@ package com.shatteredpixel.shatteredpixeldungeon.ui.changelist;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.ChangesScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.NPC_PhantomSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.NPC_PurestreamSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.watabou.noosa.Image;
 
 import java.util.ArrayList;
 
@@ -17,6 +22,13 @@ public class v0_5_X_Changes {
         add_v0_5_0_Changes(changeInfos);
     }
 
+    //static first frame of a 32px sprite, shrunk to fit the 16px button slot
+    private static Image halfSize(Image sprite) {
+        Image icon = new Image(sprite);
+        icon.scale.set(0.5f);
+        return icon;
+    }
+
     public static void add_v0_5_4_Changes (ArrayList < ChangeInfo > changeInfos) {
             ChangeInfo changes = new ChangeInfo("v0.5.4", true, "");
             changes.hardlight(Window.TITLE_COLOR);
@@ -24,7 +36,7 @@ public class v0_5_X_Changes {
 
             changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
             changes.hardlight(Window.TITLE_COLOR);
-            changes.addButton(new ChangeButton(Icons.get(Icons.ARKPD), "掉落表",
+            changes.addButton(new ChangeButton(halfSize(new NPC_PurestreamSprite()), "掉落表",
                     "与罗德岛商店区域的 _清流_ 对话，可以挑选本局游戏中不会出现的 _武器和戒指_。" + "\n\n" +
                             "只能选择已登记在图鉴中的物品，已登记的物品越多，可禁用的物品数量就越多。" + "\n\n" +
                             "进入1层之后，掉落表将无法更改。"));
@@ -32,20 +44,19 @@ public class v0_5_X_Changes {
 
             changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
             changes.hardlight(CharSprite.WARNING);
-            changes.addButton(new ChangeButton(Icons.get(Icons.WEP), "盾牌武器重做",
+            changes.addButton(new ChangeButton(halfSize(new ItemSprite(ItemSpriteSheet.GREATSHIELD)), "盾牌武器重做",
                     "_莱茵充能盾_ 和 _爱国者之盾_ 已重做。" + "\n\n" +
                             "每次受到物理攻击时会累积 _充能_，每1点充能使盾牌造成的伤害提高 _1%_。持有的护盾也会加算到充能中，若 _3回合_ 内未受到攻击，充能会快速消失。" + "\n\n" +
                             "基础伤害降低。（莱茵护盾 10 -> 8，爱国之心 15 -> 11）" + "\n\n" +
                             "盾牌武器使用专属强化：_防御力_（增加防御力/充能上限，降低伤害）、_攻击力_（增加伤害，降低防御力/上限）、_源石技艺防御_（可防御/充能源石技艺伤害）。"));
-            changes.addButton(new ChangeButton(Icons.get(Icons.SCROLL), "罗德岛任务改编",
+            changes.addButton(new ChangeButton(halfSize(new NPC_PhantomSprite()), "罗德岛任务改编",
                     "_杰西卡_、_霜叶_、_傀影_ 的任务已移至任务线，可在笔记中查看进度。" + "\n\n" +
                             "现在即使放弃任务，只要再次与最后给予任务的NPC对话，就能 _从中断处继续_ 进行。" + "\n\n" +
                             "_克里斯汀小姐_ 可能出现的区域增加了。"));
-            changes.addButton(new ChangeButton(Icons.get(Icons.ARKPD), "图鉴扩展",
+            changes.addButton(new ChangeButton(halfSize(new ItemSprite(ItemSpriteSheet.MASTERY)), "图鉴扩展",
                     "新增了 _特殊物品_ 分类。可以登记枪械配件、可露希尔补给箱、情报凭证等。" + "\n\n" +
                             "料理、料理材料及部分卷轴已加入图鉴。"));
-            changes.addButton(new ChangeButton(Icons.get(Icons.HERO_CHANGES), "其他变更",
-                    "_挑战_ 已更名为 _危机合约_。" + "\n\n" +
+            changes.addButton(new ChangeButton(Icons.get(Icons.PREFS), "其他变更",
                             "_巫术巨像_ 出现的14层将始终生成悬崖。" + "\n\n" +
                             "罗德岛的 _黍_ 和 _澄闪_ 不再受到伤害。" + "\n\n" +
                             "补充了缺失的英文翻译。"));
@@ -64,13 +75,12 @@ public class v0_5_X_Changes {
                             "修复了 _特殊伏击兵_ 的宝箱不显示技能书说明的Bug。" + "\n\n" +
                             "修复了部分敌人和陷阱未登记进图鉴的Bug。" + "\n\n" +
                             "修复了 _嘉维尔_ 首领地图的错误。" + "\n\n" +
-                            "修复了保存排行榜时可能发生的崩溃。" + "\n\n" +
                             "修复了多处文本错误。"));
             changeInfos.add(changes);
 
             changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
             changes.hardlight(CharSprite.POSITIVE);
-            changes.addButton(new ChangeButton(Icons.get(Icons.ARKPD), "罗德岛商店降价",
+            changes.addButton(new ChangeButton(halfSize(new ItemSprite(ItemSpriteSheet.INFO_CERTI)), "罗德岛商店降价",
                     "罗德岛商店的价格已下调。" + "\n\n" +
                             "_近战武器_ 300~700 -> 150~550" + "\n\n" +
                             "_投掷武器_ 100~300 -> 50~250" + "\n\n" +
