@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Certificate;
 import com.shatteredpixel.shatteredpixeldungeon.items.PortableCover;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
+import com.shatteredpixel.shatteredpixeldungeon.journal.quests.BonusStageQuestLine;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -130,6 +131,7 @@ public class TheBigUglyThing extends Mob {
 
             Badges.silentValidateHappyEnd();
             Badges.validategavial2();
+            BonusStageQuestLine.complete(BonusStageQuestLine.GavialQuestLine.class);
             Dungeon.win(Amulet.class);
             Dungeon.deleteGame(GamesInProgress.curSlot, true);
             Game.switchScene(SurfaceScene.class);

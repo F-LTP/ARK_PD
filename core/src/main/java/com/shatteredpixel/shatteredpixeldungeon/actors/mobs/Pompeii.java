@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PurpleParticle
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.NewGameItem.Certificate;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfPsionicBlast;
+import com.shatteredpixel.shatteredpixeldungeon.journal.quests.BonusStageQuestLine;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -181,6 +182,7 @@ public class Pompeii extends Mob {
 
             Badges.silentValidateHappyEnd();
             Badges.validatesiesta2();
+            BonusStageQuestLine.complete(BonusStageQuestLine.SiestaQuestLine.class);
             Dungeon.win(Amulet.class);
             Dungeon.deleteGame(GamesInProgress.curSlot, true);
             Game.switchScene(SurfaceScene.class);
