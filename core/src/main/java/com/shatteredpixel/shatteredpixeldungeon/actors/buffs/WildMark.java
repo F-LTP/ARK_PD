@@ -43,7 +43,7 @@ import java.util.ArrayList;
 
 public class WildMark extends Buff implements ActionIndicator.Action {
     {
-        //type = buffType.NEGATIVE;
+        type = buffType.POSITIVE;
     }
 
     private int charge = 0;
