@@ -16,38 +16,68 @@ public class v0_5_X_Changes {
         add_v0_5_1_Changes(changeInfos);
         add_v0_5_0_Changes(changeInfos);
     }
-    // TODO 0.5.4: replace placeholder patch notes
-    public static void add_v0_5_4_Changes(ArrayList<ChangeInfo> changeInfos) {
-        ChangeInfo changes = new ChangeInfo("v0.5.4", true, "");
-        changes.hardlight(Window.TITLE_COLOR);
-        changeInfos.add(changes);
 
-        changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
-        changes.hardlight(Window.TITLE_COLOR);
-        changes.addButton(new ChangeButton(Icons.get(Icons.ARKPD), "TODO_NEW_TITLE",
-                "TODO_NEW_DESC"));
-        changeInfos.add(changes);
+    public static void add_v0_5_4_Changes (ArrayList < ChangeInfo > changeInfos) {
+            ChangeInfo changes = new ChangeInfo("v0.5.4", true, "");
+            changes.hardlight(Window.TITLE_COLOR);
+            changeInfos.add(changes);
 
-        changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
-        changes.hardlight(CharSprite.WARNING);
-        changes.addButton(new ChangeButton(Icons.get(Icons.ARKPD), "TODO_CHANGES_TITLE",
-                "TODO_CHANGES_DESC"));
-        changes.addButton(new ChangeButton(Icons.get(Icons.BUG_KILL), "버그픽스",
-                "TODO_BUGFIX_DESC"));
-        changeInfos.add(changes);
+            changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+            changes.hardlight(Window.TITLE_COLOR);
+            changes.addButton(new ChangeButton(Icons.get(Icons.ARKPD), "掉落表",
+                    "与罗德岛商店区域的 _清流_ 对话，可以挑选本局游戏中不会出现的 _武器和戒指_。" + "\n\n" +
+                            "只能选择已登记在图鉴中的物品，已登记的物品越多，可禁用的物品数量就越多。" + "\n\n" +
+                            "进入1层之后，掉落表将无法更改。"));
+            changeInfos.add(changes);
 
-        changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
-        changes.hardlight(CharSprite.POSITIVE);
-        changes.addButton(new ChangeButton(Icons.get(Icons.ARKPD), "TODO_BUFFS_TITLE",
-                "TODO_BUFFS_DESC"));
-        changeInfos.add(changes);
+            changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+            changes.hardlight(CharSprite.WARNING);
+            changes.addButton(new ChangeButton(Icons.get(Icons.WEP), "盾牌武器重做",
+                    "_莱茵充能盾_ 和 _爱国者之盾_ 已重做。" + "\n\n" +
+                            "每次受到物理攻击时会累积 _充能_，每1点充能使盾牌造成的伤害提高 _1%_。持有的护盾也会加算到充能中，若 _3回合_ 内未受到攻击，充能会快速消失。" + "\n\n" +
+                            "基础伤害降低。（莱茵护盾 10 -> 8，爱国之心 15 -> 11）" + "\n\n" +
+                            "盾牌武器使用专属强化：_防御力_（增加防御力/充能上限，降低伤害）、_攻击力_（增加伤害，降低防御力/上限）、_源石技艺防御_（可防御/充能源石技艺伤害）。"));
+            changes.addButton(new ChangeButton(Icons.get(Icons.SCROLL), "罗德岛任务改编",
+                    "_杰西卡_、_霜叶_、_傀影_ 的任务已移至任务线，可在笔记中查看进度。" + "\n\n" +
+                            "现在即使放弃任务，只要再次与最后给予任务的NPC对话，就能 _从中断处继续_ 进行。" + "\n\n" +
+                            "_克里斯汀小姐_ 可能出现的区域增加了。"));
+            changes.addButton(new ChangeButton(Icons.get(Icons.ARKPD), "图鉴扩展",
+                    "新增了 _特殊物品_ 分类。可以登记枪械配件、可露希尔补给箱、情报凭证等。" + "\n\n" +
+                            "料理、料理材料及部分卷轴已加入图鉴。"));
+            changes.addButton(new ChangeButton(Icons.get(Icons.HERO_CHANGES), "其他变更",
+                    "_挑战_ 已更名为 _危机合约_。" + "\n\n" +
+                            "_巫术巨像_ 出现的14层将始终生成悬崖。" + "\n\n" +
+                            "罗德岛的 _黍_ 和 _澄闪_ 不再受到伤害。" + "\n\n" +
+                            "补充了缺失的英文翻译。"));
+            changes.addButton(new ChangeButton(Icons.get(Icons.BUG_KILL), "Bug修复 1",
+                    "修复了 _全面净化合剂_ 会移除 _荆棘_、_黄昏_、_狂气_ 等增益效果的Bug。" + "\n\n" +
+                            "修复了 _盾牌猛击_ 在读取存档后无法运作的Bug。" + "\n\n" +
+                            "修复了 _支配之戒_ 使敌人变为友方后，攻击的附加效果仍会生效的Bug。" + "\n\n" +
+                            "修复了 _澄净闪耀_ 被友方阻挡时游戏卡住的Bug。" + "\n\n" +
+                            "修复了 _特雷西娅人偶_ 无法正常爆炸的Bug。" + "\n\n" +
+                            "修复了与 _补拙_ 特性相关的崩溃。" + "\n\n" +
+                            "修复了状态效果图标不消失、一直残留的Bug。"));
+            changes.addButton(new ChangeButton(Icons.get(Icons.BUG_KILL), "Bug修复 2",
+                    "修复了 _巫术巨像_ 掉入悬崖时，奖励会掉落到下一层的Bug。" + "\n\n" +
+                            "修复了在罗德岛商店无法购买 _指环_ 或发生崩溃的Bug。" + "\n\n" +
+                            "修复了罗德岛商店会出售已持有的 _遗物_ 的Bug。" + "\n\n" +
+                            "修复了 _特殊伏击兵_ 的宝箱不显示技能书说明的Bug。" + "\n\n" +
+                            "修复了部分敌人和陷阱未登记进图鉴的Bug。" + "\n\n" +
+                            "修复了 _嘉维尔_ 首领地图的错误。" + "\n\n" +
+                            "修复了保存排行榜时可能发生的崩溃。" + "\n\n" +
+                            "修复了多处文本错误。"));
+            changeInfos.add(changes);
 
-        changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
-        changes.hardlight(CharSprite.NEGATIVE);
-        changes.addButton(new ChangeButton(Icons.get(Icons.ARKPD), "TODO_NERFS_TITLE",
-                "TODO_NERFS_DESC"));
-        changeInfos.add(changes);
-    }
+            changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
+            changes.hardlight(CharSprite.POSITIVE);
+            changes.addButton(new ChangeButton(Icons.get(Icons.ARKPD), "罗德岛商店降价",
+                    "罗德岛商店的价格已下调。" + "\n\n" +
+                            "_近战武器_ 300~700 -> 150~550" + "\n\n" +
+                            "_投掷武器_ 100~300 -> 50~250" + "\n\n" +
+                            "_戒指_ 500 -> 400，_遗物_ 600 -> 500" + "\n\n" +
+                            "带附魔的武器需额外支付 _100_ 费用。"));
+            changeInfos.add(changes);
+        }
     public static void add_v0_5_3_Changes(ArrayList<ChangeInfo> changeInfos) {
         ChangeInfo changes = new ChangeInfo("v0.5.3", true, "");
         changes.hardlight(Window.TITLE_COLOR);
