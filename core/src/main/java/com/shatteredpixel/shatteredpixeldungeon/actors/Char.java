@@ -378,6 +378,9 @@ public abstract class Char extends Actor {
             if (this == Dungeon.hero && enemy.buff(Blindness.class) != null && Dungeon.hero.hasTalent(Talent.FLASH_SPEAR)) {
                 trueDmg += (int) (dmg * (Dungeon.hero.pointsInTalent(Talent.FLASH_SPEAR) * 0.1f));
             }
+
+			Alignment enemyAlignment = enemy.alignment;
+
 			int effectiveDamage = enemy.defenseProc( this, dmg );
 			effectiveDamage = Math.max( effectiveDamage - dr, 0 );
 			
@@ -396,6 +399,11 @@ public abstract class Char extends Actor {
 			// If the enemy is already dead, interrupt the attack.
 			// This matters as defence procs can sometimes inflict self-damage, such as armor glyphs.
 			if (!enemy.isAlive()){
+				return true;
+			}
+
+			//this hit converted the enemy to our side (ring of dominate, soul siphon), so it deals no further harm
+			if (enemy.alignment != enemyAlignment && enemy.alignment == alignment){
 				return true;
 			}
 

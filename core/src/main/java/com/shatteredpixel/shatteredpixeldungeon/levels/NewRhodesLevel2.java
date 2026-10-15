@@ -18,6 +18,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Npc_Astesia;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Purestream;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.SkinModel;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Weedy;
+import com.shatteredpixel.shatteredpixeldungeon.journal.quests.PhantomCatQuestLine;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -41,7 +42,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gloves;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.NEARL_AXE;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WornShortsword;
-import com.shatteredpixel.shatteredpixeldungeon.journal.quests.PhantomCatQuestLine;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
@@ -279,7 +279,7 @@ public class NewRhodesLevel2 extends Level {
         drop(new Closure_WandBox(), 3715).type = Heap.Type.FOR_SALE_28F;
         drop(new Closure_TransBox(), 3781).type = Heap.Type.FOR_SALE_28F;
         drop(new Closure_RingBox(), 3782).type = Heap.Type.FOR_SALE_28F;
-        drop(new Closure_TGBox(), 3783).type = Heap.Type.FOR_SALE_28F;
+        drop(new Closure_TGBox(), Closure_TGBox.SHOP_CELL).type = Heap.Type.FOR_SALE_28F;
 
         // 무기 (근접, 총기 포함)
         for (int cell : new int[]{4116, 4117, 4118, 4184, 4185, 4186}) {
@@ -292,6 +292,8 @@ public class NewRhodesLevel2 extends Level {
         }
 
         // 유물
+        //listing must not consume the run's artifact deck; purchase removes it instead (WndTradeItem.buy_sp)
+        float[] artifactDeck = Generator.Category.ARTIFACT.probs.clone();
         for (int cell : new int[]{3980, 3981, 3982, 3912, 3913, 3914}) {
             Artifact art = Generator.randomArtifact();
             if (art != null) {
@@ -300,6 +302,7 @@ public class NewRhodesLevel2 extends Level {
                 sellForCertificates(art, cell, ARTIFACT_PRICE);
             }
         }
+        Generator.Category.ARTIFACT.probs = artifactDeck;
 
         // 반지
         for (int cell : new int[]{3985, 3986, 3987, 3917, 3918, 3919}) {
@@ -346,6 +349,7 @@ public class NewRhodesLevel2 extends Level {
         heap.priceOverride = price;
     }
 
+    //not DropTable-masked: createItems() runs once at level creation, before the player can reach Purestream
     private void sellShopWeapon(int cell, Generator.Category[] tiers, int[] prices, boolean rerollQuality) {
         int tierIndex = Random.chances(SHOP_WEAPON_TIER_PROBS);
         Weapon w;
@@ -367,6 +371,22 @@ public class NewRhodesLevel2 extends Level {
         int price = prices[tierIndex];
         if (w.hasGoodEnchant()) price += ENCHANT_SURCHARGE;
         sellForCertificates(w, cell, price);
+    }
+
+    //drops certificate-shop artifact listings whose class the hero already owns, so a duplicate can't be bought
+    public void removeOwnedArtifactListings() {
+        if (Dungeon.hero == null) return;
+        for (Heap heap : heaps.valueList()) {
+            if (heap.type == Heap.Type.FOR_SALE_28F && heroOwnsArtifact(heap.peek())) heap.destroy();
+        }
+    }
+
+    public static boolean heroOwnsArtifact(Item listing) {
+        if (!(listing instanceof Artifact) || Dungeon.hero == null) return false;
+        for (Item i : Dungeon.hero.belongings) {
+            if (i.getClass() == listing.getClass()) return true;
+        }
+        return false;
     }
 
     //strips any curse and rerolls the upgrade level to +0 85% / +1 10% / +2 5%
@@ -397,6 +417,8 @@ public class NewRhodesLevel2 extends Level {
 
     @Override
     public Group addVisuals() {
+        //runs on every GameScene build (enter/load), before heap sprites are added
+        removeOwnedArtifactListings();
         super.addVisuals();
         HallsLevel.addHallsVisuals(this, visuals);
         return visuals;
