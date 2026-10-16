@@ -85,6 +85,9 @@ public class v0_5_X_Changes {
                         "修复了移动至罗德岛时显示错误加载画面的Bug" + "\n\n" +
                         "修复了在罗德岛死亡时分数计算过低的Bug." + "\n\n" +
                         "修复了 _Guard劳动合同_ 相关的崩溃."));
+            changes.addButton(new ChangeButton(Icons.get(Icons.ARROW), "楼梯移动按钮",
+                "画面右侧新增了 _上行楼梯_ 和 _下行楼梯_ 按钮。" + "\n\n" +
+                        "发现楼梯时按钮会出现，点击即可移动至该楼梯。"));
             changeInfos.add(changes);
 
             changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
