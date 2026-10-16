@@ -66,7 +66,7 @@ public class Bones {
         branch = Dungeon.branch;
 
 		//heroes drop no bones if they have the amulet, die far above their farthest depth, are challenged, or are playing with a custom seed.
-		if (Statistics.amuletObtained || (Statistics.deepestFloor - 5) >= depth || Dungeon.challenges > 0 || Dungeon.isChallenged(TEST) || !Dungeon.customSeedText.isEmpty() || Dungeon.daily) {//change from budding
+		if (Statistics.amuletObtained || (Statistics.deepestFloor - 5) >= depth || Dungeon.challenges > 0 || Dungeon.isChallenged(TEST) || !Dungeon.customSeedText.isEmpty() || Dungeon.daily  || Dungeon.isInRhodes()) {
 			depth = branch = -1;
 			return;
 		}

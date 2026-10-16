@@ -715,11 +715,11 @@ public class DriedRose extends Artifact {
 			
 			return stealth;
 		}
-		int plusblock=0;//change from budding
+
 		@Override
 		public int drRoll() {
 			int block = 0;
-			if (rose != null)plusblock=rose.level();//change from budding
+			int plusblock = rose != null ? rose.level() : 0;
 			if (rose != null && rose.armor != null){
 				block += Random.NormalIntRange( rose.armor.DRMin(), rose.armor.DRMax());
 			}
@@ -863,7 +863,6 @@ public class DriedRose extends Artifact {
 			super.storeInBundle(bundle);
 			bundle.put(DEFEND_POS, defendingPos);
 			bundle.put(MOVING_TO_DEFEND, movingToDefendPos);
-			bundle.put(PLUS_BLOCK,plusblock);//change from budding
 		}
 		
 		@Override
@@ -871,7 +870,6 @@ public class DriedRose extends Artifact {
 			super.restoreFromBundle(bundle);
 			if (bundle.contains(DEFEND_POS)) defendingPos = bundle.getInt(DEFEND_POS);
 			movingToDefendPos = bundle.getBoolean(MOVING_TO_DEFEND);
-			plusblock=bundle.getInt(PLUS_BLOCK);//change from budding
 		}
 		
 		{

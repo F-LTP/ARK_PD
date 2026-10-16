@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.food.SanityPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SeaLevel_part2;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.SeaPlatform;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -1134,9 +1135,14 @@ public class TheEndspeaker extends Mob {
                     toDestroy.add(mob);
                 }
             }
-            for (Mob mob : toDestroy) {
-                mob.EXP = 0;
-                mob.destroy();
+            Bestiary.skipCountingEncounters = true;
+            try {
+                for (Mob mob : toDestroy) {
+                    mob.EXP = 0;
+                    mob.destroy();
+                }
+            } finally {
+                Bestiary.skipCountingEncounters = false;
             }
         }
 

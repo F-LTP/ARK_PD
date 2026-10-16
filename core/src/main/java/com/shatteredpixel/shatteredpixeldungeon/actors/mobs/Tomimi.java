@@ -154,9 +154,14 @@ public class Tomimi extends Mob {
                     yell(Messages.get(this, "phase3"));
                     boss_tel(241);
 
-                    for (Mob m : getSubjects()) {
-                        m.destroy();
-                        m.sprite.killAndErase();
+                    Bestiary.skipCountingEncounters = true;
+                    try {
+                        for (Mob m : getSubjects()) {
+                            m.destroy();
+                            m.sprite.killAndErase();
+                        }
+                    } finally {
+                        Bestiary.skipCountingEncounters = false;
                     }
                 }
                 RPG_SHOT(Dungeon.hero.pos);

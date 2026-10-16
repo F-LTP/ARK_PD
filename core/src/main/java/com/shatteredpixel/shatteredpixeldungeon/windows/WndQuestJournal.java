@@ -77,7 +77,7 @@ public class WndQuestJournal extends Window {
             resize(WIDTH, (int) pos - GAP);
             return;
         }
-        
+
         RedButton btnAbandon = new RedButton(Messages.get(this, "abandon")) {
             @Override
             protected void onClick() {

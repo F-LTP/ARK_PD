@@ -55,11 +55,13 @@ public class v0_5_X_Changes {
                             "_克里斯汀小姐_ 可能出现的区域增加了。"));
             changes.addButton(new ChangeButton(halfSize(new ItemSprite(ItemSpriteSheet.MASTERY)), "图鉴扩展",
                     "新增了 _特殊物品_ 分类。可以登记枪械配件、可露希尔补给箱、情报凭证等。" + "\n\n" +
-                            "料理、料理材料及部分卷轴已加入图鉴。"));
+                            "料理、料理材料及部分卷轴已加入图鉴。"+ "\n\n" +
+                            "_无名的萨卡兹雇佣兵_和 _感染者纠察官_作为单独条目添加了."));
             changes.addButton(new ChangeButton(Icons.get(Icons.PREFS), "其他变更",
                             "_巫术巨像_ 出现的14层将始终生成悬崖。" + "\n\n" +
                             "罗德岛的 _黍_ 和 _澄闪_ 不再受到伤害。" + "\n\n" +
-                            "补充了缺失的英文翻译。"));
+                            "补充了缺失的英文翻译。"+ "\n\n" +
+                            "_便携式掩体_不再出现在德克萨斯的商店里了."));
             changes.addButton(new ChangeButton(Icons.get(Icons.BUG_KILL), "Bug修复 1",
                     "修复了 _全面净化合剂_ 会移除 _荆棘_、_黄昏_、_狂气_ 等增益效果的Bug。" + "\n\n" +
                             "修复了 _盾牌猛击_ 在读取存档后无法运作的Bug。" + "\n\n" +
@@ -76,6 +78,13 @@ public class v0_5_X_Changes {
                             "修复了部分敌人和陷阱未登记进图鉴的Bug。" + "\n\n" +
                             "修复了 _嘉维尔_ 首领地图的错误。" + "\n\n" +
                             "修复了多处文本错误。"));
+            changes.addButton(new ChangeButton(Icons.get(Icons.BUG_KILL), "Bug修复 3",
+                "修正了_屠龙_附魔可以赋予_赤霄_以外武器的bug。" + "\n\n" +
+                        "修复了_可露西尔的变形箱 EX_在使用后在错误位置重新生成的错误。" + "\n\n" +
+                        "修复了图鉴的BOSS击败数中包含BOSS召唤过小怪的bug" + "\n\n" +
+                        "修复了移动至罗德岛时显示错误加载画面的Bug" + "\n\n" +
+                        "修复了在罗德岛死亡时分数计算过低的Bug." + "\n\n" +
+                        "修复了 _Guard劳动合同_ 相关的崩溃."));
             changeInfos.add(changes);
 
             changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
@@ -86,6 +95,11 @@ public class v0_5_X_Changes {
                             "_投掷武器_ 100~300 -> 50~250" + "\n\n" +
                             "_戒指_ 500 -> 400，_遗物_ 600 -> 500" + "\n\n" +
                             "带附魔的武器需额外支付 _100_ 费用。"));
+            changes.addButton(new ChangeButton(halfSize(new ItemSprite(ItemSpriteSheet.GOLD)), "德克萨斯的商店降价",
+                "德克萨斯商店出售的炼金物品价格已下调。（以19层为基准）" + "\n\n" +
+                        "_青色怒火_ 6000 -> 3600" + "\n\n" +
+                        "_前卫棱晶_ 8230 -> 4630" + "\n\n" +
+                        "_秘药_ 3600 -> 2880"));
             changeInfos.add(changes);
         }
     public static void add_v0_5_3_Changes(ArrayList<ChangeInfo> changeInfos) {
