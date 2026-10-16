@@ -399,7 +399,7 @@ public enum Bestiary {
 
     //debug-only: marks every entity in every category as seen, for testing the journal UI
     public static void debugRevealAll(){
-        if (!DeviceCompat.isDebug()) return;
+        //if (!DeviceCompat.isDebug()) return;
         for (Bestiary cat : values()){
             for (Class<?> cls : cat.entities()){
                 cat.seen.put(cls, true);
@@ -412,7 +412,7 @@ public enum Bestiary {
 
     //debug-only: clears seen/encounter-count state across all categories, for testing the journal UI
     public static void debugReset(){
-        if (!DeviceCompat.isDebug()) return;
+        //if (!DeviceCompat.isDebug()) return;
         for (Bestiary cat : values()){
             for (Class<?> cls : cat.entities()){
                 cat.seen.put(cls, false);
