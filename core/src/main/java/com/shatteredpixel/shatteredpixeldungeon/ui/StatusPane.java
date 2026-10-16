@@ -72,6 +72,8 @@ public class StatusPane extends Component {
 	private BitmapText depth;
 
 	private DangerIndicator danger;
+	private StairIndicator stairUp;
+	private StairIndicator stairDown;
 	private BuffIndicator buffs;
 	private Compass compass;
 
@@ -151,6 +153,12 @@ public class StatusPane extends Component {
 		danger = new DangerIndicator();
 		add( danger );
 
+		stairUp = new StairIndicator(true);
+		add(stairUp);
+
+		stairDown = new StairIndicator(false);
+		add(stairDown);
+
 		buffs = new BuffIndicator( Dungeon.hero );
 		add( buffs );
 
@@ -226,6 +234,9 @@ public class StatusPane extends Component {
 		PixelScene.align(depth);
 
 		danger.setPos( width - danger.width(), 20 );
+
+		stairUp.setPos(width - stairUp.width(), danger.bottom() + 1);
+		stairDown.setPos(width - stairDown.width(), stairUp.bottom() + 1);
 
 		buffs.setPos( 31, 9 );
 
