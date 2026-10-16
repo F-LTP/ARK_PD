@@ -116,7 +116,12 @@ public abstract class ExoticScroll extends Scroll {
 	public int value() {
 		return (Reflection.newInstance(exoToReg.get(getClass())).value() + 20) * quantity;
 	}
-	
+
+	@Override
+	public int energyVal() {
+		return (Reflection.newInstance(exoToReg.get(getClass())).energyVal() + 6) * quantity;
+	}
+
 	public static class ScrollToExotic extends Recipe {
 		
 		@Override

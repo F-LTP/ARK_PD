@@ -45,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndEnergizeItem;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoItem;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
 import com.watabou.gltextures.TextureCache;
@@ -66,27 +67,28 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class AlchemyScene extends PixelScene {
-	
+
 	private static ItemButton[] inputs = new ItemButton[3];
 	private ItemSlot output;
-	
+
 	private Emitter smokeEmitter;
 	private Emitter bubbleEmitter;
-	
+
 	private Emitter lowerBubbles;
 	private SkinnedBlock water;
-	
+
 	private RenderedTextBlock energyLeft;
 	private RenderedTextBlock energyCost;
-	
+	private RedButton energyAdd;
+
 	private RedButton btnCombine;
-	
+
 	private static final int BTN_SIZE	= 28;
 	private static int centerW;
 
-    {
-        inGameScene = true;
-    }
+	{
+		inGameScene = true;
+	}
 
 	@Override
 	public void create() {
@@ -99,12 +101,12 @@ public class AlchemyScene extends PixelScene {
 		water = new SkinnedBlock(
 				w, h,
 				Dungeon.level.waterTex() ){
-			
+
 			@Override
 			protected NoosaScript script() {
 				return NoosaScriptNoLighting.get();
 			}
-			
+
 			@Override
 			public void draw() {
 				//water has no alpha component, this improves performance
@@ -125,29 +127,29 @@ public class AlchemyScene extends PixelScene {
 
 		w -= insets.left + insets.right;
 		h -= insets.top + insets.bottom;
-		
+
 		RenderedTextBlock title = PixelScene.renderTextBlock( Messages.get(this, "title"), 9 );
 		title.hardlight(Window.TITLE_COLOR);
 		title.setPos(
-                insets.left + (w - title.width()) / 2f,
-                insets.top + (20 - title.height()) / 2f
+				insets.left + (w - title.width()) / 2f,
+				insets.top + (20 - title.height()) / 2f
 		);
 		align(title);
 		add(title);
 
 		int pw = Math.min(50 + w/2, 150);
-        int left = (int)(insets.left) + (w - pw)/2;
+		int left = (int)(insets.left) + (w - pw)/2;
 		centerW = left + pw/2;
 		int pos = (int)(insets.top) + (h - 120)/2;
 
 		RenderedTextBlock desc = PixelScene.renderTextBlock(6);
-        desc.maxWidth(pw);
-        desc.text( Messages.get(AlchemyScene.class, "text") );
-        desc.setPos(left + (pw - desc.width())/2, pos);
+		desc.maxWidth(pw);
+		desc.text( Messages.get(AlchemyScene.class, "text") );
+		desc.setPos(left + (pw - desc.width())/2, pos);
 		add(desc);
-		
+
 		pos += desc.height() + 6;
-		
+
 		synchronized (inputs) {
 			for (int i = 0; i < inputs.length; i++) {
 				inputs[i] = new ItemButton() {
@@ -155,10 +157,8 @@ public class AlchemyScene extends PixelScene {
 					protected void onClick() {
 						super.onClick();
 						if (item != null) {
-							if (!(item instanceof AlchemistsToolkit)) {
-								if (!item.collect()) {
-									Dungeon.level.drop(item, Dungeon.hero.pos);
-								}
+							if (!item.collect()) {
+								Dungeon.level.drop(item, Dungeon.hero.pos);
 							}
 							item = null;
 							slot.item(new WndBag.Placeholder(ItemSpriteSheet.SOMETHING));
@@ -176,23 +176,23 @@ public class AlchemyScene extends PixelScene {
 						return false;
 					}
 				};
-                inputs[i].setRect(left + 10, pos, BTN_SIZE, BTN_SIZE);
+				inputs[i].setRect(left + 10, pos, BTN_SIZE, BTN_SIZE);
 				add(inputs[i]);
 				pos += BTN_SIZE + 2;
 			}
 		}
-		
+
 		btnCombine = new RedButton(""){
 			Image arrow;
-			
+
 			@Override
 			protected void createChildren() {
 				super.createChildren();
-				
+
 				arrow = Icons.get(Icons.ARROW);
 				add(arrow);
 			}
-			
+
 			@Override
 			protected void layout() {
 				super.layout();
@@ -200,7 +200,7 @@ public class AlchemyScene extends PixelScene {
 				arrow.y = y + (height - arrow.height)/2f;
 				PixelScene.align(arrow);
 			}
-			
+
 			@Override
 			public void enable(boolean value) {
 				super.enable(value);
@@ -214,7 +214,7 @@ public class AlchemyScene extends PixelScene {
 					bg.alpha(0.6f);
 				}
 			}
-			
+
 			@Override
 			protected void onClick() {
 				super.onClick();
@@ -224,7 +224,7 @@ public class AlchemyScene extends PixelScene {
 		btnCombine.enable(false);
 		btnCombine.setRect(left + (pw-30)/2f, inputs[1].top()+5, 30, inputs[1].height()-10);
 		add(btnCombine);
-		
+
 		output = new ItemSlot(){
 			@Override
 			protected void onClick() {
@@ -235,15 +235,15 @@ public class AlchemyScene extends PixelScene {
 			}
 		};
 		output.setRect(left + pw - BTN_SIZE - 10, inputs[1].top(), BTN_SIZE, BTN_SIZE);
-		
+
 		ColorBlock outputBG = new ColorBlock(output.width(), output.height(), 0x9991938C);
 		outputBG.x = output.left();
 		outputBG.y = output.top();
 		add(outputBG);
-		
+
 		add(output);
 		output.visible = false;
-		
+
 		bubbleEmitter = new Emitter();
 		smokeEmitter = new Emitter();
 		bubbleEmitter.pos(0, 0, Camera.main.width, Camera.main.height);
@@ -252,25 +252,25 @@ public class AlchemyScene extends PixelScene {
 		smokeEmitter.autoKill = false;
 		add(bubbleEmitter);
 		add(smokeEmitter);
-		
+
 		pos += 10;
-		
+
 		lowerBubbles = new Emitter();
 		lowerBubbles.pos(0, pos, Camera.main.width, Math.max(0, Camera.main.height-pos));
 		add(lowerBubbles);
 		lowerBubbles.pour(Speck.factory( Speck.BUBBLE ), 0.1f );
-		
+
 		ExitButton btnExit = new ExitButton(){
 			@Override
 			protected void onClick() {
 				Dungeon.quickslot.change=false;
-				 Game.switchScene(GameScene.class);
-				 Item.updateQuickslot();
+				Game.switchScene(GameScene.class);
+				Item.updateQuickslot();
 			}
 		};
-        btnExit.setPos( insets.left + w - btnExit.width(), insets.top );
+		btnExit.setPos( insets.left + w - btnExit.width(), insets.top );
 		add( btnExit );
-		
+
 		IconButton btnGuide = new IconButton( new ItemSprite(ItemSpriteSheet.ALCH_PAGE, null)){
 			@Override
 			protected void onClick() {
@@ -278,7 +278,7 @@ public class AlchemyScene extends PixelScene {
 				clearSlots();
 				updateState();
 				AlchemyScene.this.addToFront(new Window(){
-				
+
 					{
 						WndJournal.AlchemyTab t = new WndJournal.AlchemyTab();
 						int w, h;
@@ -291,25 +291,37 @@ public class AlchemyScene extends PixelScene {
 						add(t);
 						t.setRect(0, 0, w, h);
 					}
-				
+
 				});
 			}
 		};
 		btnGuide.setRect(insets.left, insets.top, 20, 20);
 		add(btnGuide);
-		
-		energyLeft = PixelScene.renderTextBlock(Messages.get(AlchemyScene.class, "energy", availableEnergy()), 9);
+
+		energyLeft = PixelScene.renderTextBlock(energyText(), 9);
 		energyLeft.setPos(
-                centerW - energyLeft.width()/2,
-                insets.top + h - 8 - energyLeft.height()
+				centerW - energyLeft.width()/2,
+				insets.top + h - 8 - energyLeft.height()
 		);
+		energyLeft.hardlight(0x44CCFF);
 		add(energyLeft);
-		
+
+		energyAdd = new RedButton("+"){
+			@Override
+			protected void onClick() {
+				super.onClick();
+				WndEnergizeItem.openItemSelector();
+			}
+		};
+		energyAdd.setRect(energyLeft.right() + 2, energyLeft.top() - (16 - energyLeft.height())/2, 16, 16);
+		align(energyAdd);
+		add(energyAdd);
+
 		energyCost = PixelScene.renderTextBlock(6);
 		add(energyCost);
-		
+
 		fadeIn();
-		
+
 		try {
 			Dungeon.saveAll();
 			Badges.saveGlobal();
@@ -318,30 +330,28 @@ public class AlchemyScene extends PixelScene {
 			TomorrowRogueNight.reportException(e);
 		}
 	}
-	
+
 	@Override
 	public void update() {
 		super.update();
 		water.offset( 0, -5 * Game.elapsed );
 	}
-	
+
 	@Override
 	protected void onBackPressed() {
 		Game.switchScene(GameScene.class);
 	}
-	
+
 	protected WndBag.Listener itemSelector = new WndBag.Listener() {
 		@Override
 		public void onSelect( Item item ) {
 			synchronized (inputs) {
-				if (item != null && inputs[0] != null && !(item instanceof CorpseDust)) {//change from budding
+				//todo
+				if (item != null && inputs[0] != null && !(item instanceof CorpseDust)) {
 					for (int i = 0; i < inputs.length; i++) {
 						if (inputs[i].item == null) {
 							if (item instanceof Dart) {
 								inputs[i].item(item.detachAll(Dungeon.hero.belongings.backpack));
-							} else if (item instanceof AlchemistsToolkit) {
-								clearSlots();
-								inputs[i].item(item);
 							} else {
 								inputs[i].item(item.detach(Dungeon.hero.belongings.backpack));
 							}
@@ -353,7 +363,7 @@ public class AlchemyScene extends PixelScene {
 			}
 		}
 	};
-	
+
 	private<T extends Item> ArrayList<T> filterInput(Class<? extends T> itemClass){
 		ArrayList<T> filtered = new ArrayList<>();
 		for (int i = 0; i < inputs.length; i++){
@@ -364,27 +374,27 @@ public class AlchemyScene extends PixelScene {
 		}
 		return filtered;
 	}
-	
+
 	private void updateState(){
-		
+
 		ArrayList<Item> ingredients = filterInput(Item.class);
 		Recipe recipe = Recipe.findRecipe(ingredients);
-		
+
 		if (recipe != null){
 			int cost = recipe.cost(ingredients);
 
-            Item sample = recipe.sampleOutput(ingredients);
-            output.item(sample);
-            output.visible = (sample != null);
-			
+			Item sample = recipe.sampleOutput(ingredients);
+			output.item(sample);
+			output.visible = (sample != null);
+
 			energyCost.text( Messages.get(AlchemyScene.class, "cost", cost) );
 			energyCost.setPos(
 					btnCombine.left() + (btnCombine.width() - energyCost.width())/2,
 					btnCombine.top() - energyCost.height()
 			);
-			
+
 			energyCost.visible = (cost > 0);
-			
+
 			if (cost <= availableEnergy()) {
 				btnCombine.enable(true);
 				energyCost.resetColor();
@@ -392,57 +402,53 @@ public class AlchemyScene extends PixelScene {
 				btnCombine.enable(false);
 				energyCost.hardlight(0xFF0000);
 			}
-			
+
 		} else {
 			btnCombine.enable(false);
 			output.visible = false;
 			energyCost.visible = false;
 		}
-		
+
 	}
-	
+
 	private void combine(){
-		
+
 		ArrayList<Item> ingredients = filterInput(Item.class);
 		Recipe recipe = Recipe.findRecipe(ingredients);
-		
+
 		Item result = null;
-		
+
 		if (recipe != null){
-			provider.spendEnergy(recipe.cost(ingredients));
-			energyLeft.text(Messages.get(AlchemyScene.class, "energy", availableEnergy()));
-            RectF insets = getCommonInsets();
-            int h = (int)(Camera.main.height - insets.top - insets.bottom);
-            energyLeft.setPos(
-                    centerW - energyLeft.width()/2,
-                    insets.top + h - 8 - energyLeft.height()
-			);
-			
+			int cost = recipe.cost(ingredients);
+			if (toolkit != null){
+				cost = toolkit.consumeEnergy(cost);
+			}
+			Dungeon.energy -= cost;
+			createEnergy();
+
 			result = recipe.brew(ingredients);
 		}
-		
+
 		if (result != null){
 			bubbleEmitter.start(Speck.factory( Speck.BUBBLE ), 0.01f, 100 );
 			smokeEmitter.burst(Speck.factory( Speck.WOOL ), 10 );
 			Sample.INSTANCE.play( Assets.Sounds.PUFF );
-			
+
 			output.item(result);
-			if (!(result instanceof AlchemistsToolkit)) {
-				if (!result.collect()){
-					Dungeon.level.drop(result, Dungeon.hero.pos);
-				}
+			if (!result.collect()){
+				Dungeon.level.drop(result, Dungeon.hero.pos);
 			}
-			
+
 			try {
 				Dungeon.saveAll();
 			} catch (IOException e) {
 				TomorrowRogueNight.reportException(e);
 			}
-			
+
 			synchronized (inputs) {
 				for (int i = 0; i < inputs.length; i++) {
 					if (inputs[i] != null && inputs[i].item != null) {
-						if (inputs[i].item.quantity() <= 0 || inputs[i].item instanceof AlchemistsToolkit) {
+						if (inputs[i].item.quantity() <= 0) {
 							inputs[i].slot.item(new WndBag.Placeholder(ItemSpriteSheet.SOMETHING));
 							inputs[i].item = null;
 						} else {
@@ -451,15 +457,15 @@ public class AlchemyScene extends PixelScene {
 					}
 				}
 			}
-			
+
 			btnCombine.enable(false);
 		}
-		
+
 	}
-	
+
 	public void populate(ArrayList<Item> toFind, Belongings inventory){
 		clearSlots();
-		
+
 		int curslot = 0;
 		for (Item finding : toFind){
 			int needed = finding.quantity();
@@ -481,7 +487,7 @@ public class AlchemyScene extends PixelScene {
 		}
 		updateState();
 	}
-	
+
 	@Override
 	public void destroy() {
 		synchronized ( inputs ) {
@@ -490,7 +496,7 @@ public class AlchemyScene extends PixelScene {
 				inputs[i] = null;
 			}
 		}
-		
+
 		try {
 			Dungeon.saveAll();
 			Badges.saveGlobal();
@@ -500,15 +506,13 @@ public class AlchemyScene extends PixelScene {
 		}
 		super.destroy();
 	}
-	
+
 	public void clearSlots(){
 		synchronized ( inputs ) {
 			for (int i = 0; i < inputs.length; i++) {
 				if (inputs[i] != null && inputs[i].item != null) {
-					if (!(inputs[i].item instanceof AlchemistsToolkit)) {
-						if (!inputs[i].item.collect()) {
-							Dungeon.level.drop(inputs[i].item, Dungeon.hero.pos);
-						}
+					if (!inputs[i].item.collect()) {
+						Dungeon.level.drop(inputs[i].item, Dungeon.hero.pos);
 					}
 					inputs[i].item(null);
 					inputs[i].slot.item(new WndBag.Placeholder(ItemSpriteSheet.SOMETHING));
@@ -516,21 +520,21 @@ public class AlchemyScene extends PixelScene {
 			}
 		}
 	}
-	
+
 	public static class ItemButton extends Component {
-		
+
 		protected NinePatch bg;
 		protected ItemSlot slot;
-		
+
 		public Item item = null;
-		
+
 		@Override
 		protected void createChildren() {
 			super.createChildren();
-			
+
 			bg = Chrome.get( Chrome.Type.RED_BUTTON);
 			add( bg );
-			
+
 			slot = new ItemSlot() {
 				@Override
 				protected void onPointerDown() {
@@ -554,47 +558,61 @@ public class AlchemyScene extends PixelScene {
 			slot.enable(true);
 			add( slot );
 		}
-		
+
 		protected void onClick() {}
 		protected boolean onLongClick() {
 			return false;
 		}
-		
+
 		@Override
 		protected void layout() {
 			super.layout();
-			
+
 			bg.x = x;
 			bg.y = y;
 			bg.size( width, height );
-			
+
 			slot.setRect( x + 2, y + 2, width - 4, height - 4 );
 		}
-		
+
 		public void item( Item item ) {
 			slot.item( this.item = item );
 		}
 	}
-	
-	private static AlchemyProvider provider;
-	
-	public static void setProvider( AlchemyProvider p ){
-		provider = p;
+
+	public void createEnergy(){
+		energyLeft.text(energyText());
+		energyLeft.setPos(
+				centerW - energyLeft.width()/2,
+				energyLeft.top()
+		);
+		align(energyLeft);
+
+		energyAdd.setPos(energyLeft.right() + 2, energyAdd.top());
+		align(energyAdd);
+
+		updateState();
 	}
-	
+
+	private static String energyText(){
+		String text = Messages.get(AlchemyScene.class, "energy", Dungeon.energy);
+		if (toolkit != null){
+			text += "+" + toolkit.availableEnergy();
+		}
+		return text;
+	}
+
+	private static AlchemistsToolkit toolkit;
+
+	public static void assignToolkit( AlchemistsToolkit toolkit ){
+		AlchemyScene.toolkit = toolkit;
+	}
+
+	public static void clearToolkit(){
+		AlchemyScene.toolkit = null;
+	}
+
 	public static int availableEnergy(){
-		return provider == null ? 0 : provider.getEnergy();
-	}
-	
-	public static boolean providerIsToolkit(){
-		return provider instanceof AlchemistsToolkit.kitEnergy;
-	}
-	
-	public interface AlchemyProvider {
-	
-		int getEnergy();
-		
-		void spendEnergy(int reduction);
-	
+		return Dungeon.energy + (toolkit == null ? 0 : toolkit.availableEnergy());
 	}
 }

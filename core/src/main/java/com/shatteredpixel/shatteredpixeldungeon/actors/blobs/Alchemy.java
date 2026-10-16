@@ -25,12 +25,11 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.AlchemyScene;
 
-public class Alchemy extends Blob implements AlchemyScene.AlchemyProvider {
+public class Alchemy extends Blob {
 
 	protected int pos;
-	
+
 	@Override
 	protected void evolve() {
 		int cell;
@@ -47,24 +46,20 @@ public class Alchemy extends Blob implements AlchemyScene.AlchemyProvider {
 			}
 		}
 	}
-	
+
 	@Override
 	public void use( BlobEmitter emitter ) {
 		super.use( emitter );
 		emitter.start( Speck.factory( Speck.BUBBLE ), 0.33f, 0 );
 	}
-	
-	public static int alchPos;
-	
-	//1 volume is kept in reserve
-	
-	@Override
-	public int getEnergy() {
-		return Math.max(0, cur[alchPos] - 1);
-	}
-	
-	@Override
-	public void spendEnergy(int reduction) {
-		cur[alchPos] = Math.max(1, cur[alchPos] - reduction);
+
+	//pre-v0.5.5 pots stored energy as volume above 1; hands it over once and leaves the pot at 1
+	public int drainLegacyEnergy( int cell ){
+		int legacy = Math.max(0, cur[cell] - 1);
+		if (legacy > 0){
+			cur[cell] = 1;
+			volume -= legacy;
+		}
+		return legacy;
 	}
 }

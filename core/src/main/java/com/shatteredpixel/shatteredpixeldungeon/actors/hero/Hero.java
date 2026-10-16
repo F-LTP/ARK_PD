@@ -1195,9 +1195,9 @@ public class Hero extends Char {
 
             Alchemy alch = (Alchemy) Dungeon.level.blobs.get(Alchemy.class);
             if (alch != null) {
-                alch.alchPos = dst;
-                AlchemyScene.setProvider(alch);
+                Dungeon.energy += alch.drainLegacyEnergy(dst);
             }
+            AlchemyScene.clearToolkit();
             TomorrowRogueNight.switchScene(AlchemyScene.class);
             return false;
 
