@@ -48,6 +48,7 @@ public class v0_5_X_Changes {
                     "_莱茵充能盾_ 和 _爱国者之盾_ 已重做。" + "\n\n" +
                             "每次受到物理攻击时会累积 _充能_，每1点充能使盾牌造成的伤害提高 _1%_。持有的护盾也会加算到充能中，若 _3回合_ 内未受到攻击，充能会快速消失。" + "\n\n" +
                             "基础伤害降低。（莱茵护盾 10 -> 8，爱国之心 15 -> 11）" + "\n\n" +
+                            "_G52 战术闪光盾_ 虽然保留了闪光技能，但充能上限比莱茵充能盾低." + "\n\n" +
                             "盾牌武器使用专属强化：_防御力_（增加防御力/充能上限，降低伤害）、_攻击力_（增加伤害，降低防御力/上限）、_源石技艺防御_（可防御/充能源石技艺伤害）。"));
             changes.addButton(new ChangeButton(halfSize(new NPC_PhantomSprite()), "罗德岛任务改编",
                     "_杰西卡_、_霜叶_、_傀影_ 的任务已移至任务线，可在笔记中查看进度。" + "\n\n" +
@@ -99,10 +100,7 @@ public class v0_5_X_Changes {
                             "_戒指_ 500 -> 400，_遗物_ 600 -> 500" + "\n\n" +
                             "带附魔的武器需额外支付 _100_ 费用。"));
             changes.addButton(new ChangeButton(halfSize(new ItemSprite(ItemSpriteSheet.GOLD)), "德克萨斯的商店降价",
-                "德克萨斯商店出售的炼金物品价格已下调。（以19层为基准）" + "\n\n" +
-                        "_青色怒火_ 6000 -> 3600" + "\n\n" +
-                        "_前卫棱晶_ 8230 -> 4630" + "\n\n" +
-                        "_秘药_ 3600 -> 2880"));
+                "德克萨斯商店出售的炼金物品价格已下调。" ));
             changeInfos.add(changes);
         }
     public static void add_v0_5_3_Changes(ArrayList<ChangeInfo> changeInfos) {
