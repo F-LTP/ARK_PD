@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.ArmorKit;
 import com.shatteredpixel.shatteredpixeldungeon.items.ArmorUpKit;
 import com.shatteredpixel.shatteredpixeldungeon.items.Bonk;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
+import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gunaccessories.C_Mag;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gunaccessories.DotSight;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gunaccessories.GunScope;
@@ -227,6 +228,9 @@ public class Generators_Misc extends Generators {
         if (item != null) {
             if (item instanceof Certificate) {
                 item = new Certificate(item_quantity * (multiply ? 10 : 1));
+                item.doDrop(curUser);
+            } else if (item instanceof EnergyCrystal) {
+                item = new EnergyCrystal(item_quantity * (multiply ? 10 : 1));
                 item.doDrop(curUser);
             } else {
                 if (item.stackable) {
@@ -708,6 +712,8 @@ public class Generators_Misc extends Generators {
                 return Muzzlebrake.class;
             case 31:
                 return Certificate.class;
+            case 32:
+                return EnergyCrystal.class;
         }
     }
 
@@ -725,7 +731,7 @@ public class Generators_Misc extends Generators {
             case 10:
                 return 18;
             case 11:
-                return 31;
+                return 32;
             case 0:
             case 1:
             case 2:
