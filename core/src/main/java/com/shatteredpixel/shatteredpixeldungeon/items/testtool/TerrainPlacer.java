@@ -103,12 +103,16 @@ public class TerrainPlacer extends ChallengeItem {
                 case 23:
                     break;
                 case 29:
-                    icon(new Image(Dungeon.level.waterTex(),0, 0, 16, 16));
+                    Image w = new Image(Dungeon.level.waterTex(), 0, 0, 32, 32);
+                    w.scale.set(0.5f);
+                    icon(w);
                     break;
                 default:
                     int x = X.get(terrain) % 16;
                     int y = X.get(terrain) / 16;
-                    icon(new Image(Dungeon.level.tilesTex(),x * 16, y * 16, 16, 16));
+                    Image im = new Image(Dungeon.level.tilesTex(),x * 32, y * 32, 32, 32);
+                    im.scale.set(0.5f);
+                    icon(im);
                     break;
             }
         }

@@ -36,13 +36,6 @@ public class Dummy extends Mob {
     public void beckon(int cell) {
         //do nothing
     }
-    public static boolean kkdy=false;//change from budding
-    @Override
-    public void damage( int dmg, Object src ){//change from budding
-        kkdy=true;//considering more change than just invincibility;protect it from blooming enchantment&battlemage,etc
-        super.damage(dmg,src);
-        kkdy=false;
-    }
 
     @Override
     protected boolean act() {

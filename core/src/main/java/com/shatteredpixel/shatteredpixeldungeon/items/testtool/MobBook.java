@@ -167,7 +167,7 @@ public class MobBook extends ChallengeItem{
                 @Override
                 public void onClick(){
                     if (inside(x, y)) {
-                        GameScene.show(new WndScrollTitledMessage(Reflection.newInstance(allData.get(dataThreshold(mobTier)+mobIndex).getMobClass()).sprite(), M.TL(allData.get(dataThreshold(mobTier) + mobIndex).mobClass,"name"), M.L(Dict.class,"mob_"+allData.get(dataThreshold(mobTier) + mobIndex).mobClass.toString().substring(59)+"_d"),152));
+                        GameScene.show(new WndScrollTitledMessage(Reflection.newInstance(allData.get(dataThreshold(mobTier)+mobIndex).getMobClass()).sprite(), M.TL(allData.get(dataThreshold(mobTier) + mobIndex).mobClass,"name"), M.L(Dict.class,"mob_"+allData.get(dataThreshold(mobTier) + mobIndex).mobClass.getSimpleName()+"_d"),152));
                         //GameScene.show(new WndTitledMessage(Reflection.newInstance(allData.get(dataThreshold(mobTier)+mobIndex).getMobClass()).sprite(), M.TL(allData.get(dataThreshold(mobTier) + mobIndex).mobClass,"name"), M.L(Dict.class,"mob_"+allData.get(dataThreshold(mobTier) + mobIndex).mobClass.toString().substring(59)+"_d")));
                     }
                 }
