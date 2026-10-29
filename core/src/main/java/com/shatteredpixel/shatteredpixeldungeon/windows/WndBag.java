@@ -279,6 +279,9 @@ public class WndBag extends WndTabbed {
         float titleWidth = amt.x;
         if (Dungeon.energy > 0) {
             ItemSprite energy = new ItemSprite(ItemSpriteSheet.ENERGY, null);
+            //晶体的贴图填满了整个32px图块，而金币图块只有中间22px有实际图案
+            //不缩略的话晶体会比金币图标大一半左右，这里缩到与金币图案等大
+            energy.scale.set(22f/32);
             energy.x = titleWidth - energy.width() - 2;
             energy.y = (TITLE_HEIGHT - energy.height())/2f - 1;
             PixelScene.align(energy);
