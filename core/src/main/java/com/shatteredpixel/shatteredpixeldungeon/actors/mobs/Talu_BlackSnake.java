@@ -110,6 +110,9 @@ public class Talu_BlackSnake extends Mob {
 
     @Override
     public void damage(int dmg, Object src) {
+        if (phase==0){
+            notice();
+        }
         if (InvincibilityTime > 0) {
             sprite.showStatus( CharSprite.NEUTRAL, Messages.get(this, "invincibility") );
             Sample.INSTANCE.play( Assets.Sounds.HIT_PARRY, 1, Random.Float(0.96f, 1.05f));
@@ -121,7 +124,7 @@ public class Talu_BlackSnake extends Mob {
 
         super.damage(dmg, src);
 
-        if (phase==1 && HP < 2200) {
+        if (phase<=1 && HP < 2200) {
             HP = 2200;
             phase = 2;
             drup += 3;
@@ -440,7 +443,7 @@ public class Talu_BlackSnake extends Mob {
         InvincibilityTime = bundle.getInt(SKILL4TIME);
         drup = bundle.getInt(DRUPTIME);
         fx = phase > 3;
-        BossHealthBar.assignBoss(this);
+        if (phase>0) BossHealthBar.assignBoss(this);
 
     }
 }

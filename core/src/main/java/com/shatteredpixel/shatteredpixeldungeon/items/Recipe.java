@@ -189,7 +189,8 @@ public abstract class Recipe {
     private static Recipe[] oneIngredientRecipes = new Recipe[]{
             new Scroll.ScrollToStone(),
             new StewedMeat.oneMeat(),
-            new SmokeEgg.Recipe()
+            new SmokeEgg.Recipe(),
+            new Alchemize.Recipe()
     };
 
     private static Recipe[] twoIngredientRecipes = new Recipe[]{
@@ -209,7 +210,6 @@ public abstract class Recipe {
             new InfernalBrew.Recipe(),
             new ShockingBrew.Recipe(),
             new CausticBrew.Recipe(),
-            new Alchemize.Recipe(),
             new AquaBlast.Recipe(),
             new BeaconOfReturning.Recipe(),
             new CurseInfusion.Recipe(),

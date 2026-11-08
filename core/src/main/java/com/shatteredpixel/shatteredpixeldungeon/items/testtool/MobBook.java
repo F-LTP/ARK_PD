@@ -66,7 +66,7 @@ public class MobBook extends ChallengeItem{
             case 6: return MobBook.DataPack.PIRANHA.ordinal() - MobBook.DataPack.ACIDIC.ordinal() - 1;
             case 7: return MobBook.DataPack.FIRECORE.ordinal() - MobBook.DataPack.PIRANHA.ordinal() - 1;
             case 8: return MobBook.DataPack.T_SHAMAN.ordinal() - MobBook.DataPack.FIRECORE.ordinal() - 1;
-            case 9: default: return MobBook.DataPack.GUIDER.ordinal() - MobBook.DataPack.T_SHAMAN.ordinal() - 1;
+            case 9: default: return DataPack.ISHARMLA2.ordinal() - MobBook.DataPack.T_SHAMAN.ordinal() - 1;
         }
     }
     private int dataThreshold(int tier){
@@ -384,7 +384,9 @@ public class MobBook extends ChallengeItem{
         OCTO(Sea_Octo.class),
         LEAF(SeaLeef.class),
         //SEABOSS1(SeaBoss1.class),change from budding
-        GUIDER(NetherseaBrandguider.class);
+        GUIDER(NetherseaBrandguider.class),
+        ISHARMLA(Isharmla.class),
+        ISHARMLA2(IsharmlaSeabornHead.class);
         private Class<? extends Mob> mobClass;
 
         DataPack(Class<? extends Mob> cls){
